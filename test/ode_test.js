@@ -38,6 +38,7 @@ TestCase("DriftIntegrate", {
     }
 });
 
+
 TestCase("JumpIntegrate", {
     "test integrate should handle jump processes" : function() {
         var result = ode.integrate({

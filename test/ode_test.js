@@ -11,18 +11,34 @@ TestCase("EulerStep", {
 });
 
 
+TestCase("RK4Step", {
+    setUp: function() {
+        this.dy = function (y) { return [y[1], -0.25*y[0], 0.75*y[2]]; };
+        this.y = [5., 11., 13.];
+    },
+
+    "test rk4Step should update by a simple 4th order Runge-Kutta step" : function() {
+        y1 = ode.rk4Step(this.dy, this.y, 0, 0.5);
+        // numbers calculated by hand
+        assertEquals(10287, Math.round(1000 * y1[0]));
+        assertEquals(10040, Math.round(1000 * y1[1]));
+        assertEquals(18914, Math.round(1000 * y1[2]));
+    }
+});
+
+
 TestCase("DriftIntegrate", {
     setUp: function() {
-        sinon.stub(ode, "eulerStep", function(dy, y, dt) {
+        sinon.stub(ode, "rk4Step", function(dy, y, dt) {
             return [3*y[0], y[1]];
         });
     },
 
     tearDown: function() {
-        ode.eulerStep.restore()
+        ode.rk4Step.restore()
     },
 
-    "test integrate should return the results of several eulerSteps" : function() {
+    "test integrate should return the results of several rk4Steps" : function() {
         var result = ode.integrate({
             tMin: 0,
             tMax: 1,
@@ -50,6 +66,10 @@ TestCase("JumpIntegrate", {
             y0: [ 1 ]
         });
 
-        assertEquals([ 1, 4, 7, 0, 3, 6, 9, 2, 5, 8, 1 ], result.y[0]);
+        var expected = [ 1, 4, 7, 0, 3, 6, 9, 2, 5, 8, 1 ];  
+
+        for (i = 0; i < expected.length; ++i) {
+            assertEquals(1000000 * expected[i], Math.round(1000000 * result.y[0][i]));
+        }
     }
 });

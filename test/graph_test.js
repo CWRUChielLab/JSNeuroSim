@@ -7,6 +7,74 @@ TestCase("LinearAxis", {
         var screen_ordinates = axis.mapOrdinates(world_ordinates);
 
         assertEquals([50, 60, 112.5, 180, 380], screen_ordinates);
+    },
+
+    "test world and screen limits should be accessible" : function() {
+        var axis = graph.linearAxis(-4.2, -1.7, -8.4, 7.1);
+
+        assertEquals(-4.2, axis.worldMin());
+        assertEquals(-1.7, axis.worldMax());
+        assertEquals(2.5, axis.worldLength());
+        assertEquals(-8.4, axis.screenMin());
+        assertEquals(7.1, axis.screenMax());
+        assertEquals(15.5, axis.screenLength());
     }
 });
 
+
+function stubObj(methods) {
+    var stub = {}, 
+        calls = [],
+        i,l;
+
+    i = l = methods.length;    
+    while (i > 0) {
+        --i;
+        stub[methods[i]] = (function (methodName) { 
+                return function () {
+                    calls.push([methodName, 
+                        Array.prototype.slice.call(arguments,0)]);
+                }
+            })(methods[i]);
+    }
+    stub.getCalls = function () { 
+        return calls; 
+    };
+
+    return stub;
+}
+
+
+TestCase("PlotArea", {
+    "test should render xyLine to canvas" : function() {
+        var xAxis = graph.linearAxis(1, 10, 20, 110),
+            yAxis = graph.linearAxis(3, 9, 6, 18),
+            plotArea = graph.plotArea(xAxis, yAxis),
+            x = [1, 13, 5],
+            y = [7, 11, -3],
+            xScreen = xAxis.mapOrdinates(x);
+            yScreen = yAxis.mapOrdinates(y);
+
+        var context = stubObj(['save', 'restore', 'beginPath', 'rect', 
+            'moveTo', 'lineTo', 'stroke', 'clip']);
+
+        plotArea.addXYLine(x, y);
+        plotArea.draw(context);
+
+        assertEquals(
+            [
+                ['save', []],
+                ['beginPath', []],
+                ['rect', [xAxis.screenMin(), yAxis.screenMin(), 
+                    xAxis.screenLength(), yAxis.screenLength()]],
+                ['clip', []],
+                ['beginPath', []],
+                ['moveTo', [xScreen[2], yScreen[2]]],
+                ['lineTo', [xScreen[1], yScreen[1]]],
+                ['lineTo', [xScreen[0], yScreen[0]]],
+                ['stroke', []],
+                ['restore', []]
+            ],
+            context.getCalls());
+    }
+});

@@ -22,13 +22,13 @@ function plotSHO()
     v = result.y[1];
 
     // set up axes for the phase plane plot
-    var phaseXAxis = graph.linearAxis(-1.5, 1.5, 0, 600);
-    var phaseVAxis = graph.linearAxis(-1.5, 1.5, 0, 600);
+    var phaseXAxis = graph.linearAxis(-1.5, 1.5, 0, 400);
+    var phaseVAxis = graph.linearAxis(-1.5, 1.5, 0, 400);
     var phasePlot = graph.plotArea(phaseXAxis, phaseVAxis);
 
-    var timeAxis = graph.linearAxis(sho.tMin, sho.tMax, 0, 600);
-    var xAxis = graph.linearAxis(-1.5, 1.5, 600, 700);
-    var vAxis = graph.linearAxis(-1.5, 1.5, 700, 800);
+    var timeAxis = graph.linearAxis(sho.tMin, sho.tMax, 0, 400);
+    var xAxis = graph.linearAxis(-1.5, 1.5, 400, 500);
+    var vAxis = graph.linearAxis(-1.5, 1.5, 500, 600);
     var xPlot = graph.plotArea(timeAxis, xAxis);
     var vPlot = graph.plotArea(timeAxis, vAxis);
        

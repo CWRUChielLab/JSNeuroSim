@@ -19,10 +19,10 @@ TestCase("RK4Step", {
 
     "test rk4Step should update by a simple 4th order Runge-Kutta step" : function() {
         y1 = ode.rk4Step(this.dy, this.y, 0, 0.5);
-        // numbers calculated by hand
-        assertEquals(10287, Math.round(1000 * y1[0]));
-        assertEquals(10040, Math.round(1000 * y1[1]));
-        assertEquals(18914, Math.round(1000 * y1[2]));
+        // expected numbers calculated in python
+        assertClose(10.28727214, y1[0]);
+        assertClose(10.03955078, y1[1]);
+        assertClose(18.91403198, y1[2]);
     }
 });
 
@@ -69,7 +69,7 @@ TestCase("JumpIntegrate", {
         var expected = [ 1, 4, 7, 0, 3, 6, 9, 2, 5, 8, 1 ];  
 
         for (i = 0; i < expected.length; ++i) {
-            assertEquals(1000000 * expected[i], Math.round(1000000 * result.y[0][i]));
+            assertClose(expected[i], result.y[0][i], 1e-9, 1e-9);
         }
     }
 });

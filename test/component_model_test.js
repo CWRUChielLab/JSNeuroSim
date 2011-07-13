@@ -2,8 +2,8 @@ TestCase("ComponentModel", {
     setUp: function () {
         this.model = componentModel.componentModel();
 
-        this.iA1 = this.model.addStateVar("a1", 0.3);
-        this.iB = this.model.addStateVar("b", 0.1);
+        this.iA1 = this.model.addStateVar(0.3);
+        this.iB = this.model.addStateVar(0.1);
 
         sinon.stub(ode, "integrate", function () { return "stubbed ode.integrate"; });
     },
@@ -12,17 +12,16 @@ TestCase("ComponentModel", {
         ode.integrate.restore();
     },
 
+    "test addStatevar should return numbers starting with zero" : function() {
+        assertEquals(0, this.iA1);
+    },
+    
     "test addStatevar should return sequential numbers" : function() {
         assertEquals(this.iA1 + 1, this.iB);
     },
     
     "test statevar numbers should be tracked" : function() {
         assertEquals(2, this.model.numStateVars());
-    },
-
-    "test statevar names should be saved" : function() {
-        assertEquals("a1", this.model.stateVarName(0));
-        assertEquals("b", this.model.stateVarName(1));
     },
 
     "test initial values vector should be available" : function () {

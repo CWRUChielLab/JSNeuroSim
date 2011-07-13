@@ -22,29 +22,6 @@ TestCase("LinearAxis", {
 });
 
 
-function stubObj(methods) {
-    var stub = {}, 
-        calls = [],
-        i,l;
-
-    i = l = methods.length;    
-    while (i > 0) {
-        --i;
-        stub[methods[i]] = (function (methodName) { 
-                return function () {
-                    calls.push([methodName, 
-                        Array.prototype.slice.call(arguments,0)]);
-                }
-            })(methods[i]);
-    }
-    stub.getCalls = function () { 
-        return calls; 
-    };
-
-    return stub;
-}
-
-
 TestCase("PlotArea", {
     "test should render xyLine to canvas" : function() {
         var xAxis = graph.linearAxis(1, 10, 20, 110),
@@ -55,7 +32,7 @@ TestCase("PlotArea", {
             xScreen = xAxis.mapOrdinates(x);
             yScreen = yAxis.mapOrdinates(y);
 
-        var context = stubObj(['save', 'restore', 'beginPath', 'rect', 
+        var context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
             'moveTo', 'lineTo', 'stroke', 'clip']);
 
         plotArea.addXYLine(x, y);

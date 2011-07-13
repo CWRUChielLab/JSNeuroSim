@@ -2,13 +2,11 @@ var componentModel = {};
 
 componentModel.componentModel = function () {
     var numStateVars = 0;
-    var stateVarNames = [];
     var initialValues = [];
     var driftFunctions = [];
     var jumpFunctions = [];
 
-    function addStateVar(name, initialValue) {
-        stateVarNames.push(name);
+    function addStateVar(initialValue) {
         initialValues.push(initialValue);
         return numStateVars++;
     }
@@ -52,7 +50,6 @@ componentModel.componentModel = function () {
     return {
         addStateVar : addStateVar,
         numStateVars : function () { return numStateVars; },
-        stateVarName : function (i) { return stateVarNames[i]; },
         initialValues : function () { return initialValues.slice(0); },
         registerDrift : function (func) { driftFunctions.push(func); },
         drift : drift,

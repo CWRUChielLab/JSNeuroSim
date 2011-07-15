@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Electrophysiology simulation test</title>
+        <meta charset="UTF-8" />
+        <script type="text/javascript" src="../src/ode.js"></script>
+        <script type="text/javascript" src="../src/graph.js"></script>
+        <script type="text/javascript" src="../src/component_model.js"></script>
+        <script type="text/javascript" src="../src/electrophys.js"></script>
+        <script type="text/javascript" src="electrophystest.js"></script>
+    </head>
+    <body>
+        <h1>Passive membrane test</h1>
+        <canvas id="PassiveMembranePlot" width="400" height="100"></canvas><br/>
+        A passive membrane with a pulse<br/>
+        <input type="button" onclick="plotPassiveMembrane()" value="Run" />
+    </body>
+</html>

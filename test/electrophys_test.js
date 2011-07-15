@@ -12,6 +12,10 @@ TestCase("PassiveMembrane", {
         assertEquals(1, this.model.numStateVars());
     },
 
+    "test should set initial condition to be leak potential" : function () {
+        assertEquals(-65e-3, this.model.initialValues()[0]);
+    },
+
     "test should have expected drift" : function () {
         var dy = Array(this.model.numStateVars());
         this.drift(dy, [-75e-3], 0.);
@@ -52,5 +56,30 @@ TestCase("PassiveMembrane", {
 
         assertClose(1.87, this.passiveMembrane.V(withCurrents, t) 
                 - this.passiveMembrane.V(withoutCurrents, t));
+    }
+});
+
+
+TestCase("Pulse", {
+    setUp: function () {
+        this.pulse = electrophys.pulse({start: 0.1, width: 0.2, height: 0.525});
+    },
+
+    "test should return a function" : function () {
+        assertTypeOf("function", this.pulse);
+    },
+
+    "test should be off before and after the pulse" : function () {
+        assertEquals(0, this.pulse([], 0.));
+        assertEquals(0, this.pulse([], 0.0999));
+        assertEquals(0, this.pulse([], 0.3001));
+        assertEquals(0, this.pulse([], 1));
+    },
+
+    "test should be equal to the specified amplitude during the pulse" : function () {
+        var pulse = electrophys.pulse(0.1, 0.2, 0.525);
+        assertEquals(0.525, this.pulse([], 0.1001));
+        assertEquals(0.525, this.pulse([], 0.2));
+        assertEquals(0.525, this.pulse([], 0.2999));
     }
 });

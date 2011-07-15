@@ -49,6 +49,7 @@ ode.rk4Step = function (dy, y, t, dt) {
 ode.integrate = function (options) {
     var t = options.tMin, 
         y = options.y0,
+        maxStep = options.tMaxStep || (options.tMax - options.tMin)/1024 + options.tMin,
         yj,
         result = { t : [], y : [] },
         ndim = options.y0.length,
@@ -61,8 +62,8 @@ ode.integrate = function (options) {
     }
 
     while (t < options.tMax) {        
-        y = ode.rk4Step(options.drift, y, t, options.tMaxStep);
-        t += options.tMaxStep; 
+        y = ode.rk4Step(options.drift, y, t, maxStep);
+        t += maxStep; 
         
         if (options.jump) {
             yj = options.jump(y, t);

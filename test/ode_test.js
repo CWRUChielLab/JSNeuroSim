@@ -29,7 +29,7 @@ TestCase("RK4Step", {
 
 TestCase("DriftIntegrate", {
     setUp: function() {
-        sinon.stub(ode, "rk4Step", function(dy, y, dt) {
+        sinon.stub(ode, "rk4Step", function(dy, y, t, dt) {
             return [3*y[0], y[1]];
         });
     },
@@ -71,5 +71,37 @@ TestCase("JumpIntegrate", {
         for (i = 0; i < expected.length; ++i) {
             assertClose(expected[i], result.y[0][i], 1e-9, 1e-9);
         }
+    }
+});
+
+function EarlyExit(message) {
+    this.name = "EarlyExit";
+    this.message = message;
+}
+EarlyExit.prototype = Error.prototype;
+
+TestCase("IntegrateDefaultParameters", {
+    setUp: function() {
+        sinon.stub(ode, "rk4Step", function(drift, y, t, dt) {
+            assertEquals(4, dt);
+            throw new EarlyExit("Once is enough");
+        });
+    },
+
+    tearDown: function() {
+        ode.rk4Step.restore()
+    },
+
+    "test integrate should default to a time step of 1/1024th of the total time" : function() {
+        assertException(function () {
+                ode.integrate({
+                    tMin: 0,
+                    tMax: 4096,
+                    drift: function () { return [3]; },
+                    y0: [ 1 ]
+                });
+            },
+            "EarlyExit"
+        );
     }
 });

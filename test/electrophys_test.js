@@ -219,3 +219,66 @@ TestCase("GettingIFNeuron", {
     }
 });
 
+
+TestCase("GettingSynapse", {
+    setUp: function () {
+        this.model = componentModel.componentModel();
+        sinon.spy(this.model, "registerDrift");
+        sinon.spy(this.model, "registerJump");
+
+        this.presynaptic = {};
+        this.presynaptic.addSpikeWatcher = sinon.stub();
+
+        this.postsynaptic = {};
+        this.postsynaptic.addCurrent = sinon.stub();
+        var iV = this.model.addStateVar(-123e-3);
+        this.postsynaptic.V = function (state, t) { return state[iV]; };
+        
+        this.numTestStateVars = this.model.numStateVars();
+
+        this.gettingSynapse = electrophys.gettingSynapse(this.model, 
+            this.presynaptic, this.postsynaptic,
+            { W: 0.12, E_rev: -80e-3, tau_open: 10e-3, tau_close: 30e-3 });
+        this.drift = this.model.registerDrift.args[0][0];
+        this.spikeWatcher = this.presynaptic.addSpikeWatcher.args[0][0];
+        this.current = this.postsynaptic.addCurrent.args[0][0];
+    },
+
+    "test should have two state vars" : function () {
+        assertEquals(this.numTestStateVars + 2, this.model.numStateVars());
+    },
+
+    "test should set initial G_act to zero" : function () {
+        assertEquals(0, this.gettingSynapse.G_act(this.model.initialValues(), 1));
+    },
+
+    "test should set initial G_o to zero" : function () {
+        assertEquals(0, this.gettingSynapse.G_o(this.model.initialValues(), 1));
+    },
+
+    "test should have expected drift" : function () {
+        var dy = Array(this.model.numStateVars());
+        this.drift(dy, [0, 20e-3, 90e-3 ], 0.);
+        assertClose(-2, this.gettingSynapse.G_act(dy));
+        assertClose(-1, this.gettingSynapse.G_o(dy));
+    },
+
+    "test should increment G_act by one when spike happens" : function () {
+        var originalState = [1, 2.34, 0.72];
+        var state = originalState.slice(0);
+        
+        var jumped = this.spikeWatcher(state, 0);
+
+        assertTrue(jumped);
+        assertClose(3.34, state[1]);
+        assertEquals(0.72, state[2]);
+    },
+
+    "test should have expected current" : function () {
+        var state = [20e-3, 1e99, 0.12];
+
+        var current = this.current(state, 3.14);
+
+        assertClose(0.000600062257348, current);
+    }
+});

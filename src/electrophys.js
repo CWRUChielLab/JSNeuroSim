@@ -54,6 +54,7 @@ electrophys.gettingIFNeuron = function (model, options) {
     var theta_r = options.theta_r;
     var theta_tau = options.theta_tau;
     var currents = [];
+    var spikeWatchers = [];
 
     var iV = model.addStateVar(E_leak);
     var iTheta = model.addStateVar(theta_ss);
@@ -74,8 +75,17 @@ electrophys.gettingIFNeuron = function (model, options) {
     function jump(state, t) {
         if (state[iV] >= state[iTheta]) {
             state[iTheta] = theta_r;
+
+            var i = spikeWatchers.length;
+            
+            while (i > 0) {
+                --i;
+                spikeWatchers[i](state, t);
+            }
+
             return true;
         }
+        return false;
     }
 
     function VWithSpikes(state, t) {
@@ -105,6 +115,7 @@ electrophys.gettingIFNeuron = function (model, options) {
         V : function (state, t) { return state[iV]; },
         VWithSpikes : VWithSpikes,
         theta : function (state, t) { return state[iTheta]; },
-        addCurrent : function (I) { currents.push(I); }
+        addCurrent : function (I) { currents.push(I); },
+        addSpikeWatcher : function (f) { spikeWatchers.push(f); }
     };
 }

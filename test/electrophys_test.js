@@ -123,7 +123,7 @@ TestCase("GettingIFNeuron", {
         
         var jumped = this.jump(state, 0);
 
-        assertUndefined(jumped);
+        assertFalse(jumped);
         assertEquals(originalState, state);
     },
 
@@ -187,6 +187,35 @@ TestCase("GettingIFNeuron", {
 
         assertEquals([1e-3, 55e-3, 3e-3, 4e-3, 55e-3, 6e-3], withSpikes);
         assertEquals([1e-3, 2e-3, 3e-3, 4e-3, 5e-3, 6e-3], this.gettingIFNeuron.V(y));
+    },
+
+    "test should not call spike functions when the neuron does not spike"
+        : function () {
+        var state = [-10e-3, -5e-3];
+        var stub = sinon.stub() 
+        
+        this.gettingIFNeuron.addSpikeWatcher(stub);
+        this.jump(state, 0);
+
+        assertFalse(stub.called);
+    },
+
+    "test should call spike functions when the neuron spikes"
+        : function () {
+        var state = [-1e-3, -5e-3];
+        var t = 1.3;
+
+        function stub(stateIn, tIn) {
+            assertEquals(state, stateIn);
+            assertEquals(t, tIn);
+            stub.called = true;
+        }
+        stub.called = false;
+        
+        this.gettingIFNeuron.addSpikeWatcher(stub);
+        this.jump(state, t);
+
+        assertTrue(stub.called);
     }
 });
 

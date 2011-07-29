@@ -52,16 +52,31 @@ graph.plotArea = function (xAxis, yAxis) {
         for (i = 0; i < xyLines.length; ++i) {
             var xScreen = xAxis.mapOrdinates(xyLines[i][0]);
             var yScreen = yAxis.mapOrdinates(xyLines[i][1]);
-        
+            var drawing = false;
+
             l = xScreen.length;
-            j = l - 1;
+            j = l;
             
             context.beginPath();
-            context.moveTo(xScreen[j], yScreen[j]); 
+            
             
             while (j > 0) {
                 --j;
-                context.lineTo(xScreen[j], yScreen[j]); 
+                var x = xScreen[j],
+                    y = yScreen[j];
+
+                if (isFinite(x) && isFinite(y)) {
+                    if (drawing) {
+                        context.lineTo(x, y); 
+                    }
+                    else {
+                        context.moveTo(x, y); 
+                        drawing = true;
+                    }
+                }
+                else {
+                    drawing = false;
+                }
             }
             context.stroke();
         }

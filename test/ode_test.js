@@ -95,8 +95,8 @@ TestCase("IntegrateDefaultParameters", {
     "test integrate should default to a time step of 1/1024th of the total time" : function() {
         assertException(function () {
                 ode.integrate({
-                    tMin: 0,
-                    tMax: 4096,
+                    tMin: 1000,
+                    tMax: 5096,
                     drift: function () { return [3]; },
                     y0: [ 1 ]
                 });

@@ -11,8 +11,20 @@
     </head>
     <body>
         <h1>Passive membrane test</h1>
-        <canvas id="PassiveMembranePlot" width="400" height="100"></canvas><br/>
+        <canvas id="PassiveMembranePlot" width="500" height="200"></canvas><br/>
         A passive membrane with a pulse<br/>
         <input type="button" onclick="plotPassiveMembrane()" value="Run" />
+        <h1>C2 model test</h1>
+        <canvas id="C2Plot" width="500" height="200"></canvas><br/>
+        Resting <i>Tritonia</i> C2 neuron model (Calin-Jageman et al 2007)<br/>
+        <input type="button" onclick="plotC2()" value="Run" />
+        <h1>DSI model test</h1>
+        <canvas id="DSIPlot" width="500" height="200"></canvas><br/>
+        Resting <i>Tritonia</i> DSI neuron model (Calin-Jageman et al 2007)<br/>
+        <input type="button" onclick="plotDSI()" value="Run" />
+        <h1>VSI model test</h1>
+        <canvas id="VSIPlot" width="500" height="200"></canvas><br/>
+        Resting <i>Tritonia</i> VSI neuron model (Calin-Jageman et al 2007)<br/>
+        <input type="button" onclick="plotVSI()" value="Run" />
     </body>
 </html>

@@ -53,5 +53,39 @@ TestCase("PlotArea", {
                 ['restore', []]
             ],
             context.getCalls());
+    },
+
+    "test should skip NaN and infinity" : function() {
+        var xAxis = graph.linearAxis(1, 10, 20, 110),
+            yAxis = graph.linearAxis(3, 9, 6, 18),
+            plotArea = graph.plotArea(xAxis, yAxis),
+            x = [1,   13,  4, Infinity,         5, 13, 6,       13, 12, NaN ],
+            y = [NaN, 11, 12,       -3, -Infinity, 12, 3, Infinity,  8,   7 ],
+            xScreen = xAxis.mapOrdinates(x);
+            yScreen = yAxis.mapOrdinates(y);
+
+        var context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
+            'moveTo', 'lineTo', 'stroke', 'clip']);
+
+        plotArea.addXYLine(x, y);
+        plotArea.draw(context);
+
+        assertEquals(
+            [
+                ['save', []],
+                ['beginPath', []],
+                ['rect', [xAxis.screenMin(), yAxis.screenMin(), 
+                    xAxis.screenLength(), yAxis.screenLength()]],
+                ['clip', []],
+                ['beginPath', []],
+                ['moveTo', [xScreen[8], yScreen[8]]],
+                ['moveTo', [xScreen[6], yScreen[6]]],
+                ['lineTo', [xScreen[5], yScreen[5]]],
+                ['moveTo', [xScreen[2], yScreen[2]]],
+                ['lineTo', [xScreen[1], yScreen[1]]],
+                ['stroke', []],
+                ['restore', []]
+            ],
+            context.getCalls());
     }
 });

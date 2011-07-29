@@ -110,6 +110,13 @@ TestCase("GettingIFNeuron", {
         assertEquals(-40e-3, this.gettingIFNeuron.theta(this.model.initialValues(), 0));
     },
 
+    "test should be able to overide resting potential" : function () {
+        this.gettingIFNeuron = electrophys.gettingIFNeuron(this.model, 
+            { C: 2e-9, g_leak: 50e-9, E_leak: -65e-3, 
+                theta_ss: -40e-3, theta_r: 5e-3, theta_tau: 10e-3, V_rest: -123e-3 });
+        assertEquals(-123e-3, this.gettingIFNeuron.V(this.model.initialValues(), 0));
+    },
+
     "test should have expected drift" : function () {
         var dy = Array(this.model.numStateVars());
         this.drift(dy, [-75e-3, -20e-3 ], 0.);
@@ -224,17 +231,13 @@ TestCase("GettingSynapse", {
     setUp: function () {
         this.model = componentModel.componentModel();
         sinon.spy(this.model, "registerDrift");
-        sinon.spy(this.model, "registerJump");
 
         this.presynaptic = {};
         this.presynaptic.addSpikeWatcher = sinon.stub();
 
         this.postsynaptic = {};
         this.postsynaptic.addCurrent = sinon.stub();
-        var iV = this.model.addStateVar(-123e-3);
-        this.postsynaptic.V = function (state, t) { return state[iV]; };
-        
-        this.numTestStateVars = this.model.numStateVars();
+        this.postsynaptic.V = function (state, t) { return 20e-3; };
 
         this.gettingSynapse = electrophys.gettingSynapse(this.model, 
             this.presynaptic, this.postsynaptic,
@@ -245,40 +248,91 @@ TestCase("GettingSynapse", {
     },
 
     "test should have two state vars" : function () {
-        assertEquals(this.numTestStateVars + 2, this.model.numStateVars());
+        assertEquals(2, this.model.numStateVars());
     },
 
     "test should set initial G_act to zero" : function () {
-        assertEquals(0, this.gettingSynapse.G_act(this.model.initialValues(), 1));
+        assertEquals(0, 
+                this.gettingSynapse.G_act(this.model.initialValues(), 1));
     },
 
     "test should set initial G_o to zero" : function () {
-        assertEquals(0, this.gettingSynapse.G_o(this.model.initialValues(), 1));
+        assertEquals(0, 
+                this.gettingSynapse.G_o(this.model.initialValues(), 1));
     },
 
     "test should have expected drift" : function () {
         var dy = Array(this.model.numStateVars());
-        this.drift(dy, [0, 20e-3, 90e-3 ], 0.);
-        assertClose(-2, this.gettingSynapse.G_act(dy));
-        assertClose(-1, this.gettingSynapse.G_o(dy));
+        this.drift(dy, [ 20e-3, 90e-3 ], 0.);
+        assertClose(-2, this.gettingSynapse.G_act(dy, 0));
+        assertClose(-1, this.gettingSynapse.G_o(dy, 0));
     },
 
-    "test should increment G_act by one when spike happens" : function () {
-        var originalState = [1, 2.34, 0.72];
+    "test should increment G_act by one when a spike happens" : function () {
+        var originalState = [ 2.34, 0.72 ];
         var state = originalState.slice(0);
         
         var jumped = this.spikeWatcher(state, 0);
 
         assertTrue(jumped);
-        assertClose(3.34, state[1]);
-        assertEquals(0.72, state[2]);
+        assertClose(3.34, this.gettingSynapse.G_act(state, 0));
+        assertEquals(0.72, this.gettingSynapse.G_o(state, 0));
     },
 
     "test should have expected current" : function () {
-        var state = [20e-3, 1e99, 0.12];
+        var state = [ 1e99, 0.12];
 
         var current = this.current(state, 3.14);
 
-        assertClose(0.000600062257348, current);
+        assertClose(-0.000600062257348, current);
     }
 });
+
+
+TestCase("GettingShuntConductance", {
+    setUp: function () {
+        this.model = componentModel.componentModel();
+        sinon.spy(this.model, "registerDrift");
+
+        this.neuron = {};
+        this.neuron.addCurrent = sinon.stub();
+        this.neuron.V = function (state, t) { return -60e-3; };
+
+        this.gettingShunt = electrophys.gettingShuntConductance(this.model, 
+            this.neuron, 
+            { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
+                B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3 });
+        this.drift = this.model.registerDrift.args[0][0];
+        this.current = this.neuron.addCurrent.args[0][0];
+    },
+
+    "test should have two state vars" : function () {
+        assertEquals(2, this.model.numStateVars());
+    },
+
+    "test should set initial m to m_inf" : function () {
+        assertClose(0.0116073164453, 
+                this.gettingShunt.m(this.model.initialValues(), 1));
+    },
+
+    "test should set initial h to h_inf" : function () {
+        assertClose(0.9820137900379, 
+                this.gettingShunt.h(this.model.initialValues(), 1));
+    },
+
+    "test should have expected drift" : function () {
+        var dy = Array(this.model.numStateVars());
+        this.drift(dy, [ 0.2, 0.3 ], 0.);
+        assertClose(-16.555480433378882, this.gettingShunt.m(dy, 0));
+        assertClose(0.862624126989406, this.gettingShunt.h(dy, 0));
+    },
+
+    "test should have expected current" : function () {
+        var state = [ 0.2, 0.3 ];
+
+        var current = this.current(state, 3.14);
+
+        assertClose(6e-10, current, 1e-9, 1e-18);
+    }
+});
+

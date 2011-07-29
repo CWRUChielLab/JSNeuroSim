@@ -55,8 +55,9 @@ electrophys.gettingIFNeuron = function (model, options) {
     var theta_tau = options.theta_tau;
     var currents = [];
     var spikeWatchers = [];
+    var V_rest = options.V_rest || E_leak;
 
-    var iV = model.addStateVar(E_leak);
+    var iV = model.addStateVar(V_rest);
     var iTheta = model.addStateVar(theta_ss);
     
     function drift(result, state, t) {
@@ -144,11 +145,48 @@ electrophys.gettingSynapse = function (
     });
 
     postsynaptic.addCurrent(function (state, t) {
-        return W * state[iG_o] * (postsynaptic.V(state, t) - E_rev) * A;
+        return W * state[iG_o] * (E_rev - postsynaptic.V(state, t)) * A;
     });
 
     return {
         G_act: function (state, t) { return state[iG_act]; },
         G_o: function (state, t) { return state[iG_o]; },
+    };
+};
+
+
+electrophys.gettingShuntConductance = function (
+        model, neuron, options
+        ) {
+    var G = options.G;
+    var E_rev = options.E_rev;
+    var B_m = options.B_m;
+    var C_m = options.C_m;
+    var tau_m = options.tau_m;
+    var B_h = options.B_h;
+    var C_h = options.C_h;
+    var tau_h = options.tau_h;
+    
+
+    var im = model.addStateVar(1/(Math.exp((E_rev + B_m)/C_m) + 1));
+    var ih = model.addStateVar(1/(Math.exp((E_rev + B_h)/C_h) + 1));
+
+    function drift(result, state, t) {
+        var v = neuron.V(state, t);
+        var m_inf = 1/(Math.exp((v + B_m)/C_m) + 1);
+        var h_inf = 1/(Math.exp((v + B_h)/C_h) + 1);
+        
+        result[im] = (m_inf - state[im]) / tau_m;
+        result[ih] = (h_inf - state[ih]) / tau_h;
+    }
+    model.registerDrift(drift);
+
+    neuron.addCurrent(function (state, t) {
+        return G * state[im] * state[ih] * (neuron.V(state, t) - E_rev);
+    });
+
+    return {
+        m: function (state, t) { return state[im]; },
+        h: function (state, t) { return state[ih]; },
     };
 };

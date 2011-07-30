@@ -182,7 +182,7 @@ electrophys.gettingShuntConductance = function (
     model.registerDrift(drift);
 
     neuron.addCurrent(function (state, t) {
-        return G * state[im] * state[ih] * (neuron.V(state, t) - E_rev);
+        return G * state[im] * state[ih] * (E_rev - neuron.V(state, t));
     });
 
     return {

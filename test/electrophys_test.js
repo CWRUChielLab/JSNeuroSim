@@ -332,7 +332,7 @@ TestCase("GettingShuntConductance", {
 
         var current = this.current(state, 3.14);
 
-        assertClose(6e-10, current, 1e-9, 1e-18);
+        assertClose(-6e-10, current, 1e-9, 1e-18);
     }
 });
 

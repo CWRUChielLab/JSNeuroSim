@@ -87,7 +87,7 @@ function plotDSI()
     var model = componentModel.componentModel();
     var DSI = electrophys.gettingIFNeuron(model, 
         { C: 1.57e-9, g_leak: 1/38.8e6, E_leak: -47.5e-3, 
-            theta_ss: -50-3, theta_r: 200e-3, theta_tau: 15.0e-3 });
+            theta_ss: -50e-3, theta_r: 200e-3, theta_tau: 15.0e-3 });
     var DSIShunt = electrophys.gettingShuntConductance(model, DSI,
         { G: 0.08e-6, E_rev: -47.5e-3, B_m: 29e-3, C_m: -1e-3, tau_m: 10e-3,
                 B_h: -100e-3, C_h: 1e-3, tau_h: 100000e-3 });
@@ -130,7 +130,7 @@ function plotVSI()
     // create the passive membrane
     var model = componentModel.componentModel();
     var VSI = electrophys.gettingIFNeuron(model, 
-        { C: 3.2e-9, g_leak: 1/14e6, E_leak: -56e-3, V_rest: -70e-3, 
+        { C: 3.2e-9, g_leak: 1/14e6, E_leak: -56e-3, 
             theta_ss: -38e-3, theta_r: 10e-3, theta_tau: 10.0e-3 });
     var VSIShunt = electrophys.gettingShuntConductance(model, VSI,
         { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,

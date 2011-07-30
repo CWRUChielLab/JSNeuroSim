@@ -5,7 +5,7 @@ JSNeuroSim
 This project will eventually contain a series of simulations in JavaScript
 that can be used to teach students about neurophysiology.  
 
-At the moment it is still under construction, but it contains a few components 
+The code is still under construction, but it already contains a few components 
 that might be useful to others:
 
  * A basic ODE integrator (4th order Runge-Kutta, fixed step size) that 
@@ -18,12 +18,12 @@ that might be useful to others:
 
  * Simple components for a passive membrane, current pulse, integrate and fire
    neuron, shunt current, and synapse (the latter three are based on the model
-   in CRJ2007_).
+   in CTMKF2007_).
 
 To see the current code at work, download the project and open 
 integration_tests/electrophys.html in a browser with JavaScript enabled.  
 
-.. [CRJ2007] Calin-Jageman RJ, Tunstall MJ, Mensh BD, Katz PS, Frost WN.
+.. [CTMKF2007] Calin-Jageman RJ, Tunstall MJ, Mensh BD, Katz PS, Frost WN.
    Parameter Space Analysis Suggests Multi-Site Plasticity Contributes to Motor
    Pattern Initiation in Tritonia. Journal of Neurophysiology 2007
    Oct;98(4):2382 -2398. http://jn.physiology.org/content/98/4/2382.short

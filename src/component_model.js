@@ -1,23 +1,30 @@
+/*global ode: false */
 var componentModel = {};
 
 componentModel.componentModel = function () {
-    var numStateVars = 0;
-    var initialValues = [];
-    var driftFunctions = [];
-    var jumpFunctions = [];
+    "use strict";
+    var numStateVars = 0,
+        initialValues = [],
+        driftFunctions = [],
+        jumpFunctions = [];
 
     function addStateVar(initialValue) {
         initialValues.push(initialValue);
-        return numStateVars++;
+        numStateVars += 1;
+        return numStateVars - 1;
     }
 
     function drift(state, t) {
-        var result = new Array(numStateVars),
-            i, l;
+        /*jslint newcap: false */
+        var result = [], 
+            i, 
+            l;
+
+        result.length = numStateVars;
 
         i = l = driftFunctions.length;
         while (i > 0) {
-            --i;
+            i -= 1;
             driftFunctions[i](result, state, t);
         }
 
@@ -25,12 +32,12 @@ componentModel.componentModel = function () {
     }
 
     function jump(state, t) {
-        var changed = false;
+        var changed = false, i, l;
 
         i = l = jumpFunctions.length;
         while (i > 0) {
-            --i;
-            changed |= jumpFunctions[i](state, t);
+            i -= 1;
+            changed = (jumpFunctions[i](state, t) || changed);
         }
 
         if (changed) {
@@ -39,7 +46,7 @@ componentModel.componentModel = function () {
     }
         
     
-    function integrate (options) { 
+    function integrate(options) { 
         options.jump = jump;
         options.drift = drift;
         options.y0 = options.y0 || initialValues;

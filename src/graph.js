@@ -1,6 +1,7 @@
 var graph = {};
 
 graph.linearAxis = function (worldMin, worldMax, screenMin, screenMax) {
+    "use strict";
     var worldLength = worldMax - worldMin,
         screenLength = screenMax - screenMin,
         worldToScreenScale = screenLength/worldLength,
@@ -13,7 +14,7 @@ graph.linearAxis = function (worldMin, worldMax, screenMin, screenMax) {
             result = new Array(l); 
         
         while (i > 0) {
-            --i;
+            i -= 1;
             result[i] = (ordinates[i] - worldMin) * worldToScreenScale + screenMin;
         }
 
@@ -33,14 +34,15 @@ graph.linearAxis = function (worldMin, worldMax, screenMin, screenMax) {
 
 
 graph.plotArea = function (xAxis, yAxis) {
+    "use strict";
     var xyLines = [];
     
     function addXYLine(xs, ys) {
         xyLines.push([xs,ys]);
-    };
+    }
 
     function draw(context) {
-        var i, j, l;
+        var i, j, l, xScreen, yScreen, drawing, x, y;
         
         // make sure we save and restore the current clipping rectangle
         context.save();
@@ -49,10 +51,10 @@ graph.plotArea = function (xAxis, yAxis) {
                 xAxis.screenLength(), yAxis.screenLength());
         context.clip();
         
-        for (i = 0; i < xyLines.length; ++i) {
-            var xScreen = xAxis.mapOrdinates(xyLines[i][0]);
-            var yScreen = yAxis.mapOrdinates(xyLines[i][1]);
-            var drawing = false;
+        for (i = 0; i < xyLines.length; i += 1) {
+            xScreen = xAxis.mapOrdinates(xyLines[i][0]);
+            yScreen = yAxis.mapOrdinates(xyLines[i][1]);
+            drawing = false;
 
             l = xScreen.length;
             j = l;
@@ -61,9 +63,9 @@ graph.plotArea = function (xAxis, yAxis) {
             
             
             while (j > 0) {
-                --j;
-                var x = xScreen[j],
-                    y = yScreen[j];
+                j -= 1;
+                x = xScreen[j];
+                y = yScreen[j];
 
                 if (isFinite(x) && isFinite(y)) {
                     if (drawing) {

@@ -2,19 +2,19 @@ var electrophys = {};
 
 
 electrophys.passiveMembrane = function (model, options) {
-    var C = options.C;
-    var g_leak = options.g_leak;
-    var E_leak = options.E_leak;
-    var currents = [];
-
-    var iV = model.addStateVar(E_leak);
+    "use strict";
+    var C = options.C,
+        g_leak = options.g_leak,
+        E_leak = options.E_leak,
+        currents = [],
+        iV = model.addStateVar(E_leak);
     
     function drift(result, state, t) {
-        var i = currents.length;
-        var I_inj = 0;
+        var i = currents.length,
+            I_inj = 0;
         
         while (i > 0) {
-            --i;
+            i -= 1;
             I_inj += currents[i](state, t);
         }
 
@@ -27,13 +27,14 @@ electrophys.passiveMembrane = function (model, options) {
         V : function (state, t) { return state[iV]; },
         addCurrent : function (I) { currents.push(I); }
     };
-}
+};
 
 
 electrophys.pulse = function (options) {
-    var start = options.start;
-    var width = options.width;
-    var height = options.height;
+    "use strict";
+    var start = options.start,
+        width = options.width,
+        height = options.height;
 
     return function (state, t) {
             if (t >= start && t < start + width) {
@@ -47,25 +48,25 @@ electrophys.pulse = function (options) {
 
 
 electrophys.gettingIFNeuron = function (model, options) {
-    var C = options.C;
-    var g_leak = options.g_leak;
-    var E_leak = options.E_leak;
-    var theta_ss = options.theta_ss;
-    var theta_r = options.theta_r;
-    var theta_tau = options.theta_tau;
-    var currents = [];
-    var spikeWatchers = [];
-    var V_rest = options.V_rest || E_leak;
-
-    var iV = model.addStateVar(V_rest);
-    var iTheta = model.addStateVar(theta_ss);
+    "use strict";
+    var C = options.C,
+        g_leak = options.g_leak,
+        E_leak = options.E_leak,
+        theta_ss = options.theta_ss,
+        theta_r = options.theta_r,
+        theta_tau = options.theta_tau,
+        currents = [],
+        spikeWatchers = [],
+        V_rest = options.V_rest || E_leak,
+        iV = model.addStateVar(V_rest),
+        iTheta = model.addStateVar(theta_ss);
     
     function drift(result, state, t) {
-        var i = currents.length;
-        var I_inj = 0;
+        var i = currents.length,
+            I_inj = 0;
         
         while (i > 0) {
-            --i;
+            i -= 1;
             I_inj += currents[i](state, t);
         }
 
@@ -80,7 +81,7 @@ electrophys.gettingIFNeuron = function (model, options) {
             var i = spikeWatchers.length;
             
             while (i > 0) {
-                --i;
+                i -= 1;
                 spikeWatchers[i](state, t);
             }
 
@@ -91,12 +92,12 @@ electrophys.gettingIFNeuron = function (model, options) {
 
     function VWithSpikes(state, t) {
         if (state[iV] instanceof Array) {
-            var newV = state[iV].slice(0);
-            var theta = state[iTheta];
-            var i = theta.length - 1;
+            var newV = state[iV].slice(0),
+                theta = state[iTheta],
+                i = theta.length - 1;
             
             while (i > 0) {
-                --i;
+                i -= 1;
                 if (theta[i] < theta[i+1]) {
                     newV[i+1] = 55e-3;
                 }
@@ -125,13 +126,14 @@ electrophys.gettingIFNeuron = function (model, options) {
 electrophys.gettingSynapse = function (
         model, presynaptic, postsynaptic, options
         ) {
-    var iG_act = model.addStateVar(0);
-    var iG_o = model.addStateVar(0);
-    var W = options.W;
-    var E_rev = options.E_rev;
-    var tau_open = options.tau_open;
-    var tau_close = options.tau_close;
-    var A = 1/(4*Math.exp(-3.15/(tau_close/tau_open)) + 1);
+    "use strict";
+    var iG_act = model.addStateVar(0),
+        iG_o = model.addStateVar(0),
+        W = options.W,
+        E_rev = options.E_rev,
+        tau_open = options.tau_open,
+        tau_close = options.tau_close,
+        A = 1/(4*Math.exp(-3.15/(tau_close/tau_open)) + 1);
 
     function drift(result, state, t) {
         result[iG_act] = -state[iG_act] / tau_open;
@@ -140,7 +142,7 @@ electrophys.gettingSynapse = function (
     model.registerDrift(drift);
 
     presynaptic.addSpikeWatcher(function (state, t) { 
-        state[iG_act]++; 
+        state[iG_act] += 1; 
         return true; 
     });
 
@@ -158,23 +160,22 @@ electrophys.gettingSynapse = function (
 electrophys.gettingShuntConductance = function (
         model, neuron, options
         ) {
-    var G = options.G;
-    var E_rev = options.E_rev;
-    var B_m = options.B_m;
-    var C_m = options.C_m;
-    var tau_m = options.tau_m;
-    var B_h = options.B_h;
-    var C_h = options.C_h;
-    var tau_h = options.tau_h;
-    
-
-    var im = model.addStateVar(1/(Math.exp((E_rev + B_m)/C_m) + 1));
-    var ih = model.addStateVar(1/(Math.exp((E_rev + B_h)/C_h) + 1));
+    "use strict";
+    var G = options.G,
+        E_rev = options.E_rev,
+        B_m = options.B_m,
+        C_m = options.C_m,
+        tau_m = options.tau_m,
+        B_h = options.B_h,
+        C_h = options.C_h,
+        tau_h = options.tau_h,
+        im = model.addStateVar(1/(Math.exp((E_rev + B_m)/C_m) + 1)),
+        ih = model.addStateVar(1/(Math.exp((E_rev + B_h)/C_h) + 1));
 
     function drift(result, state, t) {
-        var v = neuron.V(state, t);
-        var m_inf = 1/(Math.exp((v + B_m)/C_m) + 1);
-        var h_inf = 1/(Math.exp((v + B_h)/C_h) + 1);
+        var v = neuron.V(state, t),
+            m_inf = 1/(Math.exp((v + B_m)/C_m) + 1),
+            h_inf = 1/(Math.exp((v + B_h)/C_h) + 1);
         
         result[im] = (m_inf - state[im]) / tau_m;
         result[ih] = (h_inf - state[ih]) / tau_h;

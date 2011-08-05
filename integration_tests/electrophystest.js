@@ -1,3 +1,21 @@
+// set up the controls for the passive membrane simulation
+function init() {
+    passiveMembraneParams = { 
+        paramA:{ label: "param A" }, 
+        paramB:{ label: "param B" }, 
+        paramC:{ label: "param C" }, 
+        paramD:{ label: "param D" } 
+    };
+    passiveMembraneLayout = [
+        ['A Heading', ['paramA', 'paramB']],
+        ['A Second Heading', ['paramC', 'paramD']],
+    ];
+    passiveMembranePanel = document.getElementById('PassiveMembraneControls');
+    passiveMembraneControls = simcontrols.controls(
+        passiveMembranePanel, passiveMembraneParams, passiveMembraneLayout);
+}
+window.onload=init;
+
 // simulate and plot a passive membrane with a pulse
 function plotPassiveMembrane()
 {
@@ -157,5 +175,4 @@ function plotVSI()
     vPlot.addXYLine(t, v);
     vPlot.draw(context);
 }
-
 

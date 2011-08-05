@@ -97,7 +97,7 @@ TestCase("IntegrateDefaultParameters", {
                 ode.integrate({
                     tMin: 1000,
                     tMax: 5096,
-                    drift: function () { return [3]; },
+                    drift: function () {},
                     y0: [ 1 ]
                 });
             },

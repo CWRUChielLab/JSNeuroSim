@@ -7,7 +7,7 @@ ode.eulerStep = function (dy, y, t, dt) {
         i;
         
     for (i = 0; i < y.length; i += 1) {
-        y1[i] = y[i] + dy1[i]*dt;
+        y1[i] = y[i] + dy1[i] * dt;
     }
 
     return y1;
@@ -25,14 +25,14 @@ ode.rk4Step = function (dy, y, t, dt) {
         y1[j] = y[j] + 0.5 * dt * y1[j];
     }
     
-    y2 = dy(y1, t + dt/2); 
+    y2 = dy(y1, t + dt / 2); 
     j = l;
     while (j > 0) {
         j -= 1;
         y2[j] = y[j] + 0.5 * dt * y2[j];
     }
     
-    y3 = dy(y2, t + dt/2); 
+    y3 = dy(y2, t + dt / 2); 
     j = l;
     while (j > 0) {
         j -= 1;
@@ -43,7 +43,8 @@ ode.rk4Step = function (dy, y, t, dt) {
     j = l;
     while (j > 0) {
         j -= 1;
-        y4[j] = y1[j]/3 + y2[j]*2/3 + y3[j]/3 + dt * y4[j]/6 - y[j]/3;
+        y4[j] = (y1[j] / 3 + y2[j] * 2 / 3 + y3[j] / 3 
+                + dt * y4[j] / 6 - y[j] / 3);
     }
 
     return y4;
@@ -53,7 +54,7 @@ ode.integrate = function (options) {
     "use strict";
     var t = options.tMin, 
         y = options.y0,
-        maxStep = options.tMaxStep || (options.tMax - options.tMin)/1024,
+        maxStep = options.tMaxStep || (options.tMax - options.tMin) / 1024,
         yj,
         result = { t : [], y : [] },
         ndim = options.y0.length,

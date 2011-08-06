@@ -4,18 +4,20 @@ graph.linearAxis = function (worldMin, worldMax, screenMin, screenMax) {
     "use strict";
     var worldLength = worldMax - worldMin,
         screenLength = screenMax - screenMin,
-        worldToScreenScale = screenLength/worldLength,
-        screenToWorldScale = worldLength/screenLength;
+        worldToScreenScale = screenLength / worldLength,
+        screenToWorldScale = worldLength / screenLength;
     
 
     function mapOrdinates(ordinates) {
         var l = ordinates.length,
             i = l, 
-            result = new Array(l); 
+            result = [];
+        result.length = l; 
         
         while (i > 0) {
             i -= 1;
-            result[i] = (ordinates[i] - worldMin) * worldToScreenScale + screenMin;
+            result[i] = ((ordinates[i] - worldMin) * worldToScreenScale 
+                    + screenMin);
         }
 
         return result;
@@ -38,7 +40,7 @@ graph.plotArea = function (xAxis, yAxis) {
     var xyLines = [];
     
     function addXYLine(xs, ys) {
-        xyLines.push([xs,ys]);
+        xyLines.push([xs, ys]);
     }
 
     function draw(context) {
@@ -70,13 +72,11 @@ graph.plotArea = function (xAxis, yAxis) {
                 if (isFinite(x) && isFinite(y)) {
                     if (drawing) {
                         context.lineTo(x, y); 
-                    }
-                    else {
+                    } else {
                         context.moveTo(x, y); 
                         drawing = true;
                     }
-                }
-                else {
+                } else {
                     drawing = false;
                 }
             }

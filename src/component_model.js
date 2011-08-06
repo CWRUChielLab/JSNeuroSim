@@ -1,4 +1,3 @@
-/*global ode: false */
 var componentModel = {};
 
 componentModel.componentModel = function () {
@@ -15,7 +14,6 @@ componentModel.componentModel = function () {
     }
 
     function drift(state, t) {
-        /*jslint newcap: false */
         var result = [], 
             i, 
             l;
@@ -47,6 +45,7 @@ componentModel.componentModel = function () {
         
     
     function integrate(options) { 
+        /*global ode: false */
         options.jump = jump;
         options.drift = drift;
         options.y0 = options.y0 || initialValues;

@@ -1,6 +1,5 @@
 var electrophys = {};
 
-
 electrophys.passiveMembrane = function (model, options) {
     "use strict";
     var C = options.C,
@@ -18,7 +17,7 @@ electrophys.passiveMembrane = function (model, options) {
             I_inj += currents[i](state, t);
         }
 
-        result[iV] = (g_leak * (E_leak - state[iV]) + I_inj)/C;
+        result[iV] = (g_leak * (E_leak - state[iV]) + I_inj) / C;
     }
 
     model.registerDrift(drift);
@@ -37,13 +36,12 @@ electrophys.pulse = function (options) {
         height = options.height;
 
     return function (state, t) {
-            if (t >= start && t < start + width) {
-                return height;
-            }
-            else {
-                return 0;
-            }
-        };
+        if (t >= start && t < start + width) {
+            return height;
+        } else {
+            return 0;
+        }
+    };
 };
 
 
@@ -70,8 +68,8 @@ electrophys.gettingIFNeuron = function (model, options) {
             I_inj += currents[i](state, t);
         }
 
-        result[iV] = (g_leak * (E_leak - state[iV]) + I_inj)/C;
-        result[iTheta] = (theta_ss - state[iTheta])/theta_tau;
+        result[iV] = (g_leak * (E_leak - state[iV]) + I_inj) / C;
+        result[iTheta] = (theta_ss - state[iTheta]) / theta_tau;
     }
 
     function jump(state, t) {
@@ -98,14 +96,13 @@ electrophys.gettingIFNeuron = function (model, options) {
             
             while (i > 0) {
                 i -= 1;
-                if (theta[i] < theta[i+1]) {
-                    newV[i+1] = 55e-3;
+                if (theta[i] < theta[i + 1]) {
+                    newV[i + 1] = 55e-3;
                 }
             }
 
             return newV;
-        }
-        else {
+        } else {
             return state[iV];
         }
     }
@@ -123,9 +120,9 @@ electrophys.gettingIFNeuron = function (model, options) {
 };
 
 
-electrophys.gettingSynapse = function (
-        model, presynaptic, postsynaptic, options
-        ) {
+electrophys.gettingSynapse = function (model, presynaptic, 
+    postsynaptic, options) {
+
     "use strict";
     var iG_act = model.addStateVar(0),
         iG_o = model.addStateVar(0),
@@ -133,7 +130,7 @@ electrophys.gettingSynapse = function (
         E_rev = options.E_rev,
         tau_open = options.tau_open,
         tau_close = options.tau_close,
-        A = 1/(4*Math.exp(-3.15/(tau_close/tau_open)) + 1);
+        A = 1 / (4 * Math.exp(-3.15 / (tau_close / tau_open)) + 1);
 
     function drift(result, state, t) {
         result[iG_act] = -state[iG_act] / tau_open;
@@ -152,14 +149,13 @@ electrophys.gettingSynapse = function (
 
     return {
         G_act: function (state, t) { return state[iG_act]; },
-        G_o: function (state, t) { return state[iG_o]; },
+        G_o: function (state, t) { return state[iG_o]; }
     };
 };
 
 
-electrophys.gettingShuntConductance = function (
-        model, neuron, options
-        ) {
+electrophys.gettingShuntConductance = function (model, neuron, options) {
+
     "use strict";
     var G = options.G,
         E_rev = options.E_rev,
@@ -169,13 +165,13 @@ electrophys.gettingShuntConductance = function (
         B_h = options.B_h,
         C_h = options.C_h,
         tau_h = options.tau_h,
-        im = model.addStateVar(1/(Math.exp((E_rev + B_m)/C_m) + 1)),
-        ih = model.addStateVar(1/(Math.exp((E_rev + B_h)/C_h) + 1));
+        im = model.addStateVar(1 / (Math.exp((E_rev + B_m) / C_m) + 1)),
+        ih = model.addStateVar(1 / (Math.exp((E_rev + B_h) / C_h) + 1));
 
     function drift(result, state, t) {
         var v = neuron.V(state, t),
-            m_inf = 1/(Math.exp((v + B_m)/C_m) + 1),
-            h_inf = 1/(Math.exp((v + B_h)/C_h) + 1);
+            m_inf = 1 / (Math.exp((v + B_m) / C_m) + 1),
+            h_inf = 1 / (Math.exp((v + B_h) / C_h) + 1);
         
         result[im] = (m_inf - state[im]) / tau_m;
         result[ih] = (h_inf - state[ih]) / tau_h;
@@ -188,6 +184,6 @@ electrophys.gettingShuntConductance = function (
 
     return {
         m: function (state, t) { return state[im]; },
-        h: function (state, t) { return state[ih]; },
+        h: function (state, t) { return state[ih]; }
     };
 };

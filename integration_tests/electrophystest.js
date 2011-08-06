@@ -84,11 +84,14 @@ window.addEventListener('load', function () {
             { C: 2.27e-9, g_leak: 1 / 23.3e6, E_leak: -48e-3, 
                 theta_ss: -34e-3, theta_r: 0e-3, theta_tau: 65.0e-3 });
         C2Fast = electrophys.gettingSynapse(model, C2, C2, 
-            { W: 0.12000e-6, E_rev: -80e-3, tau_open:   10e-3, tau_close:   30e-3 });
+            { W: 0.12000e-6, E_rev: -80e-3, tau_open:   10e-3, 
+                tau_close:   30e-3 });
         C2Med = electrophys.gettingSynapse(model, C2, C2, 
-            { W: 0.02800e-6, E_rev: -80e-3, tau_open:   10e-3, tau_close: 1200e-3 });
+            { W: 0.02800e-6, E_rev: -80e-3, tau_open:   10e-3, 
+                tau_close: 1200e-3 });
         C2Slow = electrophys.gettingSynapse(model, C2, C2, 
-            { W: 0.00300e-6, E_rev: -80e-3, tau_open: 4000e-3, tau_close: 4000e-3 });
+            { W: 0.00300e-6, E_rev: -80e-3, tau_open: 4000e-3, 
+                tau_close: 4000e-3 });
 
         C2.addCurrent(electrophys.pulse(
             {start: 1, width: 5, height: 2e-9}
@@ -135,14 +138,14 @@ window.addEventListener('load', function () {
             { C: 1.5714765e-9, g_leak: 1 / 38.8e6, E_leak: -47.5e-3, 
                 theta_ss: -50e-3, theta_r: 200e-3, theta_tau: 15.0e-3 });
         DSIShunt = electrophys.gettingShuntConductance(model, DSI,
-            { G: 0.08e-6, E_rev: -47.5e-3, B_m: 29e-3, C_m: -1e-3, tau_m: 10e-3,
-                    B_h: -100e-3, C_h: 1e-3, tau_h: 100000e-3 });
-            //{ G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
-            //        B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3 });
+            { G: 0.08e-6, E_rev: -47.5e-3, B_m: 29e-3, C_m: -1e-3, 
+                tau_m: 10e-3, B_h: -100e-3, C_h: 1e-3, tau_h: 100000e-3 });
         DSIFast = electrophys.gettingSynapse(model, DSI, DSI, 
-            { W: 0.30000e-6, E_rev: -80e-3, tau_open:   10e-3, tau_close:   85e-3 });
+            { W: 0.30000e-6, E_rev: -80e-3, tau_open:   10e-3, 
+                tau_close:   85e-3 });
         DSISlow = electrophys.gettingSynapse(model, DSI, DSI, 
-            { W: 0.01200e-6, E_rev: -80e-3, tau_open:  200e-3, tau_close: 2800e-3 });
+            { W: 0.01200e-6, E_rev: -80e-3, tau_open:  200e-3, 
+                tau_close: 2800e-3 });
 
         DSI.addCurrent(electrophys.pulse(
             {start: 0.5, width: 5, height: 3e-9}
@@ -192,9 +195,11 @@ window.addEventListener('load', function () {
             { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
                     B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3 });
         VSIFast = electrophys.gettingSynapse(model, VSI, VSI, 
-            { W: 0.54000e-6, E_rev: -80e-3, tau_open:   10e-3, tau_close:  100e-3 });
+            { W: 0.54000e-6, E_rev: -80e-3, tau_open:   10e-3, 
+                tau_close:  100e-3 });
         VSISlow = electrophys.gettingSynapse(model, VSI, VSI, 
-            { W: 0.00460e-6, E_rev: -80e-3, tau_open: 1000e-3, tau_close: 2500e-3 });
+            { W: 0.00460e-6, E_rev: -80e-3, tau_open: 1000e-3, 
+                tau_close: 2500e-3 });
 
         VSI.addCurrent(electrophys.pulse(
             {start: 0.5, width: 5, height: 2.5e-9}

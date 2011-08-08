@@ -10,14 +10,17 @@ window.addEventListener('load', function () {
 
     // set up the controls for the passive membrane simulation
     params = { 
-        paramA: { label: "param A" }, 
-        paramB: { label: "param B" }, 
-        paramC: { label: "param C" }, 
-        paramD: { label: "param D" } 
+        C_nF: { label: "Membrane capacitance (nF)", default: 2 }, 
+        g_leak_uS: { label: "Leak conductance (\u00B5S)", default: 1 }, 
+        E_leak_mV: { label: "Leak potential (mV)", default: -65 }, 
+        pulseStart_ms: { label: "Start (ms)", default: 15 },
+        pulseWidth_ms: { label: "Width (ms)", default: 10 },
+        pulseHeight_nA: { label: "Amplitude (nA)", default: 10 }
     };
     layout = [
-        ['A Heading', ['paramA', 'paramB']],
-        ['A Second Heading', ['paramC', 'paramD']],
+        ['Cell Parameters', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Pulse Parameters', ['pulseStart_ms', 'pulseWidth_ms', 
+            'pulseHeight_nA']],
     ];
     panel = document.getElementById('PassiveMembraneControls');
     controls = simcontrols.controls(panel, params, layout);
@@ -25,7 +28,7 @@ window.addEventListener('load', function () {
     // simulate and plot a passive membrane with a pulse
     function plotPassiveMembrane() {
         var canvas, context, model, passiveMembrane,
-            result, t, v, timeAxis, vAxis, vPlot;
+            result, t, v, timeAxis, vAxis, vPlot, params;
         
         // get the drawing surface
         canvas = document.getElementById('PassiveMembranePlot');
@@ -35,13 +38,19 @@ window.addEventListener('load', function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // create the passive membrane
+        params = controls.values;
         model = componentModel.componentModel();
-        passiveMembrane = electrophys.passiveMembrane(model, 
-            { C: 2e-9, g_leak: 1e-6, E_leak: -65e-3 });
+        passiveMembrane = electrophys.passiveMembrane(model, {
+            C: params.C_nF * 1e-9, 
+            g_leak: params.g_leak_uS * 1e-6, 
+            E_leak: params.E_leak_mV * 1e-3 
+        });
 
-        passiveMembrane.addCurrent(electrophys.pulse(
-            {start: 15e-3, width: 10e-3, height: 10e-9}
-        ));
+        passiveMembrane.addCurrent(electrophys.pulse({
+            start: params.pulseStart_ms * 1e-3, 
+            width: params.pulseWidth_ms * 1e-3, 
+            height: params.pulseHeight_nA * 1e-9, 
+        }));
         
         // simulate it
         result = model.integrate({tMin: 0, tMax: 50e-3});

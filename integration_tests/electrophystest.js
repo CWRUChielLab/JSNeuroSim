@@ -29,7 +29,6 @@ window.addEventListener('load', function () {
             'pulseHeight_nA']],
     ];
     panel = document.getElementById('PassiveMembraneControls');
-    var controls;
 
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
@@ -80,12 +79,10 @@ window.addEventListener('load', function () {
         runSimulation();
     }
 
-    document.getElementById('PassiveMembraneRunButton').addEventListener(
-            'click', runSimulation, false
-            );
-    document.getElementById('PassiveMembraneResetButton').addEventListener(
-            'click', reset, false
-            );
+    (document.getElementById('PassiveMembraneRunButton')
+        .addEventListener('click', runSimulation, false));
+    (document.getElementById('PassiveMembraneResetButton')
+        .addEventListener('click', reset, false));
     
     // make the enter key run the simulation (after a slight delay to allow
     // the edit box to fire a change event first).  

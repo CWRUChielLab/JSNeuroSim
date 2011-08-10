@@ -28,7 +28,7 @@ var simcontrols = (function () {
 
     function controls(element, params, layout) {
         var i, section, heading, paramTable, j, paramName, paramRow, 
-            paramLabel, paramInputCell,  
+            paramLabel, paramInputCell, paramUnits,
             values, errorLabels = {}, textBoxes = {};
 
         // store the current value of each of the parameters
@@ -78,6 +78,10 @@ var simcontrols = (function () {
                 textBoxes[paramName].addEventListener('change', 
                     textBoxChangeHandler(paramName), false);
                 paramInputCell.appendChild(textBoxes[paramName]);
+
+                paramUnits = document.createElement('td');
+                paramUnits.innerHTML = params[paramName].units;
+                paramRow.appendChild(paramUnits);
 
                 errorLabels[paramName] = document.createElement('td');
                 paramRow.appendChild(errorLabels[paramName]);

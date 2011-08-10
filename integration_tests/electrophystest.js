@@ -10,17 +10,17 @@ window.addEventListener('load', function () {
 
     // set up the controls for the passive membrane simulation
     params = { 
-        C_nF: { label: "Membrane capacitance (nF)", 
+        C_nF: { label: 'Membrane capacitance', units: 'nF',
             defaultVal: 2, minVal: 0.05, maxVal: 100 }, 
-        g_leak_uS: { label: "Leak conductance (\u00B5S)", 
+        g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
             defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
-        E_leak_mV: { label: "Leak potential (mV)",
+        E_leak_mV: { label: 'Leak potential', units: 'mV',
             defaultVal: -65, minVal: -1000, maxVal: 1000 }, 
-        pulseStart_ms: { label: "Start (ms)", 
+        pulseStart_ms: { label: 'Start', units: 'ms', 
             defaultVal: 15, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseWidth_ms: { label: "Width (ms)", 
+        pulseWidth_ms: { label: 'Width', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseHeight_nA: { label: "Amplitude (nA)", 
+        pulseHeight_nA: { label: 'Amplitude', units: 'nA', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 }
     };
     layout = [

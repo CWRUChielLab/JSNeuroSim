@@ -7,19 +7,22 @@ var simcontrols = (function () {
             return { 
                 value: param.defaultVal, 
                 error: 'Unrecognized entry; using default of '
-                    + String(param.defaultVal)
+                    + String(param.defaultVal) + ' '
+                    + param.units
             };
         } else if (+value < param.minVal) {
             return { 
                 value: param.minVal, 
                 error: 'Value too low; using minimum value of '
-                    + String(param.minVal)
+                    + String(param.minVal) + ' '
+                    + param.units
             };
         } else if (+value > param.maxVal) {
             return { 
                 value: param.maxVal, 
                 error: 'Value too high; using maximum value of '
-                    + String(param.maxVal)
+                    + String(param.maxVal) + ' '
+                    + param.units
             };
         } else {
             return { value: +value, error: '' };

@@ -6,16 +6,22 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, panel, controls;
+    var params, layout, panel, controls, tMax = 50e-3;
 
     // set up the controls for the passive membrane simulation
     params = { 
-        C_nF: { label: "Membrane capacitance (nF)", defaultVal: 2 }, 
-        g_leak_uS: { label: "Leak conductance (\u00B5S)", defaultVal: 1 }, 
-        E_leak_mV: { label: "Leak potential (mV)", defaultVal: -65 }, 
-        pulseStart_ms: { label: "Start (ms)", defaultVal: 15 },
-        pulseWidth_ms: { label: "Width (ms)", defaultVal: 10 },
-        pulseHeight_nA: { label: "Amplitude (nA)", defaultVal: 10 }
+        C_nF: { label: "Membrane capacitance (nF)", 
+            defaultVal: 2, minVal: 0.05, maxVal: 100 }, 
+        g_leak_uS: { label: "Leak conductance (\u00B5S)", 
+            defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
+        E_leak_mV: { label: "Leak potential (mV)",
+            defaultVal: -65, minVal: -1000, maxVal: 1000 }, 
+        pulseStart_ms: { label: "Start (ms)", 
+            defaultVal: 15, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseWidth_ms: { label: "Width (ms)", 
+            defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseHeight_nA: { label: "Amplitude (nA)", 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 }
     };
     layout = [
         ['Cell Parameters', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
@@ -53,7 +59,8 @@ window.addEventListener('load', function () {
         }));
         
         // simulate it
-        result = model.integrate({tMin: 0, tMax: 50e-3});
+        result = model.integrate({tMin: 0, tMax: tMax, tMaxStep: 1e-6});
+        
         t = result.t;
         v = passiveMembrane.V(result.y, result.t);
 

@@ -1,11 +1,11 @@
 TestCase("SimControls", {
     setUp: function () {
         self.params = { 
-            paramA: { label: "param A", defaultVal: 1 }, 
-            paramB: { label: "param B", defaultVal: 2 }, 
-            paramC: { label: "param C", defaultVal: 4 }, 
-            paramD: { label: "param D", defaultVal: 8 },
-            paramE: { label: "param E", defaultVal: 16 } // not shown 
+            paramA: { label: "param A", defaultVal: 1, minVal: -10, maxVal: 10 }, 
+            paramB: { label: "param B", defaultVal: 2, minVal: -20, maxVal: 20 }, 
+            paramC: { label: "param C", defaultVal: 4, minVal: -40, maxVal: 40 }, 
+            paramD: { label: "param D", defaultVal: 8, minVal: -80, maxVal: 80 },
+            paramE: { label: "param E", defaultVal: 16, minVal: -160, maxVal: 160 } // not shown 
         };
         self.layout = [
             ['A Heading', ['paramA', 'paramB']],
@@ -26,6 +26,10 @@ TestCase("SimControls", {
         this.editParamB = this.table0Row1.childNodes[1].childNodes[0];
         this.editParamC = this.table1Row0.childNodes[1].childNodes[0];
         this.editParamD = this.table1Row1.childNodes[1].childNodes[0];
+        this.errorParamA = this.table0Row0.childNodes[2];
+        this.errorParamB = this.table0Row1.childNodes[2];
+        this.errorParamC = this.table1Row0.childNodes[2];
+        this.errorParamD = this.table1Row1.childNodes[2];
     },
 
     'test should create two sections' : function () {
@@ -52,6 +56,8 @@ TestCase("SimControls", {
         assertEquals('TD', this.table0Row0.childNodes[0].tagName);
         assertEquals('param A', this.table0Row0.childNodes[0].innerHTML);
         assertEquals('TD', this.table0Row0.childNodes[1].tagName);
+        assertEquals('TD', this.errorParamA.tagName);
+        assertEquals('', this.errorParamA.innerHTML);
 
         assertEquals('TABLE', this.paramTable0.tagName);
 
@@ -81,16 +87,54 @@ TestCase("SimControls", {
         assertEquals(self.controls.values.paramD, +this.editParamD.value);
     },
 
-    'test changing control should change values' : function () {
+    editValue: function (editBox, newValue) {
         // simulate a user change
-        this.editParamB.value = 1.25;
+        editBox.value = newValue;
         var evt = document.createEvent("HTMLEvents");
         evt.initEvent("change", true, true); // event type,bubbling,cancelable
-        this.editParamB.dispatchEvent(evt);
+        editBox.dispatchEvent(evt);
+    },
 
-        assertEquals(1.25, self.controls.values.paramB);
+    'test entering valid value should change value and clear error' : function () {
+        this.editValue(this.editParamB, '1.25');
+        assertSame(1.25, self.controls.values.paramB);
+        assertEquals('', this.errorParamB.innerHTML);
+    },
+
+    'test entering invalid value should use default and give error' : function () {
+        this.editValue(this.editParamC, -123);
+        assertSame(-40, self.controls.values.paramC);
+        assertNotEquals('', this.errorParamC.innerHTML);
     }
 });
 
+
 TestCase("SimControlsValidator", {
+    setUp: function () {
+        this.param = { defaultVal:2, minVal:-8, maxVal:13 };
+    },
+
+    'test should return valid values with no error' : function () {
+        var result = simcontrols.defaultValidator(this.param, '4');
+        assertSame(4, result.value);
+        assertEquals('', result.error);
+    },
+
+    'test should return default value if not a finite number' : function () {
+        var result = simcontrols.defaultValidator(this.param, 'Infinity');
+        assertEquals(2, result.value);
+        assertEquals('Unrecognized entry; using default of 2', result.error);
+    },
+
+    'test should return min value if less than minVal' : function () {
+        var result = simcontrols.defaultValidator(this.param, '-12');
+        assertEquals(-8, result.value);
+        assertEquals('Value too low; using minimum value of -8', result.error);
+    },
+
+    'test should return max value if greater than maxVal' : function () {
+        var result = simcontrols.defaultValidator(this.param, '15');
+        assertEquals(13, result.value);
+        assertEquals('Value too high; using maximum value of 13', result.error);
+    }
 })

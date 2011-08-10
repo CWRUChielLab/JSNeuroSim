@@ -162,6 +162,23 @@ TestCase("SimControls", {
         this.editValue(this.editParamC, -123);
         assertSame(-40, this.controls.values.paramC);
         assertNotEquals('', this.errorParamC.innerHTML);
+    },
+
+    'test entering a value should not create an error until a change event' 
+        : function () {
+        
+        this.editParamC.value = -123;
+        assertSame(2, this.controls.values.paramB);
+        assertEquals('', this.errorParamC.innerHTML);
+    },
+
+    'test triggerRead should force read of all controls' 
+        : function () {
+        
+        this.editParamC.value = -123;
+        this.controls.triggerRead();
+        assertSame(-40, this.controls.values.paramC);
+        assertNotEquals('', this.errorParamC.innerHTML);
     }
 });
 

@@ -29,10 +29,10 @@ window.addEventListener('load', function () {
             'pulseHeight_nA']],
     ];
     panel = document.getElementById('PassiveMembraneControls');
-    controls = simcontrols.controls(panel, params, layout);
+    var controls;
 
     // simulate and plot a passive membrane with a pulse
-    function plotPassiveMembrane() {
+    function runSimulation() {
         var canvas, context, model, passiveMembrane,
             result, t, v, timeAxis, vAxis, vPlot, params;
         
@@ -73,9 +73,33 @@ window.addEventListener('load', function () {
         vPlot.addXYLine(t, v);
         vPlot.draw(context);
     }
+    
+    function reset() {
+        panel.innerHTML = '';
+        controls = simcontrols.controls(panel, params, layout);
+        runSimulation();
+    }
 
-    document.getElementById('PassiveMembraneButton').addEventListener('click', 
-            plotPassiveMembrane, false);
+    document.getElementById('PassiveMembraneRunButton').addEventListener(
+            'click', runSimulation, false
+            );
+    document.getElementById('PassiveMembraneResetButton').addEventListener(
+            'click', reset, false
+            );
+    
+    // make the enter key run the simulation (after a slight delay to allow
+    // the edit box to fire a change event first).  
+    panel.addEventListener('keydown',  
+        function (event, element) {
+            if (event.keyCode === 13) { 
+                controls.triggerRead();
+                runSimulation();
+                return false;
+            }
+        }, true);
+
+    reset();
+
 }, false);
 
 

@@ -91,12 +91,26 @@ var simcontrols = (function () {
             }
         }
 
-        return { values: values };
+        function triggerRead() {
+            var i;
+
+            for (i in textBoxes) {
+                if (textBoxes.hasOwnProperty(i)) {                
+                    console.log(i);
+                    textBoxChangeHandler(i)();
+                }
+            }
+        }
+
+        return { 
+            values: values,
+            triggerRead: triggerRead
+        };
     }
 
     return {
         controls: controls,
-        defaultValidator: defaultValidator
+        defaultValidator: defaultValidator,
     };
 }());
 

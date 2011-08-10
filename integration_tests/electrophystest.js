@@ -10,12 +10,12 @@ window.addEventListener('load', function () {
 
     // set up the controls for the passive membrane simulation
     params = { 
-        C_nF: { label: "Membrane capacitance (nF)", default: 2 }, 
-        g_leak_uS: { label: "Leak conductance (\u00B5S)", default: 1 }, 
-        E_leak_mV: { label: "Leak potential (mV)", default: -65 }, 
-        pulseStart_ms: { label: "Start (ms)", default: 15 },
-        pulseWidth_ms: { label: "Width (ms)", default: 10 },
-        pulseHeight_nA: { label: "Amplitude (nA)", default: 10 }
+        C_nF: { label: "Membrane capacitance (nF)", defaultVal: 2 }, 
+        g_leak_uS: { label: "Leak conductance (\u00B5S)", defaultVal: 1 }, 
+        E_leak_mV: { label: "Leak potential (mV)", defaultVal: -65 }, 
+        pulseStart_ms: { label: "Start (ms)", defaultVal: 15 },
+        pulseWidth_ms: { label: "Width (ms)", defaultVal: 10 },
+        pulseHeight_nA: { label: "Amplitude (nA)", defaultVal: 10 }
     };
     layout = [
         ['Cell Parameters', ['C_nF', 'g_leak_uS', 'E_leak_mV']],

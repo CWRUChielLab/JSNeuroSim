@@ -10,7 +10,7 @@ simcontrols.controls = function (element, params, layout) {
     values = {};
     for (i in params) {
         if (params.hasOwnProperty(i)) {
-            values[i] = params[i].default;
+            values[i] = params[i].defaultVal;
         }
     }
 
@@ -46,7 +46,7 @@ simcontrols.controls = function (element, params, layout) {
             paramRow.appendChild(paramInputCell);
 
             textBoxes[paramName] = document.createElement('input');
-            textBoxes[paramName].value = params[paramName].default;
+            textBoxes[paramName].value = params[paramName].defaultVal;
             textBoxes[paramName].addEventListener('change', 
                 textBoxChangeHandler(paramName), false);
             paramInputCell.appendChild(textBoxes[paramName]);

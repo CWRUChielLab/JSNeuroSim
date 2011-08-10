@@ -1,11 +1,11 @@
 TestCase("SimControls", {
     setUp: function () {
         self.params = { 
-            paramA: { label: "param A", default: 1 }, 
-            paramB: { label: "param B", default: 2 }, 
-            paramC: { label: "param C", default: 4 }, 
-            paramD: { label: "param D", default: 8 },
-            paramE: { label: "param E", default: 16 } // not shown 
+            paramA: { label: "param A", defaultVal: 1 }, 
+            paramB: { label: "param B", defaultVal: 2 }, 
+            paramC: { label: "param C", defaultVal: 4 }, 
+            paramD: { label: "param D", defaultVal: 8 },
+            paramE: { label: "param E", defaultVal: 16 } // not shown 
         };
         self.layout = [
             ['A Heading', ['paramA', 'paramB']],
@@ -91,3 +91,6 @@ TestCase("SimControls", {
         assertEquals(1.25, self.controls.values.paramB);
     }
 });
+
+TestCase("SimControlsValidator", {
+})

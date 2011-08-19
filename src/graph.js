@@ -8,30 +8,40 @@ graph.linearAxis = function (worldMin, worldMax, displayMin, displayMax) {
         displayToWorldScale = worldLength / displayLength;
     
     function mapWorldToDisplay(ordinates) {
-        var l = ordinates.length,
-            i = l, 
-            result = [];
-        result.length = l; 
+        var l, i, result;
         
-        while (i > 0) {
-            i -= 1;
-            result[i] = ((ordinates[i] - worldMin) * worldToDisplayScale 
-                    + displayMin);
+        if (ordinates.length) {
+            result = [];
+            i = l = ordinates.length;
+
+            while (i > 0) {
+                i -= 1;
+                result[i] = ((ordinates[i] - worldMin) * worldToDisplayScale +
+                    displayMin);
+            }
+        } else {
+            result = ((ordinates - worldMin) * worldToDisplayScale +
+                displayMin);
         }
 
         return result;
     }
 
     function mapDisplayToWorld(ordinates) {
-        var l = ordinates.length,
-            i = l, 
-            result = [];
-        result.length = l; 
+        var l, i, result;
         
-        while (i > 0) {
-            i -= 1;
-            result[i] = ((ordinates[i] - displayMin) / worldToDisplayScale 
-                    + worldMin);
+        if (ordinates.length) {
+            result = [];
+            i = l = ordinates.length;
+
+            while (i > 0) {
+                i -= 1;
+                result[i] = ((ordinates[i] - displayMin) / worldToDisplayScale +
+                    worldMin);
+            }
+        } else {
+            result = ((ordinates - displayMin) / worldToDisplayScale +
+                worldMin);
         }
 
         return result;
@@ -58,14 +68,22 @@ graph.linearAxis = function (worldMin, worldMax, displayMin, displayMax) {
 
 graph.plotArea = function (xAxis, yAxis) {
     "use strict";
-    var xyLines = [];
+    var drawnObjects = [];
     
     function addXYLine(xs, ys) {
-        xyLines.push([xs, ys]);
+        var obj = ["xyLine", xs, ys];
+        drawnObjects.push(obj);
+        return obj;
+    }
+
+    function addText(x, y, text) {
+        var obj = ["text", x, y, text];
+        drawnObjects.push(obj);
+        return obj;
     }
 
     function draw(context) {
-        var i, j, l, xDisplay, yDisplay, drawing, x, y;
+        var i, j, l, xDisplay, yDisplay, drawing, x, y, text;
         
         // make sure we save and restore the current clipping rectangle
         context.save();
@@ -74,41 +92,65 @@ graph.plotArea = function (xAxis, yAxis) {
                 xAxis.displayLength(), yAxis.displayLength());
         context.clip();
         
-        for (i = 0; i < xyLines.length; i += 1) {
-            xDisplay = xAxis.mapWorldToDisplay(xyLines[i][0]);
-            yDisplay = yAxis.mapWorldToDisplay(xyLines[i][1]);
-            drawing = false;
+        for (i = 0; i < drawnObjects.length; i += 1) {
+            if (drawnObjects[i][0] === "xyLine") {
+                xDisplay = xAxis.mapWorldToDisplay(drawnObjects[i][1]);
+                yDisplay = yAxis.mapWorldToDisplay(drawnObjects[i][2]);
+                drawing = false;
 
-            l = xDisplay.length;
-            j = l;
-            
-            context.beginPath();
-            
-            
-            while (j > 0) {
-                j -= 1;
-                x = xDisplay[j];
-                y = yDisplay[j];
+                l = xDisplay.length;
+                j = l;
+                
+                context.beginPath();
+                
+                
+                while (j > 0) {
+                    j -= 1;
+                    x = xDisplay[j];
+                    y = yDisplay[j];
 
-                if (isFinite(x) && isFinite(y)) {
-                    if (drawing) {
-                        context.lineTo(x, y); 
+                    if (isFinite(x) && isFinite(y)) {
+                        if (drawing) {
+                            context.lineTo(x, y); 
+                        } else {
+                            context.moveTo(x, y); 
+                            drawing = true;
+                        }
                     } else {
-                        context.moveTo(x, y); 
-                        drawing = true;
+                        drawing = false;
                     }
-                } else {
-                    drawing = false;
                 }
-            }
-            context.stroke();
-        }
+            
+                context.stroke();
+            
+            } else if (drawnObjects[i][0] === "text") {
+            
+                xDisplay = xAxis.mapWorldToDisplay(drawnObjects[i][1]);
+                yDisplay = yAxis.mapWorldToDisplay(drawnObjects[i][2]);
+                text = drawnObjects[i][3];
+                
+                context.fillText(text, xDisplay, yDisplay);
+            }            
+        } 
 
         context.restore();
     }
 
+    function remove(obj) {
+        var i;
+
+        // this is O(N), but could be rewritten to be O(log(N)) if needed
+        for (i = 0; i < drawnObjects.length; i += 1) {
+            if (drawnObjects[i] === obj) {
+                drawnObjects.splice(i, 1);
+            }
+        }
+    }
+
     return {
         addXYLine : addXYLine,
+        addText : addText,
+        remove : remove,
         draw : draw
     };
 };

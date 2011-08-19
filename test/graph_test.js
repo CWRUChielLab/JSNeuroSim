@@ -4,37 +4,52 @@ TestCase("LinearAxis", {
         this.axis = graph.linearAxis(5, 20, 100, 250); 
         this.axisFlipped = graph.linearAxis(5, 20, 450, 300); 
         this.worldOrdinates = [0, 1, 6.25, 13, 33];
+        this.displayOrdinates = [50, 60, 112.5, 180, 380];
+        this.displayOrdinatesFlipped = [500, 490, 437.5, 370, 170];
     },
 
     "test mapWorldToDisplay should map points between coordinate systems" : 
             function() {
-        var displayOrdinates = 
-            this.axis.mapWorldToDisplay(this.worldOrdinates);
+        var result = this.axis.mapWorldToDisplay(this.worldOrdinates);
 
-        assertEquals([50, 60, 112.5, 180, 380], displayOrdinates);
+        assertEquals(this.displayOrdinates, result);
+    },
+
+    "test mapWorldToDisplay should work for single points" : 
+            function() {
+        var result = this.axis.mapWorldToDisplay(this.worldOrdinates[0]);
+
+        assertEquals(this.displayOrdinates[0], result);
     },
 
     "test mapWorldToDisplay should handle flipped coordinate systems" : 
             function() {
-        var displayOrdinates = 
-            this.axisFlipped.mapWorldToDisplay(this.worldOrdinates);
+        var result = this.axisFlipped.mapWorldToDisplay(this.worldOrdinates);
 
-        assertEquals([500, 490, 437.5, 370, 170], displayOrdinates);
+        assertEquals(this.displayOrdinatesFlipped, result);
     },
 
     "test mapDisplayToWorld should be the inverse of mapWorldToDisplay" : 
             function() {
-        var displayOrdinates = 
-                this.axis.mapWorldToDisplay(this.worldOrdinates),
-            newWorldOrdinates = 
-                this.axis.mapDisplayToWorld(displayOrdinates),
-            displayOrdinatesFlipped = 
-                this.axisFlipped.mapWorldToDisplay(this.worldOrdinates),
-            newWorldOrdinatesFlipped = 
-                this.axisFlipped.mapDisplayToWorld(displayOrdinatesFlipped);
+        var result = this.axis.mapDisplayToWorld(this.displayOrdinates);
 
-        assertEquals(this.worldOrdinates, newWorldOrdinates);
-        assertEquals(this.worldOrdinates, newWorldOrdinatesFlipped);
+        assertEquals(this.worldOrdinates, result);
+    },
+
+    "test mapDisplayToWorld should work for single points" : 
+            function() {
+        var result = this.axis.mapDisplayToWorld(this.displayOrdinates[0]);
+
+        assertEquals(this.worldOrdinates[0], result);
+    },
+
+    "test mapDisplayToWorld should work for flipped coordinates" : 
+            function() {
+        var result = this.axisFlipped.mapDisplayToWorld(
+                this.displayOrdinatesFlipped
+                );
+
+        assertEquals(this.worldOrdinates, result);
     },
 
     "test isInDisplayRange should check if coordinate falls within axis" : 
@@ -59,7 +74,7 @@ TestCase("PlotArea", {
         this.plotArea = graph.plotArea(this.xAxis, this.yAxis);
 
         this.context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
-            'moveTo', 'lineTo', 'stroke', 'clip']);
+            'moveTo', 'lineTo', 'stroke', 'clip', 'fillText']);
 
         this.plotSetup = [
             ['save', []],
@@ -135,5 +150,54 @@ TestCase("PlotArea", {
             ],
             this.drawingCalls()
         );
-    }
+    },
+
+    "test addText should add text to the graph" : function() {
+        var x = 1,
+            y = 7,
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y);
+
+        this.plotArea.addText(x, y, "abc");
+        this.plotArea.draw(this.context);
+
+        assertEquals([['fillText', ["abc", xScreen, yScreen]]], 
+            this.drawingCalls());
+    },
+
+    "test remove should get rid of a line" : function() {
+        var x = [1, 13, 5], y = [7, 11, -3], line;
+
+        line = this.plotArea.addXYLine(x, y);
+        this.plotArea.remove(line);
+        this.plotArea.draw(this.context);
+
+        assertEquals([], this.drawingCalls());
+    },
+    
+    "test remove should only remove the requested object" : function() {
+        var x = [1, 13, 5, 6],
+            y = [7, 11, -3, 4],
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y),
+            removedText;
+
+        this.plotArea.addText(x[0], y[0], "a");
+        this.plotArea.addText(x[1], y[1], "b");
+        removedText = this.plotArea.addText(x[2], y[2], "c");
+        this.plotArea.addText(x[3], y[3], "d");
+
+        this.plotArea.remove(removedText);
+        this.plotArea.draw(this.context);
+
+        assertEquals(
+                [
+                    ['fillText', ["a", xScreen[0], yScreen[0]]],
+                    ['fillText', ["b", xScreen[1], yScreen[1]]],
+                    ['fillText', ["d", xScreen[3], yScreen[3]]],
+                ], 
+            this.drawingCalls()
+        );
+    },
+
 });

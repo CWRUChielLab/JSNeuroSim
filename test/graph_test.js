@@ -1,82 +1,130 @@
 
 TestCase("LinearAxis", {
-    "test mapOrdinates should map points between coordinate systems" : function() {
-        var axis = graph.linearAxis(5, 20, 100, 250);
-        var world_ordinates = [0, 1, 6.25, 13, 33];
-
-        var screen_ordinates = axis.mapOrdinates(world_ordinates);
-
-        assertEquals([50, 60, 112.5, 180, 380], screen_ordinates);
+    setUp : function () {
+        this.axis = graph.linearAxis(5, 20, 100, 250); 
+        this.axisFlipped = graph.linearAxis(5, 20, 450, 300); 
+        this.worldOrdinates = [0, 1, 6.25, 13, 33];
     },
 
-    "test world and screen limits should be accessible" : function() {
-        var axis = graph.linearAxis(-4.2, -1.7, -8.4, 7.1);
+    "test mapWorldToDisplay should map points between coordinate systems" : 
+            function() {
+        var displayOrdinates = 
+            this.axis.mapWorldToDisplay(this.worldOrdinates);
 
-        assertEquals(-4.2, axis.worldMin());
-        assertEquals(-1.7, axis.worldMax());
-        assertEquals(2.5, axis.worldLength());
-        assertEquals(-8.4, axis.screenMin());
-        assertEquals(7.1, axis.screenMax());
-        assertEquals(15.5, axis.screenLength());
+        assertEquals([50, 60, 112.5, 180, 380], displayOrdinates);
+    },
+
+    "test mapWorldToDisplay should handle flipped coordinate systems" : 
+            function() {
+        var displayOrdinates = 
+            this.axisFlipped.mapWorldToDisplay(this.worldOrdinates);
+
+        assertEquals([500, 490, 437.5, 370, 170], displayOrdinates);
+    },
+
+    "test mapDisplayToWorld should be the inverse of mapWorldToDisplay" : 
+            function() {
+        var displayOrdinates = 
+                this.axis.mapWorldToDisplay(this.worldOrdinates),
+            newWorldOrdinates = 
+                this.axis.mapDisplayToWorld(displayOrdinates),
+            displayOrdinatesFlipped = 
+                this.axisFlipped.mapWorldToDisplay(this.worldOrdinates),
+            newWorldOrdinatesFlipped = 
+                this.axisFlipped.mapDisplayToWorld(displayOrdinatesFlipped);
+
+        assertEquals(this.worldOrdinates, newWorldOrdinates);
+        assertEquals(this.worldOrdinates, newWorldOrdinatesFlipped);
+    },
+
+    "test isInDisplayRange should check if coordinate falls within axis" : 
+            function() {
+        assertTrue(this.axis.isInDisplayRange(110));
+        assertFalse(this.axis.isInDisplayRange(310));
+        assertFalse(this.axis.isInDisplayRange(99));
+
+        assertTrue(this.axisFlipped.isInDisplayRange(310));
+        assertFalse(this.axisFlipped.isInDisplayRange(299));
+        assertFalse(this.axisFlipped.isInDisplayRange(461));
     }
 });
 
 
 TestCase("PlotArea", {
-    "test should render xyLine to canvas" : function() {
-        var xAxis = graph.linearAxis(1, 10, 20, 110),
-            yAxis = graph.linearAxis(3, 9, 6, 18),
-            plotArea = graph.plotArea(xAxis, yAxis),
-            x = [1, 13, 5],
-            y = [7, 11, -3],
-            xScreen = xAxis.mapOrdinates(x);
-            yScreen = yAxis.mapOrdinates(y);
+    setUp : function () {
+        var that = this;
 
-        var context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
+        this.xAxis = graph.linearAxis(1, 10, 20, 110);
+        this.yAxis = graph.linearAxis(3, 9, 6, 18);
+        this.plotArea = graph.plotArea(this.xAxis, this.yAxis);
+
+        this.context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
             'moveTo', 'lineTo', 'stroke', 'clip']);
 
-        plotArea.addXYLine(x, y);
-        plotArea.draw(context);
+        this.plotSetup = [
+            ['save', []],
+            ['beginPath', []],
+            ['rect', [this.xAxis.displayMin(), this.yAxis.displayMin(), 
+                this.xAxis.displayLength(), this.yAxis.displayLength()]],
+            ['clip', []]
+        ];
+        this.plotCleanup = [
+            ['restore', []]
+        ];
+
+        // get the drawing calls without the unchanging setup and cleanup calls
+        this.drawingCalls = function () {
+            var allCalls = this.context.getCalls();
+            
+            return allCalls.slice(this.plotSetup.length,
+                allCalls.length - this.plotCleanup.length);
+        };
+     },
+
+    "test should have proper setup" : function() {
+        this.plotArea.draw(this.context);
+        assertEquals(this.plotSetup, 
+            this.context.getCalls().slice(0, this.plotSetup.length));
+    },
+
+    "test should have proper cleanup" : function() {
+        this.plotArea.draw(this.context);
+        assertEquals(this.plotCleanup, 
+            this.context.getCalls().slice(this.plotSetup.length));
+    },
+
+    "test should render xyLine to canvas" : function() {
+        var x = [1, 13, 5],
+            y = [7, 11, -3],
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y);
+
+        this.plotArea.addXYLine(x, y);
+        this.plotArea.draw(this.context);
 
         assertEquals(
             [
-                ['save', []],
-                ['beginPath', []],
-                ['rect', [xAxis.screenMin(), yAxis.screenMin(), 
-                    xAxis.screenLength(), yAxis.screenLength()]],
-                ['clip', []],
                 ['beginPath', []],
                 ['moveTo', [xScreen[2], yScreen[2]]],
                 ['lineTo', [xScreen[1], yScreen[1]]],
                 ['lineTo', [xScreen[0], yScreen[0]]],
-                ['stroke', []],
-                ['restore', []]
+                ['stroke', []]
             ],
-            context.getCalls());
+            this.drawingCalls()
+        );
     },
 
-    "test should skip NaN and infinity" : function() {
-        var xAxis = graph.linearAxis(1, 10, 20, 110),
-            yAxis = graph.linearAxis(3, 9, 6, 18),
-            plotArea = graph.plotArea(xAxis, yAxis),
-            x = [1,   13,  4, Infinity,         5, 13, 6,       13, 12, NaN ],
+    "test line should skip NaN and infinity" : function() {
+        var x = [1,   13,  4, Infinity,         5, 13, 6,       13, 12, NaN ],
             y = [NaN, 11, 12,       -3, -Infinity, 12, 3, Infinity,  8,   7 ],
-            xScreen = xAxis.mapOrdinates(x);
-            yScreen = yAxis.mapOrdinates(y);
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y);
 
-        var context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
-            'moveTo', 'lineTo', 'stroke', 'clip']);
-
-        plotArea.addXYLine(x, y);
-        plotArea.draw(context);
+        this.plotArea.addXYLine(x, y);
+        this.plotArea.draw(this.context);
 
         assertEquals(
             [
-                ['save', []],
-                ['beginPath', []],
-                ['rect', [xAxis.screenMin(), yAxis.screenMin(), 
-                    xAxis.screenLength(), yAxis.screenLength()]],
-                ['clip', []],
                 ['beginPath', []],
                 ['moveTo', [xScreen[8], yScreen[8]]],
                 ['moveTo', [xScreen[6], yScreen[6]]],
@@ -84,8 +132,8 @@ TestCase("PlotArea", {
                 ['moveTo', [xScreen[2], yScreen[2]]],
                 ['lineTo', [xScreen[1], yScreen[1]]],
                 ['stroke', []],
-                ['restore', []]
             ],
-            context.getCalls());
+            this.drawingCalls()
+        );
     }
 });

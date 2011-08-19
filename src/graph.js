@@ -1,14 +1,13 @@
 var graph = {};
 
-graph.linearAxis = function (worldMin, worldMax, screenMin, screenMax) {
+graph.linearAxis = function (worldMin, worldMax, displayMin, displayMax) {
     "use strict";
     var worldLength = worldMax - worldMin,
-        screenLength = screenMax - screenMin,
-        worldToScreenScale = screenLength / worldLength,
-        screenToWorldScale = worldLength / screenLength;
+        displayLength = displayMax - displayMin,
+        worldToDisplayScale = displayLength / worldLength,
+        displayToWorldScale = worldLength / displayLength;
     
-
-    function mapOrdinates(ordinates) {
+    function mapWorldToDisplay(ordinates) {
         var l = ordinates.length,
             i = l, 
             result = [];
@@ -16,21 +15,43 @@ graph.linearAxis = function (worldMin, worldMax, screenMin, screenMax) {
         
         while (i > 0) {
             i -= 1;
-            result[i] = ((ordinates[i] - worldMin) * worldToScreenScale 
-                    + screenMin);
+            result[i] = ((ordinates[i] - worldMin) * worldToDisplayScale 
+                    + displayMin);
         }
 
         return result;
     }
 
+    function mapDisplayToWorld(ordinates) {
+        var l = ordinates.length,
+            i = l, 
+            result = [];
+        result.length = l; 
+        
+        while (i > 0) {
+            i -= 1;
+            result[i] = ((ordinates[i] - displayMin) / worldToDisplayScale 
+                    + worldMin);
+        }
+
+        return result;
+    }
+
+    function isInDisplayRange(ordinate) {
+        return ordinate <= Math.max(displayMax, displayMin) && 
+            ordinate >= Math.min(displayMin, displayMax);
+    }
+
     return {
-        mapOrdinates : mapOrdinates,
+        mapWorldToDisplay : mapWorldToDisplay,
+        mapDisplayToWorld : mapDisplayToWorld,
+        isInDisplayRange : isInDisplayRange,
         worldMin : function () { return worldMin; },
         worldMax : function () { return worldMax; },
         worldLength : function () { return worldLength; },
-        screenMin : function () { return screenMin; },
-        screenMax : function () { return screenMax; },
-        screenLength : function () { return screenLength; }
+        displayMin : function () { return displayMin; },
+        displayMax : function () { return displayMax; },
+        displayLength : function () { return displayLength; }
     };
 };
 
@@ -44,21 +65,21 @@ graph.plotArea = function (xAxis, yAxis) {
     }
 
     function draw(context) {
-        var i, j, l, xScreen, yScreen, drawing, x, y;
+        var i, j, l, xDisplay, yDisplay, drawing, x, y;
         
         // make sure we save and restore the current clipping rectangle
         context.save();
         context.beginPath();
-        context.rect(xAxis.screenMin(), yAxis.screenMin(), 
-                xAxis.screenLength(), yAxis.screenLength());
+        context.rect(xAxis.displayMin(), yAxis.displayMin(), 
+                xAxis.displayLength(), yAxis.displayLength());
         context.clip();
         
         for (i = 0; i < xyLines.length; i += 1) {
-            xScreen = xAxis.mapOrdinates(xyLines[i][0]);
-            yScreen = yAxis.mapOrdinates(xyLines[i][1]);
+            xDisplay = xAxis.mapWorldToDisplay(xyLines[i][0]);
+            yDisplay = yAxis.mapWorldToDisplay(xyLines[i][1]);
             drawing = false;
 
-            l = xScreen.length;
+            l = xDisplay.length;
             j = l;
             
             context.beginPath();
@@ -66,8 +87,8 @@ graph.plotArea = function (xAxis, yAxis) {
             
             while (j > 0) {
                 j -= 1;
-                x = xScreen[j];
-                y = yScreen[j];
+                x = xDisplay[j];
+                y = yDisplay[j];
 
                 if (isFinite(x) && isFinite(y)) {
                     if (drawing) {

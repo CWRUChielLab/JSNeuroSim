@@ -62,9 +62,8 @@ window.addEventListener('load', function () {
         }
         
         // simulate it
-        result = model.integrate({
-            tMin: 0, tMax: params.totalDuration_ms * 1e-3, tMaxStep: 1e-6
-        });
+        result = model.integrate({tMin: 0, 
+            tMax: params.totalDuration_ms * 1e-3, tMaxStep: 1e-6 });
         
         t = result.t;
         v = passiveMembrane.V(result.y, result.t);

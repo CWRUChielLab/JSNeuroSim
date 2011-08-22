@@ -7,7 +7,7 @@ electrophys.passiveConductance = function (neuron, options) {
 
     function current(state, t) {
         return g * (E_rev - neuron.V(state, t));
-    };
+    }
 
     neuron.addCurrent(current);
 };
@@ -41,7 +41,7 @@ electrophys.passiveMembrane = function (model, options) {
 
     model.registerDrift(drift);
     
-    that.V = function (state, t) { return state[iV]; },
+    that.V = function (state, t) { return state[iV]; };
     that.addCurrent = addCurrent;
     that.leak = electrophys.passiveConductance(that, 
         { E_rev: E_leak, g: g_leak });

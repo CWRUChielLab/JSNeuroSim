@@ -14,7 +14,7 @@ window.addEventListener('load', function () {
     // set up the controls for the passive membrane simulation
     params = { 
         C_nF: { label: 'Membrane capacitance', units: 'nF',
-            defaultVal: 2, minVal: 0.05, maxVal: 100 }, 
+            defaultVal: 2, minVal: 0.01, maxVal: 100 }, 
         g_leak_uS: { label: 'Membrane conductance', units: '\u00B5S', 
             defaultVal: 2, minVal: 0.01, maxVal: 100 }, 
         E_leak_mV: { label: 'Resting potential', units: 'mV',
@@ -64,8 +64,11 @@ window.addEventListener('load', function () {
         }
         
         // simulate it
-        result = model.integrate({tMin: 0, 
-            tMax: params.totalDuration_ms * 1e-3, tMaxStep: 1e-4 });
+        result = model.integrate({
+            tMin: 0, 
+            tMax: params.totalDuration_ms * 1e-3, 
+            tMaxStep: Math.min(1e-4, params.C_nF / params.g_leak_uS * 1e-3) 
+        });
         
         t = result.t;
         v = passiveMembrane.V(result.y, result.t);

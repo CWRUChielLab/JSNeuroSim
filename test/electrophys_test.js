@@ -1,3 +1,24 @@
+TestCase("PassiveConductance", {
+    setUp: function () {
+        this.model = componentModel.componentModel();
+
+        this.neuron = {};
+        this.neuron.addCurrent = sinon.stub();
+        this.neuron.V = function (state, t) { return -60e-3; };
+
+        this.passiveConductance = electrophys.passiveConductance(this.neuron, 
+            { g: 1e-6, E_rev: -70e-3 });
+        this.current = this.neuron.addCurrent.args[0][0];
+    },
+
+    "test should have expected current" : function () {
+        var current = this.current([], 3.14);
+
+        assertClose(-10e-9, current, 1e-9, 1e-18);
+    }
+});
+
+
 TestCase("PassiveMembrane", {
     setUp: function () {
         this.model = componentModel.componentModel();
@@ -81,27 +102,6 @@ TestCase("Pulse", {
         assertEquals(0.525, this.pulse([], 0.1001));
         assertEquals(0.525, this.pulse([], 0.2));
         assertEquals(0.525, this.pulse([], 0.2999));
-    }
-});
-
-
-TestCase("PassiveConductance", {
-    setUp: function () {
-        this.model = componentModel.componentModel();
-
-        this.neuron = {};
-        this.neuron.addCurrent = sinon.stub();
-        this.neuron.V = function (state, t) { return -60e-3; };
-
-        this.passiveConductance = electrophys.passiveConductance(this.neuron, 
-            { g: 1e-6, E_rev: -70e-3 });
-        this.current = this.neuron.addCurrent.args[0][0];
-    },
-
-    "test should have expected current" : function () {
-        var current = this.current([], 3.14);
-
-        assertClose(-10e-9, current, 1e-9, 1e-18);
     }
 });
 

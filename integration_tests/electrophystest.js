@@ -152,8 +152,8 @@ window.addEventListener('load', function () {
             measureText = null;
         } else {
             measureText = vPlot.addText(xWorld + 0.3, yWorld - 1.3,
-                "\u0394(" + (xWorld-xStart).toFixed(2) + " ms, " 
-                + (yWorld-yStart).toFixed(2) + " mV)");
+                "\u0394(" + (xWorld - xStart).toFixed(2) + " ms, " 
+                + (yWorld - yStart).toFixed(2) + " mV)");
         }
 
         // plot the results

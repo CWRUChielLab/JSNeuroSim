@@ -8,7 +8,7 @@ window.addEventListener('load', function () {
 
     var params, layout, panel, controls, tMax = 1000e-3, 
         timeAxis, vAxis, vPlot, 
-        crosshairs, crosshairText,
+        crosshairs, crosshairText, canvas,
         xStart, yStart, measureLine, measureText, dragging;
 
     // set up the controls for the passive membrane simulation
@@ -118,7 +118,7 @@ window.addEventListener('load', function () {
 
     function updateCrosshairs(evt, start) {
         var canvas, context, xDisplay, yDisplay, xWorld, yWorld, 
-            canvasRect;
+            canvasRect, point;
 
 
         // clear the canvas
@@ -133,9 +133,10 @@ window.addEventListener('load', function () {
         vPlot.remove(measureText);
 
         // add new crosshairs
+        point = evt.changedTouches ? evt.changedTouches[0] : evt;
         canvasRect = canvas.getBoundingClientRect();
-        xDisplay = evt.clientX - canvasRect.left;
-        yDisplay = evt.clientY - canvasRect.top;
+        xDisplay = point.clientX - canvasRect.left;
+        yDisplay = point.clientY - canvasRect.top;
         xWorld = timeAxis.mapDisplayToWorld(xDisplay);
         yWorld = vAxis.mapDisplayToWorld(yDisplay);
         crosshairs = vPlot.addPoints([xWorld], [yWorld]);
@@ -160,31 +161,34 @@ window.addEventListener('load', function () {
         vPlot.draw(context);
     }
 
-    (document.getElementById('PassiveMembranePlot')
-        .addEventListener('mousedown', function (evt, element) {
-            dragging = true;
-            updateCrosshairs(evt, true);
-        }, false));
+    function dragStart(evt, element) {
+        dragging = true;
+        updateCrosshairs(evt, true);
+        evt.preventDefault();
+    } 
 
-    (document.getElementById('PassiveMembranePlot')
-        .addEventListener('mousemove', function (evt, element) {
-            if (dragging) {
-                updateCrosshairs(evt);
-            }
-        }, false));
+    function drag(evt, element) {
+        if (dragging) {
+            updateCrosshairs(evt);
+            evt.preventDefault();
+        }
+    } 
 
-    (document.getElementById('PassiveMembranePlot')
-        .addEventListener('mouseout', function (evt, element) {
-            dragging = false;
-        }, false));
+    function dragEnd(evt, element) {
+        dragging = false;
+        evt.preventDefault();
+    } 
+    canvas = document.getElementById('PassiveMembranePlot');
 
-    (document.getElementById('PassiveMembranePlot')
-        .addEventListener('click', function (evt, element) {
-            if (dragging) {
-                dragging = false;
-                updateCrosshairs(evt);
-            }
-        }, false));
+    (canvas.addEventListener('mousedown', dragStart, false));
+    (canvas.addEventListener('mousemove', drag, false));
+    (canvas.addEventListener('mouseup', dragEnd, false));
+    (canvas.addEventListener('mouseout', dragEnd, false));
+
+    (canvas.addEventListener('touchstart', dragStart, true));
+    (canvas.addEventListener('touchmove', drag, true));
+    (canvas.addEventListener('touchend', dragEnd, true));
+    (canvas.addEventListener('touchcancel', dragEnd, true));
 
     reset();
 

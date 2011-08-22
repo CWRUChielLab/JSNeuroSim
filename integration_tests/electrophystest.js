@@ -7,7 +7,9 @@ window.addEventListener('load', function () {
     'use strict';
 
     var params, layout, panel, controls, tMax = 1000e-3, 
-        timeAxis, vAxis, vPlot, crosshairs, crosshairText;
+        timeAxis, vAxis, vPlot, 
+        crosshairs, crosshairText,
+        xStart, yStart, measureLine, measureText, dragging;
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -63,7 +65,7 @@ window.addEventListener('load', function () {
         
         // simulate it
         result = model.integrate({tMin: 0, 
-            tMax: params.totalDuration_ms * 1e-3, tMaxStep: 1e-6 });
+            tMax: params.totalDuration_ms * 1e-3, tMaxStep: 1e-4 });
         
         t = result.t;
         v = passiveMembrane.V(result.y, result.t);
@@ -110,35 +112,77 @@ window.addEventListener('load', function () {
             }
         }, true);
 
+
+    function updateCrosshairs(evt, start) {
+        var canvas, context, xDisplay, yDisplay, xWorld, yWorld, 
+            canvasRect;
+
+
+        // clear the canvas
+        canvas = document.getElementById('PassiveMembranePlot');
+        context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // get rid of the old crosshairs
+        vPlot.remove(crosshairs);
+        vPlot.remove(crosshairText);
+        vPlot.remove(measureLine);
+        vPlot.remove(measureText);
+
+        // add new crosshairs
+        canvasRect = canvas.getBoundingClientRect();
+        xDisplay = evt.clientX - canvasRect.left;
+        yDisplay = evt.clientY - canvasRect.top;
+        xWorld = timeAxis.mapDisplayToWorld(xDisplay);
+        yWorld = vAxis.mapDisplayToWorld(yDisplay);
+        crosshairs = vPlot.addPoints([xWorld], [yWorld]);
+        crosshairText = vPlot.addText(xWorld + 0.3, yWorld + 0.3,
+                "(" + xWorld.toFixed(2) + " ms, " 
+                + yWorld.toFixed(2) + " mV)");
+
+        if (start) {
+            xStart = xWorld;
+            yStart = yWorld;
+        }
+        measureLine = vPlot.addXYLine([xStart, xStart, xWorld], [yStart, yWorld, yWorld]);
+        if (xWorld === xStart && yWorld === yStart) {
+            measureText = null;
+        } else {
+            measureText = vPlot.addText(xWorld + 0.3, yWorld - 1.3,
+                "\u0394(" + (xWorld-xStart).toFixed(2) + " ms, " 
+                + (yWorld-yStart).toFixed(2) + " mV)");
+        }
+
+        // plot the results
+        vPlot.draw(context);
+    }
+
     (document.getElementById('PassiveMembranePlot')
-        .addEventListener('click', 
-            function (evt, element) {
-                var canvas, context, xDisplay, yDisplay, xWorld, yWorld, 
-                    canvasRect;
+        .addEventListener('mousedown', function (evt, element) {
+            dragging = true;
+            updateCrosshairs(evt, true);
+        }, false));
 
-                // clear the canvas
-                canvas = document.getElementById('PassiveMembranePlot');
-                context = canvas.getContext('2d');
-                context.clearRect(0, 0, canvas.width, canvas.height);
+    (document.getElementById('PassiveMembranePlot')
+        .addEventListener('mousemove', function (evt, element) {
+            if (dragging) {
+                updateCrosshairs(evt);
+            }
+        }, false));
 
-                // get rid of the old crosshairs
-                vPlot.remove(crosshairs);
-                vPlot.remove(crosshairText);
+    (document.getElementById('PassiveMembranePlot')
+        .addEventListener('mouseout', function (evt, element) {
+            dragging = false;
+        }, false));
 
-                // add new crosshairs
-                canvasRect = canvas.getBoundingClientRect();
-                xDisplay = window.pageXOffset + evt.clientX - canvasRect.left;
-                yDisplay = window.pageYOffset + evt.clientY - canvasRect.top;
-                xWorld = timeAxis.mapDisplayToWorld(xDisplay);
-                yWorld = vAxis.mapDisplayToWorld(yDisplay);
-                crosshairs = vPlot.addPoints([xWorld], [yWorld]);
-                crosshairText = vPlot.addText(xWorld + 0.3, yWorld + 0.3,
-                        "(" + xWorld.toFixed(2) + " ms, " 
-                        + yWorld.toFixed(2) + " mV)");
+    (document.getElementById('PassiveMembranePlot')
+        .addEventListener('click', function (evt, element) {
+            if (dragging) {
+                dragging = false;
+                updateCrosshairs(evt);
+            }
+        }, false));
 
-                // plot the results
-                vPlot.draw(context);
-            }, false));
     reset();
 
 }, false);

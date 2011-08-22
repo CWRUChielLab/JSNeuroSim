@@ -6,7 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, panel, controls, tMax = 50e-3;
+    var params, layout, panel, controls, tMax = 50e-3, 
+        timeAxis, vAxis, vPlot, crosshairs, crosshairText;
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -33,15 +34,8 @@ window.addEventListener('load', function () {
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var canvas, context, model, passiveMembrane,
-            result, t, v, timeAxis, vAxis, vPlot, params;
+            result, t, v, t_ms, v_mV, params;
         
-        // get the drawing surface
-        canvas = document.getElementById('PassiveMembranePlot');
-        context = canvas.getContext('2d');
-
-        // clear the canvas
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
         // create the passive membrane
         params = controls.values;
         model = componentModel.componentModel();
@@ -63,13 +57,23 @@ window.addEventListener('load', function () {
         t = result.t;
         v = passiveMembrane.V(result.y, result.t);
 
+        t_ms = graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(t);
+        v_mV = graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(v);
+      
+        // get the drawing surface
+        canvas = document.getElementById('PassiveMembranePlot');
+        context = canvas.getContext('2d');
+
+        // clear the canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
         // set up axes for the plot
-        timeAxis = graph.linearAxis(t[0], t[t.length - 1], 0, 500);
-        vAxis = graph.linearAxis(-70e-3, -50e-3, 200, 0);
+        timeAxis = graph.linearAxis(t_ms[0], t_ms[t.length - 1], 0, 500);
+        vAxis = graph.linearAxis(-70, -50, 200, 0);
         vPlot = graph.plotArea(timeAxis, vAxis);
            
         // plot the results
-        vPlot.addXYLine(t, v);
+        vPlot.addXYLine(t_ms, v_mV);
         vPlot.draw(context);
     }
     
@@ -87,14 +91,43 @@ window.addEventListener('load', function () {
     // make the enter key run the simulation (after a slight delay to allow
     // the edit box to fire a change event first).  
     panel.addEventListener('keydown',  
-        function (event, element) {
-            if (event.keyCode === 13) { 
+        function (evt, element) {
+            if (evt.keyCode === 13) { // enter was pressed 
                 controls.triggerRead();
                 runSimulation();
                 return false;
             }
         }, true);
 
+    (document.getElementById('PassiveMembranePlot')
+        .addEventListener('click', 
+            function (evt, element) {
+                var canvas, context, xDisplay, yDisplay, xWorld, yWorld, 
+                    canvasRect;
+
+                // clear the canvas
+                canvas = document.getElementById('PassiveMembranePlot');
+                context = canvas.getContext('2d');
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                // get rid of the old crosshairs
+                vPlot.remove(crosshairs);
+                vPlot.remove(crosshairText);
+
+                // add new crosshairs
+                canvasRect = canvas.getBoundingClientRect();
+                xDisplay = window.pageXOffset + evt.clientX - canvasRect.left;
+                yDisplay = window.pageYOffset + evt.clientY - canvasRect.top;
+                xWorld = timeAxis.mapDisplayToWorld(xDisplay);
+                yWorld = vAxis.mapDisplayToWorld(yDisplay);
+                crosshairs = vPlot.addPoints([xWorld], [yWorld]);
+                crosshairText = vPlot.addText(xWorld + 0.3, yWorld + 0.3,
+                        "(" + xWorld.toFixed(2) + " ms, " 
+                        + yWorld.toFixed(2) + " mV)");
+
+                // plot the results
+                vPlot.draw(context);
+            }, false));
     reset();
 
 }, false);

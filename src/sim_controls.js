@@ -96,7 +96,6 @@ var simcontrols = (function () {
 
             for (i in textBoxes) {
                 if (textBoxes.hasOwnProperty(i)) {                
-                    console.log(i);
                     textBoxChangeHandler(i)();
                 }
             }

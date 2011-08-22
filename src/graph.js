@@ -76,6 +76,12 @@ graph.plotArea = function (xAxis, yAxis) {
         return obj;
     }
 
+    function addPoints(xs, ys) {
+        var obj = ["points", xs, ys];
+        drawnObjects.push(obj);
+        return obj;
+    }
+
     function addText(x, y, text) {
         var obj = ["text", x, y, text];
         drawnObjects.push(obj);
@@ -83,7 +89,10 @@ graph.plotArea = function (xAxis, yAxis) {
     }
 
     function draw(context) {
-        var i, j, l, xDisplay, yDisplay, drawing, x, y, text;
+        var i, j, l, xDisplay, yDisplay, drawing, x, y, text, symbolsize;
+
+        symbolsize = 
+            Math.min(xAxis.displayLength(), yAxis.displayLength()) / 10;
         
         // make sure we save and restore the current clipping rectangle
         context.save();
@@ -123,6 +132,30 @@ graph.plotArea = function (xAxis, yAxis) {
             
                 context.stroke();
             
+            } else if (drawnObjects[i][0] === "points") {
+                xDisplay = xAxis.mapWorldToDisplay(drawnObjects[i][1]);
+                yDisplay = yAxis.mapWorldToDisplay(drawnObjects[i][2]);
+
+                l = xDisplay.length;
+                j = l;
+                
+                context.beginPath();
+                
+                while (j > 0) {
+                    j -= 1;
+                    x = xDisplay[j];
+                    y = yDisplay[j];
+
+                    if (isFinite(x) && isFinite(y)) {
+                        context.moveTo(x - symbolsize / 2, y); 
+                        context.lineTo(x + symbolsize / 2, y); 
+                        context.moveTo(x, y - symbolsize / 2); 
+                        context.lineTo(x, y + symbolsize / 2); 
+                    }
+                }
+            
+                context.stroke();
+            
             } else if (drawnObjects[i][0] === "text") {
             
                 xDisplay = xAxis.mapWorldToDisplay(drawnObjects[i][1]);
@@ -149,6 +182,7 @@ graph.plotArea = function (xAxis, yAxis) {
 
     return {
         addXYLine : addXYLine,
+        addPoints : addPoints,
         addText : addText,
         remove : remove,
         draw : draw

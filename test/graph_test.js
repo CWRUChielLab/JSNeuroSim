@@ -165,6 +165,39 @@ TestCase("PlotArea", {
             this.drawingCalls());
     },
 
+    "test addPoints should add crosshairs to the graph" : function() {
+        var x = [1, 2.1, Infinity, 3.4, 6.2],
+            y = [7, 6.3, 8.1, NaN, 3.3],
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y),
+            delta = Math.min(this.xAxis.displayLength(),
+                this.yAxis.displayLength())/20;
+
+        this.plotArea.addPoints(x, y);
+        this.plotArea.draw(this.context);
+
+        assertEquals(
+            [
+                ['beginPath', []],
+                ['moveTo', [xScreen[4]-delta, yScreen[4]]],
+                ['lineTo', [xScreen[4]+delta, yScreen[4]]],
+                ['moveTo', [xScreen[4], yScreen[4]-delta]],
+                ['lineTo', [xScreen[4], yScreen[4]+delta]],
+                // should skip infinity and NaN points
+                ['moveTo', [xScreen[1]-delta, yScreen[1]]],
+                ['lineTo', [xScreen[1]+delta, yScreen[1]]],
+                ['moveTo', [xScreen[1], yScreen[1]-delta]],
+                ['lineTo', [xScreen[1], yScreen[1]+delta]],
+                ['moveTo', [xScreen[0]-delta, yScreen[0]]],
+                ['lineTo', [xScreen[0]+delta, yScreen[0]]],
+                ['moveTo', [xScreen[0], yScreen[0]-delta]],
+                ['lineTo', [xScreen[0], yScreen[0]+delta]],
+                ['stroke', []],
+            ],
+            this.drawingCalls()
+        );
+    },
+
     "test remove should get rid of a line" : function() {
         var x = [1, 13, 5], y = [7, 11, -3], line;
 

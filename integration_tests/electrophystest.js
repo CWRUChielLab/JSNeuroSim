@@ -6,35 +6,42 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, panel, controls, tMax = 50e-3, 
+    var params, layout, panel, controls, tMax = 1000e-3, 
         timeAxis, vAxis, vPlot, crosshairs, crosshairText;
 
     // set up the controls for the passive membrane simulation
     params = { 
         C_nF: { label: 'Membrane capacitance', units: 'nF',
             defaultVal: 2, minVal: 0.05, maxVal: 100 }, 
-        g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
-            defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
-        E_leak_mV: { label: 'Leak potential', units: 'mV',
-            defaultVal: -65, minVal: -1000, maxVal: 1000 }, 
-        pulseStart_ms: { label: 'Start', units: 'ms', 
-            defaultVal: 15, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseWidth_ms: { label: 'Width', units: 'ms', 
+        g_leak_uS: { label: 'Membrane conductance', units: '\u00B5S', 
+            defaultVal: 2, minVal: 0.01, maxVal: 100 }, 
+        E_leak_mV: { label: 'Resting potential', units: 'mV',
+            defaultVal: 0, minVal: -1000, maxVal: 1000 }, 
+        pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseHeight_nA: { label: 'Amplitude', units: 'nA', 
-            defaultVal: 10, minVal: -1000, maxVal: 1000 }
+        pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        pulseWidth_ms: { label: 'Pulse duration', units: 'ms', 
+            defaultVal: 4, minVal: 0, maxVal: tMax / 1e-3 },
+        isi_ms: { label: 'Inter-stimulus interval', units: 'ms', 
+            defaultVal: 1, minVal: 0, maxVal: tMax / 1e-3 },
+        numPulses: { label: 'Number of pulses', units: '', 
+            defaultVal: 2, minVal: 0, maxVal: 100 },
+        totalDuration_ms: { label: 'Total duration', units: 'ms', 
+            defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 }
     };
     layout = [
-        ['Cell Parameters', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
-        ['Pulse Parameters', ['pulseStart_ms', 'pulseWidth_ms', 
-            'pulseHeight_nA']],
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
+            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+        ['Simulation Settings', ['totalDuration_ms']]
     ];
     panel = document.getElementById('PassiveMembraneControls');
 
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var canvas, context, model, passiveMembrane,
-            result, t, v, t_ms, v_mV, params;
+            result, t, v, t_ms, v_mV, params, i;
         
         // create the passive membrane
         params = controls.values;
@@ -45,14 +52,19 @@ window.addEventListener('load', function () {
             E_leak: params.E_leak_mV * 1e-3 
         });
 
-        passiveMembrane.addCurrent(electrophys.pulse({
-            start: params.pulseStart_ms * 1e-3, 
-            width: params.pulseWidth_ms * 1e-3, 
-            height: params.pulseHeight_nA * 1e-9, 
-        }));
+        for (i = 0; i < params.numPulses; i += 1) {
+            passiveMembrane.addCurrent(electrophys.pulse({
+                start: 1e-3 * (params.pulseStart_ms + 
+                        i * (params.pulseWidth_ms + params.isi_ms)), 
+                width: params.pulseWidth_ms * 1e-3, 
+                height: params.pulseHeight_nA * 1e-9, 
+            }));
+        }
         
         // simulate it
-        result = model.integrate({tMin: 0, tMax: tMax, tMaxStep: 1e-6});
+        result = model.integrate({
+            tMin: 0, tMax: params.totalDuration_ms * 1e-3, tMaxStep: 1e-6
+        });
         
         t = result.t;
         v = passiveMembrane.V(result.y, result.t);
@@ -69,7 +81,7 @@ window.addEventListener('load', function () {
 
         // set up axes for the plot
         timeAxis = graph.linearAxis(t_ms[0], t_ms[t.length - 1], 0, 500);
-        vAxis = graph.linearAxis(-70, -50, 200, 0);
+        vAxis = graph.linearAxis(-10, 10, 200, 0);
         vPlot = graph.plotArea(timeAxis, vAxis);
            
         // plot the results

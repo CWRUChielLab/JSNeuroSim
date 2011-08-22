@@ -1,13 +1,32 @@
 var electrophys = {};
 
+electrophys.passiveConductance = function (neuron, options) {
+    "use strict";
+    var g = options.g,
+        E_rev = options.E_rev;
+
+    function current(state, t) {
+        return g * (E_rev - neuron.V(state, t));
+    };
+
+    neuron.addCurrent(current);
+};
+
+
 electrophys.passiveMembrane = function (model, options) {
     "use strict";
     var C = options.C,
         g_leak = options.g_leak,
         E_leak = options.E_leak,
         currents = [],
-        iV = model.addStateVar(E_leak);
+        leak,
+        iV = model.addStateVar(E_leak),
+        that = {};
     
+    function addCurrent(I) {
+        currents.push(I);
+    }
+
     function drift(result, state, t) {
         var i = currents.length,
             I_inj = 0;
@@ -17,15 +36,17 @@ electrophys.passiveMembrane = function (model, options) {
             I_inj += currents[i](state, t);
         }
 
-        result[iV] = (g_leak * (E_leak - state[iV]) + I_inj) / C;
+        result[iV] = I_inj / C;
     }
 
     model.registerDrift(drift);
     
-    return {
-        V : function (state, t) { return state[iV]; },
-        addCurrent : function (I) { currents.push(I); }
-    };
+    that.V = function (state, t) { return state[iV]; },
+    that.addCurrent = addCurrent;
+    that.leak = electrophys.passiveConductance(that, 
+        { E_rev: E_leak, g: g_leak });
+
+    return that;
 };
 
 

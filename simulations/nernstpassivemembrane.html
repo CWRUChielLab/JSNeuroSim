@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Nernst passive membrane simulation</title>
+        <meta charset="UTF-8" />
+        <script src="../src/ode.js"></script>
+        <script src="../src/graph.js"></script>
+        <script src="../src/component_model.js"></script>
+        <script src="../src/electrophys.js"></script>
+        <script src="../src/sim_controls.js"></script>
+        <script src="nernstpassivemembrane.js"></script>
+    </head>
+    <body>
+        <h1>Nernst passive membrane simulation</h1>
+        <canvas id="NernstPassiveMembranePlot" width="500" height="200"></canvas><br/>
+        <div id="NernstPassiveMembraneControls"></div>
+        <input type="button" id="NernstPassiveMembraneRunButton" value="Run" />
+        <input type="button" id="NernstPassiveMembraneResetButton" value="Reset" />
+    </body>
+</html>

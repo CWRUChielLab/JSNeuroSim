@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Passive membrane simulation</title>
+        <meta charset="UTF-8" />
+        <script src="../src/ode.js"></script>
+        <script src="../src/graph.js"></script>
+        <script src="../src/component_model.js"></script>
+        <script src="../src/electrophys.js"></script>
+        <script src="../src/sim_controls.js"></script>
+        <script src="passivemembrane.js"></script>
+    </head>
+    <body>
+        <h1>Passive membrane simulation</h1>
+        <canvas id="PassiveMembranePlot" width="500" height="200"></canvas><br/>
+        <div id="PassiveMembraneControls"></div>
+        <input type="button" id="PassiveMembraneRunButton" value="Run" />
+        <input type="button" id="PassiveMembraneResetButton" value="Reset" />
+    </body>
+</html>

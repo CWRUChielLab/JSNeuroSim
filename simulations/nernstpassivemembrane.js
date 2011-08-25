@@ -64,21 +64,21 @@ window.addEventListener('load', function () {
         model = componentModel.componentModel();
         nernstPassiveMembrane = electrophys.passiveMembrane(model, {
             C: params.C_nF * 1e-9, 
-            g_leak: 0., 
+            g_leak: 0, 
             E_leak: V_steadyState
         });
 
         electrophys.passiveConductance(
-                nernstPassiveMembrane, 
-                { g: params.g_Na_uS * 1e-6, E_rev: params.E_Na_mV * 1e-3 }
+            nernstPassiveMembrane, 
+            { g: params.g_Na_uS * 1e-6, E_rev: params.E_Na_mV * 1e-3 }
         );
         electrophys.passiveConductance(
-                nernstPassiveMembrane, 
-                { g: params.g_K_uS * 1e-6, E_rev: params.E_K_mV * 1e-3 }
+            nernstPassiveMembrane, 
+            { g: params.g_K_uS * 1e-6, E_rev: params.E_K_mV * 1e-3 }
         );
         electrophys.passiveConductance(
-                nernstPassiveMembrane, 
-                { g: params.g_Cl_uS * 1e-6, E_rev: params.E_Cl_mV * 1e-3 }
+            nernstPassiveMembrane, 
+            { g: params.g_Cl_uS * 1e-6, E_rev: params.E_Cl_mV * 1e-3 }
         );
         for (i = 0; i < params.numPulses; i += 1) {
             nernstPassiveMembrane.addCurrent(electrophys.pulse({

@@ -98,10 +98,51 @@ TestCase("Pulse", {
     },
 
     "test should be equal to the specified amplitude during the pulse" : function () {
-        var pulse = electrophys.pulse(0.1, 0.2, 0.525);
         assertEquals(0.525, this.pulse([], 0.1001));
         assertEquals(0.525, this.pulse([], 0.2));
         assertEquals(0.525, this.pulse([], 0.2999));
+    }
+});
+
+
+TestCase("PulseTrain", {
+    setUp: function () {
+        this.pulseTrain = electrophys.pulseTrain(
+            {start: 0.1, width: 0.2, height: 0.525, gap: 0.3, num_pulses: 4});
+    },
+
+    "test should return a function" : function () {
+        assertTypeOf("function", this.pulseTrain);
+    },
+
+    "test should be off before and after the pulseTrain" : function () {
+        assertEquals(0, this.pulseTrain([], 0.));
+        assertEquals(0, this.pulseTrain([], 0.0999));
+        assertEquals(0, this.pulseTrain([], 1.8001));
+        assertEquals(0, this.pulseTrain([], 3));
+    },
+
+    "test should be off  between pulses" : function () {
+        assertEquals(0, this.pulseTrain([], 0.3001));
+        assertEquals(0, this.pulseTrain([], 0.5999));
+
+        assertEquals(0, this.pulseTrain([], 0.9));
+
+        assertEquals(0, this.pulseTrain([], 1.3001));
+        assertEquals(0, this.pulseTrain([], 1.5999));
+    },
+
+    "test should be equal to the specified amplitude during the pulses" : function () {
+        assertEquals(0.525, this.pulseTrain([], 0.1001));
+        assertEquals(0.525, this.pulseTrain([], 0.2));
+        assertEquals(0.525, this.pulseTrain([], 0.2999));
+
+        assertEquals(0.525, this.pulseTrain([], 0.7));
+
+        assertEquals(0.525, this.pulseTrain([], 0.12));
+
+        assertEquals(0.525, this.pulseTrain([], 1.7));
+        assertEquals(0.525, this.pulseTrain([], 1.7999));
     }
 });
 

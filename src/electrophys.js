@@ -66,6 +66,26 @@ electrophys.pulse = function (options) {
 };
 
 
+electrophys.pulseTrain = function (options) {
+    "use strict";
+    var start = options.start,
+        width = options.width,
+        height = options.height,
+        gap = options.gap,
+        num_pulses = options.num_pulses,
+        period = width + gap,
+        end = start + period * num_pulses - gap;
+
+    return function (state, t) {
+        if (t >= start && t < end && (t - start) % period < width) {
+            return height;
+        } else {
+            return 0;
+        }
+    };
+};
+
+
 electrophys.gettingIFNeuron = function (model, options) {
     "use strict";
     var C = options.C,

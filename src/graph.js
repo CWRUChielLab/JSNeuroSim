@@ -1,3 +1,4 @@
+/*jslint browser: true */
 var graph = {};
 
 graph.linearAxis = function (worldMin, worldMax, displayMin, displayMax) {
@@ -180,12 +181,20 @@ graph.plotArea = function (xAxis, yAxis) {
         }
     }
 
+    function createSVG(panel) {
+        var svg;
+
+        svg = document.createElement('div');
+        panel.appendChild(svg);
+    }
+
     return {
         addXYLine : addXYLine,
         addPoints : addPoints,
         addText : addText,
         remove : remove,
-        draw : draw
+        draw : draw,
+        createSVG : createSVG
     };
 };
 

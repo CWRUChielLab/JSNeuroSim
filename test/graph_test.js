@@ -73,6 +73,8 @@ TestCase("PlotArea", {
         this.yAxis = graph.linearAxis(3, 9, 6, 18);
         this.plotArea = graph.plotArea(this.xAxis, this.yAxis);
 
+        this.panel = document.createElement('div');
+
         this.context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
             'moveTo', 'lineTo', 'stroke', 'clip', 'fillText']);
 
@@ -94,7 +96,15 @@ TestCase("PlotArea", {
             return allCalls.slice(this.plotSetup.length,
                 allCalls.length - this.plotCleanup.length);
         };
-     },
+    },
+
+    "test createSVG should create an svg" : function() {
+        assertEquals(0, this.panel.childNodes.length);
+
+        this.plotArea.createSVG(this.panel);        
+
+        assertEquals(1, this.panel.childNodes.length);
+    },
 
     "test should have proper setup" : function() {
         this.plotArea.draw(this.context);

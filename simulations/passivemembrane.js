@@ -169,7 +169,8 @@ window.addEventListener('load', function () {
         xWorld = timeAxis.mapDisplayToWorld(xDisplay);
         yWorld = vAxis.mapDisplayToWorld(yDisplay);
         crosshairs = vPlot.addPoints([xWorld], [yWorld]);
-        crosshairText = vPlot.addText(xWorld + 0.3, yWorld + 0.3,
+        crosshairText = vPlot.addText(xWorld + 0.01 * timeAxis.worldLength(), 
+                yWorld + 0.01 * vAxis.worldLength(),
                 "(" + xWorld.toFixed(2) + " ms, " 
                 + yWorld.toFixed(2) + " mV)");
 
@@ -177,12 +178,14 @@ window.addEventListener('load', function () {
             xStart = xWorld;
             yStart = yWorld;
         }
-        measureLine = vPlot.addXYLine([xStart, xStart, xWorld], [yStart, yWorld, yWorld]);
+        measureLine = vPlot.addXYLine([xStart, xStart, xWorld], 
+            [yStart, yWorld, yWorld]);
         if (xWorld === xStart && yWorld === yStart) {
             measureText = null;
         } else {
-            measureText = vPlot.addText(xWorld + 0.3, yWorld - 1.3,
-                "\u0394(" + (xWorld - xStart).toFixed(2) + " ms, " 
+            measureText = vPlot.addText(xWorld + 0.01 * timeAxis.worldLength(), 
+                yWorld - 0.05 * vAxis.worldLength(),
+                "\u0394 (" + (xWorld - xStart).toFixed(2) + " ms, " 
                 + (yWorld - yStart).toFixed(2) + " mV)");
         }
 
@@ -199,7 +202,8 @@ window.addEventListener('load', function () {
         // add new crosshairs
         yWorld2 = iStimAxis.mapDisplayToWorld(yDisplay);
         crosshairs2 = iStimPlot.addPoints([xWorld], [yWorld2]);
-        crosshairText2 = iStimPlot.addText(xWorld + 0.3, yWorld2 + 0.3,
+        crosshairText2 = iStimPlot.addText(xWorld + 0.01 * timeAxis.worldLength(), 
+                yWorld2 + 0.02 * iStimAxis.worldLength(),
                 "(" + xWorld.toFixed(2) + " ms, " 
                 + yWorld2.toFixed(2) + " nA)");
 
@@ -210,8 +214,9 @@ window.addEventListener('load', function () {
         if (xWorld === xStart && yWorld2 === yStart2) {
             measureText2 = null;
         } else {
-            measureText2 = iStimPlot.addText(xWorld + 0.3, yWorld2 - 1.3,
-                "\u0394(" + (xWorld - xStart).toFixed(2) + " ms, " 
+            measureText2 = iStimPlot.addText(xWorld + 0.01 * timeAxis.worldLength(), 
+                yWorld2 - 0.06 * iStimAxis.worldLength(),
+                "\u0394 (" + (xWorld - xStart).toFixed(2) + " ms, " 
                 + (yWorld2 - yStart2).toFixed(2) + " nA)");
         }
 

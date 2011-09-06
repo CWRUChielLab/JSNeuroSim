@@ -69,11 +69,11 @@ TestCase("PlotArea", {
     setUp : function () {
         var that = this;
 
+        this.panel = document.createElement('div');
+
         this.xAxis = graph.linearAxis(1, 10, 20, 110);
         this.yAxis = graph.linearAxis(3, 9, 6, 18);
-        this.plotArea = graph.plotArea(this.xAxis, this.yAxis);
-
-        this.panel = document.createElement('div');
+        this.plotArea = graph.plotArea(this.xAxis, this.yAxis, this.panel);
 
         this.context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
             'moveTo', 'lineTo', 'stroke', 'clip', 'fillText']);
@@ -96,14 +96,117 @@ TestCase("PlotArea", {
             return allCalls.slice(this.plotSetup.length,
                 allCalls.length - this.plotCleanup.length);
         };
+
+        // get the drawing calls without the unchanging setup and cleanup calls
+        this.getDrawingElements = function () {
+            return Array.prototype.slice.apply(
+                    this.panel.childNodes[0].childNodes, 
+                    [0]
+            );
+        };
     },
 
-    "test createSVG should create an svg" : function() {
-        assertEquals(0, this.panel.childNodes.length);
-
-        this.plotArea.createSVG(this.panel);        
-
+    "test should create an svg" : function() {
         assertEquals(1, this.panel.childNodes.length);
+        assertEquals('SVG', this.panel.childNodes[0].tagName);
+    },
+
+    "test should add xyLine to svg" : function() {
+        var x = [1, 13, 5],
+            y = [7, 11, -3],
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y),
+            elements;
+
+        this.plotArea.addXYLine(x, y);
+        elements = this.getDrawingElements();
+
+        assertEquals(1, elements.length);
+        assertEquals('POLYLINE', elements[0].tagName);
+        assertEquals('none', elements[0].fill);
+        assertEquals('black', elements[0].stroke);
+        assertEquals(xScreen[0] + ',' + yScreen[0] + ' ' + 
+            xScreen[1] + ',' + yScreen[1] + ' ' +
+            xScreen[2] + ',' + yScreen[2] + ' ',
+            elements[0].points);
+    },
+
+    "test svg line should skip NaN and infinity" : function() {
+        var x = [1,   13,  4, Infinity,         5, 13, 6,       13, 12, NaN ],
+            y = [NaN, 11, 12,       -3, -Infinity, 12, 3, Infinity,  8,   7 ],
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y),
+            elements;
+
+        this.plotArea.addXYLine(x, y);
+        elements = this.getDrawingElements();
+
+        assertEquals(3, elements.length);
+        assertEquals(xScreen[1] + ',' + yScreen[1] + ' ' + 
+            xScreen[2] + ',' + yScreen[2] + ' ',
+            elements[0].points);
+        assertEquals(xScreen[5] + ',' + yScreen[5] + ' ' + 
+            xScreen[6] + ',' + yScreen[6] + ' ',
+            elements[1].points);
+        assertEquals(xScreen[8] + ',' + yScreen[8] + ' ',
+            elements[2].points);
+    },
+
+    "test addText should add text to the svg" : function() {
+        var x = 1,
+            y = 7,
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y),
+            elements;
+
+        this.plotArea.addText(x, y, "abc");
+        elements = this.getDrawingElements();
+
+        assertEquals(1, elements.length);
+        assertEquals('TEXT', elements[0].tagName);
+        assertEquals('' + xScreen, elements[0].x);
+        assertEquals('' + yScreen, elements[0].y);
+        assertEquals("abc", elements[0].innerHTML);
+    },
+
+    "test addPoints should add crosshairs to the svg" : function() {
+        var x = [1, 2.1, Infinity, 3.4, 6.2],
+            y = [7, 6.3, 8.1, NaN, 3.3],
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y),
+            delta = 10,
+            elements,
+            i, validIndexes, xc, yc, line1, line2;
+
+        this.plotArea.addPoints(x, y);
+        elements = this.getDrawingElements();
+
+        validIndexes = [0,1,4]; // should skip NaN and Infinity
+
+        assertEquals(2 * validIndexes.length, elements.length);
+        
+        for (i = 0; i < validIndexes.length; ++i) {
+            xc = xScreen[validIndexes[i]];
+            yc = yScreen[validIndexes[i]];
+
+            line1 = elements[2 * i];
+            assertEquals('LINE', line1.tagName);
+            assertEquals('none', line1.fill);
+            assertEquals('black', line1.stroke);
+            assertEquals(xc, line1.x1);
+            assertEquals(yc - delta, line1.y1);
+            assertEquals(xc, line1.x2);
+            assertEquals(yc + delta, line1.y2);
+
+            line2 = elements[2 * i + 1];
+            assertEquals('LINE', line2.tagName);
+            assertEquals('none', line2.fill);
+            assertEquals('black', line2.stroke);
+            assertEquals(xc-delta, line2.x1);
+            assertEquals(yc, line2.y1);
+            assertEquals(xc+delta, line2.x2);
+            assertEquals(yc, line2.y2);
+        }
     },
 
     "test should have proper setup" : function() {

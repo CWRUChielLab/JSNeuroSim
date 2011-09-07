@@ -67,8 +67,6 @@ TestCase("LinearAxis", {
 
 TestCase("PlotArea", {
     setUp : function () {
-        var that = this;
-
         this.panel = document.createElementNS(
             "http://www.w3.org/2000/svg",
             'svg:svg'
@@ -109,13 +107,6 @@ TestCase("PlotArea", {
         };
     },
 
-    /*
-    "test should create an svg" : function() {
-        assertEquals(1, this.panel.childNodes.length);
-        assertEquals('svg:svg', this.panel.childNodes[0].tagName);
-    },
-    */
-
     "test should add xyLine to svg" : function() {
         var x = [1, 13, 5],
             y = [7, 11, -3],
@@ -128,8 +119,8 @@ TestCase("PlotArea", {
 
         assertEquals(1, elements.length);
         assertEquals('polyline', elements[0].tagName);
-        //assertEquals('none', elements[0].fill);
-        //assertEquals('black', elements[0].stroke);
+        assertEquals('none', elements[0].getAttribute('fill'));
+        assertEquals('black', elements[0].getAttribute('stroke'));
         assertEquals(3, elements[0].points.numberOfItems);
         assertEquals(xScreen[0], elements[0].points.getItem(0).x);
         assertEquals(yScreen[0], elements[0].points.getItem(0).y);
@@ -203,8 +194,8 @@ TestCase("PlotArea", {
 
             line1 = elements[2 * i];
             assertEquals('line', line1.tagName);
-            //assertEquals('none', line1.fill);
-            //assertEquals('black', line1.stroke);
+            assertEquals('none', line1.getAttribute('fill'));
+            assertEquals('black', line1.getAttribute('stroke'));
             assertClose(xc, line1.x1.animVal.value, 1e-4);
             assertClose(yc - delta, line1.y1.animVal.value, 1e-4);
             assertClose(xc, line1.x2.animVal.value, 1e-4);
@@ -212,8 +203,8 @@ TestCase("PlotArea", {
 
             line2 = elements[2 * i + 1];
             assertEquals('line', line2.tagName);
-            //assertClose('none', line2.fill);
-            //assertClose('black', line2.stroke);
+            assertEquals('none', line2.getAttribute('fill'));
+            assertEquals('black', line2.getAttribute('stroke'));
             assertClose(xc - delta, line2.x1.animVal.value, 1e-4);
             assertClose(yc, line2.y1.animVal.value, 1e-4);
             assertClose(xc + delta, line2.x2.animVal.value, 1e-4);
@@ -393,4 +384,83 @@ TestCase("PlotArea", {
         );
     },
 
+});
+
+
+TestCase("Graph", {
+    setUp: function () {
+        this.xs = [1, 13, 5, 6];
+        this.ys = [7, 11, -3, 4];
+        this.width = 123;
+        this.height = 456;
+        this.panel = document.createElement("div");
+
+        this.oldPlotArea = graph.plotArea;
+        graph.plotArea = function () {
+            return createStubbedObj(['addXYLine']);
+        }
+
+        this.graph = graph.graph(this.panel, this.width, this.height, 
+            this.xs, this.ys);
+
+        this.context = createStubbedObj(['save', 'restore', 'beginPath', 
+            'rect', 'moveTo', 'lineTo', 'stroke', 'clip', 'fillText']);
+    },
+
+    tearDown: function () {
+        graph.plotArea = this.oldPlotArea;
+    },
+
+    "test should create an svg" : function() {
+        assertEquals(1, this.panel.childNodes.length);
+        assertEquals('svg:svg', this.panel.childNodes[0].tagName);
+    },
+
+    "test should use width and height of svg" : function() {
+        assertEquals(this.width, 
+            this.panel.childNodes[0].getAttribute('width'));
+        assertEquals(this.height, 
+            this.panel.childNodes[0].getAttribute('height'));
+        assertEquals('0 0 ' + this.width + ' ' + this.height, 
+                this.panel.childNodes[0].getAttribute('viewBox'));
+    },
+
+    "test should expose axes" : function() {
+        assertNotUndefined(this.graph.xAxis && 
+            this.graph.xAxis.mapWorldToDisplay);
+        assertNotUndefined(this.graph.yAxis && 
+            this.graph.yAxis.mapWorldToDisplay);
+        assertFalse(this.graph.xAxis === this.graph.yAxis);
+    },
+
+    "test should expose plotArea" : function() {
+        assertNotUndefined(this.graph.plotArea);
+        assertNotUndefined(this.graph.plotArea.addXYLine);
+    },
+
+    "test world xAxis should have a 5% margin" : function() {
+        assertClose(0.4, this.graph.xAxis.worldMin(), 1e-4);
+        assertClose(13.6, this.graph.xAxis.worldMax(), 1e-4);
+    },
+
+    "test world yAxis should have a 5% margin" : function() {
+        assertClose(-3.7, this.graph.yAxis.worldMin(), 1e-4);
+        assertClose(11.7, this.graph.yAxis.worldMax(), 1e-4);
+    },
+
+    "test display xAxis should have a 25 px margin" : function() {
+        assertClose(25, this.graph.xAxis.displayMin(), 1e-4);
+        assertClose(this.width - 25, this.graph.xAxis.displayMax(), 1e-4);
+    },
+
+    "test display yAxis should be flipped and have a 25 px margin" : 
+            function() {
+        assertClose(this.height - 25, this.graph.yAxis.displayMin(), 1e-4);
+        assertClose(25, this.graph.yAxis.displayMax(), 1e-4);
+    },
+
+    "test should plot XYLine for data" : function() {
+        assertTrue(
+            this.graph.plotArea.hasCall('addXYLine', [this.xs, this.ys]));
+    }
 });

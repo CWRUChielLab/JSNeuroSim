@@ -256,13 +256,6 @@ graph.plotArea = function (xAxis, yAxis, svg) {
     }
 
     svg = svg || document.createElementNS(svgns, 'svg:svg');
-    //svg.setAttribute('width', 200);
-    //svg.setAttribute('heigth', 200);
-    //svg.setAttribute('viewBox', "0 0 200 200");
-    //svg.height=100;
-    //svg.version="1.1";
-    //svg.viewbox="0 0 100 100";
-    //panel && panel.appendChild(svg); // TODO: remove &&
 
     return {
         addXYLine : addXYLine,
@@ -270,6 +263,41 @@ graph.plotArea = function (xAxis, yAxis, svg) {
         addText : addText,
         remove : remove,
         draw : draw,
+    };
+};
+
+graph.graph = function (panel, width, height, xs, ys) {
+    "use strict";
+    var svg, plotArea, xAxis, yAxis, 
+        minX, maxX, lengthX, 
+        minY, maxY, lengthY;
+    
+    svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg:svg');
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', height);
+    svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+    panel.appendChild(svg); 
+
+    minX = Math.min.apply(null, xs);
+    maxX = Math.max.apply(null, xs);
+    lengthX = maxX - minX;
+
+    minY = Math.min.apply(null, ys);
+    maxY = Math.max.apply(null, ys);
+    lengthY = maxY - minY;
+
+    xAxis = graph.linearAxis(minX - 0.05 * lengthX, maxX + 0.05 * lengthX, 
+            25, width - 25);
+    yAxis = graph.linearAxis(minY - 0.05 * lengthY, maxY + 0.05 * lengthY, 
+            height - 25, 25);
+    plotArea = graph.plotArea(xAxis, yAxis, svg);
+
+    plotArea.addXYLine(xs, ys);
+
+    return {
+        xAxis: xAxis,
+        yAxis: yAxis,
+        plotArea: plotArea
     };
 };
 

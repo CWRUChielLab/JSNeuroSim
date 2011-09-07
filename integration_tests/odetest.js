@@ -9,16 +9,10 @@ window.addEventListener('load', function () {
     function plotSHO() {
 
         // get the drawing surface
-        var canvas, context,
-            sho, result, t, x, v, 
+        var sho, result, t, x, v, 
             phaseXAxis, phaseVAxis, phasePlot,
             timeAxis, xAxis, vAxis, xPlot, vPlot,
-            svgPlot;
-
-        // set up the canvas
-        canvas = document.getElementById('SHOPlot');
-        context = canvas.getContext('2d');
-        context.clearRect(0, 0, canvas.width, canvas.height);
+            plotPanel;
 
         // simulate the oscillator
         sho = {
@@ -33,30 +27,13 @@ window.addEventListener('load', function () {
         x = result.y[0];
         v = result.y[1];
 
-        // set up axes for the phase plane plot
-        phaseXAxis = graph.linearAxis(-1.5, 1.5, 0, 400);
-        phaseVAxis = graph.linearAxis(-1.5, 1.5, 0, 400);
-        svgPlot = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            'svg:svg'
-        );
-        document.getElementById('SHOPlots').appendChild(svgPlot);
-        phasePlot = graph.plotArea(phaseXAxis, phaseVAxis, svgPlot);
-
-        timeAxis = graph.linearAxis(sho.tMin, sho.tMax, 0, 400);
-        xAxis = graph.linearAxis(-1.5, 1.5, 400, 500);
-        vAxis = graph.linearAxis(-1.5, 1.5, 500, 600);
-        xPlot = graph.plotArea(timeAxis, xAxis);
-        vPlot = graph.plotArea(timeAxis, vAxis);
-           
         // plot the results
-        phasePlot.addXYLine(x, v);
-        xPlot.addXYLine(t, x);
-        vPlot.addXYLine(t, v);
-
-        phasePlot.draw(context);
-        xPlot.draw(context);
-        vPlot.draw(context);
+        plotPanel = document.getElementById('SHOPlots');
+        graph.graph(plotPanel, 400, 400, x, v);
+        plotPanel.appendChild(document.createElement('br'));
+        graph.graph(plotPanel, 400, 100, t, x);
+        plotPanel.appendChild(document.createElement('br'));
+        graph.graph(plotPanel, 400, 100, t, v);
     }
 
     document.getElementById('SHOButton').addEventListener('click', 

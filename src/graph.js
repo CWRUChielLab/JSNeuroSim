@@ -67,11 +67,11 @@ graph.linearAxis = function (worldMin, worldMax, displayMin, displayMax) {
 };
 
 
-graph.plotArea = function (xAxis, yAxis, panel) {
+graph.plotArea = function (xAxis, yAxis, svg) {
     "use strict";
     var canvasDrawnObjects = [], 
         graphObjects = [],
-        svg;
+        svgns = "http://www.w3.org/2000/svg";
     
     function addXYLine(xs, ys) {
         var obj, elem, xDisplay, yDisplay, points = '', i, x, y,
@@ -79,7 +79,7 @@ graph.plotArea = function (xAxis, yAxis, panel) {
          
         xDisplay = xAxis.mapWorldToDisplay(xs);
         yDisplay = yAxis.mapWorldToDisplay(ys);
-        for (i = 0; i < xDisplay.length + 1; ++i) {
+        for (i = 0; i < xDisplay.length + 1; i += 1) {
             x = xDisplay[i];
             y = yDisplay[i];
 
@@ -87,10 +87,10 @@ graph.plotArea = function (xAxis, yAxis, panel) {
                 points += x + "," + y + " ";
             } else {
                 if (points.length > 0) {
-                    elem = document.createElement('polyline');
-                    elem.fill = 'none';
-                    elem.stroke = 'black';
-                    elem.points = points;
+                    elem = document.createElementNS(svgns, 'polyline');
+                    elem.setAttribute('fill', 'none');
+                    elem.setAttribute('stroke', 'black');
+                    elem.setAttribute("points",  points);
                     svg.appendChild(elem);
 
                     polylines.push(elem);
@@ -99,10 +99,8 @@ graph.plotArea = function (xAxis, yAxis, panel) {
             }
         }
 
-        graphObjects.push([polylines, "xyLine", xs, ys]);
-
-        obj = ["xyLine", xs, ys];
-        canvasDrawnObjects.push(obj);
+        obj = [polylines, "xyLine", xs, ys];
+        graphObjects.push(obj);
 
         return obj;
     }
@@ -113,37 +111,35 @@ graph.plotArea = function (xAxis, yAxis, panel) {
          
         xDisplay = xAxis.mapWorldToDisplay(xs);
         yDisplay = yAxis.mapWorldToDisplay(ys);
-        for (i = 0; i < xDisplay.length; ++i) {
+        for (i = 0; i < xDisplay.length; i += 1) {
             x = xDisplay[i];
             y = yDisplay[i];
 
             if (isFinite(x) && isFinite(y)) {
-                elem = document.createElement('line');
-                elem.fill = 'none';
-                elem.stroke = 'black';
-                elem.x1 = x;
-                elem.y1 = y - delta;
-                elem.x2 = x;
-                elem.y2 = y + delta;
+                elem = document.createElementNS(svgns, 'line');
+                elem.setAttribute('fill', 'none');
+                elem.setAttribute('stroke', 'black');
+                elem.setAttribute('x1', x);
+                elem.setAttribute('y1', y - delta);
+                elem.setAttribute('x2', x);
+                elem.setAttribute('y2', y + delta);
                 svg.appendChild(elem);
                 lines.push(elem);
 
-                elem = document.createElement('line');
-                elem.fill = 'none';
-                elem.stroke = 'black';
-                elem.x1 = x - delta;
-                elem.y1 = y;
-                elem.x2 = x + delta;
-                elem.y2 = y;
+                elem = document.createElementNS(svgns, 'line');
+                elem.setAttribute('fill', 'none');
+                elem.setAttribute('stroke', 'black');
+                elem.setAttribute('x1', x - delta);
+                elem.setAttribute('y1', y);
+                elem.setAttribute('x2', x + delta);
+                elem.setAttribute('y2', y);
                 svg.appendChild(elem);
                 lines.push(elem);
             }
         }
 
-        graphObjects.push([lines, "points", xs, ys]);
-
-        obj = ["points", xs, ys];
-        canvasDrawnObjects.push(obj);
+        obj = [lines, "points", xs, ys];
+        graphObjects.push(obj);
 
         return obj;
     }
@@ -151,16 +147,15 @@ graph.plotArea = function (xAxis, yAxis, panel) {
     function addText(x, y, text) {
         var obj, elem;
         
-        elem = document.createElement('text');
-        elem.x = xAxis.mapWorldToDisplay(x);
-        elem.y = yAxis.mapWorldToDisplay(y);
+        elem = document.createElementNS(svgns, 'text');
+        elem.setAttribute('x', xAxis.mapWorldToDisplay(x));
+        elem.setAttribute('y', yAxis.mapWorldToDisplay(y));
         elem.innerHTML = text;
         svg.appendChild(elem);
 
-        graphObjects.push([elem, "text", x, y, text]);
+        obj = [[elem], "text", x, y, text];
+        graphObjects.push(obj);
 
-        obj = ["text", x, y, text];
-        canvasDrawnObjects.push(obj);
         return obj;
     }
 
@@ -175,12 +170,12 @@ graph.plotArea = function (xAxis, yAxis, panel) {
         context.beginPath();
         context.rect(xAxis.displayMin(), yAxis.displayMin(), 
                 xAxis.displayLength(), yAxis.displayLength());
-       context.clip();
+        context.clip();
         
-        for (i = 0; i < canvasDrawnObjects.length; i += 1) {
-            if (canvasDrawnObjects[i][0] === "xyLine") {
-                xDisplay = xAxis.mapWorldToDisplay(canvasDrawnObjects[i][1]);
-                yDisplay = yAxis.mapWorldToDisplay(canvasDrawnObjects[i][2]);
+        for (i = 0; i < graphObjects.length; i += 1) {
+            if (graphObjects[i][1] === "xyLine") {
+                xDisplay = xAxis.mapWorldToDisplay(graphObjects[i][2]);
+                yDisplay = yAxis.mapWorldToDisplay(graphObjects[i][3]);
                 drawing = false;
 
                 l = xDisplay.length;
@@ -208,9 +203,9 @@ graph.plotArea = function (xAxis, yAxis, panel) {
             
                 context.stroke();
             
-            } else if (canvasDrawnObjects[i][0] === "points") {
-                xDisplay = xAxis.mapWorldToDisplay(canvasDrawnObjects[i][1]);
-                yDisplay = yAxis.mapWorldToDisplay(canvasDrawnObjects[i][2]);
+            } else if (graphObjects[i][1] === "points") {
+                xDisplay = xAxis.mapWorldToDisplay(graphObjects[i][2]);
+                yDisplay = yAxis.mapWorldToDisplay(graphObjects[i][3]);
 
                 l = xDisplay.length;
                 j = l;
@@ -232,11 +227,11 @@ graph.plotArea = function (xAxis, yAxis, panel) {
             
                 context.stroke();
             
-            } else if (canvasDrawnObjects[i][0] === "text") {
+            } else if (graphObjects[i][1] === "text") {
             
-                xDisplay = xAxis.mapWorldToDisplay(canvasDrawnObjects[i][1]);
-                yDisplay = yAxis.mapWorldToDisplay(canvasDrawnObjects[i][2]);
-                text = canvasDrawnObjects[i][3];
+                xDisplay = xAxis.mapWorldToDisplay(graphObjects[i][2]);
+                yDisplay = yAxis.mapWorldToDisplay(graphObjects[i][3]);
+                text = graphObjects[i][4];
                 
                 context.fillText(text, xDisplay, yDisplay);
             }            
@@ -246,18 +241,28 @@ graph.plotArea = function (xAxis, yAxis, panel) {
     }
 
     function remove(obj) {
-        var i;
+        var i, j;
 
         // this is O(N), but could be rewritten to be O(log(N)) if needed
-        for (i = 0; i < canvasDrawnObjects.length; i += 1) {
-            if (canvasDrawnObjects[i] === obj) {
-                canvasDrawnObjects.splice(i, 1);
+        for (i = 0; i < graphObjects.length; i += 1) {
+            if (graphObjects[i] === obj) {
+                for (j = 0; j < graphObjects[i][0].length; j += 1) {
+                    svg.removeChild(graphObjects[i][0][j]);
+                }
+
+                graphObjects.splice(i, 1);
             }
         }
     }
 
-    svg = document.createElement('svg');
-    panel && panel.appendChild(svg); // TODO: remove &&
+    svg = svg || document.createElementNS(svgns, 'svg:svg');
+    //svg.setAttribute('width', 200);
+    //svg.setAttribute('heigth', 200);
+    //svg.setAttribute('viewBox', "0 0 200 200");
+    //svg.height=100;
+    //svg.version="1.1";
+    //svg.viewbox="0 0 100 100";
+    //panel && panel.appendChild(svg); // TODO: remove &&
 
     return {
         addXYLine : addXYLine,

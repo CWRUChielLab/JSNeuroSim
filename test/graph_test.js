@@ -69,7 +69,10 @@ TestCase("PlotArea", {
     setUp : function () {
         var that = this;
 
-        this.panel = document.createElement('div');
+        this.panel = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            'svg:svg'
+        );
 
         this.xAxis = graph.linearAxis(1, 10, 20, 110);
         this.yAxis = graph.linearAxis(3, 9, 6, 18);
@@ -100,16 +103,18 @@ TestCase("PlotArea", {
         // get the drawing calls without the unchanging setup and cleanup calls
         this.getDrawingElements = function () {
             return Array.prototype.slice.apply(
-                    this.panel.childNodes[0].childNodes, 
+                    this.panel.childNodes, 
                     [0]
             );
         };
     },
 
+    /*
     "test should create an svg" : function() {
         assertEquals(1, this.panel.childNodes.length);
-        assertEquals('SVG', this.panel.childNodes[0].tagName);
+        assertEquals('svg:svg', this.panel.childNodes[0].tagName);
     },
+    */
 
     "test should add xyLine to svg" : function() {
         var x = [1, 13, 5],
@@ -122,13 +127,16 @@ TestCase("PlotArea", {
         elements = this.getDrawingElements();
 
         assertEquals(1, elements.length);
-        assertEquals('POLYLINE', elements[0].tagName);
-        assertEquals('none', elements[0].fill);
-        assertEquals('black', elements[0].stroke);
-        assertEquals(xScreen[0] + ',' + yScreen[0] + ' ' + 
-            xScreen[1] + ',' + yScreen[1] + ' ' +
-            xScreen[2] + ',' + yScreen[2] + ' ',
-            elements[0].points);
+        assertEquals('polyline', elements[0].tagName);
+        //assertEquals('none', elements[0].fill);
+        //assertEquals('black', elements[0].stroke);
+        assertEquals(3, elements[0].points.numberOfItems);
+        assertEquals(xScreen[0], elements[0].points.getItem(0).x);
+        assertEquals(yScreen[0], elements[0].points.getItem(0).y);
+        assertEquals(xScreen[1], elements[0].points.getItem(1).x);
+        assertEquals(yScreen[1], elements[0].points.getItem(1).y);
+        assertEquals(xScreen[2], elements[0].points.getItem(2).x);
+        assertEquals(yScreen[2], elements[0].points.getItem(2).y);
     },
 
     "test svg line should skip NaN and infinity" : function() {
@@ -142,14 +150,18 @@ TestCase("PlotArea", {
         elements = this.getDrawingElements();
 
         assertEquals(3, elements.length);
-        assertEquals(xScreen[1] + ',' + yScreen[1] + ' ' + 
-            xScreen[2] + ',' + yScreen[2] + ' ',
-            elements[0].points);
-        assertEquals(xScreen[5] + ',' + yScreen[5] + ' ' + 
-            xScreen[6] + ',' + yScreen[6] + ' ',
-            elements[1].points);
-        assertEquals(xScreen[8] + ',' + yScreen[8] + ' ',
-            elements[2].points);
+        assertEquals(xScreen[1], elements[0].points.getItem(0).x);
+        assertEquals(yScreen[1], elements[0].points.getItem(0).y);
+        assertEquals(xScreen[2], elements[0].points.getItem(1).x);
+        assertEquals(yScreen[2], elements[0].points.getItem(1).y);
+
+        assertEquals(xScreen[5], elements[1].points.getItem(0).x);
+        assertEquals(yScreen[5], elements[1].points.getItem(0).y);
+        assertEquals(xScreen[6], elements[1].points.getItem(1).x);
+        assertEquals(yScreen[6], elements[1].points.getItem(1).y);
+
+        assertEquals(xScreen[8], elements[2].points.getItem(0).x);
+        assertEquals(yScreen[8], elements[2].points.getItem(0).y);
     },
 
     "test addText should add text to the svg" : function() {
@@ -163,9 +175,9 @@ TestCase("PlotArea", {
         elements = this.getDrawingElements();
 
         assertEquals(1, elements.length);
-        assertEquals('TEXT', elements[0].tagName);
-        assertEquals('' + xScreen, elements[0].x);
-        assertEquals('' + yScreen, elements[0].y);
+        assertEquals('text', elements[0].tagName);
+        assertEquals('' + xScreen, elements[0].x.animVal.getItem(0).value);
+        assertEquals('' + yScreen, elements[0].y.animVal.getItem(0).value);
         assertEquals("abc", elements[0].innerHTML);
     },
 
@@ -190,23 +202,58 @@ TestCase("PlotArea", {
             yc = yScreen[validIndexes[i]];
 
             line1 = elements[2 * i];
-            assertEquals('LINE', line1.tagName);
-            assertEquals('none', line1.fill);
-            assertEquals('black', line1.stroke);
-            assertEquals(xc, line1.x1);
-            assertEquals(yc - delta, line1.y1);
-            assertEquals(xc, line1.x2);
-            assertEquals(yc + delta, line1.y2);
+            assertEquals('line', line1.tagName);
+            //assertEquals('none', line1.fill);
+            //assertEquals('black', line1.stroke);
+            assertClose(xc, line1.x1.animVal.value, 1e-4);
+            assertClose(yc - delta, line1.y1.animVal.value, 1e-4);
+            assertClose(xc, line1.x2.animVal.value, 1e-4);
+            assertClose(yc + delta, line1.y2.animVal.value, 1e-4);
 
             line2 = elements[2 * i + 1];
-            assertEquals('LINE', line2.tagName);
-            assertEquals('none', line2.fill);
-            assertEquals('black', line2.stroke);
-            assertEquals(xc-delta, line2.x1);
-            assertEquals(yc, line2.y1);
-            assertEquals(xc+delta, line2.x2);
-            assertEquals(yc, line2.y2);
+            assertEquals('line', line2.tagName);
+            //assertClose('none', line2.fill);
+            //assertClose('black', line2.stroke);
+            assertClose(xc - delta, line2.x1.animVal.value, 1e-4);
+            assertClose(yc, line2.y1.animVal.value, 1e-4);
+            assertClose(xc + delta, line2.x2.animVal.value, 1e-4);
+            assertClose(yc, line2.y2.animVal.value, 1e-4);
         }
+    },
+
+    "test remove should get rid of lines" : function() {
+        var line, element,
+            x = [1,   13,  4, Infinity,         5, 13, 6,       13, 12, NaN ],
+            y = [NaN, 11, 12,       -3, -Infinity, 12, 3, Infinity,  8,   7 ];
+
+        line = this.plotArea.addXYLine(x, y);
+        this.plotArea.remove(line);
+        elements = this.getDrawingElements();
+
+        assertEquals(0, elements.length);
+    },
+
+    "test remove should only remove the requested object(s)" : function() {
+        var x = [1, 13, 5, 6],
+            y = [7, 11, -3, 4],
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y),
+            removedText;
+
+        this.plotArea.addText(x[0], y[0], "a");
+        this.plotArea.addText(x[1], y[1], "b");
+        removedText = this.plotArea.addText(x[2], y[2], "c");
+        this.plotArea.addText(x[3], y[3], "d");
+
+        this.plotArea.remove(removedText);
+        this.plotArea.draw(this.context);
+
+        elements = this.getDrawingElements();
+
+        assertEquals(3, elements.length);
+        assertEquals('a', elements[0].innerHTML);
+        assertEquals('b', elements[1].innerHTML);
+        assertEquals('d', elements[2].innerHTML);
     },
 
     "test should have proper setup" : function() {

@@ -12,7 +12,8 @@ window.addEventListener('load', function () {
         var canvas, context,
             sho, result, t, x, v, 
             phaseXAxis, phaseVAxis, phasePlot,
-            timeAxis, xAxis, vAxis, xPlot, vPlot;
+            timeAxis, xAxis, vAxis, xPlot, vPlot,
+            svgPlot;
 
         // set up the canvas
         canvas = document.getElementById('SHOPlot');
@@ -35,7 +36,12 @@ window.addEventListener('load', function () {
         // set up axes for the phase plane plot
         phaseXAxis = graph.linearAxis(-1.5, 1.5, 0, 400);
         phaseVAxis = graph.linearAxis(-1.5, 1.5, 0, 400);
-        phasePlot = graph.plotArea(phaseXAxis, phaseVAxis);
+        svgPlot = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            'svg:svg'
+        );
+        document.getElementById('SHOPlots').appendChild(svgPlot);
+        phasePlot = graph.plotArea(phaseXAxis, phaseVAxis, svgPlot);
 
         timeAxis = graph.linearAxis(sho.tMin, sho.tMax, 0, 400);
         xAxis = graph.linearAxis(-1.5, 1.5, 400, 500);

@@ -10,7 +10,7 @@ window.addEventListener('load', function () {
 
     // set up the controls for the passive membrane simulation
     params = { 
-        m_gates: { label: 'Number of activation gates', 
+        m_gates: { label: 'Number of activation gates',
             defaultVal: 3, minVal: 0, maxVal: 10 },
         h_gates: { label: 'Number of inactivation gates', 
             defaultVal: 1, minVal: 0, maxVal: 10 },
@@ -22,12 +22,12 @@ window.addEventListener('load', function () {
         V_hold_mV: { label: 'Holding potential', units: 'mV', 
             defaultVal: -100, minVal: -1000, maxVal: 1000 },
         t_step_ms: { label: 'Step delay', units: 'ms', 
-            defaultVal: 0.5, minVal: 0, maxVal: tMax },
+            defaultVal: 0.5, minVal: 0, maxVal: tMax / 1e-3 },
         V_step_mV: { label: 'Step potential', units: 'mV', 
-            defaultVal: -100, minVal: -1000, maxVal: 1000 },
+            defaultVal: 100, minVal: -1000, maxVal: 1000 },
 
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
-            defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 }
+            defaultVal: 4, minVal: 0, maxVal: tMax / 1e-3 }
     };
     layout = [
         ['Channel Properties', ['m_gates', 'h_gates', 'E_rev_mV', 
@@ -41,32 +41,214 @@ window.addEventListener('load', function () {
     // simulate and plot a simple harmonic oscillator
     function runSimulation() {
 
-        var sho, result, t, x, v, 
-            phaseXAxis, phaseVAxis, phasePlot,
-            timeAxis, xAxis, vAxis, xPlot, vPlot,
-            plotPanel;
+        var params = controls.values, t, m_gates, h_gates, channel_open, V, I,
+            eventTimeFuncs = [], eventFuncs = [], 
+            t_next, t_event, nextEventFunc, done = false, i, j,
+            plotPanel, results, title;
 
-        // simulate the oscillator
-        sho = {
-            tMin: 0,
-            tMax: 100,
-            tMaxStep: 0.1,
-            drift: function (y, t) { return [y[1], -y[0]]; }, 
-            y0: [1, 0]
+        // set up the simulation
+        j = 0;
+        params = controls.values;
+        t = [0];
+        m_gates = [];
+        for (i = 0; i < params.m_gates; i += 1) {
+            m_gates[i] = [0];
+        }
+        h_gates = [];
+        for (i = 0; i < params.h_gates; i += 1) {
+            h_gates[i] = [1];
+        }
+        V = [params.V_hold_mV * 1e-3];
+        channel_open = [1];
+        for (i = 0; i < params.m_gates; i += 1) {
+            if (!m_gates[i][j]) {
+                channel_open[j] = 0;
+            }
+        }
+        for (i = 0; i < params.h_gates; i += 1) {
+            if (!h_gates[i][j]) {
+                channel_open[j] = 0;
+            }
+        }
+        I = [channel_open[j] * (V[j] - params.E_rev_mV * 1e-3) *
+            params.g_channel_pS * 1e-12];
+        
+        function alpha_m(V) {
+            return 0.1e6 * (-40e-3 - V) / 
+                (Math.exp((-40e-3 - V) / 10e-3) - 1);
+        }
+
+        function beta_m(V) {
+            return 4e6 * Math.exp((-65e-3 - V) / 18e-3);
+        }
+
+        function alpha_h(V) {
+            return 0.07e6 * Math.exp((-65e-3 - V) / 20e-3);
+        }
+
+        function beta_h(V) {
+            return 1e3 / 
+                (Math.exp((-35e-3 - V) / 10e-3) + 1);
+        }
+
+        // add the "end simulation" event
+        eventTimeFuncs.push(function (t) { 
+            return params.totalDuration_ms * 1e-3; 
+        });
+        eventFuncs.push(function (t) { 
+            done = true;
+        });
+        
+        // add the voltage step event
+        eventTimeFuncs.push(function (t) { 
+            if (t < params.t_step_ms * 1e-3) {
+                return params.t_step_ms * 1e-3;
+            } else {
+                return Infinity;
+            }
+        });
+        eventFuncs.push(function (t) { 
+            V[V.length - 1] = params.V_step_mV * 1e-3;
+        });
+
+        // add the activation gate change events
+        function eventTimeFuncM(i) {
+            return function (t) {
+                var rate;
+                if (m_gates[i][m_gates[i].length - 1]) {
+                    rate = beta_m(V[V.length - 1]);
+                } else {
+                    rate = alpha_m(V[V.length - 1]);
+                }
+                return -Math.log(Math.random()) / rate + t;
+            };
+        }
+        function eventFuncM(i) {
+            return function (t) {
+                if (m_gates[i][m_gates[i].length - 1]) {
+                    m_gates[i][m_gates[i].length - 1] = 0;
+                } else {
+                    m_gates[i][m_gates[i].length - 1] = 1;
+                }
+            };
+        }
+        for (i = 0; i < params.m_gates; i += 1) {
+            eventTimeFuncs.push(eventTimeFuncM(i));
+            eventFuncs.push(eventFuncM(i));
+        }
+
+        // add the inactivation gate change events
+        function eventTimeFuncH(i) {
+            return function (t) {
+                var rate;
+                if (h_gates[i][h_gates[i].length - 1]) {
+                    rate = beta_h(V[V.length - 1]);
+                } else {
+                    rate = alpha_h(V[V.length - 1]);
+                }
+                return -Math.log(Math.random()) / rate + t;
+            };
+        }
+        function eventFuncH(i) {
+            return function (t) {
+                if (h_gates[i][h_gates[i].length - 1]) {
+                    h_gates[i][h_gates[i].length - 1] = 0;
+                } else {
+                    h_gates[i][h_gates[i].length - 1] = 1;
+                }
+            };
+        }
+        for (i = 0; i < params.h_gates; i += 1) {
+            eventTimeFuncs.push(eventTimeFuncH(i));
+            eventFuncs.push(eventFuncH(i));
+        }
+
+
+        // simulate the channel
+        while (!done) {
+            t_next = Infinity;
+            for (i = 0; i < eventTimeFuncs.length; i += 1) {
+                t_event = eventTimeFuncs[i](t[j]);
+                if (t_event < t_next) {
+                    t_next = t_event;
+                    nextEventFunc = eventFuncs[i];
+                }
+            }
+
+            j += 2;
+            t[j - 1] = t_next;
+            t[j] = t_next;
+
+            for (i = 0; i < params.m_gates; i += 1) {
+                m_gates[i][j - 1] = m_gates[i][j - 2];
+                m_gates[i][j] = m_gates[i][j - 2];
+            }
+            for (i = 0; i < params.h_gates; i += 1) {
+                h_gates[i][j - 1] = h_gates[i][j - 2];
+                h_gates[i][j] = h_gates[i][j - 2];
+            }
+            V[j - 1] = V[j - 2];
+            V[j] = V[j - 2];
+   
+            nextEventFunc();
+   
+            channel_open[j - 1] = channel_open[j - 2];
+            channel_open[j] = 1;
+            for (i = 0; i < params.m_gates; i += 1) {
+                if (!m_gates[i][j]) {
+                    channel_open[j] = 0;
+                }
+            }
+            for (i = 0; i < params.h_gates; i += 1) {
+                if (!h_gates[i][j]) {
+                    channel_open[j] = 0;
+                }
+            }
+            I[j - 1] = I[j - 2];
+            I[j] = [channel_open[j] * (V[j] - params.E_rev_mV * 1e-3) *
+                params.g_channel_pS * 1e-12];
+        }
+        
+
+        // set up the results
+        results = {
+            t_ms: graph.linearAxis(0, 1e-3, 0, 1).mapWorldToDisplay(t),
+            I_pA: graph.linearAxis(0, 1e-12, 0, 1).mapWorldToDisplay(I),
+            m_gates: m_gates,
+            h_gates: h_gates,
+            V_mV: graph.linearAxis(0, 1e-3, 0, 1).mapWorldToDisplay(V)
         };
-        result = ode.integrate(sho);
-        t = result.t;
-        x = result.y[0];
-        v = result.y[1];
 
         // plot the results
         plotPanel = document.getElementById('SingleChannelPlots');
         plotPanel.innerHTML = '';
-        graph.graph(plotPanel, 400, 400, x, v);
+        
+        title = document.createElement('h3');
+        title.innerHTML = 'Channel current';
+        plotPanel.appendChild(title);
+        graph.graph(plotPanel, 400, 100, results.t_ms, results.I_pA);
+
+        title = document.createElement('h3');
+        title.innerHTML = 'Activation gates';
+        plotPanel.appendChild(title);
+        for (i = 0; i < results.m_gates.length; i += 1) {
+            graph.graph(plotPanel, 400, 100, results.t_ms, results.m_gates[i]);
+            plotPanel.appendChild(document.createElement('br'));
+        }
+
+        title = document.createElement('h3');
+        title.innerHTML = 'Inactivation gates';
+        plotPanel.appendChild(title);
+        for (i = 0; i < results.h_gates.length; i += 1) {
+            graph.graph(plotPanel, 400, 100, results.t_ms, results.h_gates[i]);
+            plotPanel.appendChild(document.createElement('br'));
+        }
+
+        title = document.createElement('h3');
+        title.innerHTML = 'Clamp potential';
+        plotPanel.appendChild(title);
+        graph.graph(plotPanel, 400, 100, results.t_ms, results.V_mV);
         plotPanel.appendChild(document.createElement('br'));
-        graph.graph(plotPanel, 400, 100, t, x);
-        plotPanel.appendChild(document.createElement('br'));
-        graph.graph(plotPanel, 400, 100, t, v);
     }
 
     function reset() {

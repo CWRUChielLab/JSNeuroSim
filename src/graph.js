@@ -281,10 +281,16 @@ graph.graph = function (panel, width, height, xs, ys) {
     minX = Math.min.apply(null, xs);
     maxX = Math.max.apply(null, xs);
     lengthX = maxX - minX;
+    if (lengthX === 0) {
+        lengthX = Math.abs(minX) * 1e-10 + 1e-30;
+    }
 
     minY = Math.min.apply(null, ys);
     maxY = Math.max.apply(null, ys);
     lengthY = maxY - minY;
+    if (lengthY === 0) {
+        lengthY = Math.abs(minY) * 1e-10 + 1e-30;
+    }
 
     xAxis = graph.linearAxis(minX - 0.05 * lengthX, maxX + 0.05 * lengthX, 
             25, width - 25);

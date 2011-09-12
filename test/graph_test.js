@@ -76,8 +76,8 @@ TestCase("PlotArea", {
         this.yAxis = graph.linearAxis(3, 9, 6, 18);
         this.plotArea = graph.plotArea(this.xAxis, this.yAxis, this.panel);
 
-        this.context = createStubbedObj(['save', 'restore', 'beginPath', 'rect', 
-            'moveTo', 'lineTo', 'stroke', 'clip', 'fillText']);
+        this.context = createStubbedObj(['save', 'restore', 'beginPath', 
+            'rect', 'moveTo', 'lineTo', 'stroke', 'clip', 'fillText']);
 
         this.plotSetup = [
             ['save', []],
@@ -446,6 +446,24 @@ TestCase("Graph", {
     "test world yAxis should have a 5% margin" : function() {
         assertClose(-3.7, this.graph.yAxis.worldMin(), 1e-4);
         assertClose(11.7, this.graph.yAxis.worldMax(), 1e-4);
+    },
+
+    "test world xAxis should always have a non-zero length" : function() {
+        var graph1 = graph.graph(this.panel, this.width, this.height, 
+            [1, 1], [0,1]),
+            graph2 = graph.graph(this.panel, this.width, this.height, 
+            [0, 0], [0,1]);
+        assertNotEquals(graph1.xAxis.worldMin(), graph1.xAxis.worldMax());
+        assertNotEquals(graph2.xAxis.worldMin(), graph2.xAxis.worldMax());
+    },
+
+    "test world yAxis should always have a non-zero length" : function() {
+        var graph1 = graph.graph(this.panel, this.width, this.height, 
+            [0, 1], [1,1]),
+            graph2 = graph.graph(this.panel, this.width, this.height, 
+            [0, 1], [0,0]);
+        assertNotEquals(graph1.yAxis.worldMin(), graph1.yAxis.worldMax());
+        assertNotEquals(graph2.yAxis.worldMin(), graph2.yAxis.worldMax());
     },
 
     "test display xAxis should have a 25 px margin" : function() {

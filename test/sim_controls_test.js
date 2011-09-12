@@ -5,7 +5,7 @@ TestCase("SimControls", {
                 defaultVal: 1, minVal: -10, maxVal: 10 }, 
             paramB: { label: "param B", units: 'm', 
                 defaultVal: 2, minVal: -20, maxVal: 20 }, 
-            paramC: { label: "param C", units: 'cm', 
+            paramC: { label: "param C", /* units: 'cm', */
                 defaultVal: 4, minVal: -40, maxVal: 40 }, 
             paramD: { label: "param D", units: 'mm', 
                 defaultVal: 8, minVal: -80, maxVal: 80 },
@@ -79,7 +79,7 @@ TestCase("SimControls", {
     'test units should be listed' : function () {
         assertEquals('km', this.unitsParamA.innerHTML);
         assertEquals('m', this.unitsParamB.innerHTML);
-        assertEquals('cm', this.unitsParamC.innerHTML);
+        assertEquals('', this.unitsParamC.innerHTML);
         assertEquals('mm', this.unitsParamD.innerHTML);
     },
 

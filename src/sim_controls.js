@@ -83,7 +83,9 @@ var simcontrols = (function () {
                 paramInputCell.appendChild(textBoxes[paramName]);
 
                 paramUnits = document.createElement('td');
-                paramUnits.innerHTML = params[paramName].units;
+                if (params[paramName].units) {
+                    paramUnits.innerHTML = params[paramName].units;
+                }
                 paramRow.appendChild(paramUnits);
 
                 errorLabels[paramName] = document.createElement('td');

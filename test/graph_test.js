@@ -162,14 +162,50 @@ TestCase("PlotArea", {
             yScreen = this.yAxis.mapWorldToDisplay(y),
             elements;
 
-        this.plotArea.addText(x, y, "abc");
+        this.plotArea.addText(x, y, 'abc');
         elements = this.getDrawingElements();
 
         assertEquals(1, elements.length);
         assertEquals('text', elements[0].tagName);
         assertEquals('' + xScreen, elements[0].x.animVal.getItem(0).value);
         assertEquals('' + yScreen, elements[0].y.animVal.getItem(0).value);
-        assertEquals("abc", elements[0].innerHTML);
+        assertEquals('abc', elements[0].childNodes[0].nodeValue);
+    },
+
+    "test addText should accept optional font size" : function() {
+        var x = 1, y = 7, elements;
+
+        this.plotArea.addText(x, y, "abc", { fontSize: 16 });
+        elements = this.getDrawingElements();
+
+        assertEquals('16', elements[0].getAttribute('font-size'));
+    },
+
+    "test addText should accept optional alignment strings" : function() {
+        var x = 1, y = 7, elements;
+
+        this.plotArea.addText(x, y, "abc", 
+                { hAlign: 'end', vAlign: 'top' });
+        elements = this.getDrawingElements();
+
+        assertEquals('end', elements[0].getAttribute('text-anchor'));
+        assertEquals('top', elements[0].getAttribute('dominant-baseline'));
+    },
+
+    "test addText should accept optional offset" : function() {
+        var x = 1,
+            y = 7,
+            xScreen = this.xAxis.mapWorldToDisplay(x),
+            yScreen = this.yAxis.mapWorldToDisplay(y),
+            elements;
+
+        this.plotArea.addText(x, y, 'abc', { offset: [5, 3] });
+        elements = this.getDrawingElements();
+
+        assertEquals('' + (xScreen + 5), 
+                elements[0].x.animVal.getItem(0).value);
+        assertEquals('' + (yScreen + 3), 
+                elements[0].y.animVal.getItem(0).value);
     },
 
     "test addPoints should add crosshairs to the svg" : function() {
@@ -242,9 +278,9 @@ TestCase("PlotArea", {
         elements = this.getDrawingElements();
 
         assertEquals(3, elements.length);
-        assertEquals('a', elements[0].innerHTML);
-        assertEquals('b', elements[1].innerHTML);
-        assertEquals('d', elements[2].innerHTML);
+        assertEquals('a', elements[0].childNodes[0].nodeValue);
+        assertEquals('b', elements[1].childNodes[0].nodeValue);
+        assertEquals('d', elements[2].childNodes[0].nodeValue);
     },
 
     "test should have proper setup" : function() {
@@ -397,14 +433,11 @@ TestCase("Graph", {
 
         this.oldPlotArea = graph.plotArea;
         graph.plotArea = function () {
-            return createStubbedObj(['addXYLine']);
+            return createStubbedObj(['addXYLine', 'addText']);
         }
 
         this.graph = graph.graph(this.panel, this.width, this.height, 
             this.xs, this.ys);
-
-        this.context = createStubbedObj(['save', 'restore', 'beginPath', 
-            'rect', 'moveTo', 'lineTo', 'stroke', 'clip', 'fillText']);
     },
 
     tearDown: function () {
@@ -466,19 +499,29 @@ TestCase("Graph", {
         assertNotEquals(graph2.yAxis.worldMin(), graph2.yAxis.worldMax());
     },
 
-    "test display xAxis should have a 25 px margin" : function() {
-        assertClose(25, this.graph.xAxis.displayMin(), 1e-4);
-        assertClose(this.width - 25, this.graph.xAxis.displayMax(), 1e-4);
+    "test display xAxis should have a 35 px, 5 px margin" : function() {
+        assertClose(35, this.graph.xAxis.displayMin(), 1e-4);
+        assertClose(this.width - 10, this.graph.xAxis.displayMax(), 1e-4);
     },
 
-    "test display yAxis should be flipped and have a 25 px margin" : 
+    "test display yAxis should be flipped and have a 5 px, 20 px margin" : 
             function() {
-        assertClose(this.height - 25, this.graph.yAxis.displayMin(), 1e-4);
-        assertClose(25, this.graph.yAxis.displayMax(), 1e-4);
+        assertClose(this.height - 20, this.graph.yAxis.displayMin(), 1e-4);
+        assertClose(5, this.graph.yAxis.displayMax(), 1e-4);
     },
 
     "test should plot XYLine for data" : function() {
         assertTrue(
             this.graph.plotArea.hasCall('addXYLine', [this.xs, this.ys]));
+    },
+
+    "test should plot Y axis range" : function() {
+        var options = { hAlign: 'end', vAlign: 'middle', fontSize: 11, 
+            offset: [-4, 0] };
+
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [1, 11, '11.00', options]));
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [1, -3, '-3.00', options]));
     }
 });

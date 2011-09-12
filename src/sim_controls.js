@@ -56,7 +56,7 @@ var simcontrols = (function () {
             section = document.createElement('div');
             element.appendChild(section);
 
-            heading = document.createElement('h3');
+            heading = document.createElement('h4');
             heading.innerHTML = layout[i][0];
             section.appendChild(heading);
 

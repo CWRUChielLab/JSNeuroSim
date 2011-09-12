@@ -64,9 +64,9 @@ TestCase("SimControls", {
         assertEquals('A Second Heading', this.heading1.innerHTML);
     },
 
-    'test headings should be h3 elements' : function () {
-        assertEquals('H3', this.heading0.tagName);
-        assertEquals('H3', this.heading1.tagName);
+    'test headings should be h4 elements' : function () {
+        assertEquals('H4', this.heading0.tagName);
+        assertEquals('H4', this.heading1.tagName);
     },
 
     'test units should be table data items' : function () {

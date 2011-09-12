@@ -144,16 +144,29 @@ graph.plotArea = function (xAxis, yAxis, svg) {
         return obj;
     }
 
-    function addText(x, y, text) {
-        var obj, elem;
+    function addText(x, y, text, options) {
+        var obj, elem, offset;
+        
+        options = options || {};
+        offset = options.offset || [0, 0];
         
         elem = document.createElementNS(svgns, 'text');
-        elem.setAttribute('x', xAxis.mapWorldToDisplay(x));
-        elem.setAttribute('y', yAxis.mapWorldToDisplay(y));
-        elem.innerHTML = text;
+        elem.setAttribute('x', xAxis.mapWorldToDisplay(x) + offset[0]);
+        elem.setAttribute('y', yAxis.mapWorldToDisplay(y) + offset[1]);
+        if (options.vAlign) {
+            elem.setAttribute('dominant-baseline', options.vAlign);
+        }
+        if (options.hAlign) {
+            elem.setAttribute('text-anchor', options.hAlign);
+        }
+        if (options.fontSize) {
+            elem.setAttribute('font-size', options.fontSize);
+        }
+
+        elem.appendChild(document.createTextNode(text));
         svg.appendChild(elem);
 
-        obj = [[elem], "text", x, y, text];
+        obj = [[elem], "text", x, y, text, options];
         graphObjects.push(obj);
 
         return obj;
@@ -293,12 +306,16 @@ graph.graph = function (panel, width, height, xs, ys) {
     }
 
     xAxis = graph.linearAxis(minX - 0.05 * lengthX, maxX + 0.05 * lengthX, 
-            25, width - 25);
+            35, width - 10);
     yAxis = graph.linearAxis(minY - 0.05 * lengthY, maxY + 0.05 * lengthY, 
-            height - 25, 25);
+            height - 20, 5);
     plotArea = graph.plotArea(xAxis, yAxis, svg);
 
     plotArea.addXYLine(xs, ys);
+    plotArea.addText(minX, minY, minY.toFixed(2), 
+        { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [-4, 0] });
+    plotArea.addText(minX, maxY, maxY.toFixed(2),
+        { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [-4, 0] });
 
     return {
         xAxis: xAxis,

@@ -384,6 +384,9 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         dragging = false;
         window.removeEventListener('mousemove', drag, false);
         window.removeEventListener('mouseup', endDrag, false);
+        window.removeEventListener('touchmove', drag, false);
+        window.removeEventListener('touchend', drag, false);
+        window.removeEventListener('touchcancel', drag, false);
         return updateCrosshairs(evt, false);
     }
 
@@ -391,11 +394,15 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         dragging = true;
         window.addEventListener('mousemove', drag, false);
         window.addEventListener('mouseup', endDrag, false);
+        window.addEventListener('touchmove', drag, false);
+        window.addEventListener('touchend', drag, false);
+        window.addEventListener('touchcancel', drag, false);
         evt.preventDefault();
         return updateCrosshairs(evt, true);
     }
 
     svg.addEventListener('mousedown', startDrag, false);
+    svg.addEventListener('touchstart', startDrag, false);
 
     return {
         xAxis: xAxis,

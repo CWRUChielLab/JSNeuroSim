@@ -656,5 +656,49 @@ TestCase("Graph", {
             + (y[2] - y[0]).toFixed(2) + ' bs)', 
             {hAlign: 'start', fontSize: 11, offset: [4, 10]} ]); 
         assertTrue(this.graph.plotArea.hasCall('remove', [oldLengthText])); 
+    },
+
+    simulateTouchEvent: function (type, x, y) {
+        var svg, screenX, screenY, clientX, clientY, svgRect, touches, evt;
+        svg = this.panel.childNodes[0].childNodes[0];
+        svgRect = svg.getBoundingClientRect();
+        clientX = x + svgRect.left;
+        clientY = y + svgRect.top;
+        screenX = clientX + window.screenX;
+        screenY = clientX + window.screenY;
+
+        touches = [{clientX: clientX, clientY: clientY, 
+            screenX: screenX, screenY: screenY, identifier: 1, 
+            pageX: screenX, pageY: screenY, target: svg}];
+
+        evt = document.createEvent("TouchEvent");
+        evt.initTouchEvent(type, true, true, window, 0, screenX, screenY,
+                clientX, clientY, false, false, false, false,
+                touches, touches, touches, 1, 0); 
+        svg.dispatchEvent(evt);
+        window.dispatchEvent(evt);
+    },
+
+    "ztest touching and dragging should create a measuring bar" : function () {
+        var xDisplay = [70, 80], 
+            yDisplay = [50, 42],
+            x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
+            y = this.graph.yAxis.mapDisplayToWorld(yDisplay);
+
+        this.simulateTouchEvent("touchstart", xDisplay[0], yDisplay[0]);        
+        this.simulateTouchEvent("touchmove", xDisplay[1], yDisplay[1]);        
+        assertTrue(this.graph.plotArea.hasCall('addPoints', [x, y])); 
+        assertTrue(this.graph.plotArea.hasCall('addXYLine', 
+            [[x[0], x[0], x[1]], [y[0], y[1], y[1]]])); 
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [x[1], y[1], '(' + x[1].toFixed(2) + ' as, ' 
+            + y[1].toFixed(2) + ' bs)', 
+            {hAlign: 'start', fontSize: 11, offset: [4, -2]} ])); 
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [x[1], y[1], 
+            '\u0394(' + (x[1] - x[0]).toFixed(2) + ' as, ' 
+            + (y[1] - y[0]).toFixed(2) + ' bs)', 
+            {hAlign: 'start', fontSize: 11, offset: [4, 10]} ])); 
     }
+
 });

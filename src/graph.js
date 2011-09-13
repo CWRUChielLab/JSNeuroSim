@@ -329,7 +329,12 @@ graph.graph = function (panel, width, height, xs, ys) {
     dragging = false;
 
     function updateCrosshairs(evt, isFirstPoint) {
-        var point, xDisplay, yDisplay, xWorld, yWorld;
+        var point, xDisplay, yDisplay, xWorld, yWorld, hAlign, xOffset;
+
+        plotArea.remove(crosshairs);
+        plotArea.remove(ruleLine);
+        plotArea.remove(positionText);
+        plotArea.remove(lengthText);
 
         point = evt.changedTouches ? evt.changedTouches[0] : evt;
         xDisplay = point.clientX - div.offsetLeft + window.pageXOffset;
@@ -342,10 +347,14 @@ graph.graph = function (panel, width, height, xs, ys) {
             yDragStart = yWorld;
         }
 
-        plotArea.remove(crosshairs);
-        plotArea.remove(ruleLine);
-        plotArea.remove(positionText);
-        plotArea.remove(lengthText);
+        if (xDragStart > xWorld) {
+            hAlign = 'end';
+            xOffset = -4;
+        }
+        else {
+            hAlign = 'start';
+            xOffset = 4;
+        }
 
         crosshairs = plotArea.addPoints([xDragStart, xWorld], 
                 [yDragStart, yWorld]);
@@ -353,11 +362,12 @@ graph.graph = function (panel, width, height, xs, ys) {
             [yDragStart, yWorld, yWorld]);
         positionText = plotArea.addText(xWorld, yWorld, 
             '(' + xWorld.toFixed(2) + ', ' + yWorld.toFixed(2) + ')',
-            {fontSize: 11, offset: [4, -2]});
+            {hAlign: hAlign, fontSize: 11, offset: [xOffset, -2]});
         lengthText = plotArea.addText(xWorld, yWorld, 
             '\u0394(' + (xWorld - xDragStart).toFixed(2) + ', ' 
             + (yWorld - yDragStart).toFixed(2) + ')',
-            {vAlign: 'text-before-edge', fontSize: 11, offset: [4, 0]});
+            {hAlign: hAlign, vAlign: 'text-before-edge', fontSize: 11, 
+                offset: [xOffset, 0]});
     }
 
     function startDrag(evt, element) {

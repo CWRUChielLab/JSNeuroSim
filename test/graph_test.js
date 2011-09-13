@@ -559,11 +559,11 @@ TestCase("Graph", {
         assertTrue(this.graph.plotArea.hasCall('addPoints', [x, y])); 
         assertTrue(this.graph.plotArea.hasCall('addText', 
             [x[1], y[1], '(' + x[1].toFixed(2) + ', ' + y[1].toFixed(2) + ')', 
-            {fontSize: 11, offset: [4, -2]} ])); 
+            {hAlign: 'start', fontSize: 11, offset: [4, -2]} ])); 
     },
 
     "test clicking and dragging should create a measuring bar" : function () {
-        var xDisplay = [70, 60], 
+        var xDisplay = [70, 80], 
             yDisplay = [50, 42],
             x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
             y = this.graph.yAxis.mapDisplayToWorld(yDisplay);
@@ -575,12 +575,32 @@ TestCase("Graph", {
             [[x[0], x[0], x[1]], [y[0], y[1], y[1]]])); 
         assertTrue(this.graph.plotArea.hasCall('addText', 
             [x[1], y[1], '(' + x[1].toFixed(2) + ', ' + y[1].toFixed(2) + ')', 
-            {fontSize: 11, offset: [4, -2]} ])); 
+            {hAlign: 'start', fontSize: 11, offset: [4, -2]} ])); 
         assertTrue(this.graph.plotArea.hasCall('addText', 
             [x[1], y[1], 
             '\u0394(' + (x[1] - x[0]).toFixed(2) + ', ' 
             + (y[1] - y[0]).toFixed(2) + ')', 
-            {vAlign: 'text-before-edge', fontSize: 11, offset: [4, 0]} ])); 
+            {hAlign: 'start', vAlign: 'text-before-edge', 
+                fontSize: 11, offset: [4, 0]} ])); 
+    },
+
+    "test clicking and dragging left should flip the text" : function () {
+        var xDisplay = [70, 60], 
+            yDisplay = [50, 42],
+            x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
+            y = this.graph.yAxis.mapDisplayToWorld(yDisplay);
+
+        this.simulateMouseEvent("mousedown", xDisplay[0], yDisplay[0]);        
+        this.simulateMouseEvent("mousemove", xDisplay[1], yDisplay[1]);        
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [x[1], y[1], '(' + x[1].toFixed(2) + ', ' + y[1].toFixed(2) + ')', 
+            {hAlign: 'end', fontSize: 11, offset: [-4, -2]} ])); 
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [x[1], y[1], 
+            '\u0394(' + (x[1] - x[0]).toFixed(2) + ', ' 
+            + (y[1] - y[0]).toFixed(2) + ')', 
+            {hAlign: 'end', vAlign: 'text-before-edge', 
+                fontSize: 11, offset: [-4, 0]} ])); 
     },
 
     "test cursor should remain after end of click" : function () {
@@ -611,7 +631,7 @@ TestCase("Graph", {
     },
 
     "test clicking again should remove old cursors" : function () {
-        var xDisplay = [70, 60, 23, 33], 
+        var xDisplay = [70, 80, 88, 33], 
             yDisplay = [50, 42, 17, 82],
             x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
             y = this.graph.yAxis.mapDisplayToWorld(yDisplay),
@@ -626,13 +646,14 @@ TestCase("Graph", {
         assertTrue(this.graph.plotArea.hasCall('remove', [oldAddPoints])); 
         oldPositionText = this.graph.plotArea.findCall('addText', 
             [x[2], y[2], '(' + x[2].toFixed(2) + ', ' + y[2].toFixed(2) + ')', 
-            {fontSize: 11, offset: [4, -2]} ]); 
+            {hAlign: 'start', fontSize: 11, offset: [4, -2]} ]); 
         assertTrue(this.graph.plotArea.hasCall('remove', [oldPositionText])); 
         oldLengthText = this.graph.plotArea.findCall('addText', 
-            [x[1], y[1], 
-            '\u0394(' + (x[1] - x[0]).toFixed(2) + ', ' 
-            + (y[1] - y[0]).toFixed(2) + ')', 
-            {vAlign: 'text-before-edge', fontSize: 11, offset: [4, 0]} ]); 
+            [x[2], y[2], 
+            '\u0394(' + (x[2] - x[0]).toFixed(2) + ', ' 
+            + (y[2] - y[0]).toFixed(2) + ')', 
+            {hAlign: 'start', vAlign: 'text-before-edge', fontSize: 11, 
+                offset: [4, 0]} ]); 
         assertTrue(this.graph.plotArea.hasCall('remove', [oldLengthText])); 
     }
 });

@@ -438,7 +438,7 @@ TestCase("Graph", {
         }
 
         this.graph = graph.graph(this.panel, this.width, this.height, 
-            this.xs, this.ys);
+            this.xs, this.ys, { xUnits: 'as', yUnits: 'bs' });
     },
 
     tearDown: function () {
@@ -558,7 +558,8 @@ TestCase("Graph", {
         this.simulateMouseEvent("mousedown", xDisplay[0], yDisplay[0]);        
         assertTrue(this.graph.plotArea.hasCall('addPoints', [x, y])); 
         assertTrue(this.graph.plotArea.hasCall('addText', 
-            [x[1], y[1], '(' + x[1].toFixed(2) + ', ' + y[1].toFixed(2) + ')', 
+            [x[1], y[1], '(' + x[1].toFixed(2) + ' as, '
+            + y[1].toFixed(2) + ' bs)', 
             {hAlign: 'start', fontSize: 11, offset: [4, -2]} ])); 
     },
 
@@ -574,12 +575,13 @@ TestCase("Graph", {
         assertTrue(this.graph.plotArea.hasCall('addXYLine', 
             [[x[0], x[0], x[1]], [y[0], y[1], y[1]]])); 
         assertTrue(this.graph.plotArea.hasCall('addText', 
-            [x[1], y[1], '(' + x[1].toFixed(2) + ', ' + y[1].toFixed(2) + ')', 
+            [x[1], y[1], '(' + x[1].toFixed(2) + ' as, ' 
+            + y[1].toFixed(2) + ' bs)', 
             {hAlign: 'start', fontSize: 11, offset: [4, -2]} ])); 
         assertTrue(this.graph.plotArea.hasCall('addText', 
             [x[1], y[1], 
-            '\u0394(' + (x[1] - x[0]).toFixed(2) + ', ' 
-            + (y[1] - y[0]).toFixed(2) + ')', 
+            '\u0394(' + (x[1] - x[0]).toFixed(2) + ' as, ' 
+            + (y[1] - y[0]).toFixed(2) + ' bs)', 
             {hAlign: 'start', vAlign: 'text-before-edge', 
                 fontSize: 11, offset: [4, 0]} ])); 
     },
@@ -593,12 +595,13 @@ TestCase("Graph", {
         this.simulateMouseEvent("mousedown", xDisplay[0], yDisplay[0]);        
         this.simulateMouseEvent("mousemove", xDisplay[1], yDisplay[1]);        
         assertTrue(this.graph.plotArea.hasCall('addText', 
-            [x[1], y[1], '(' + x[1].toFixed(2) + ', ' + y[1].toFixed(2) + ')', 
+            [x[1], y[1], '(' + x[1].toFixed(2) + ' as, ' 
+            + y[1].toFixed(2) + ' bs)', 
             {hAlign: 'end', fontSize: 11, offset: [-4, -2]} ])); 
         assertTrue(this.graph.plotArea.hasCall('addText', 
             [x[1], y[1], 
-            '\u0394(' + (x[1] - x[0]).toFixed(2) + ', ' 
-            + (y[1] - y[0]).toFixed(2) + ')', 
+            '\u0394(' + (x[1] - x[0]).toFixed(2) + ' as, ' 
+            + (y[1] - y[0]).toFixed(2) + ' bs)', 
             {hAlign: 'end', vAlign: 'text-before-edge', 
                 fontSize: 11, offset: [-4, 0]} ])); 
     },
@@ -645,13 +648,14 @@ TestCase("Graph", {
             [[x[0], x[2]], [y[0], y[2]]]); 
         assertTrue(this.graph.plotArea.hasCall('remove', [oldAddPoints])); 
         oldPositionText = this.graph.plotArea.findCall('addText', 
-            [x[2], y[2], '(' + x[2].toFixed(2) + ', ' + y[2].toFixed(2) + ')', 
+            [x[2], y[2], '(' + x[2].toFixed(2) + ' as, ' 
+            + y[2].toFixed(2) + ' bs)', 
             {hAlign: 'start', fontSize: 11, offset: [4, -2]} ]); 
         assertTrue(this.graph.plotArea.hasCall('remove', [oldPositionText])); 
         oldLengthText = this.graph.plotArea.findCall('addText', 
             [x[2], y[2], 
-            '\u0394(' + (x[2] - x[0]).toFixed(2) + ', ' 
-            + (y[2] - y[0]).toFixed(2) + ')', 
+            '\u0394(' + (x[2] - x[0]).toFixed(2) + ' as, ' 
+            + (y[2] - y[0]).toFixed(2) + ' bs)', 
             {hAlign: 'start', vAlign: 'text-before-edge', fontSize: 11, 
                 offset: [4, 0]} ]); 
         assertTrue(this.graph.plotArea.hasCall('remove', [oldLengthText])); 

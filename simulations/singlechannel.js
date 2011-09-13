@@ -226,26 +226,30 @@ window.addEventListener('load', function () {
         title = document.createElement('h4');
         title.innerHTML = 'Channel current (pA)';
         plotPanel.appendChild(title);
-        graph.graph(plotPanel, 400, 70, results.t_ms, results.I_pA);
+        graph.graph(plotPanel, 400, 70, results.t_ms, results.I_pA,
+            {xUnits: 'ms', yUnits: 'pA'});
 
         title = document.createElement('h4');
         title.innerHTML = 'Activation gates';
         plotPanel.appendChild(title);
         for (i = 0; i < results.m_gates.length; i += 1) {
-            graph.graph(plotPanel, 400, 70, results.t_ms, results.m_gates[i]);
+            graph.graph(plotPanel, 400, 70, results.t_ms, results.m_gates[i],
+                {xUnits: 'ms'});
         }
 
         title = document.createElement('h4');
         title.innerHTML = 'Inactivation gates';
         plotPanel.appendChild(title);
         for (i = 0; i < results.h_gates.length; i += 1) {
-            graph.graph(plotPanel, 400, 70, results.t_ms, results.h_gates[i]);
+            graph.graph(plotPanel, 400, 70, results.t_ms, results.h_gates[i],
+                {xUnits: 'ms'});
         }
 
         title = document.createElement('h4');
         title.innerHTML = 'Clamp potential (mV)';
         plotPanel.appendChild(title);
-        graph.graph(plotPanel, 400, 70, results.t_ms, results.V_mV);
+        graph.graph(plotPanel, 400, 70, results.t_ms, results.V_mV,
+            {xUnits: 'ms', yUnits: 'mV'});
     }
 
     function reset() {

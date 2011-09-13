@@ -279,7 +279,7 @@ graph.plotArea = function (xAxis, yAxis, svg) {
     };
 };
 
-graph.graph = function (panel, width, height, xs, ys) {
+graph.graph = function (panel, width, height, xs, ys, options) {
     "use strict";
     var svg, div, 
         plotArea, xAxis, yAxis, 
@@ -287,8 +287,13 @@ graph.graph = function (panel, width, height, xs, ys) {
         minY, maxY, lengthY,
         crosshairs, positionText, ruleLine, lengthText, 
         xDragStart, yDragStart,
-        dragging;
-   
+        dragging,
+        xUnits, yUnits;
+  
+    options = options || {};
+    xUnits = options.xUnits ? ' ' + options.xUnits : '';
+    yUnits = options.yUnits ? ' ' + options.yUnits : '';
+
     div = document.createElement('div'); 
     div.style.margin = 0;
     div.style.padding = 0;
@@ -361,11 +366,12 @@ graph.graph = function (panel, width, height, xs, ys) {
         ruleLine = plotArea.addXYLine([xDragStart, xDragStart, xWorld],
             [yDragStart, yWorld, yWorld]);
         positionText = plotArea.addText(xWorld, yWorld, 
-            '(' + xWorld.toFixed(2) + ', ' + yWorld.toFixed(2) + ')',
+            '(' + xWorld.toFixed(2) + xUnits + ', ' 
+            + yWorld.toFixed(2) + yUnits + ')',
             {hAlign: hAlign, fontSize: 11, offset: [xOffset, -2]});
         lengthText = plotArea.addText(xWorld, yWorld, 
-            '\u0394(' + (xWorld - xDragStart).toFixed(2) + ', ' 
-            + (yWorld - yDragStart).toFixed(2) + ')',
+            '\u0394(' + (xWorld - xDragStart).toFixed(2) + xUnits + ', ' 
+            + (yWorld - yDragStart).toFixed(2) + yUnits + ')',
             {hAlign: hAlign, vAlign: 'text-before-edge', fontSize: 11, 
                 offset: [xOffset, 0]});
     }

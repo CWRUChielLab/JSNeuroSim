@@ -433,7 +433,8 @@ TestCase("Graph", {
 
         this.oldPlotArea = graph.plotArea;
         graph.plotArea = function () {
-            return createStubbedObj(['addXYLine', 'addText', 'addPoints']);
+            return createStubbedObj(['addXYLine', 'addText', 'addPoints',
+                'remove']);
         }
 
         this.graph = graph.graph(this.panel, this.width, this.height, 
@@ -444,18 +445,20 @@ TestCase("Graph", {
         graph.plotArea = this.oldPlotArea;
     },
 
-    "test should create an svg" : function() {
+    "test should create an svg inside a div" : function() {
         assertEquals(1, this.panel.childNodes.length);
-        assertEquals('svg:svg', this.panel.childNodes[0].tagName);
+        assertEquals('DIV', this.panel.childNodes[0].tagName);
+        assertEquals(1, this.panel.childNodes[0].childNodes.length);
+        assertEquals('svg:svg', this.panel.childNodes[0].childNodes[0].tagName);
     },
 
     "test should use width and height of svg" : function() {
-        assertEquals(this.width, 
-            this.panel.childNodes[0].getAttribute('width'));
-        assertEquals(this.height, 
-            this.panel.childNodes[0].getAttribute('height'));
+        var svg = this.panel.childNodes[0].childNodes[0];
+
+        assertEquals(this.width, svg.getAttribute('width'));
+        assertEquals(this.height, svg.getAttribute('height'));
         assertEquals('0 0 ' + this.width + ' ' + this.height, 
-                this.panel.childNodes[0].getAttribute('viewBox'));
+                svg.getAttribute('viewBox'));
     },
 
     "test should expose axes" : function() {
@@ -504,10 +507,10 @@ TestCase("Graph", {
         assertClose(this.width - 10, this.graph.xAxis.displayMax(), 1e-4);
     },
 
-    "test display yAxis should be flipped and have a 5 px, 20 px margin" : 
+    "test display yAxis should be flipped and have a 10 px, 20 px margin" : 
             function() {
         assertClose(this.height - 20, this.graph.yAxis.displayMin(), 1e-4);
-        assertClose(5, this.graph.yAxis.displayMax(), 1e-4);
+        assertClose(10, this.graph.yAxis.displayMax(), 1e-4);
     },
 
     "test should plot XYLine for data" : function() {
@@ -527,7 +530,7 @@ TestCase("Graph", {
 
     simulateMouseEvent: function (type, x, y) {
         var svg, screenX, screenY, clientX, clientY, svgRect, evt;
-        svg = this.panel.childNodes[0];
+        svg = this.panel.childNodes[0].childNodes[0];
         svgRect = svg.getBoundingClientRect();
         clientX = x + svgRect.left;
         clientY = y + svgRect.top;
@@ -538,16 +541,98 @@ TestCase("Graph", {
         evt.initMouseEvent(type, true, true, window, 0, screenX, screenY,
                 clientX, clientY, false, false, false, false, 0, svg); 
         svg.dispatchEvent(evt);
+
+        evt = document.createEvent("MouseEvent");
+        evt.initMouseEvent(type, true, true, window, 0, screenX, screenY,
+                clientX, clientY, false, false, false, false, 0, window); 
+        window.dispatchEvent(evt);
     },
 
     "test clicking on the graph should add crosshairs at that point" : 
         function () {
-        var xDisplay = 70, 
-            yDisplay = 50,
+        var xDisplay = [70, 70], 
+            yDisplay = [50, 50],
             x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
             y = this.graph.yAxis.mapDisplayToWorld(yDisplay);
 
-        this.simulateMouseEvent("mousedown", xDisplay, yDisplay);        
-        assertTrue(this.graph.plotArea.hasCall('addPoints', [[x], [y]])); 
+        this.simulateMouseEvent("mousedown", xDisplay[0], yDisplay[0]);        
+        assertTrue(this.graph.plotArea.hasCall('addPoints', [x, y])); 
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [x[1], y[1], '(' + x[1].toFixed(2) + ', ' + y[1].toFixed(2) + ')', 
+            {fontSize: 11, offset: [4, -2]} ])); 
+    },
+
+    "test clicking and dragging should create a measuring bar" : function () {
+        var xDisplay = [70, 60], 
+            yDisplay = [50, 42],
+            x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
+            y = this.graph.yAxis.mapDisplayToWorld(yDisplay);
+
+        this.simulateMouseEvent("mousedown", xDisplay[0], yDisplay[0]);        
+        this.simulateMouseEvent("mousemove", xDisplay[1], yDisplay[1]);        
+        assertTrue(this.graph.plotArea.hasCall('addPoints', [x, y])); 
+        assertTrue(this.graph.plotArea.hasCall('addXYLine', 
+            [[x[0], x[0], x[1]], [y[0], y[1], y[1]]])); 
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [x[1], y[1], '(' + x[1].toFixed(2) + ', ' + y[1].toFixed(2) + ')', 
+            {fontSize: 11, offset: [4, -2]} ])); 
+        assertTrue(this.graph.plotArea.hasCall('addText', 
+            [x[1], y[1], 
+            '\u0394(' + (x[1] - x[0]).toFixed(2) + ', ' 
+            + (y[1] - y[0]).toFixed(2) + ')', 
+            {vAlign: 'text-before-edge', fontSize: 11, offset: [4, 0]} ])); 
+    },
+
+    "test cursor should remain after end of click" : function () {
+        var xDisplay = [70, 60, 23], 
+            yDisplay = [50, 42, 17],
+            x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
+            y = this.graph.yAxis.mapDisplayToWorld(yDisplay),
+            oldAddPoints;
+
+        this.simulateMouseEvent("mousedown", xDisplay[0], yDisplay[0]);        
+        this.simulateMouseEvent("mousemove", xDisplay[1], yDisplay[1]);        
+        this.simulateMouseEvent("mouseup", xDisplay[2], yDisplay[2]);        
+        oldAddPoints = this.graph.plotArea.findCall('addPoints', 
+            [[x[0], x[2]], [y[0], y[2]]]);
+        assertFalse(this.graph.plotArea.hasCall('remove', [oldAddPoints]));
+    },
+
+    "test mouse move without a mouse down should not create a cursor" 
+        : function () {
+        var xDisplay = [70, 60, 23], 
+            yDisplay = [50, 42, 17],
+            x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
+            y = this.graph.yAxis.mapDisplayToWorld(yDisplay);
+
+        this.simulateMouseEvent("mousemove", xDisplay[0], yDisplay[0]);        
+        this.simulateMouseEvent("mousemove", xDisplay[1], yDisplay[1]);        
+        assertFalse(this.graph.plotArea.hasCall('addPoints')); 
+    },
+
+    "test clicking again should remove old cursors" : function () {
+        var xDisplay = [70, 60, 23, 33], 
+            yDisplay = [50, 42, 17, 82],
+            x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
+            y = this.graph.yAxis.mapDisplayToWorld(yDisplay),
+            oldAddPoints, oldPositionText, oldLengthText;
+
+        this.simulateMouseEvent("mousedown", xDisplay[0], yDisplay[0]);        
+        this.simulateMouseEvent("mousemove", xDisplay[1], yDisplay[1]);        
+        this.simulateMouseEvent("mouseup", xDisplay[2], yDisplay[2]);        
+        this.simulateMouseEvent("mousedown", xDisplay[3], yDisplay[3]);        
+        oldAddPoints = this.graph.plotArea.findCall('addPoints', 
+            [[x[0], x[2]], [y[0], y[2]]]); 
+        assertTrue(this.graph.plotArea.hasCall('remove', [oldAddPoints])); 
+        oldPositionText = this.graph.plotArea.findCall('addText', 
+            [x[2], y[2], '(' + x[2].toFixed(2) + ', ' + y[2].toFixed(2) + ')', 
+            {fontSize: 11, offset: [4, -2]} ]); 
+        assertTrue(this.graph.plotArea.hasCall('remove', [oldPositionText])); 
+        oldLengthText = this.graph.plotArea.findCall('addText', 
+            [x[1], y[1], 
+            '\u0394(' + (x[1] - x[0]).toFixed(2) + ', ' 
+            + (y[1] - y[0]).toFixed(2) + ')', 
+            {vAlign: 'text-before-edge', fontSize: 11, offset: [4, 0]} ]); 
+        assertTrue(this.graph.plotArea.hasCall('remove', [oldLengthText])); 
     }
 });

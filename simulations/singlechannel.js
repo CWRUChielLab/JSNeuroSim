@@ -233,7 +233,6 @@ window.addEventListener('load', function () {
         plotPanel.appendChild(title);
         for (i = 0; i < results.m_gates.length; i += 1) {
             graph.graph(plotPanel, 400, 70, results.t_ms, results.m_gates[i]);
-            plotPanel.appendChild(document.createElement('br'));
         }
 
         title = document.createElement('h4');
@@ -241,14 +240,12 @@ window.addEventListener('load', function () {
         plotPanel.appendChild(title);
         for (i = 0; i < results.h_gates.length; i += 1) {
             graph.graph(plotPanel, 400, 70, results.t_ms, results.h_gates[i]);
-            plotPanel.appendChild(document.createElement('br'));
         }
 
         title = document.createElement('h4');
         title.innerHTML = 'Clamp potential (mV)';
         plotPanel.appendChild(title);
         graph.graph(plotPanel, 400, 70, results.t_ms, results.V_mV);
-        plotPanel.appendChild(document.createElement('br'));
     }
 
     function reset() {

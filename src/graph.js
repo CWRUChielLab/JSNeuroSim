@@ -281,16 +281,24 @@ graph.plotArea = function (xAxis, yAxis, svg) {
 
 graph.graph = function (panel, width, height, xs, ys) {
     "use strict";
-    var svg, plotArea, xAxis, yAxis, 
+    var svg, div, 
+        plotArea, xAxis, yAxis, 
         minX, maxX, lengthX, 
         minY, maxY, lengthY,
-        crosshairs;
-    
+        crosshairs, positionText, ruleLine, lengthText, 
+        xDragStart, yDragStart,
+        dragging;
+   
+    div = document.createElement('div'); 
+    div.style.margin = 0;
+    div.style.padding = 0;
+    panel.appendChild(div);
+
     svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg:svg');
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
     svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-    panel.appendChild(svg); 
+    div.appendChild(svg); 
 
     minX = Math.min.apply(null, xs);
     maxX = Math.max.apply(null, xs);
@@ -309,7 +317,7 @@ graph.graph = function (panel, width, height, xs, ys) {
     xAxis = graph.linearAxis(minX - 0.05 * lengthX, maxX + 0.05 * lengthX, 
             35, width - 10);
     yAxis = graph.linearAxis(minY - 0.05 * lengthY, maxY + 0.05 * lengthY, 
-            height - 20, 5);
+            height - 20, 10);
     plotArea = graph.plotArea(xAxis, yAxis, svg);
 
     plotArea.addXYLine(xs, ys);
@@ -318,19 +326,62 @@ graph.graph = function (panel, width, height, xs, ys) {
     plotArea.addText(minX, maxY, maxY.toFixed(2),
         { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [-4, 0] });
 
-    function updateCrosshairs(evt, element) {
+    dragging = false;
+
+    function updateCrosshairs(evt, isFirstPoint) {
         var point, xDisplay, yDisplay, xWorld, yWorld;
 
         point = evt.changedTouches ? evt.changedTouches[0] : evt;
-        xDisplay = point.clientX - svg.offsetLeft + window.pageXOffset;
-        yDisplay = point.clientY - svg.offsetTop + window.pageYOffset;
+        xDisplay = point.clientX - div.offsetLeft + window.pageXOffset;
+        yDisplay = point.clientY - div.offsetTop + window.pageYOffset;
         xWorld = xAxis.mapDisplayToWorld(xDisplay);
         yWorld = yAxis.mapDisplayToWorld(yDisplay);
 
-        crosshairs = plotArea.addPoints([xWorld], [yWorld]);
+        if (isFirstPoint) {
+            xDragStart = xWorld;
+            yDragStart = yWorld;
+        }
+
+        plotArea.remove(crosshairs);
+        plotArea.remove(ruleLine);
+        plotArea.remove(positionText);
+        plotArea.remove(lengthText);
+
+        crosshairs = plotArea.addPoints([xDragStart, xWorld], 
+                [yDragStart, yWorld]);
+        ruleLine = plotArea.addXYLine([xDragStart, xDragStart, xWorld],
+            [yDragStart, yWorld, yWorld]);
+        positionText = plotArea.addText(xWorld, yWorld, 
+            '(' + xWorld.toFixed(2) + ', ' + yWorld.toFixed(2) + ')',
+            {fontSize: 11, offset: [4, -2]});
+        lengthText = plotArea.addText(xWorld, yWorld, 
+            '\u0394(' + (xWorld - xDragStart).toFixed(2) + ', ' 
+            + (yWorld - yDragStart).toFixed(2) + ')',
+            {vAlign: 'text-before-edge', fontSize: 11, offset: [4, 0]});
     }
 
-    svg.addEventListener('mousedown', updateCrosshairs, false);
+    function startDrag(evt, element) {
+        dragging = true;
+        window.addEventListener('mousemove', drag, false);
+        window.addEventListener('mouseup', endDrag, false);
+        evt.preventDefault();
+        return updateCrosshairs(evt, true);
+    }
+
+    function drag(evt, element) {
+        evt.preventDefault();
+        return updateCrosshairs(evt, false);
+    }
+
+    function endDrag(evt, element) {
+        evt.preventDefault();
+        dragging = false;
+        window.removeEventListener('mousemove', drag, false);
+        window.removeEventListener('mouseup', endDrag, false);
+        return updateCrosshairs(evt, false);
+    }
+
+    svg.addEventListener('mousedown', startDrag, false);
 
     return {
         xAxis: xAxis,

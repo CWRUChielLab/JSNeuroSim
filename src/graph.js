@@ -376,7 +376,7 @@ graph.graph = function (panel, width, height, xs, ys, options) {
 
     function drag(evt, element) {
         evt.preventDefault();
-        return updateCrosshairs(evt, false);
+        updateCrosshairs(evt, false);
     }
 
     function endDrag(evt, element) {
@@ -387,7 +387,7 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         window.removeEventListener('touchmove', drag, false);
         window.removeEventListener('touchend', drag, false);
         window.removeEventListener('touchcancel', drag, false);
-        return updateCrosshairs(evt, false);
+        updateCrosshairs(evt, false);
     }
 
     function startDrag(evt, element) {
@@ -398,7 +398,7 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         window.addEventListener('touchend', drag, false);
         window.addEventListener('touchcancel', drag, false);
         evt.preventDefault();
-        return updateCrosshairs(evt, true);
+        updateCrosshairs(evt, true);
     }
 
     svg.addEventListener('mousedown', startDrag, false);

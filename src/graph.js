@@ -385,8 +385,8 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         window.removeEventListener('mousemove', drag, false);
         window.removeEventListener('mouseup', endDrag, false);
         window.removeEventListener('touchmove', drag, false);
-        window.removeEventListener('touchend', drag, false);
-        window.removeEventListener('touchcancel', drag, false);
+        window.removeEventListener('touchend', endDrag, false);
+        window.removeEventListener('touchcancel', endDrag, false);
         updateCrosshairs(evt, false);
     }
 
@@ -395,8 +395,8 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         window.addEventListener('mousemove', drag, false);
         window.addEventListener('mouseup', endDrag, false);
         window.addEventListener('touchmove', drag, false);
-        window.addEventListener('touchend', drag, false);
-        window.addEventListener('touchcancel', drag, false);
+        window.addEventListener('touchend', endDrag, false);
+        window.addEventListener('touchcancel', endDrag, false);
         evt.preventDefault();
         updateCrosshairs(evt, true);
     }

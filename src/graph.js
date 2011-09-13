@@ -371,8 +371,7 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         lengthText = plotArea.addText(xWorld, yWorld, 
             '\u0394(' + (xWorld - xDragStart).toFixed(2) + xUnits + ', ' 
             + (yWorld - yDragStart).toFixed(2) + yUnits + ')',
-            {hAlign: hAlign, vAlign: 'text-before-edge', fontSize: 11, 
-                offset: [xOffset, 0]});
+            {hAlign: hAlign, fontSize: 11, offset: [xOffset, 10]});
     }
 
     function drag(evt, element) {

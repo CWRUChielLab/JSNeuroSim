@@ -582,8 +582,7 @@ TestCase("Graph", {
             [x[1], y[1], 
             '\u0394(' + (x[1] - x[0]).toFixed(2) + ' as, ' 
             + (y[1] - y[0]).toFixed(2) + ' bs)', 
-            {hAlign: 'start', vAlign: 'text-before-edge', 
-                fontSize: 11, offset: [4, 0]} ])); 
+            {hAlign: 'start', fontSize: 11, offset: [4, 10]} ])); 
     },
 
     "test clicking and dragging left should flip the text" : function () {
@@ -602,8 +601,7 @@ TestCase("Graph", {
             [x[1], y[1], 
             '\u0394(' + (x[1] - x[0]).toFixed(2) + ' as, ' 
             + (y[1] - y[0]).toFixed(2) + ' bs)', 
-            {hAlign: 'end', vAlign: 'text-before-edge', 
-                fontSize: 11, offset: [-4, 0]} ])); 
+            {hAlign: 'end', fontSize: 11, offset: [-4, 10]} ])); 
     },
 
     "test cursor should remain after end of click" : function () {
@@ -656,8 +654,7 @@ TestCase("Graph", {
             [x[2], y[2], 
             '\u0394(' + (x[2] - x[0]).toFixed(2) + ' as, ' 
             + (y[2] - y[0]).toFixed(2) + ' bs)', 
-            {hAlign: 'start', vAlign: 'text-before-edge', fontSize: 11, 
-                offset: [4, 0]} ]); 
+            {hAlign: 'start', fontSize: 11, offset: [4, 10]} ]); 
         assertTrue(this.graph.plotArea.hasCall('remove', [oldLengthText])); 
     }
 });

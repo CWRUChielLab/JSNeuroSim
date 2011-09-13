@@ -147,8 +147,8 @@ TestCase("SimControls", {
     editValue: function (editBox, newValue) {
         // simulate a user change
         editBox.value = newValue;
-        var evt = document.createEvent("HTMLEvents");
-        evt.initEvent("change", true, true); // event type,bubbling,cancelable
+        var evt = document.createEvent("Event");
+        evt.initEvent("change", true, true); 
         editBox.dispatchEvent(evt);
     },
 

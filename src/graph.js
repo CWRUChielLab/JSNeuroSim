@@ -107,7 +107,7 @@ graph.plotArea = function (xAxis, yAxis, svg) {
 
     function addPoints(xs, ys) {
         var obj, elem, xDisplay, yDisplay, i, x, y,
-            lines = [], delta = 10; 
+            lines = [], delta = 5; 
          
         xDisplay = xAxis.mapWorldToDisplay(xs);
         yDisplay = yAxis.mapWorldToDisplay(ys);
@@ -283,7 +283,8 @@ graph.graph = function (panel, width, height, xs, ys) {
     "use strict";
     var svg, plotArea, xAxis, yAxis, 
         minX, maxX, lengthX, 
-        minY, maxY, lengthY;
+        minY, maxY, lengthY,
+        crosshairs;
     
     svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg:svg');
     svg.setAttribute('width', width);
@@ -316,6 +317,20 @@ graph.graph = function (panel, width, height, xs, ys) {
         { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [-4, 0] });
     plotArea.addText(minX, maxY, maxY.toFixed(2),
         { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [-4, 0] });
+
+    function updateCrosshairs(evt, element) {
+        var point, xDisplay, yDisplay, xWorld, yWorld;
+
+        point = evt.changedTouches ? evt.changedTouches[0] : evt;
+        xDisplay = point.clientX - svg.offsetLeft + window.pageXOffset;
+        yDisplay = point.clientY - svg.offsetTop + window.pageYOffset;
+        xWorld = xAxis.mapDisplayToWorld(xDisplay);
+        yWorld = yAxis.mapDisplayToWorld(yDisplay);
+
+        crosshairs = plotArea.addPoints([xWorld], [yWorld]);
+    }
+
+    svg.addEventListener('mousedown', updateCrosshairs, false);
 
     return {
         xAxis: xAxis,

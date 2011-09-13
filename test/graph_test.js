@@ -213,7 +213,7 @@ TestCase("PlotArea", {
             y = [7, 6.3, 8.1, NaN, 3.3],
             xScreen = this.xAxis.mapWorldToDisplay(x),
             yScreen = this.yAxis.mapWorldToDisplay(y),
-            delta = 10,
+            delta = 5,
             elements,
             i, validIndexes, xc, yc, line1, line2;
 
@@ -433,7 +433,7 @@ TestCase("Graph", {
 
         this.oldPlotArea = graph.plotArea;
         graph.plotArea = function () {
-            return createStubbedObj(['addXYLine', 'addText']);
+            return createStubbedObj(['addXYLine', 'addText', 'addPoints']);
         }
 
         this.graph = graph.graph(this.panel, this.width, this.height, 
@@ -523,5 +523,31 @@ TestCase("Graph", {
             [1, 11, '11.00', options]));
         assertTrue(this.graph.plotArea.hasCall('addText', 
             [1, -3, '-3.00', options]));
+    },
+
+    simulateMouseEvent: function (type, x, y) {
+        var svg, screenX, screenY, clientX, clientY, svgRect, evt;
+        svg = this.panel.childNodes[0];
+        svgRect = svg.getBoundingClientRect();
+        clientX = x + svgRect.left;
+        clientY = y + svgRect.top;
+        screenX = clientX + window.screenX;
+        screenY = clientX + window.screenY;
+
+        evt = document.createEvent("MouseEvent");
+        evt.initMouseEvent(type, true, true, window, 0, screenX, screenY,
+                clientX, clientY, false, false, false, false, 0, svg); 
+        svg.dispatchEvent(evt);
+    },
+
+    "test clicking on the graph should add crosshairs at that point" : 
+        function () {
+        var xDisplay = 70, 
+            yDisplay = 50,
+            x = this.graph.xAxis.mapDisplayToWorld(xDisplay),
+            y = this.graph.yAxis.mapDisplayToWorld(yDisplay);
+
+        this.simulateMouseEvent("mousedown", xDisplay, yDisplay);        
+        assertTrue(this.graph.plotArea.hasCall('addPoints', [[x], [y]])); 
     }
 });

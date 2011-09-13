@@ -355,8 +355,7 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         if (xDragStart > xWorld) {
             hAlign = 'end';
             xOffset = -4;
-        }
-        else {
+        } else {
             hAlign = 'start';
             xOffset = 4;
         }
@@ -376,14 +375,6 @@ graph.graph = function (panel, width, height, xs, ys, options) {
                 offset: [xOffset, 0]});
     }
 
-    function startDrag(evt, element) {
-        dragging = true;
-        window.addEventListener('mousemove', drag, false);
-        window.addEventListener('mouseup', endDrag, false);
-        evt.preventDefault();
-        return updateCrosshairs(evt, true);
-    }
-
     function drag(evt, element) {
         evt.preventDefault();
         return updateCrosshairs(evt, false);
@@ -395,6 +386,14 @@ graph.graph = function (panel, width, height, xs, ys, options) {
         window.removeEventListener('mousemove', drag, false);
         window.removeEventListener('mouseup', endDrag, false);
         return updateCrosshairs(evt, false);
+    }
+
+    function startDrag(evt, element) {
+        dragging = true;
+        window.addEventListener('mousemove', drag, false);
+        window.addEventListener('mouseup', endDrag, false);
+        evt.preventDefault();
+        return updateCrosshairs(evt, true);
     }
 
     svg.addEventListener('mousedown', startDrag, false);

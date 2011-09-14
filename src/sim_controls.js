@@ -54,10 +54,12 @@ var simcontrols = (function () {
         // create the controls
         for (i = 0; i < layout.length; i += 1) {
             section = document.createElement('div');
+            section.className = 'simparamsection';
             element.appendChild(section);
 
             heading = document.createElement('h4');
             heading.innerHTML = layout[i][0];
+            heading.className = 'simparamheading';
             section.appendChild(heading);
 
             paramTable = document.createElement('table');
@@ -71,6 +73,7 @@ var simcontrols = (function () {
                 
                 paramLabel = document.createElement('td');
                 paramLabel.innerHTML = params[paramName].label;
+                paramLabel.className = 'simparamlabel';
                 paramRow.appendChild(paramLabel);
                 
                 paramInputCell = document.createElement('td');
@@ -80,15 +83,18 @@ var simcontrols = (function () {
                 textBoxes[paramName].value = params[paramName].defaultVal;
                 textBoxes[paramName].addEventListener('change', 
                     textBoxChangeHandler(paramName), false);
+                textBoxes[paramName].className = 'simparaminput';
                 paramInputCell.appendChild(textBoxes[paramName]);
 
                 paramUnits = document.createElement('td');
                 if (params[paramName].units) {
                     paramUnits.innerHTML = params[paramName].units;
                 }
+                paramUnits.className = 'simparamunits';
                 paramRow.appendChild(paramUnits);
 
                 errorLabels[paramName] = document.createElement('td');
+                errorLabels[paramName].className = 'simparamerror';
                 paramRow.appendChild(errorLabels[paramName]);
             }
         }

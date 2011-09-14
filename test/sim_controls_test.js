@@ -59,6 +59,11 @@ TestCase("SimControls", {
         assertEquals(2, this.panel.childNodes.length);
     },
 
+    'test sections should have class simparamsection' : function () {
+        assertEquals('simparamsection', this.section0.className);
+        assertEquals('simparamsection', this.section1.className);
+    },
+
     'test headings should have proper text' : function () {
         assertEquals('A Heading', this.heading0.innerHTML);
         assertEquals('A Second Heading', this.heading1.innerHTML);
@@ -67,6 +72,11 @@ TestCase("SimControls", {
     'test headings should be h4 elements' : function () {
         assertEquals('H4', this.heading0.tagName);
         assertEquals('H4', this.heading1.tagName);
+    },
+
+    'test headings should have simparamheading class' : function () {
+        assertEquals('simparamheading', this.heading0.className);
+        assertEquals('simparamheading', this.heading1.className);
     },
 
     'test units should be table data items' : function () {
@@ -81,6 +91,13 @@ TestCase("SimControls", {
         assertEquals('m', this.unitsParamB.innerHTML);
         assertEquals('', this.unitsParamC.innerHTML);
         assertEquals('mm', this.unitsParamD.innerHTML);
+    },
+
+    'test row unitss should have class simparamunits' : function () {
+        assertEquals('simparamunits', this.unitsParamA.className);
+        assertEquals('simparamunits', this.unitsParamB.className);
+        assertEquals('simparamunits', this.unitsParamC.className);
+        assertEquals('simparamunits', this.unitsParamD.className);
     },
 
     'test second child of section should be a table of parameters' : 
@@ -110,11 +127,25 @@ TestCase("SimControls", {
         assertEquals('param D', this.labelParamD.innerHTML);
     },
 
+    'test row labels should have class simparamlabel' : function () {
+        assertEquals('simparamlabel', this.labelParamA.className);
+        assertEquals('simparamlabel', this.labelParamB.className);
+        assertEquals('simparamlabel', this.labelParamC.className);
+        assertEquals('simparamlabel', this.labelParamD.className);
+    },
+
     'test error messages should initially be empty' : function () {
         assertEquals('', this.errorParamA.innerHTML);
         assertEquals('', this.errorParamB.innerHTML);
         assertEquals('', this.errorParamC.innerHTML);
         assertEquals('', this.errorParamD.innerHTML);
+    },
+
+    'test row errors should have class simparamerror' : function () {
+        assertEquals('simparamerror', this.errorParamA.className);
+        assertEquals('simparamerror', this.errorParamB.className);
+        assertEquals('simparamerror', this.errorParamC.className);
+        assertEquals('simparamerror', this.errorParamD.className);
     },
 
     'test edit boxes should be input nodes inside td nodes' : function () {
@@ -127,6 +158,13 @@ TestCase("SimControls", {
         assertEquals('TD', this.editParamB.parentNode.tagName);
         assertEquals('TD', this.editParamC.parentNode.tagName);
         assertEquals('TD', this.editParamD.parentNode.tagName);
+    },
+
+    'test input boxes should have simparaminput class' : function () {
+        assertEquals('simparaminput', this.editParamA.className);
+        assertEquals('simparaminput', this.editParamB.className);
+        assertEquals('simparaminput', this.editParamC.className);
+        assertEquals('simparaminput', this.editParamD.className);
     },
 
     'test controls should start out with default values' : function () {
@@ -152,13 +190,15 @@ TestCase("SimControls", {
         editBox.dispatchEvent(evt);
     },
 
-    'test entering valid value should change value and clear error' : function () {
+    'test entering valid value should change value and clear error' 
+        : function () {
         this.editValue(this.editParamB, '1.25');
         assertSame(1.25, this.controls.values.paramB);
         assertEquals('', this.errorParamB.innerHTML);
     },
 
-    'test entering invalid value should use default and give error' : function () {
+    'test entering invalid value should use default and give error' 
+        : function () {
         this.editValue(this.editParamC, -123);
         assertSame(-40, this.controls.values.paramC);
         assertNotEquals('', this.errorParamC.innerHTML);

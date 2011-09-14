@@ -3,6 +3,7 @@
     <head>        
         <title>Single channel recording simulation</title>
         <meta charset="UTF-8" />
+        <link rel="stylesheet" href="simulations.css" type="text/css">
         <script src="../src/ode.js"></script>
         <script src="../src/graph.js"></script>
         <script src="../src/component_model.js"></script>
@@ -11,10 +12,9 @@
         <script src="singlechannel.js"></script>
     </head>
     <body>
-        <h1>Single channel recording simulation</h1>
-        <div id="SingleChannelPlots" 
-            style="float:right; border: 1px solid #000; padding: 10px;"></div><br/>
-        <div id="SingleChannelControls"></div>
+        <h1 class="simtitle">Single channel recording simulation</h1>
+        <div id="SingleChannelPlots" class="plotpanel"></div>
+        <div id="SingleChannelControls" class="controlspanel"></div>
         <input id="SingleChannelRunButton" type="button" value="Run"/>
         <input type="button" id="SingleChannelResetButton" value="Reset" />
     </body>

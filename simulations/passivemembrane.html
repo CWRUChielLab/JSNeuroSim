@@ -3,6 +3,7 @@
     <head>        
         <title>Passive membrane simulation</title>
         <meta charset="UTF-8" />
+        <link rel="stylesheet" href="simulations.css" type="text/css">
         <script src="../src/ode.js"></script>
         <script src="../src/graph.js"></script>
         <script src="../src/component_model.js"></script>
@@ -11,10 +12,10 @@
         <script src="passivemembrane.js"></script>
     </head>
     <body>
-        <h1>Passive membrane simulation</h1>
-        <canvas id="PassiveMembranePlot" width="500" height="350"></canvas><br/>
-        <div id="PassiveMembraneControls"></div>
-        <input type="button" id="PassiveMembraneRunButton" value="Run" />
-        <input type="button" id="PassiveMembraneResetButton" value="Reset" />
+        <h1 class="simtitle">Passive membrane simulation</h1>
+        <div id="PassiveMembranePlots" class="plotpanel"></div>
+        <div id="PassiveMembraneControls" class="controlspanel"></div>
+        <input id="PassiveMembraneRunButton" type="button" value="Run"/>
+        <input type="button" id="PassiveMembraneResetButton" value="Reset"/>
     </body>
 </html>

@@ -46,9 +46,9 @@ window.addEventListener('load', function () {
 
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
-        var canvas, context, model, passiveMembrane, pulseTrain,
-            result, t, v, t_ms, v_mV, params, vMin_mV, vMax_mV,
-            iStim_nA, iStimMin_nA, iStimMax_nA;
+        var model, passiveMembrane, pulseTrain,
+            result, t, v, t_ms, v_mV, params, iStim_nA,
+            plotPanel, title; 
         
         // create the passive membrane
         params = controls.values;
@@ -68,6 +68,7 @@ window.addEventListener('load', function () {
         });
         passiveMembrane.addCurrent(pulseTrain);
         
+
         // simulate it
         result = model.integrate({
             tMin: 0, 
@@ -83,44 +84,26 @@ window.addEventListener('load', function () {
       
         iStim_nA = t.map(function (t) {return pulseTrain([], t) / 1e-9; });
 
-        // get the drawing surface
-        canvas = document.getElementById('PassiveMembranePlot');
-        context = canvas.getContext('2d');
 
-        // clear the canvas
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        // set up axes for the plot
-        timeAxis = graph.linearAxis(t_ms[0], t_ms[t.length - 1], 0, 500);
-
-        vMin_mV = Math.min(-10, Math.min.apply(null, v_mV) - 2);
-        vMax_mV = Math.max(10, Math.max.apply(null, v_mV) + 2);
-        vAxis = graph.linearAxis(vMin_mV, vMax_mV, 200, 0);
-        vPlot = graph.plotArea(timeAxis, vAxis);
-
-        vPlot.addText(t_ms[0], vMin_mV, vMin_mV.toFixed(0) + ' mV');
-        vPlot.addText(t_ms[0], vMax_mV - 0.05 * (vMax_mV - vMin_mV), 
-            vMax_mV.toFixed(0) + ' mV');
-
-
-        iStimMin_nA = Math.min(-5, Math.min.apply(null, iStim_nA) - 2);
-        iStimMax_nA = Math.max(15, Math.max.apply(null, iStim_nA) + 2);
-        iStimAxis = graph.linearAxis(iStimMin_nA, iStimMax_nA, 350, 225);
-        iStimPlot = graph.plotArea(timeAxis, iStimAxis);
-
-        iStimPlot.addText(t_ms[0], iStimMin_nA, 
-            iStimMin_nA.toFixed(0) + ' nA');
-        iStimPlot.addText(t_ms[0], 
-            iStimMax_nA - 0.07 * (iStimMax_nA - iStimMin_nA), 
-            iStimMax_nA.toFixed(0) + ' nA');
-
-           
         // plot the results
-        vPlot.addXYLine(t_ms, v_mV);
-        vPlot.draw(context);
-        iStimPlot.addXYLine(t_ms, iStim_nA);
-        iStimPlot.draw(context);
+        plotPanel = document.getElementById('PassiveMembranePlots');
+        plotPanel.innerHTML = '';
+        
+        title = document.createElement('h4');
+        title.innerHTML = 'Membrane potential (mV)';
+        title.className = 'simplotheading';
+        plotPanel.appendChild(title);
+        graph.graph(plotPanel, 400, 150, t_ms, v_mV,
+            {xUnits: 'ms', yUnits: 'mV'});
+
+        title = document.createElement('h4');
+        title.innerHTML = 'Stimulation current (mV)';
+        title.className = 'simplotheading';
+        plotPanel.appendChild(title);
+        graph.graph(plotPanel, 400, 70, t_ms, iStim_nA,
+            {xUnits: 'ms', yUnits: 'nA'});
     }
+
     
     function reset() {
         panel.innerHTML = '';
@@ -128,13 +111,14 @@ window.addEventListener('load', function () {
         runSimulation();
     }
 
+
     (document.getElementById('PassiveMembraneRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('PassiveMembraneResetButton')
         .addEventListener('click', reset, false));
     
-    // make the enter key run the simulation (after a slight delay to allow
-    // the edit box to fire a change event first).  
+
+    // make the enter key run the simulation  
     panel.addEventListener('keydown',  
         function (evt, element) {
             if (evt.keyCode === 13) { // enter was pressed 
@@ -143,115 +127,6 @@ window.addEventListener('load', function () {
                 return false;
             }
         }, true);
-
-
-    function updateCrosshairs(evt, start) {
-        var canvas, context, xDisplay, yDisplay, xWorld, 
-            yWorld, yWorld2, canvasRect, point;
-
-
-        // clear the canvas
-        canvas = document.getElementById('PassiveMembranePlot');
-        context = canvas.getContext('2d');
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        // get rid of the old crosshairs
-        vPlot.remove(crosshairs);
-        vPlot.remove(crosshairText);
-        vPlot.remove(measureLine);
-        vPlot.remove(measureText);
-
-        // add new crosshairs
-        point = evt.changedTouches ? evt.changedTouches[0] : evt;
-        canvasRect = canvas.getBoundingClientRect();
-        xDisplay = point.clientX - canvasRect.left;
-        yDisplay = point.clientY - canvasRect.top;
-        xWorld = timeAxis.mapDisplayToWorld(xDisplay);
-        yWorld = vAxis.mapDisplayToWorld(yDisplay);
-        crosshairs = vPlot.addPoints([xWorld], [yWorld]);
-        crosshairText = vPlot.addText(xWorld + 0.01 * timeAxis.worldLength(), 
-                yWorld + 0.01 * vAxis.worldLength(),
-                "(" + xWorld.toFixed(2) + " ms, " 
-                + yWorld.toFixed(2) + " mV)");
-
-        if (start) {
-            xStart = xWorld;
-            yStart = yWorld;
-        }
-        measureLine = vPlot.addXYLine([xStart, xStart, xWorld], 
-            [yStart, yWorld, yWorld]);
-        if (xWorld === xStart && yWorld === yStart) {
-            measureText = null;
-        } else {
-            measureText = vPlot.addText(xWorld + 0.01 * timeAxis.worldLength(), 
-                yWorld - 0.05 * vAxis.worldLength(),
-                "\u0394 (" + (xWorld - xStart).toFixed(2) + " ms, " 
-                + (yWorld - yStart).toFixed(2) + " mV)");
-        }
-
-        // plot the results
-        vPlot.draw(context);
-
-
-        // get rid of the old crosshairs
-        iStimPlot.remove(crosshairs2);
-        iStimPlot.remove(crosshairText2);
-        iStimPlot.remove(measureLine2);
-        iStimPlot.remove(measureText2);
-
-        // add new crosshairs
-        yWorld2 = iStimAxis.mapDisplayToWorld(yDisplay);
-        crosshairs2 = iStimPlot.addPoints([xWorld], [yWorld2]);
-        crosshairText2 = iStimPlot.addText(xWorld + 0.01 * timeAxis.worldLength(), 
-                yWorld2 + 0.02 * iStimAxis.worldLength(),
-                "(" + xWorld.toFixed(2) + " ms, " 
-                + yWorld2.toFixed(2) + " nA)");
-
-        if (start) {
-            yStart2 = yWorld2;
-        }
-        measureLine2 = iStimPlot.addXYLine([xStart, xStart, xWorld], [yStart2, yWorld2, yWorld2]);
-        if (xWorld === xStart && yWorld2 === yStart2) {
-            measureText2 = null;
-        } else {
-            measureText2 = iStimPlot.addText(xWorld + 0.01 * timeAxis.worldLength(), 
-                yWorld2 - 0.06 * iStimAxis.worldLength(),
-                "\u0394 (" + (xWorld - xStart).toFixed(2) + " ms, " 
-                + (yWorld2 - yStart2).toFixed(2) + " nA)");
-        }
-
-        // plot the results
-        iStimPlot.draw(context);
-    }
-
-    function dragStart(evt, element) {
-        dragging = true;
-        updateCrosshairs(evt, true);
-        evt.preventDefault();
-    } 
-
-    function drag(evt, element) {
-        if (dragging) {
-            updateCrosshairs(evt);
-            evt.preventDefault();
-        }
-    } 
-
-    function dragEnd(evt, element) {
-        dragging = false;
-        evt.preventDefault();
-    } 
-    canvas = document.getElementById('PassiveMembranePlot');
-
-    (canvas.addEventListener('mousedown', dragStart, false));
-    (canvas.addEventListener('mousemove', drag, false));
-    (canvas.addEventListener('mouseup', dragEnd, false));
-    (canvas.addEventListener('mouseout', dragEnd, false));
-
-    (canvas.addEventListener('touchstart', dragStart, true));
-    (canvas.addEventListener('touchmove', drag, true));
-    (canvas.addEventListener('touchend', dragEnd, true));
-    (canvas.addEventListener('touchcancel', dragEnd, true));
 
     reset();
 

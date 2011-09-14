@@ -28,7 +28,8 @@ body
 {
     float:right; 
     border: 1px solid #000; 
-    padding: 15px;
+    padding-top: 10px;
+    padding-left: 15px;
 }
 
 .controlspanel
@@ -59,3 +60,8 @@ body
     margin-bottom: 0.5ex;
 }
 
+.simplotheading
+{
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}

@@ -225,7 +225,9 @@ TestCase("SimControls", {
 
 TestCase("SimControlsValidator", {
     setUp: function () {
-        this.param = { defaultVal: 2, minVal: -8, maxVal: 13, units: 'foozles' };
+        this.param = { 
+            defaultVal: 2, minVal: -8, maxVal: 13, units: 'foozles' 
+        };
     },
 
     'test should return valid values with no error' : function () {
@@ -244,6 +246,20 @@ TestCase("SimControlsValidator", {
         var result = simcontrols.defaultValidator(this.param, '-12');
         assertEquals(-8, result.value);
         assertEquals('Value too low; using minimum value of -8 foozles', result.error);
+    },
+
+    'test should skip units if none are given' : function () {
+        var result, parameters;
+
+        parameters = { 
+            defaultVal: 2, minVal: -8, maxVal: 13 
+        };
+
+        result = simcontrols.defaultValidator(parameters, '15');
+        
+        assertEquals(13, result.value);
+        assertEquals('Value too high; using maximum value of 13', 
+            result.error);
     },
 
     'test should return max value if greater than maxVal' : function () {

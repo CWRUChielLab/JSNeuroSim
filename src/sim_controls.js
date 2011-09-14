@@ -3,6 +3,8 @@ var simcontrols = (function () {
     "use strict";
 
     function defaultValidator(param, value) {
+        var units = param.units === undefined ? '' : ' ' + param.units;
+
         if (!isFinite(value)) {
             return { 
                 value: param.defaultVal, 
@@ -21,8 +23,7 @@ var simcontrols = (function () {
             return { 
                 value: param.maxVal, 
                 error: 'Value too high; using maximum value of '
-                    + String(param.maxVal) + ' '
-                    + param.units
+                    + String(param.maxVal) + units
             };
         } else {
             return { value: +value, error: '' };

@@ -6,7 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
     
-    var params, layout, panel, controls, tMax = 1000e-3; 
+    var params, layout, controlsPanel, controls, tMax = 1000e-3; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -35,7 +35,7 @@ window.addEventListener('load', function () {
         ['Voltage Clamp', ['V_hold_mV', 't_step_ms', 'V_step_mV']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
-    panel = document.getElementById('SingleChannelControls');
+    controlsPanel = document.getElementById('SingleChannelControls');
 
 
     // simulate and plot a simple harmonic oscillator
@@ -257,8 +257,8 @@ window.addEventListener('load', function () {
     }
 
     function reset() {
-        panel.innerHTML = '';
-        controls = simcontrols.controls(panel, params, layout);
+        controlsPanel.innerHTML = '';
+        controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
     }
 
@@ -268,7 +268,7 @@ window.addEventListener('load', function () {
         .addEventListener('click', reset, false));
     
     // make the enter key run the simulation  
-    panel.addEventListener('keydown',  
+    controlsPanel.addEventListener('keydown',  
         function (evt, element) {
             if (evt.keyCode === 13) { // enter was pressed 
                 controls.triggerRead();

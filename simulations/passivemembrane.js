@@ -6,14 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, panel, controls, tMax = 1000e-3, 
-        timeAxis, vAxis, vPlot, 
-        iStimAxis, iStimPlot, 
-        canvas, dragging,
-        crosshairs, crosshairText, 
-        xStart, yStart, measureLine, measureText, 
-        crosshairs2, crosshairText2,
-        xStart2, yStart2, measureLine2, measureText2;
+    var params, layout, controlsPanel, controls, tMax = 1000e-3; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -42,7 +35,7 @@ window.addEventListener('load', function () {
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
-    panel = document.getElementById('PassiveMembraneControls');
+    controlsPanel = document.getElementById('PassiveMembraneControls');
 
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
@@ -106,8 +99,8 @@ window.addEventListener('load', function () {
 
     
     function reset() {
-        panel.innerHTML = '';
-        controls = simcontrols.controls(panel, params, layout);
+        controlsPanel.innerHTML = '';
+        controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
     }
 
@@ -119,7 +112,7 @@ window.addEventListener('load', function () {
     
 
     // make the enter key run the simulation  
-    panel.addEventListener('keydown',  
+    controlsPanel.addEventListener('keydown',  
         function (evt, element) {
             if (evt.keyCode === 13) { // enter was pressed 
                 controls.triggerRead();

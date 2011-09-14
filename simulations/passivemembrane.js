@@ -93,14 +93,14 @@ window.addEventListener('load', function () {
         title.innerHTML = 'Membrane potential (mV)';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
-        graph.graph(plotPanel, 400, 150, t_ms, v_mV,
+        graph.graph(plotPanel, 425, 150, t_ms, v_mV,
             {xUnits: 'ms', yUnits: 'mV'});
 
         title = document.createElement('h4');
         title.innerHTML = 'Stimulation current (mV)';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
-        graph.graph(plotPanel, 400, 70, t_ms, iStim_nA,
+        graph.graph(plotPanel, 425, 70, t_ms, iStim_nA,
             {xUnits: 'ms', yUnits: 'nA'});
     }
 

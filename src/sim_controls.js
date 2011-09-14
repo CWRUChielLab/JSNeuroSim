@@ -9,15 +9,13 @@ var simcontrols = (function () {
             return { 
                 value: param.defaultVal, 
                 error: 'Unrecognized entry; using default of '
-                    + String(param.defaultVal) + ' '
-                    + param.units
+                    + String(param.defaultVal) + units
             };
         } else if (+value < param.minVal) {
             return { 
                 value: param.minVal, 
                 error: 'Value too low; using minimum value of '
-                    + String(param.minVal) + ' '
-                    + param.units
+                    + String(param.minVal) + units
             };
         } else if (+value > param.maxVal) {
             return { 

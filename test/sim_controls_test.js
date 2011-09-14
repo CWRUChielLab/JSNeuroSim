@@ -242,19 +242,22 @@ TestCase("SimControlsValidator", {
     'test should return default value if not a finite number' : function () {
         var result = simcontrols.defaultValidator(this.param, 'Infinity');
         assertEquals(2, result.value);
-        assertEquals('Unrecognized entry; using default of 2 foozles', result.error);
+        assertEquals('Unrecognized entry; using default of 2 foozles', 
+            result.error);
     },
 
     'test should return min value if less than minVal' : function () {
         var result = simcontrols.defaultValidator(this.param, '-12');
         assertEquals(-8, result.value);
-        assertEquals('Value too low; using minimum value of -8 foozles', result.error);
+        assertEquals('Value too low; using minimum value of -8 foozles', 
+            result.error);
     },
 
     'test should return max value if greater than maxVal' : function () {
         var result = simcontrols.defaultValidator(this.param, '15');
         assertEquals(13, result.value);
-        assertEquals('Value too high; using maximum value of 13 foozles', result.error);
+        assertEquals('Value too high; using maximum value of 13 foozles',
+            result.error);
     },
 
     'test should skip units if none are given' : function () {

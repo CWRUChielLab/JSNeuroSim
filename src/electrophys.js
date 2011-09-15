@@ -13,6 +13,156 @@ electrophys.passiveConductance = function (neuron, options) {
 };
 
 
+electrophys.hhKConductance = function (model, neuron, options) {
+    "use strict";
+
+    var g_K = options.g_K, E_K = options.E_K,
+        iN = model.addStateVar(1);
+
+    function drift(result, state, t) {
+        
+        var v = neuron.V(state, t);
+        
+        result[iN] = electrophys.hhKConductance.alpha_n(v) * (1 - state[iN]) -
+            electrophys.hhKConductance.beta_n(v) * state[iN];
+    }
+    model.registerDrift(drift);
+
+    neuron.addCurrent(function (state, t) {
+        return g_K * state[iN] * state[iN] * state[iN] * state[iN] * 
+            (E_K - neuron.V(state, t));
+    });
+
+    return {
+        n: function (state, t) { return state[iN]; },
+    };
+};
+
+
+electrophys.hhKConductance.alpha_n = function (V) {
+    "use strict";
+
+    var t_scale = 100, 
+        v0 = -55e-3, 
+        v_scale = 10e-3, 
+        x;
+    
+    x = (v0 - V) / v_scale;
+
+    if (Math.abs(x) < 1e-9) {
+        // avoid dividing by zero
+        return t_scale;
+    } else {
+        return t_scale * x / (Math.exp(x) - 1);
+    }
+};
+
+
+electrophys.hhKConductance.beta_n = function (V) {
+    "use strict";
+
+    var t_scale = 125, 
+        v0 = -65e-3, 
+        v_scale = 80e-3, 
+        x;
+    
+    x = (v0 - V) / v_scale;
+
+    return t_scale * Math.exp(x);
+};
+
+
+electrophys.hhNaConductance = function (model, neuron, options) {
+    "use strict";
+
+    var g_Na = options.g_Na, E_Na = options.E_Na,
+        alpha_h, beta_h, alpha_m, beta_m,
+        im = model.addStateVar(0),
+        ih = model.addStateVar(1);
+
+    function drift(result, state, t) {
+        var v = neuron.V(state, t);
+        
+        result[im] = electrophys.hhNaConductance.alpha_m(v) * (1 - state[im]) -
+            electrophys.hhNaConductance.beta_m(v) * state[im];
+        result[ih] = electrophys.hhNaConductance.alpha_h(v) * (1 - state[ih]) -
+            electrophys.hhNaConductance.beta_h(v) * state[ih];
+    }
+    model.registerDrift(drift);
+
+    neuron.addCurrent(function (state, t) {
+        return g_Na * state[im] * state[im] * state[im] * state[ih] * 
+            (E_Na - neuron.V(state, t));
+    });
+
+    return {
+        m: function (state, t) { return state[im]; },
+        h: function (state, t) { return state[ih]; }
+    };
+};
+
+
+electrophys.hhNaConductance.alpha_m = function (V) {
+    "use strict";
+
+    var t_scale = 1000, 
+        v0 = -40e-3, 
+        v_scale = 10e-3, 
+        x;
+    
+    x = (v0 - V) / v_scale;
+
+    if (Math.abs(x) < 1e-9) {
+        // avoid dividing by zero
+        return t_scale;
+    } else {
+        return t_scale * x / (Math.exp(x) - 1);
+    }
+};
+
+
+electrophys.hhNaConductance.beta_m = function (V) {
+    "use strict";
+
+    var t_scale = 4000, 
+        v0 = -65e-3, 
+        v_scale = 18e-3, 
+        x;
+    
+    x = (v0 - V) / v_scale;
+
+    return t_scale * Math.exp(x);
+};
+
+
+electrophys.hhNaConductance.alpha_h = function (V) {
+    "use strict";
+
+    var t_scale = 70, 
+        v0 = -65e-3, 
+        v_scale = 20e-3, 
+        x;
+    
+    x = (v0 - V) / v_scale;
+
+    return t_scale * Math.exp(x);
+};
+
+
+electrophys.hhNaConductance.beta_h = function (V) {
+    "use strict";
+
+    var t_scale = 1000, 
+        v0 = -35e-3, 
+        v_scale = 10e-3, 
+        x;
+    
+    x = (v0 - V) / v_scale;
+
+    return t_scale * (1.0 / (Math.exp(x) + 1));
+};
+
+
 electrophys.passiveMembrane = function (model, options) {
     "use strict";
     var C = options.C,

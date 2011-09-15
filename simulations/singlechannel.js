@@ -73,24 +73,6 @@ window.addEventListener('load', function () {
         I = [channel_open[j] * (V[j] - params.E_rev_mV * 1e-3) *
             params.g_channel_pS * 1e-12];
         
-        function alpha_m(V) {
-            return 0.1e6 * (-40e-3 - V) / 
-                (Math.exp((-40e-3 - V) / 10e-3) - 1);
-        }
-
-        function beta_m(V) {
-            return 4e6 * Math.exp((-65e-3 - V) / 18e-3);
-        }
-
-        function alpha_h(V) {
-            return 0.07e6 * Math.exp((-65e-3 - V) / 20e-3);
-        }
-
-        function beta_h(V) {
-            return 1e3 / 
-                (Math.exp((-35e-3 - V) / 10e-3) + 1);
-        }
-
         // add the "end simulation" event
         eventTimeFuncs.push(function (t) { 
             return params.totalDuration_ms * 1e-3; 
@@ -116,9 +98,9 @@ window.addEventListener('load', function () {
             return function (t) {
                 var rate;
                 if (m_gates[i][m_gates[i].length - 1]) {
-                    rate = beta_m(V[V.length - 1]);
+                    rate = electrophys.hhNaConductance.beta_m(V[V.length - 1]);
                 } else {
-                    rate = alpha_m(V[V.length - 1]);
+                    rate = electrophys.hhNaConductance.alpha_m(V[V.length - 1]);
                 }
                 return -Math.log(Math.random()) / rate + t;
             };
@@ -142,9 +124,9 @@ window.addEventListener('load', function () {
             return function (t) {
                 var rate;
                 if (h_gates[i][h_gates[i].length - 1]) {
-                    rate = beta_h(V[V.length - 1]);
+                    rate = electrophys.hhNaConductance.beta_h(V[V.length - 1]);
                 } else {
-                    rate = alpha_h(V[V.length - 1]);
+                    rate = electrophys.hhNaConductance.alpha_h(V[V.length - 1]);
                 }
                 return -Math.log(Math.random()) / rate + t;
             };

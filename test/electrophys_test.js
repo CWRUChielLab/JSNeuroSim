@@ -19,6 +19,145 @@ TestCase("PassiveConductance", {
 });
 
 
+TestCase("HHKConductance", {
+    setUp: function () {
+        this.model = componentModel.componentModel();
+        sinon.spy(this.model, "registerDrift");
+
+        this.neuron = {};
+        this.neuron.addCurrent = sinon.stub();
+        this.neuron.V = function (state, t) { return -30e-3; };
+
+        this.hhK = electrophys.hhKConductance(this.model, 
+            this.neuron, { g_K: 1e-6, E_K: -70e-3 });
+        this.drift = this.model.registerDrift.args[0][0];
+        this.current = this.neuron.addCurrent.args[0][0];
+    },
+
+    "test should have expected alpha_n" : function () {
+        assertClose(315.7187089473768, // hand calculation
+            electrophys.hhKConductance.alpha_n(-25e-3));
+        assertClose(100, // analytic limit for -55mV
+            electrophys.hhKConductance.alpha_n(-55.0000000000001e-3));
+        assertClose(100, // analytic limit for -55mV
+            electrophys.hhKConductance.alpha_n(-55e-3));
+    },
+
+    "test should have expected beta_n" : function () {
+        assertClose(110.31211282307443,
+            electrophys.hhKConductance.beta_n(-55e-3));
+    },
+
+    "test should have one state var" : function () {
+        assertEquals(1, this.model.numStateVars());
+    },
+
+    "test should set initial n to 1" : function () {
+        assertClose(1, this.hhK.n(this.model.initialValues(), 1));
+    },
+
+    "test should have expected drift" : function () {
+        var dy = Array(this.model.numStateVars()),
+            y0 = [0.2];
+        this.drift(dy, y0, 0.);
+        assertClose(
+            electrophys.hhKConductance.alpha_n(this.neuron.V()) * 
+            (1 - this.hhK.n(y0)) -
+            electrophys.hhKConductance.beta_n(this.neuron.V()) * 
+            this.hhK.n(y0),
+            this.hhK.n(dy, 0));
+    },
+    "test should have expected current" : function () {
+        var state = [0.2, 0.3];
+
+        var current = this.current(state, 3.14);
+
+        assertClose(-64e-12, 
+            current, 1e-9, 1e-24);
+    }
+});
+
+
+TestCase("HHNaConductance", {
+    setUp: function () {
+        this.model = componentModel.componentModel();
+        sinon.spy(this.model, "registerDrift");
+
+        this.neuron = {};
+        this.neuron.addCurrent = sinon.stub();
+        this.neuron.V = function (state, t) { return -30e-3; };
+
+        this.hhNa = electrophys.hhNaConductance(this.model, 
+            this.neuron, { g_Na: 1e-6, E_Na: -70e-3 });
+        this.drift = this.model.registerDrift.args[0][0];
+        this.current = this.neuron.addCurrent.args[0][0];
+    },
+
+    "test should have expected alpha_m" : function () {
+        assertClose(430.8253751833024, // hand calculation
+            electrophys.hhNaConductance.alpha_m(-55e-3));
+        assertClose(1000, // analytic limit for -40mV
+            electrophys.hhNaConductance.alpha_m(-40.00000000000001e-3));
+        assertClose(1000, // analytic limit for -40mV
+            electrophys.hhNaConductance.alpha_m(-40e-3));
+    },
+
+    "test should have expected beta_m" : function () {
+        assertClose(2295.013682949731, // hand calculation
+            electrophys.hhNaConductance.beta_m(-55e-3));
+    },
+
+    "test should have expected alpha_h" : function () {
+        assertClose(42.45714617988434, // hand calculation
+            electrophys.hhNaConductance.alpha_h(-55e-3));
+    },
+
+    "test should have expected beta_h" : function () {
+        assertClose(119.20292202211755, // hand calculation
+            electrophys.hhNaConductance.beta_h(-55e-3));
+    },
+
+    "test should have two state vars" : function () {
+        assertEquals(2, this.model.numStateVars());
+    },
+
+    "test should set initial m to 0" : function () {
+        assertClose(0, this.hhNa.m(this.model.initialValues(), 1));
+    },
+
+    "test should set initial h to 1" : function () {
+        assertClose(1, this.hhNa.h(this.model.initialValues(), 1));
+    },
+
+    "test should have expected drift" : function () {
+        var dy = Array(this.model.numStateVars()),
+            y0 = [0.2, 0.3];
+        this.drift(dy, y0, 0.);
+        assertClose(
+            electrophys.hhNaConductance.alpha_m(this.neuron.V()) * 
+            (1 - this.hhNa.m(y0)) -
+            electrophys.hhNaConductance.beta_m(this.neuron.V()) * 
+            this.hhNa.m(y0),
+            this.hhNa.m(dy, 0));
+        assertClose(
+            electrophys.hhNaConductance.alpha_h(this.neuron.V()) * 
+            (1 - this.hhNa.h(y0)) -
+            electrophys.hhNaConductance.beta_h(this.neuron.V()) * 
+            this.hhNa.h(y0),
+            this.hhNa.h(dy, 0));
+    },
+
+    "test should have expected current" : function () {
+        var state = [0.2, 0.3];
+
+        var current = this.current(state, 3.14);
+
+        assertClose(-96e-12, 
+            current, 1e-9, 1e-18);
+    }
+});
+
+
 TestCase("PassiveMembrane", {
     setUp: function () {
         this.model = componentModel.componentModel();

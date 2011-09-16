@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Current clamp simulation</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="simulations.css" type="text/css">
+        <script src="../src/ode.js"></script>
+        <script src="../src/graph.js"></script>
+        <script src="../src/component_model.js"></script>
+        <script src="../src/electrophys.js"></script>
+        <script src="../src/sim_controls.js"></script>
+        <script src="simple_currentclamp.js"></script>
+    </head>
+    <body>
+        <h1 class="simtitle">Current clamp simulation</h1>
+        <div id="CurrentClampPlots" class="plotpanel"></div>
+        <div id="CurrentClampControls" class="controlspanel"></div>
+        <input id="CurrentClampRunButton" type="button" value="Run"/>
+        <input type="button" id="CurrentClampResetButton" value="Reset"/>
+    </body>
+</html>

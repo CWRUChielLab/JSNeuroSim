@@ -163,6 +163,23 @@ electrophys.hhNaConductance.beta_h = function (V) {
 };
 
 
+electrophys.gapJunction = function (neuron1, neuron2, options) {
+    "use strict";
+    var g = options.g;
+
+    function current1(state, t) {
+        return g * (neuron2.V(state, t) - neuron1.V(state, t));
+    }
+
+    function current2(state, t) {
+        return g * (neuron1.V(state, t) - neuron2.V(state, t));
+    }
+
+    neuron1.addCurrent(current1);
+    neuron2.addCurrent(current2);
+};
+
+
 electrophys.passiveMembrane = function (model, options) {
     "use strict";
     var C = options.C,

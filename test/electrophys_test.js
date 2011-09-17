@@ -158,6 +158,30 @@ TestCase("HHNaConductance", {
 });
 
 
+TestCase("gapJunction", {
+    setUp: function () {
+        this.neuron1 = {};
+        this.neuron1.addCurrent = sinon.stub();
+        this.neuron1.V = function (state, t) { return -60e-3; };
+
+        this.neuron2 = {};
+        this.neuron2.addCurrent = sinon.stub();
+        this.neuron2.V = function (state, t) { return 20e-3; };
+
+        this.gapJunction = electrophys.gapJunction(
+            this.neuron1, this.neuron2, { g: 2e-6 }
+            );
+        this.current1 = this.neuron1.addCurrent.args[0][0];
+        this.current2 = this.neuron2.addCurrent.args[0][0];
+    },
+
+    "test should have expected current" : function () {
+        assertClose(160e-9, this.current1([], 3.14));
+        assertClose(-160e-9, this.current2([], 3.14));
+    }
+});
+
+
 TestCase("PassiveMembrane", {
     setUp: function () {
         this.model = componentModel.componentModel();

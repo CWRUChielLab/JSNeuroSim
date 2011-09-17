@@ -17,7 +17,7 @@ window.addEventListener('load', function () {
         E_leak_mV: { label: 'Leak potential', units: 'mV',
             defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
         g_Na_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 120., minVal: 0.01, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 120, minVal: 0.01, maxVal: 1000 }, 
         E_Na_mV: { label: 'Sodium Nernst potential', units: 'mV',
             defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
         g_K_uS: { label: 'Delayed rectifier potassium conductance', 

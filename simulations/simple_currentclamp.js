@@ -85,8 +85,9 @@ window.addEventListener('load', function () {
         prerun = model.integrate({
             tMin: 0, 
             tMax: 60e-3, 
-            tMaxStep: Math.min(1e-4, params.C_nF / 
-                (params.g_leak_uS + params.g_Na_uS + params.g_K_uS) * 1e-3) 
+            tMaxStep: 1e-4,
+            //tMaxStep: Math.min(1e-4, params.C_nF / 
+            //    (params.g_leak_uS + params.g_Na_uS + params.g_K_uS) * 1e-3) 
         });
         y0 = [];
         for (j = 0; j < prerun.y.length; j += 1) {
@@ -97,8 +98,9 @@ window.addEventListener('load', function () {
         result = model.integrate({
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
-            tMaxStep: Math.min(1e-4, params.C_nF / 
-                (params.g_leak_uS + params.g_Na_uS + params.g_K_uS) * 1e-3),
+            tMaxStep: 1e-4,
+            //tMaxStep: Math.min(1e-4, params.C_nF / 
+            //    (params.g_leak_uS + params.g_Na_uS + params.g_K_uS) * 1e-3),
             y0: y0
         });
         

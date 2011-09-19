@@ -97,6 +97,7 @@ TestCase("DriftIntegrate", {
             tMin: 0,
             tMax: 1,
             tMaxStep: 0.5,
+            tMinOutput: 0,
             drift: function () {},
             y0: [ 1, 2 ]
         });
@@ -105,7 +106,24 @@ TestCase("DriftIntegrate", {
         console.log(result.t);
         assertTrue(result.t[1] - result.t[0] < 0.1);
         assertTrue(result.t[2] - result.t[1] < 0.1);
+    },
+
+    "test integrate should output steps no closer than min output interval" 
+        : function() {
+        var result = ode.integrate({
+            tMin: 0,
+            tMax: 1,
+            tMaxStep: 0.1,
+            tMinOutput: 0.3,
+            drift: function () {},
+            y0: [ 1, 2 ]
+        });
+
+        assertTrue(result.t[1] - result.t[0] > 0.3);
+        assertTrue(result.t[2] - result.t[1] > 0.3);
+        assertTrue(result.t[3] - result.t[2] > 0.3);
     }
+
 });
 
 

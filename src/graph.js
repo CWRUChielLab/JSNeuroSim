@@ -305,15 +305,15 @@ graph.graph = function (panel, width, height, xs, ys, options) {
     svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
     div.appendChild(svg); 
 
-    minX = Math.min.apply(null, xs);
-    maxX = Math.max.apply(null, xs);
+    minX = xs.reduce(function (a, b) { return a < b ? a : b; });
+    maxX = xs.reduce(function (a, b) { return a > b ? a : b; });
     lengthX = maxX - minX;
     if (lengthX === 0) {
         lengthX = Math.abs(minX) * 1e-10 + 1e-30;
     }
 
-    minY = Math.min.apply(null, ys);
-    maxY = Math.max.apply(null, ys);
+    minY = ys.reduce(function (a, b) { return a < b ? a : b; });
+    maxY = ys.reduce(function (a, b) { return a > b ? a : b; });
     lengthY = maxY - minY;
     if (lengthY === 0) {
         lengthY = Math.abs(minY) * 1e-10 + 1e-30;

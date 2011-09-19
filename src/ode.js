@@ -54,17 +54,18 @@ ode.rk4Step = function (dy, y, t, dt) {
 ode.rk45Step = function (dy, y, t, dt) {
     "use strict";
     // Constants from Numerical recipes, 3ed, p 913
-    var c2 = 1/5, c3 = 3/10, c4 = 4/5, c5 = 8/9, c6 = 1, c7 = 1,
-        a21 = 1/5, 
-        a31 = 3/40, a32 = 9/40,
-        a41 = 44/45, a42 = -56/15, a43 = 32/9,
-        a51 = 19372/6561, a52 = -25360/2187, a53 = 64448/6561, a54 = -212/729,
-        a61 = 9017/3168, a62 = -355/33, a63 = 46732/5247, a64 = 49/176, 
-            a65 = -5103/18656,
-        a71 = 35/384, a73 = 500/1113, a74 = 125/192, a75 = -2187/6784, 
-            a76 = 11/84,
-        b1 = 5179/57600, b3 = 7571/16695, b4 = 393/640, 
-            b5 = -92097/339200, b6 = 187/2100, b7 = 1/40,
+    var c2 = 1 / 5, c3 = 3 / 10, c4 = 4 / 5, c5 = 8 / 9, c6 = 1, c7 = 1,
+        a21 = 1 / 5, 
+        a31 = 3 / 40, a32 = 9 / 40,
+        a41 = 44 / 45, a42 = -56 / 15, a43 = 32 / 9,
+        a51 = 19372 / 6561, a52 = -25360 / 2187, a53 = 64448 / 6561, 
+        a54 = -212 / 729,
+        a61 = 9017 / 3168, a62 = -355 / 33, a63 = 46732 / 5247, a64 = 49 / 176, 
+        a65 = -5103 / 18656,
+        a71 = 35 / 384, a73 = 500 / 1113, a74 = 125 / 192, a75 = -2187 / 6784, 
+        a76 = 11 / 84,
+        b1 = 5179 / 57600, b3 = 7571 / 16695, b4 = 393 / 640, 
+        b5 = -92097 / 339200, b6 = 187 / 2100, b7 = 1 / 40,
         k1, k2, k3, k4, k5, k6, k7,
         y2 = [], y3 = [], y4 = [], y5 = [], y6 = [], y7 = [], delta = [], 
         i, n;
@@ -116,15 +117,16 @@ ode.rk45Step = function (dy, y, t, dt) {
             b5 * k5[i] + b6 * k6[i] + b7 * k7[i]);
     }
     
-    return { y: y7, delta: delta }
+    return { y: y7, delta: delta };
 };
 
 
 ode.integrate = function (options) {
     "use strict";
-    var t = options.tMin, 
-        y = options.y0,
+    var t = options.tMin, y = options.y0,
         maxStep = options.tMaxStep || (options.tMax - options.tMin) / 1024,
+        tMinOutput = (options.tMinOutput !== undefined ? 
+            options.tMinOutput : maxStep / 8),
         yj,
         result = { t : [], y : [] },
         ndim = options.y0.length,
@@ -146,7 +148,7 @@ ode.integrate = function (options) {
                 -Math.min.apply(null, step.delta)
             );
 
-            h_new = 0.99 * h * Math.pow(atol/delta_max, 1/5);
+            h_new = 0.99 * h * Math.pow(atol / delta_max, 1 / 5);
 
             if (h_new > 10 * h) {                
                 h_new = 10 * h;
@@ -177,11 +179,13 @@ ode.integrate = function (options) {
             }
         }
 
-        result.t.push(t);
-        d = ndim;
-        while (d > 0) {        
-            d -= 1;
-            result.y[d].push(y[d]);
+        if (t - result.t[result.t.length - 1] >= tMinOutput) {
+            result.t.push(t);
+            d = ndim;
+            while (d > 0) {        
+                d -= 1;
+                result.y[d].push(y[d]);
+            }
         }
     }
 

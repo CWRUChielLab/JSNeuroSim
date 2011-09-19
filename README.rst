@@ -17,9 +17,11 @@ Several simulations can be found inside of the simulations directory, including:
 
  * A simulation of a passive cable.  
 
+We plan to add several more simulations by the end October of 2011.   
+
 There are also several components that may be useful for other projects:
 
- * An ODE integrator (using a 4-5th order Dormand-Prince embedded Runge-Kutta
+ * An ODE integrator (using a 4th-5th order Dormand-Prince embedded Runge-Kutta
    algorithm with variable step size) that supports instantaneous changes and 
    resets of state variables.  
 

@@ -2,26 +2,39 @@
 JSNeuroSim
 ==========
 
-This project will eventually contain a series of simulations in JavaScript
+This project contains a series of simulations in JavaScript
 that can be used to teach students about neurophysiology.  
 
-The code is still under construction, but it already contains a few components 
-that might be useful to others:
+Several simulations can be found inside of the simulations directory, including:
 
- * A basic ODE integrator (4th order Runge-Kutta, fixed step size) that 
-   supports instantaneous changes and resets of state variables.  
+ * A simulation of a patch clamp of a single sodium channel
+
+ * A simulation of a current clamp of a single compartment neuron with
+   Hodgekin and Huxley conductances.
+
+ * A simulation of a single compartment neuron with a passive membrane with 
+   leak channels.  
+
+ * A simulation of a passive cable.  
+
+There are also several components that may be useful for other projects:
+
+ * An ODE integrator (using a 4-5th order Dormand-Prince embedded Runge-Kutta
+   algorithm with variable step size) that supports instantaneous changes and 
+   resets of state variables.  
 
  * A wrapper around the ODE integrator for models composed of multiple 
    discrete components, for example neurons and synapses.  This allows you
    to build and test the components independently, and then combine them
    once they are working together.  
 
- * Simple components for a passive membrane, current pulse, integrate and fire
-   neuron, shunt current, and synapse (the latter three are based on the model
-   in CTMKF2007_).
+ * Simple components for a passive membrane, current pulse, Hodgekin and Huxley
+   sodium and potassium current, integrate and fire neuron, shunt current, and
+   synapse (the latter three are based on the model in CTMKF2007_).
 
 To see the current code at work, download the project and open 
-integration_tests/electrophys.html in a browser with JavaScript enabled.  
+one of the html files in the simulation folder in a browser with JavaScript 
+enabled.  
 
 .. [CTMKF2007] Calin-Jageman RJ, Tunstall MJ, Mensh BD, Katz PS, Frost WN.
    Parameter Space Analysis Suggests Multi-Site Plasticity Contributes to Motor

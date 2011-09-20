@@ -130,7 +130,7 @@ ode.integrate = function (options) {
         yj,
         result = { t : [], y : [] },
         ndim = options.y0.length,
-        d, h, h_new, step, atol = 1e-4, delta_max, i;
+        d, h, h_new, step, atol = 1e-5, delta_max, i;
     
     result.t.push(t);
     for (d = 0; d < ndim; d += 1) {        

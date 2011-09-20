@@ -16,8 +16,10 @@ electrophys.passiveConductance = function (neuron, options) {
 electrophys.hhKConductance = function (model, neuron, options) {
     "use strict";
 
-    var g_K = options.g_K, E_K = options.E_K,
-        iN = model.addStateVar(1);
+    var g_K = options.g_K, 
+        E_K = options.E_K,
+        V_rest = options.V_rest,
+        iN = model.addStateVar(electrophys.hhKConductance.n_infinity(V_rest));
 
     function drift(result, state, t) {
         
@@ -72,13 +74,34 @@ electrophys.hhKConductance.beta_n = function (V) {
 };
 
 
+electrophys.hhKConductance.n_infinity = function (V) {
+    "use strict";
+    
+    var alpha = electrophys.hhKConductance.alpha_n(V),
+        beta = electrophys.hhKConductance.beta_n(V);
+    
+    return alpha / (alpha + beta);
+};
+
+
+electrophys.hhKConductance.tau_n = function (V) {
+    "use strict";
+
+    var alpha = electrophys.hhKConductance.alpha_n(V),
+        beta = electrophys.hhKConductance.beta_n(V);
+    
+    return 1 / (alpha + beta);
+};
+
+
 electrophys.hhNaConductance = function (model, neuron, options) {
     "use strict";
 
     var g_Na = options.g_Na, E_Na = options.E_Na,
         alpha_h, beta_h, alpha_m, beta_m,
-        im = model.addStateVar(0),
-        ih = model.addStateVar(1);
+        V_rest = options.V_rest,
+        im = model.addStateVar(electrophys.hhNaConductance.m_infinity(V_rest)),
+        ih = model.addStateVar(electrophys.hhNaConductance.h_infinity(V_rest));
 
     function drift(result, state, t) {
         var v = neuron.V(state, t);
@@ -135,6 +158,26 @@ electrophys.hhNaConductance.beta_m = function (V) {
 };
 
 
+electrophys.hhNaConductance.m_infinity = function (V) {
+    "use strict";
+
+    var alpha = electrophys.hhNaConductance.alpha_m(V),
+        beta = electrophys.hhNaConductance.beta_m(V);
+    
+    return alpha / (alpha + beta);
+};
+
+
+electrophys.hhNaConductance.tau_m = function (V) {
+    "use strict";
+
+    var alpha = electrophys.hhNaConductance.alpha_m(V),
+        beta = electrophys.hhNaConductance.beta_m(V);
+    
+    return 1 / (alpha + beta);
+};
+
+
 electrophys.hhNaConductance.alpha_h = function (V) {
     "use strict";
 
@@ -163,6 +206,26 @@ electrophys.hhNaConductance.beta_h = function (V) {
 };
 
 
+electrophys.hhNaConductance.h_infinity = function (V) {
+    "use strict";
+
+    var alpha = electrophys.hhNaConductance.alpha_h(V),
+        beta = electrophys.hhNaConductance.beta_h(V);
+    
+    return alpha / (alpha + beta);
+};
+
+
+electrophys.hhNaConductance.tau_h = function (V) {
+    "use strict";
+
+    var alpha = electrophys.hhNaConductance.alpha_h(V),
+        beta = electrophys.hhNaConductance.beta_h(V);
+    
+    return 1 / (alpha + beta);
+};
+
+
 electrophys.gapJunction = function (neuron1, neuron2, options) {
     "use strict";
     var g = options.g;
@@ -185,9 +248,10 @@ electrophys.passiveMembrane = function (model, options) {
     var C = options.C,
         g_leak = options.g_leak,
         E_leak = options.E_leak,
+        V_rest = options.V_rest || E_leak,
         currents = [],
         leak,
-        iV = model.addStateVar(E_leak),
+        iV = model.addStateVar(V_rest),
         that = {};
     
     function addCurrent(I) {

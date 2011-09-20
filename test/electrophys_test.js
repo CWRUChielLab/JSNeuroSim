@@ -29,7 +29,7 @@ TestCase("HHKConductance", {
         this.neuron.V = function (state, t) { return -30e-3; };
 
         this.hhK = electrophys.hhKConductance(this.model, 
-            this.neuron, { g_K: 1e-6, E_K: -70e-3 });
+            this.neuron, { g_K: 1e-6, E_K: -70e-3, V_rest: -60e-3 });
         this.drift = this.model.registerDrift.args[0][0];
         this.current = this.neuron.addCurrent.args[0][0];
     },
@@ -48,12 +48,31 @@ TestCase("HHKConductance", {
             electrophys.hhKConductance.beta_n(-55e-3));
     },
 
+    "test should have expected n_infinity" : function () {
+        var c = electrophys.hhKConductance, 
+            v = -44e-3;
+        assertClose(c.alpha_n(v) / (c.alpha_n(v) + c.beta_n(v)),
+            c.n_infinity(v));
+    },
+
+    "test should have expected tau_n" : function () {
+        var c = electrophys.hhKConductance, 
+            v = -44e-3;
+        assertClose(1 / (c.alpha_n(v) + c.beta_n(v)), c.tau_n(v));
+    },
+
     "test should have one state var" : function () {
         assertEquals(1, this.model.numStateVars());
     },
 
-    "test should set initial n to 1" : function () {
-        assertClose(1, this.hhK.n(this.model.initialValues(), 1));
+    "test should set initial n to n_infinity" : function () {
+        assertClose(electrophys.hhKConductance.n_infinity(-60e-3), 
+            this.hhK.n(this.model.initialValues(), 1));
+    },
+
+    "test should set initial n to n_infinity" : function () {
+        assertClose(electrophys.hhKConductance.n_infinity(-60e-3), 
+            this.hhK.n(this.model.initialValues(), 1));
     },
 
     "test should have expected drift" : function () {
@@ -88,7 +107,7 @@ TestCase("HHNaConductance", {
         this.neuron.V = function (state, t) { return -30e-3; };
 
         this.hhNa = electrophys.hhNaConductance(this.model, 
-            this.neuron, { g_Na: 1e-6, E_Na: -70e-3 });
+            this.neuron, { g_Na: 1e-6, E_Na: -70e-3, V_rest: -60e-3 });
         this.drift = this.model.registerDrift.args[0][0];
         this.current = this.neuron.addCurrent.args[0][0];
     },
@@ -107,6 +126,19 @@ TestCase("HHNaConductance", {
             electrophys.hhNaConductance.beta_m(-55e-3));
     },
 
+    "test should have expected m_infinity" : function () {
+        var c = electrophys.hhNaConductance, 
+            v = -44e-3;
+        assertClose(c.alpha_m(v) / (c.alpha_m(v) + c.beta_m(v)),
+            c.m_infinity(v));
+    },
+
+    "test should have expected tau_m" : function () {
+        var c = electrophys.hhNaConductance, 
+            v = -44e-3;
+        assertClose(1 / (c.alpha_m(v) + c.beta_m(v)), c.tau_m(v));
+    },
+
     "test should have expected alpha_h" : function () {
         assertClose(42.45714617988434, // hand calculation
             electrophys.hhNaConductance.alpha_h(-55e-3));
@@ -117,16 +149,31 @@ TestCase("HHNaConductance", {
             electrophys.hhNaConductance.beta_h(-55e-3));
     },
 
+    "test should have expected h_infinity" : function () {
+        var c = electrophys.hhNaConductance, 
+            v = -44e-3;
+        assertClose(c.alpha_h(v) / (c.alpha_h(v) + c.beta_h(v)),
+            c.h_infinity(v));
+    },
+
+    "test should have expected tau_h" : function () {
+        var c = electrophys.hhNaConductance, 
+            v = -44e-3;
+        assertClose(1 / (c.alpha_h(v) + c.beta_h(v)), c.tau_h(v));
+    },
+
     "test should have two state vars" : function () {
         assertEquals(2, this.model.numStateVars());
     },
 
-    "test should set initial m to 0" : function () {
-        assertClose(0, this.hhNa.m(this.model.initialValues(), 1));
+    "test should set initial m to m_infinity" : function () {
+        assertClose(electrophys.hhNaConductance.m_infinity(-60e-3), 
+            this.hhNa.m(this.model.initialValues(), 1));
     },
 
-    "test should set initial h to 1" : function () {
-        assertClose(1, this.hhNa.h(this.model.initialValues(), 1));
+    "test should set initial h to h_infinity" : function () {
+        assertClose(electrophys.hhNaConductance.h_infinity(-60e-3), 
+            this.hhNa.h(this.model.initialValues(), 1));
     },
 
     "test should have expected drift" : function () {
@@ -197,7 +244,15 @@ TestCase("PassiveMembrane", {
     },
 
     "test should set initial condition to be leak potential" : function () {
-        assertEquals(-65e-3, this.passiveMembrane.V(this.model.initialValues(), 0));
+        assertEquals(-65e-3, 
+            this.passiveMembrane.V(this.model.initialValues(), 0));
+    },
+
+    "test if V_rest is given, should set initial condition to be V_rest" : 
+        function () {
+        var passiveMembrane = electrophys.passiveMembrane(this.model, 
+            { C: 2e-9, g_leak: 50e-9, E_leak: -65e-3, V_rest: -120e-3 });
+        assertEquals(-120e-3, passiveMembrane.V(this.model.initialValues(), 0));
     },
 
     "test should have expected drift" : function () {

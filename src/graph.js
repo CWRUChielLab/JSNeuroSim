@@ -284,7 +284,7 @@ graph.graph = function (panel, width, height, xs, ys, options) {
     var svg, div, 
         plotArea, xAxis, yAxis, 
         minX, maxX, lengthX, 
-        minY, maxY, lengthY,
+        minY, maxY, lengthY, yPeak, yTrough,
         crosshairs, positionText, ruleLine, lengthText, 
         xDragStart, yDragStart,
         dragging,
@@ -305,31 +305,41 @@ graph.graph = function (panel, width, height, xs, ys, options) {
     svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
     div.appendChild(svg); 
 
-    minX = xs.reduce(function (a, b) { return a < b ? a : b; });
-    maxX = xs.reduce(function (a, b) { return a > b ? a : b; });
-    lengthX = maxX - minX;
-    if (lengthX === 0) {
-        lengthX = Math.abs(minX) * 1e-10 + 1e-30;
+    if (options.xMin !== undefined && options.xMax != undefined) {
+        minX = options.xMin;
+        maxX = options.xMax;
+    } else {
+        minX = xs.reduce(function (a, b) { return a < b ? a : b; });
+        maxX = xs.reduce(function (a, b) { return a > b ? a : b; });
+        lengthX = maxX - minX;
+
+        if (lengthX === 0) {
+            lengthX = Math.abs(minX) * 1e-10 + 1e-30;
+        }
+        
+        minX -= 0.02 * lengthX;
+        maxX += 0.02 * lengthX;
     }
 
-    minY = ys.reduce(function (a, b) { return a < b ? a : b; });
-    maxY = ys.reduce(function (a, b) { return a > b ? a : b; });
+
+    yTrough = minY = ys.reduce(function (a, b) { return a < b ? a : b; });
+    yPeak = maxY = ys.reduce(function (a, b) { return a > b ? a : b; });
     lengthY = maxY - minY;
     if (lengthY === 0) {
         lengthY = Math.abs(minY) * 1e-10 + 1e-30;
     }
+    minY -= 0.05 * lengthY;
+    maxY += 0.05 * lengthY;
 
-    xAxis = graph.linearAxis(minX - 0.05 * lengthX, maxX + 0.05 * lengthX, 
-            35, width - 10);
-    yAxis = graph.linearAxis(minY - 0.05 * lengthY, maxY + 0.05 * lengthY, 
-            height - 20, 10);
+    xAxis = graph.linearAxis(minX, maxX, 45, width - 10);
+    yAxis = graph.linearAxis(minY, maxY, height - 20, 10);
     plotArea = graph.plotArea(xAxis, yAxis, svg);
 
     plotArea.addXYLine(xs, ys);
-    plotArea.addText(minX, minY, minY.toFixed(2), 
-        { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [-4, 0] });
-    plotArea.addText(minX, maxY, maxY.toFixed(2),
-        { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [-4, 0] });
+    plotArea.addText(minX, yTrough, yTrough.toFixed(2), 
+        { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [0, 0] });
+    plotArea.addText(minX, yPeak, yPeak.toFixed(2),
+        { hAlign: 'end', vAlign: 'middle', fontSize: 11, offset: [0, 0] });
 
     dragging = false;
 

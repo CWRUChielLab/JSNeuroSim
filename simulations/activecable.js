@@ -6,7 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3; 
+    var params, layout, controlsPanel, controls, tMax = 1000e-3, 
+        currentRunNumber = 0; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -69,8 +70,9 @@ window.addEventListener('load', function () {
             r_intersegment, 
             numCapSegments, cappingFactor, prevSegment,
             factor,
-            V_rest = -73e-3,
-            startTime = new Date().getTime();
+            V_rest = -73.25e-3,
+            startTime = new Date().getTime(),
+            t0, y0, runNumber;
        
         params = controls.values;
 
@@ -118,50 +120,6 @@ window.addEventListener('load', function () {
                 });
         }
 
-        // add a cap with segments of exponentially increasing lengths
-        /*
-        prevSegment = passiveMembranes[0]; 
-        factor = cappingFactor; 
-        for (i = 0; i < numCapSegments; i += 1) {
-            passiveMembranes[passiveMembranes.length] = 
-                electrophys.passiveMembrane(model, {
-                    C: params.C_uF_p_cm2 * surfaceArea_cm2 * factor * 1e-6, 
-                    g_leak: params.g_leak_mS_p_cm2 * surfaceArea_cm2 * 
-                        factor * 1e-3, 
-                    E_leak: params.E_leak_mV * 1e-3 
-                });
-
-            electrophys.gapJunction(prevSegment, 
-                passiveMembranes[passiveMembranes.length - 1], { 
-                    g: 1 / (r_intersegment * factor * 
-                        (1 + 1 / cappingFactor) / 2)
-                });
-
-            prevSegment = passiveMembranes[passiveMembranes.length - 1]; 
-            factor *= cappingFactor; 
-        }
-        prevSegment = passiveMembranes[params.numCompartments - 1]; 
-        factor = cappingFactor; 
-        for (i = 0; i < numCapSegments; i += 1) {
-            passiveMembranes[passiveMembranes.length] = 
-                electrophys.passiveMembrane(model, {
-                    C: params.C_uF_p_cm2 * surfaceArea_cm2 * factor * 1e-6, 
-                    g_leak: params.g_leak_mS_p_cm2 * surfaceArea_cm2 * 
-                        factor * 1e-3, 
-                    E_leak: params.E_leak_mV * 1e-3 
-                });
-
-            electrophys.gapJunction(prevSegment, 
-                passiveMembranes[passiveMembranes.length - 1], { 
-                    g: 1 / (r_intersegment * factor * 
-                        (1 + 1 / cappingFactor) / 2)
-                });
-
-            prevSegment = passiveMembranes[passiveMembranes.length - 1]; 
-            factor *= cappingFactor; 
-        }
-        */
-        
 
         pulseTrain = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms, 
@@ -172,52 +130,81 @@ window.addEventListener('load', function () {
         });
         passiveMembranes[0].addCurrent(pulseTrain);
         
+        t_ms = [];
+        v_0_mV = [];
+        v_f_mV = [];
+        iStim_nA = [];
 
-        // simulate it
-        result = model.integrate({
-            tMin: 0, 
-            tMax: params.totalDuration_ms * 1e-3, 
-            tMaxStep: 1e-6, 
-        });
-        
-        t = result.t;
-        v_0 = passiveMembranes[0].V(result.y, result.t);
-        v_f = passiveMembranes[params.numCompartments - 1].V(result.y, result.t);
+        t0 = 0;
+        y0 = model.initialValues();
+        runNumber = currentRunNumber += 1;
 
-        t_ms = graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(t);
-        v_0_mV = graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(v_0);
-        v_f_mV = graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(v_f);
-      
-        iStim_nA = t.map(function (t) {return pulseTrain([], t) / 1e-9; });
+        function updateSim() {
+            if (runNumber != currentRunNumber) {
+                return;
+            }
 
+            // simulate it
+            result = model.integrate({
+                tMin: t0, 
+                tMax: params.totalDuration_ms * 1e-3, 
+                tMaxStep: 1e-6,
+                y0: y0, 
+                timeout: 750
+            });
+            
+            t = result.t;
+            v_0 = passiveMembranes[0].V(result.y, result.t);
+            v_f = passiveMembranes[params.numCompartments - 1].V(result.y, result.t);
 
-        // plot the results
-        plotPanel = document.getElementById('ActiveCablePlots');
-        plotPanel.innerHTML = '';
-        
-        title = document.createElement('h4');
-        title.innerHTML = 'Membrane potential 1 (mV)';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        graph.graph(plotPanel, 425, 150, t_ms, v_0_mV,
-            {xUnits: 'ms', yUnits: 'mV'});
+            t_ms = t_ms.concat(graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(t));
+            v_0_mV = v_0_mV.concat(graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(v_0));
+            v_f_mV = v_f_mV.concat(graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(v_f));
+          
+            iStim_nA = iStim_nA.concat(t.map(function (t) {return pulseTrain([], t) / 1e-9; }));
 
-        title = document.createElement('h4');
-        title.innerHTML = 'Membrane potential 2 (mV)';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        graph.graph(plotPanel, 425, 150, t_ms, v_f_mV,
-            {xUnits: 'ms', yUnits: 'mV'});
+            // plot the results
+            plotPanel = document.getElementById('ActiveCablePlots');
+            plotPanel.innerHTML = '';
+            
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane potential 1 (mV)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 150, t_ms, v_0_mV,
+                {xUnits: 'ms', yUnits: 'mV', 
+                xMin: -0.02 * params.totalDuration_ms, 
+                xMax: params.totalDuration_ms});
 
-        title = document.createElement('h4');
-        title.innerHTML = 'Stimulation current (mV)';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        graph.graph(plotPanel, 425, 70, t_ms, iStim_nA,
-            {xUnits: 'ms', yUnits: 'nA'});
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane potential 2 (mV)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 150, t_ms, v_f_mV,
+                {xUnits: 'ms', yUnits: 'mV',
+                xMin: -0.02 * params.totalDuration_ms, 
+                xMax: params.totalDuration_ms});
 
-        console.log('Total time: ' + (new Date().getTime() - startTime));
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation current (mV)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 70, t_ms, iStim_nA,
+                {xUnits: 'ms', yUnits: 'nA',
+                xMin: -0.02 * params.totalDuration_ms, 
+                xMax: params.totalDuration_ms});
 
+            if (result.terminationReason == 'Timeout') {
+                t0 = result.t_f;
+                y0 = result.y_f;
+                window.setTimeout(updateSim, 0);
+            }
+            else {
+                console.log('Total time: ' + (new Date().getTime() - startTime));
+            }
+        }
+
+        window.setTimeout(updateSim, 0);
     }
 
     

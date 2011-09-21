@@ -474,9 +474,16 @@ TestCase("Graph", {
         assertNotUndefined(this.graph.plotArea.addXYLine);
     },
 
-    "test world xAxis should have a 5% margin" : function() {
-        assertClose(0.4, this.graph.xAxis.worldMin(), 1e-4);
-        assertClose(13.6, this.graph.xAxis.worldMax(), 1e-4);
+    "test world xAxis should have a 2% margin" : function() {
+        assertClose(0.76, this.graph.xAxis.worldMin(), 1e-4);
+        assertClose(13.24, this.graph.xAxis.worldMax(), 1e-4);
+    },
+
+    "test should use xMin, xMax if given" : function() {
+        this.graph = graph.graph(this.panel, this.width, this.height, 
+            this.xs, this.ys, { xMin: -1.3, xMax: 2.4 });
+        assertClose(-1.3, this.graph.xAxis.worldMin(), 1e-4);
+        assertClose(2.4, this.graph.xAxis.worldMax(), 1e-4);
     },
 
     "test world yAxis should have a 5% margin" : function() {
@@ -502,8 +509,8 @@ TestCase("Graph", {
         assertNotEquals(graph2.yAxis.worldMin(), graph2.yAxis.worldMax());
     },
 
-    "test display xAxis should have a 35 px, 5 px margin" : function() {
-        assertClose(35, this.graph.xAxis.displayMin(), 1e-4);
+    "test display xAxis should have a 45 px, 5 px margin" : function() {
+        assertClose(45, this.graph.xAxis.displayMin(), 1e-4);
         assertClose(this.width - 10, this.graph.xAxis.displayMax(), 1e-4);
     },
 
@@ -520,12 +527,12 @@ TestCase("Graph", {
 
     "test should plot Y axis range" : function() {
         var options = { hAlign: 'end', vAlign: 'middle', fontSize: 11, 
-            offset: [-4, 0] };
+            offset: [0, 0] };
 
         assertTrue(this.graph.plotArea.hasCall('addText', 
-            [1, 11, '11.00', options]));
+            [this.graph.xAxis.worldMin(), 11, '11.00', options]));
         assertTrue(this.graph.plotArea.hasCall('addText', 
-            [1, -3, '-3.00', options]));
+            [this.graph.xAxis.worldMin(), -3, '-3.00', options]));
     },
 
     simulateMouseEvent: function (type, x, y) {

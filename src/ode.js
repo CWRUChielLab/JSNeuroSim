@@ -128,9 +128,10 @@ ode.integrate = function (options) {
         tMinOutput = (options.tMinOutput !== undefined ? 
             options.tMinOutput : maxStep / 8),
         yj,
-        result = { t : [], y : [] },
+        result = { t : [], y : [], terminationReason : 'reached tMax' },
         ndim = options.y0.length,
-        d, h, h_new, step, atol = 1e-5, delta_max, i;
+        d, h, h_new, step, atol = 1e-5, delta_max, i,
+        startTime = (new Date()).getTime();
     
     result.t.push(t);
     for (d = 0; d < ndim; d += 1) {        
@@ -139,7 +140,7 @@ ode.integrate = function (options) {
     }
 
     h = maxStep;
-    while (t < options.tMax) {        
+addpoints: while (t < options.tMax) {
         while (true) {
             step = ode.rk45Step(options.drift, y, t, h);
 
@@ -160,6 +161,10 @@ ode.integrate = function (options) {
                 h_new = maxStep;
             }
 
+            if (t + h_new === t) {
+                result.terminationReason = 'Step size too small';
+                break addpoints;
+            }
 
             if (delta_max < atol) {
                 t += h; 
@@ -179,7 +184,9 @@ ode.integrate = function (options) {
             }
         }
 
-        if (t - result.t[result.t.length - 1] >= tMinOutput) {
+        if (t - result.t[result.t.length - 1] >= tMinOutput || 
+                t >= options.tMax) {
+            
             result.t.push(t);
             d = ndim;
             while (d > 0) {        
@@ -187,7 +194,17 @@ ode.integrate = function (options) {
                 result.y[d].push(y[d]);
             }
         }
+
+        if (options.timeout && 
+                (new Date()).getTime() - startTime >= options.timeout) {
+
+            result.terminationReason = 'Timeout';
+            break addpoints;
+        }
     }
+
+    result.t_f = t;
+    result.y_f = y;
 
     return result;
 };

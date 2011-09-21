@@ -53,18 +53,36 @@ TestCase("RK45Step", {
 
 TestCase("DriftIntegrate", {
     setUp: function() {
-        var that = this;
+        var that = this,
+            stepsLeft = 100,
+            time = 0;
+
         this.error = function (y, t, dt) {
             return [1e-9, 1e-9];
         };
 
         sinon.stub(ode, "rk45Step", function(dy, y, t, dt) {
+            time += 10;
+            stepsLeft -= 1;
+
+            if (stepsLeft < 0) {
+                throw Error('Too many steps taken!');
+            }
+
             return { y : [3*y[0], y[1]], delta : that.error(y, t, dt) };
         });
+
+        this.oldDate = Date;
+        Date = function () {
+            this.getTime = function () {
+                return time;
+            }
+        }
     },
 
     tearDown: function() {
-        ode.rk45Step.restore()
+        ode.rk45Step.restore();
+        Date = this.oldDate;
     },
 
     "test integrate should return the results of several rk4Steps" : function() {
@@ -80,6 +98,35 @@ TestCase("DriftIntegrate", {
         assertEquals([0, 0.5, 1], result.t);
         assertEquals([1, 3, 9], result.y[0]);
         assertEquals([2, 2, 2], result.y[1]);
+        assertEquals('reached tMax', result.terminationReason);
+    },
+
+    "test integrate should report that it reached tMax" : function() {
+        var result = ode.integrate({
+            tMin: 0,
+            tMax: 1,
+            tMaxStep: 0.5,
+            drift: function () {},
+            y0: [ 1, 2 ]
+        });
+
+        assertEquals('reached tMax', result.terminationReason);
+    },
+
+    "test integrate should set t_f and y_f to the final time and position" 
+        : function() {
+        
+        var result = ode.integrate({
+            tMin: 0,
+            tMax: 1,
+            tMaxStep: 0.5,
+            drift: function () {},
+            y0: [ 1, 2 ]
+        });
+
+        assertEquals(result.t[result.t.length - 1], result.t_f);
+        assertEquals(result.y[0][result.t.length - 1], result.y_f[0]);
+        assertEquals(result.y[1][result.t.length - 1], result.y_f[1]);
     },
 
     "test integrate should take smaller steps if delta is large" : function() {
@@ -103,9 +150,31 @@ TestCase("DriftIntegrate", {
         });
 
         assertNotUndefined(result);
-        console.log(result.t);
         assertTrue(result.t[1] - result.t[0] < 0.1);
         assertTrue(result.t[2] - result.t[1] < 0.1);
+        assertEquals('reached tMax', result.terminationReason);
+    },
+
+    "test integrate should exit when it encounters an unavoidable NaN" : function() {
+        var result;
+       
+        this.error = function (y, t, dt) {
+            return [ 1e-9, NaN ];
+        };
+
+        result = ode.integrate({
+            tMin: 0.1,
+            tMax: 1,
+            tMaxStep: 0.5,
+            tMinOutput: 0,
+            drift: function () {},
+            y0: [ 1, 2 ]
+        });
+
+        assertNotUndefined(result);
+        assertEquals(1, result.t.length);
+        assertEquals(1, result.y[0].length);
+        assertEquals('Step size too small', result.terminationReason);
     },
 
     "test integrate should output steps no closer than min output interval" 
@@ -122,8 +191,22 @@ TestCase("DriftIntegrate", {
         assertTrue(result.t[1] - result.t[0] > 0.3);
         assertTrue(result.t[2] - result.t[1] > 0.3);
         assertTrue(result.t[3] - result.t[2] > 0.3);
-    }
+    },
 
+    "test integrate should stop early if it exceeds the timeout" 
+        : function() {
+        var result = ode.integrate({
+            tMin: 0,
+            tMax: 1,
+            tMaxStep: 0.1,
+            timeout: 50,
+            drift: function () {},
+            y0: [ 1, 2 ]
+        });
+
+        assertEquals(6, result.t.length);
+        assertEquals('Timeout', result.terminationReason);
+    }
 });
 
 

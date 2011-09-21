@@ -86,22 +86,14 @@ window.addEventListener('load', function () {
             tMin: 0, 
             tMax: 60e-3, 
             tMaxStep: 1e-4,
-            //tMaxStep: Math.min(1e-4, params.C_nF / 
-            //    (params.g_leak_uS + params.g_Na_uS + params.g_K_uS) * 1e-3) 
         });
-        y0 = [];
-        for (j = 0; j < prerun.y.length; j += 1) {
-            y0.push(prerun.y[j].pop());
-        }
 
         // simulate it
         result = model.integrate({
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
             tMaxStep: 1e-4,
-            //tMaxStep: Math.min(1e-4, params.C_nF / 
-            //    (params.g_leak_uS + params.g_Na_uS + params.g_K_uS) * 1e-3),
-            y0: y0
+            y0: prerun.y_f
         });
         
         t = result.t;

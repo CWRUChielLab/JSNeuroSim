@@ -70,9 +70,11 @@ TestCase("HHKConductance", {
             this.hhK.n(this.model.initialValues(), 1));
     },
 
-    "test should set initial n to n_infinity" : function () {
-        assertClose(electrophys.hhKConductance.n_infinity(-60e-3), 
-            this.hhK.n(this.model.initialValues(), 1));
+    "test should default to n_infinity of -65 mV" : function () {
+        var hhK = electrophys.hhKConductance(this.model, 
+            this.neuron, { g_K: 1e-6, E_K: -70e-3, });
+        assertClose(electrophys.hhKConductance.n_infinity(-65e-3), 
+            hhK.n(this.model.initialValues(), 1));
     },
 
     "test should have expected drift" : function () {
@@ -171,9 +173,23 @@ TestCase("HHNaConductance", {
             this.hhNa.m(this.model.initialValues(), 1));
     },
 
+    "test should default to m_infinity of -65 mV" : function () {
+        var hhNa = electrophys.hhNaConductance(this.model, 
+            this.neuron, { g_Na: 1e-6, E_Na: -70e-3 });
+        assertClose(electrophys.hhNaConductance.m_infinity(-65e-3), 
+            hhNa.m(this.model.initialValues(), 1));
+    },
+
     "test should set initial h to h_infinity" : function () {
         assertClose(electrophys.hhNaConductance.h_infinity(-60e-3), 
             this.hhNa.h(this.model.initialValues(), 1));
+    },
+
+    "test should default to h_infinity of -65 mV" : function () {
+        var hhNa = electrophys.hhNaConductance(this.model, 
+            this.neuron, { g_Na: 1e-6, E_Na: -70e-3 });
+        assertClose(electrophys.hhNaConductance.h_infinity(-65e-3), 
+            hhNa.h(this.model.initialValues(), 1));
     },
 
     "test should have expected drift" : function () {

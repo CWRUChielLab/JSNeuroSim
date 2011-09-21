@@ -18,7 +18,7 @@ electrophys.hhKConductance = function (model, neuron, options) {
 
     var g_K = options.g_K, 
         E_K = options.E_K,
-        V_rest = options.V_rest,
+        V_rest = options.V_rest || -65e-3,
         iN = model.addStateVar(electrophys.hhKConductance.n_infinity(V_rest));
 
     function drift(result, state, t) {
@@ -99,7 +99,7 @@ electrophys.hhNaConductance = function (model, neuron, options) {
 
     var g_Na = options.g_Na, E_Na = options.E_Na,
         alpha_h, beta_h, alpha_m, beta_m,
-        V_rest = options.V_rest,
+        V_rest = options.V_rest || -65e-3,
         im = model.addStateVar(electrophys.hhNaConductance.m_infinity(V_rest)),
         ih = model.addStateVar(electrophys.hhNaConductance.h_infinity(V_rest));
 

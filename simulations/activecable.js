@@ -186,7 +186,7 @@ window.addEventListener('load', function () {
                 xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
-            title.innerHTML = 'Stimulation current (mV)';
+            title.innerHTML = 'Stimulation current (nA)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_nA,

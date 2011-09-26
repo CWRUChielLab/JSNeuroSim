@@ -149,7 +149,7 @@ addpoints: while (t < options.tMax) {
                 -Math.min.apply(null, step.delta)
             );
 
-            h_new = 0.99 * h * Math.pow(atol / delta_max, 1 / 5);
+            h_new = 0.95 * h * Math.pow(atol / delta_max, 1 / 5);
 
             if (h_new > 10 * h) {                
                 h_new = 10 * h;

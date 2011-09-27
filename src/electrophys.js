@@ -330,31 +330,7 @@ electrophys.synapse = function (model, presynaptic, postsynaptic, options) {
         a_d = options.a_d,
         V_T = options.V_T,
         K_p = options.K_p;
-/*
-    var iG_act = model.addStateVar(0),
-        iG_o = model.addStateVar(0),
-        W = options.W,
-        E_rev = options.E_rev,
-        tau_open = options.tau_open,
-        tau_close = options.tau_close,
-        A = 1 / (4 * Math.exp(-3.15 / (tau_close / tau_open)) + 1);
 
-    function drift(result, state, t) {
-        result[iG_act] = -state[iG_act] / tau_open;
-        result[iG_o] = state[iG_act] / tau_open - state[iG_o] / tau_close;
-    }
-    model.registerDrift(drift);
-
-    presynaptic.addSpikeWatcher(function (state, t) { 
-        state[iG_act] += 1; 
-        return true; 
-    });
-
-    return {
-        G_act: function (state, t) { return state[iG_act]; },
-        G_o: function (state, t) { return state[iG_o]; }
-    };
-*/
     function drift(result, state, t) {
         var s = state[is],
             V = presynaptic.V(state, t),

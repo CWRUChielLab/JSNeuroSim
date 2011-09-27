@@ -17,15 +17,15 @@ window.addEventListener('load', function () {
         E_leak_pre_mV: { label: 'Leak potential', units: 'mV',
             defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
         g_Na_pre_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 120, minVal: 0.01, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 120, minVal: 0, maxVal: 1000 }, 
         E_Na_pre_mV: { label: 'Sodium Nernst potential', units: 'mV',
             defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
         g_K_pre_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 36, minVal: 0.01, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 36, minVal: 0, maxVal: 1000 }, 
         E_K_pre_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
         pulseStart_pre_ms: { label: 'Stimulus delay', units: 'ms', 
-            defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_pre_nA: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
         pulseWidth_pre_ms: { label: 'Pulse duration', units: 'ms', 
@@ -35,6 +35,19 @@ window.addEventListener('load', function () {
         numPulses_pre: { label: 'Number of pulses', units: '', 
             defaultVal: 2, minVal: 0, maxVal: 100 },
 
+        g_syn_uS: { label: 'Maximum conductance', units: '\u00B5S', 
+            defaultVal: 1, minVal: 0, maxVal: 1000 },
+        E_rev_syn_mV: { label: 'Reversal potential', units: 'mV', 
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
+        tau_r_ms: { label: 'Rise time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000 },
+        tau_d_ms: { label: 'Decay time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000 },
+        V_thresh_mV: { label: 'Threshold potential', units: 'mV', 
+            defaultVal: 2, minVal: -1000, maxVal: 1000 },
+        K_p: { label: 'Threshold width', units: 'mV', 
+            defaultVal: 5, minVal: 0.1, maxVal: 1000 },
+
         C_post_nF: { label: 'Membrane capacitance', units: 'nF',
             defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
         g_leak_post_uS: { label: 'Leak conductance', units: '\u00B5S', 
@@ -42,15 +55,15 @@ window.addEventListener('load', function () {
         E_leak_post_mV: { label: 'Leak potential', units: 'mV',
             defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
         g_Na_post_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 120, minVal: 0.01, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 120, minVal: 0, maxVal: 1000 }, 
         E_Na_post_mV: { label: 'Sodium Nernst potential', units: 'mV',
             defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
         g_K_post_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 36, minVal: 0.01, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 36, minVal: 0, maxVal: 1000 }, 
         E_K_post_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
         pulseStart_post_ms: { label: 'Stimulus delay', units: 'ms', 
-            defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_post_nA: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         pulseWidth_post_ms: { label: 'Pulse duration', units: 'ms', 
@@ -70,6 +83,8 @@ window.addEventListener('load', function () {
         ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 
             'pulseHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
             'numPulses_pre']],
+        ['Synapse properties', [ 'g_syn_uS', 'E_rev_syn_mV', 'tau_r_ms',
+            'tau_d_ms', 'V_thresh_mV', 'K_p']],
         ['Postsynaptic Cell Properties', ['C_post_nF', 'g_leak_post_uS', 
             'E_leak_post_mV', 'g_Na_post_uS', 'E_Na_post_mV', 'g_K_post_uS', 
             'E_K_post_mV']],
@@ -82,7 +97,7 @@ window.addEventListener('load', function () {
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
-        var model, 
+        var model, synapse,
             neuron_pre, pulseTrain_pre, hhKCurrent_pre, hhNaCurrent_pre,
             neuron_post, pulseTrain_post, hhKCurrent_post, hhNaCurrent_post,
             prerun, result, t, t_ms, 
@@ -145,6 +160,18 @@ window.addEventListener('load', function () {
             E_Na: params.E_Na_post_mV * 1e-3
         });
 
+
+        // create the synapse
+        synapse = electrophys.synapse(model, neuron_pre, neuron_post, {
+            g_bar: params.g_syn_uS * 1e-6 / (
+                1 / (1 + params.tau_r_ms / params.tau_d_ms)), 
+            E_rev: params.E_rev_syn_mV * 1e-3,
+            a_r: 1 / params.tau_r_ms * 1e3, 
+            a_d: 1 / params.tau_d_ms * 1e3, 
+            V_T: params.V_thresh_mV * 1e-3,
+            K_p: params.K_p * 1e-3
+        });
+
         
         // run it for a bit to let it reach steady state
         prerun = model.integrate({
@@ -188,7 +215,7 @@ window.addEventListener('load', function () {
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         graph.graph(plotPanel, 425, 150, t_ms, v_pre_mV,
-            {xUnits: 'ms', yUnits: 'mV', minYRange: 10});
+            {xUnits: 'ms', yUnits: 'mV', minYRange: 50});
 
         title = document.createElement('h4');
         title.innerHTML = 'Presynaptic Stimulation current (mV)';
@@ -202,7 +229,7 @@ window.addEventListener('load', function () {
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         graph.graph(plotPanel, 425, 150, t_ms, v_post_mV,
-            {xUnits: 'ms', yUnits: 'mV', minYRange: 10});
+            {xUnits: 'ms', yUnits: 'mV', minYRange: 50});
 
         title = document.createElement('h4');
         title.innerHTML = 'Postsynaptic Stimulation current (mV)';

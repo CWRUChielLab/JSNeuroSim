@@ -493,7 +493,7 @@ TestCase("Graph", {
 
     "test world xAxis should always have a non-zero length" : function() {
         var graph1 = graph.graph(this.panel, this.width, this.height, 
-            [1, 1], [0,1]),
+            [1, 1], [1,1]),
             graph2 = graph.graph(this.panel, this.width, this.height, 
             [0, 0], [0,1]);
         assertNotEquals(graph1.xAxis.worldMin(), graph1.xAxis.worldMax());
@@ -504,9 +504,16 @@ TestCase("Graph", {
         var graph1 = graph.graph(this.panel, this.width, this.height, 
             [0, 1], [1,1]),
             graph2 = graph.graph(this.panel, this.width, this.height, 
-            [0, 1], [0,0]);
+            [0, 0], [1,0]);
         assertNotEquals(graph1.yAxis.worldMin(), graph1.yAxis.worldMax());
         assertNotEquals(graph2.yAxis.worldMin(), graph2.yAxis.worldMax());
+    },
+
+    "test world yAxis should use minYRange, if given" : function() {
+        var graph1 = graph.graph(this.panel, this.width, this.height, 
+            [0, 1], [1,1], { minYRange: 10 });
+        assertClose(-4, graph1.yAxis.worldMin());
+        assertClose(6, graph1.yAxis.worldMax());
     },
 
     "test display xAxis should have a 45 px, 5 px margin" : function() {

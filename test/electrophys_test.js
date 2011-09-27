@@ -19,6 +19,53 @@ TestCase("PassiveConductance", {
 });
 
 
+TestCase("Synapse", {
+    setUp: function () {
+        this.model = componentModel.componentModel();
+        sinon.spy(this.model, "registerDrift");
+
+        this.presynaptic = {};
+        this.presynaptic.V = function (state, t) { return 10e-3; };
+
+        this.postsynaptic = {};
+        this.postsynaptic.addCurrent = sinon.stub();
+        this.postsynaptic.V = function (state, t) { return -60e-3; };
+
+        this.synapse = electrophys.synapse(this.model, 
+            this.presynaptic, this.postsynaptic,
+            { g_bar: 0.1, E_rev: -15e-3,
+                a_r: 1/10e-3, a_d: 1/25e-3, 
+                V_T: 2e-3, K_p: 5e-3 });
+        this.drift = this.model.registerDrift.args[0][0];
+        this.current = this.postsynaptic.addCurrent.args[0][0];
+    },
+
+    "test should have one state var" : function () {
+        assertEquals(1, this.model.numStateVars());
+    },
+
+    "test should set initial s to zero" : function () {
+        assertEquals(0, 
+                this.synapse.s(this.model.initialValues(), 1));
+    },
+
+    "test should have expected drift" : function () {
+        var dy = Array(this.model.numStateVars());
+        this.drift(dy, [ 0.3 ], 0.);
+        assertClose(46.241286959374705, // hand calculated
+            this.synapse.s(dy, 0));
+    },
+
+    "test should have expected current" : function () {
+        var state = [ 0.2 ];
+
+        var current = this.current(state, 3.14);
+
+        assertClose(0.9e-3, current); // hand calculated
+    }
+});
+
+
 TestCase("HHKConductance", {
     setUp: function () {
         this.model = componentModel.componentModel();

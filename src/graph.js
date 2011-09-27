@@ -331,6 +331,11 @@ graph.graph = function (panel, width, height, xs, ys, options) {
     minY -= 0.05 * lengthY;
     maxY += 0.05 * lengthY;
 
+    if (options.minYRange && 1.1 * lengthY < options.minYRange) {
+        minY -= (options.minYRange - 1.1 * lengthY) / 2;
+        maxY += (options.minYRange - 1.1 * lengthY) / 2;
+    }
+
     xAxis = graph.linearAxis(minX, maxX, 45, width - 10);
     yAxis = graph.linearAxis(minY, maxY, height - 20, 10);
     plotArea = graph.plotArea(xAxis, yAxis, svg);

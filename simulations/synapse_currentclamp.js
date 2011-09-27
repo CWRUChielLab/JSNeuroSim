@@ -36,7 +36,7 @@ window.addEventListener('load', function () {
             defaultVal: 2, minVal: 0, maxVal: 100 },
 
         g_syn_uS: { label: 'Maximum conductance', units: '\u00B5S', 
-            defaultVal: 1, minVal: 0, maxVal: 1000 },
+            defaultVal: 0.5, minVal: 0, maxVal: 1000 },
         E_rev_syn_mV: { label: 'Reversal potential', units: 'mV', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         tau_r_ms: { label: 'Rise time constant', units: 'ms', 
@@ -63,7 +63,7 @@ window.addEventListener('load', function () {
         E_K_post_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
         pulseStart_post_ms: { label: 'Stimulus delay', units: 'ms', 
-            defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_post_nA: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         pulseWidth_post_ms: { label: 'Pulse duration', units: 'ms', 
@@ -175,8 +175,8 @@ window.addEventListener('load', function () {
         
         // run it for a bit to let it reach steady state
         prerun = model.integrate({
-            tMin: 0, 
-            tMax: 60e-3, 
+            tMin: -120e-3, 
+            tMax: 0, 
             tMaxStep: 1e-4,
         });
 
@@ -215,7 +215,7 @@ window.addEventListener('load', function () {
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         graph.graph(plotPanel, 425, 150, t_ms, v_pre_mV,
-            {xUnits: 'ms', yUnits: 'mV', minYRange: 50});
+            {xUnits: 'ms', yUnits: 'mV', minYRange: 20});
 
         title = document.createElement('h4');
         title.innerHTML = 'Presynaptic Stimulation current (mV)';
@@ -229,7 +229,7 @@ window.addEventListener('load', function () {
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         graph.graph(plotPanel, 425, 150, t_ms, v_post_mV,
-            {xUnits: 'ms', yUnits: 'mV', minYRange: 50});
+            {xUnits: 'ms', yUnits: 'mV', minYRange: 20});
 
         title = document.createElement('h4');
         title.innerHTML = 'Postsynaptic Stimulation current (mV)';

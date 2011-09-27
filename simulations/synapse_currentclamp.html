@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Synapse current clamp simulation</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="simulations.css" type="text/css">
+        <script src="../src/ode.js"></script>
+        <script src="../src/graph.js"></script>
+        <script src="../src/component_model.js"></script>
+        <script src="../src/electrophys.js"></script>
+        <script src="../src/sim_controls.js"></script>
+        <script src="synapse_currentclamp.js"></script>
+    </head>
+    <body>
+        <h1 class="simtitle">Synapse current clamp simulation</h1>
+        <div id="SynapseCurrentClampPlots" class="plotpanel"></div>
+        <div id="SynapseCurrentClampControls" class="controlspanel"></div>
+        <input id="SynapseCurrentClampRunButton" type="button" value="Run"/>
+        <input type="button" id="SynapseCurrentClampResetButton" value="Reset"/>
+    </body>
+</html>

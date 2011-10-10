@@ -164,7 +164,8 @@ window.addEventListener('load', function () {
         // create the synapse
         synapse = electrophys.synapse(model, neuron_pre, neuron_post, {
             g_bar: params.g_syn_uS * 1e-6 / (
-                1 / (1 + params.tau_r_ms / params.tau_d_ms)), 
+                1 / (1 + params.tau_r_ms / params.tau_d_ms)
+            ), 
             E_rev: params.E_rev_syn_mV * 1e-3,
             a_r: 1 / params.tau_r_ms * 1e3, 
             a_d: 1 / params.tau_d_ms * 1e3, 

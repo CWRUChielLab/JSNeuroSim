@@ -345,8 +345,7 @@ electrophys.synapse = function (model, presynaptic, postsynaptic, options) {
     });
 
     return {
-        s: function (state, t) { return state[is]; },
-        T: function (state, t) { return state[iT]; }
+        s: function (state, t) { return state[is]; }
     };
 };
 
@@ -471,8 +470,9 @@ electrophys.gettingShuntConductance = function (model, neuron, options) {
         B_h = options.B_h,
         C_h = options.C_h,
         tau_h = options.tau_h,
-        im = model.addStateVar(1 / (Math.exp((E_rev + B_m) / C_m) + 1)),
-        ih = model.addStateVar(1 / (Math.exp((E_rev + B_h) / C_h) + 1));
+        V_rest = options.V_rest || E_rev,
+        im = model.addStateVar(1 / (Math.exp((V_rest + B_m) / C_m) + 1)),
+        ih = model.addStateVar(1 / (Math.exp((V_rest + B_h) / C_h) + 1));
 
     function drift(result, state, t) {
         var v = neuron.V(state, t),

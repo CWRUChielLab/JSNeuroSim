@@ -305,7 +305,7 @@ graph.graph = function (panel, width, height, xs, ys, options) {
     svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
     div.appendChild(svg); 
 
-    if (options.xMin !== undefined && options.xMax != undefined) {
+    if (options.xMin !== undefined && options.xMax !== undefined) {
         minX = options.xMin;
         maxX = options.xMax;
     } else {

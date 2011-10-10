@@ -1,4 +1,4 @@
-stats = {};
+var stats = {};
 
 stats.factorial = function (n) {    
     "use strict";
@@ -11,7 +11,7 @@ stats.factorial = function (n) {
     }
 
     return result;
-}
+};
 
 stats.randomBinomial = function (t, p) {
     "use strict";
@@ -26,7 +26,7 @@ stats.randomBinomial = function (t, p) {
     }
 
     return result;
-}
+};
 
 stats.randomPoisson = function (mu) {
     "use strict";
@@ -41,7 +41,7 @@ stats.randomPoisson = function (mu) {
     }
 
     return result;
-}
+};
 
 stats.randomNormal = function (mu, sigma) {
     "use strict";
@@ -60,5 +60,5 @@ stats.randomNormal = function (mu, sigma) {
     } while (x * x > -4 * Math.log(u));
 
     return mu + sigma * x;
-}
+};
 

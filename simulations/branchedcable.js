@@ -179,7 +179,7 @@ window.addEventListener('load', function () {
                 V_rest: V_rest
             });
 
-            if (i == 0) { 
+            if (i === 0) { 
                 electrophys.gapJunction(myelinatedCompartment[0], 
                     leftNodeCompartment[i], { 
                         g: 1 / r_intercompartment_boundary
@@ -217,17 +217,20 @@ window.addEventListener('load', function () {
                 V_rest: V_rest
             });
 
-            if (i == 0) { 
+            if (i === 0) { 
                 electrophys.gapJunction(
                     myelinatedCompartment[numBranchedCompartments - 1], 
-                    rightNodeCompartment[i], { 
+                    rightNodeCompartment[i], 
+                    { 
                         g: 1 / r_intercompartment_boundary
-                    });
+                    }
+                ); 
             } else {
                 electrophys.gapJunction(rightNodeCompartment[i - 1], 
-                    rightNodeCompartment[i], { 
+                    rightNodeCompartment[i], 
+                    { 
                         g: 1 / r_intercompartment_node 
-                    });
+                    }); 
             }
 
             electrophys.hhKConductance(model, 
@@ -265,7 +268,7 @@ window.addEventListener('load', function () {
         runNumber = currentRunNumber += 1;
 
         function updateSim() {
-            if (runNumber != currentRunNumber) {
+            if (runNumber !== currentRunNumber) {
                 return;
             }
 
@@ -281,8 +284,8 @@ window.addEventListener('load', function () {
             t = result.t;
             v_0 = leftNodeCompartment[0].V(result.y, result.t);
             v_c = myelinatedCompartment[
-                Math.floor(numBranchedCompartments/2)
-                ].V(result.y, result.t);
+                Math.floor(numBranchedCompartments / 2)
+            ].V(result.y, result.t);
             v_f = rightNodeCompartment[0].V(result.y, result.t);
 
             t_ms = t_ms.concat(graph.linearAxis(0, 1, 0, 1000).
@@ -305,9 +308,9 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_0_mV,
-                {xUnits: 'ms', yUnits: 'mV', 
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'mV', 
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
             title.innerHTML = 
@@ -315,34 +318,33 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_c_mV,
-                {xUnits: 'ms', yUnits: 'mV',
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'mV',
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
             title.innerHTML = 'Membrane potential node 2 (mV)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_f_mV,
-                {xUnits: 'ms', yUnits: 'mV',
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'mV',
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
             title.innerHTML = 'Stimulation current (nA)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_nA,
-                {xUnits: 'ms', yUnits: 'nA',
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'nA',
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
-            if (result.terminationReason == 'Timeout') {
+            if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
                 y0 = result.y_f;
                 window.setTimeout(updateSim, 0);
-            }
-            else {
+            } else {
                 console.log('Total time: ' + (new Date().getTime() - startTime));
             }
         }

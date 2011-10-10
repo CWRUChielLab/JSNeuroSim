@@ -47,6 +47,8 @@ window.addEventListener('load', function () {
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 7000, minVal: 0, maxVal: tMax / 1e-3 },
         
+        V_init_mV_C2: { label: 'Initial membrane potential', units: 'mV', 
+            defaultVal: -48, minVal: -1000, maxVal: 1000 },
         C_nF_C2: { label: 'Membrane capacitance', units: 'nF', 
             defaultVal: 2.27, minVal: 0.01, maxVal: 100 },
         g_leak_uS_C2: { label: 'Leak conductance', units: '\u00B5S', 
@@ -63,33 +65,35 @@ window.addEventListener('load', function () {
             units: '\u00B5S', defaultVal: 0.12, minVal: 0, maxVal: 100 },
         E_Fast_mV_C2: { label: 'Fast undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Fast_ms_C2: { 
-            label: 'Fast undershoot opening time constant', units: 'ms', 
+        tau_open_Fast_ms_C2: { units: 'ms', 
+            label: 'Fast undershoot opening time constant', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Fast_ms_C2: { 
-            label: 'Fast undershoot closing time constant', units: 'ms', 
+        tau_close_Fast_ms_C2: { units: 'ms', 
+            label: 'Fast undershoot closing time constant', 
             defaultVal: 30, minVal: 0.1, maxVal: 1000000 },
         W_Med_uS_C2: { label: 'Medium undershoot conductance', 
             units: '\u00B5S', defaultVal: 0.028, minVal: 0, maxVal: 100 },
         E_Med_mV_C2: { label: 'Medium undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Med_ms_C2: { 
+        tau_open_Med_ms_C2: { units: 'ms', 
             label: 'Medium undershoot opening time constant', 
-            units: 'ms', defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Med_ms_C2: { 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Med_ms_C2: { units: 'ms',
             label: 'Medium undershoot closing time constant', 
-            units: 'ms', defaultVal: 1200, minVal: 0.1, maxVal: 1000000 },
+            defaultVal: 1200, minVal: 0.1, maxVal: 1000000 },
         W_Slow_uS_C2: { label: 'Slow undershoot conductance', 
             units: '\u00B5S', defaultVal: 0.003, minVal: 0, maxVal: 100 },
         E_Slow_mV_C2: { label: 'Slow undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Slow_ms_C2: { 
+        tau_open_Slow_ms_C2: { units: 'ms', 
             label: 'Slow undershoot opening time constant', 
-            units: 'ms', defaultVal: 4000, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Slow_ms_C2: { 
+            defaultVal: 4000, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Slow_ms_C2: { units: 'ms', 
             label: 'Slow undershoot closing time constant', 
-            units: 'ms', defaultVal: 4000, minVal: 0.1, maxVal: 1000000 },
+            defaultVal: 4000, minVal: 0.1, maxVal: 1000000 },
         
+        V_init_mV_DSI: { label: 'Initial membrane potential', units: 'mV', 
+            defaultVal: -50, minVal: -1000, maxVal: 1000 },
         C_nF_DSI: { label: 'Membrane capacitance', units: 'nF', 
             defaultVal: 1.5714765, minVal: 0.01, maxVal: 100 },
         g_leak_uS_DSI: { label: 'Leak conductance', units: '\u00B5S', 
@@ -122,23 +126,25 @@ window.addEventListener('load', function () {
             units: '\u00B5S', defaultVal: 0.3, minVal: 0, maxVal: 100 },
         E_Fast_mV_DSI: { label: 'Fast undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Fast_ms_DSI: { 
-            label: 'Fast undershoot opening time constant', units: 'ms', 
+        tau_open_Fast_ms_DSI: { units: 'ms', 
+            label: 'Fast undershoot opening time constant', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Fast_ms_DSI: { 
-            label: 'Fast undershoot closing time constant', units: 'ms', 
+        tau_close_Fast_ms_DSI: { units: 'ms', 
+            label: 'Fast undershoot closing time constant', 
             defaultVal: 85, minVal: 0.1, maxVal: 1000000 },
         W_Slow_uS_DSI: { label: 'Slow undershoot conductance', 
             units: '\u00B5S', defaultVal: 0.012, minVal: 0, maxVal: 100 },
         E_Slow_mV_DSI: { label: 'Slow undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Slow_ms_DSI: { 
+        tau_open_Slow_ms_DSI: { units: 'ms', 
             label: 'Slow undershoot opening time constant', 
-            units: 'ms', defaultVal: 200, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Slow_ms_DSI: { 
+            defaultVal: 200, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Slow_ms_DSI: { units: 'ms', 
             label: 'Slow undershoot closing time constant', 
-            units: 'ms', defaultVal: 2800, minVal: 0.1, maxVal: 1000000 },
+            defaultVal: 2800, minVal: 0.1, maxVal: 1000000 },
         
+        V_init_mV_VSI: { label: 'Initial membrane potential', units: 'mV', 
+            defaultVal: -60, minVal: -1000, maxVal: 1000 },
         C_nF_VSI: { label: 'Membrane capacitance', units: 'nF', 
             defaultVal: 3.2, minVal: 0.01, maxVal: 100 },
         g_leak_uS_VSI: { label: 'Leak conductance', units: '\u00B5S', 
@@ -171,31 +177,31 @@ window.addEventListener('load', function () {
             units: '\u00B5S', defaultVal: 0.54, minVal: 0, maxVal: 100 },
         E_Fast_mV_VSI: { label: 'Fast undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Fast_ms_VSI: { 
-            label: 'Fast undershoot opening time constant', units: 'ms', 
+        tau_open_Fast_ms_VSI: { units: 'ms', 
+            label: 'Fast undershoot opening time constant', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Fast_ms_VSI: { 
-            label: 'Fast undershoot closing time constant', units: 'ms', 
+        tau_close_Fast_ms_VSI: { units: 'ms', 
+            label: 'Fast undershoot closing time constant', 
             defaultVal: 100, minVal: 0.1, maxVal: 1000000 },
         W_Slow_uS_VSI: { label: 'Slow undershoot conductance', 
             units: '\u00B5S', defaultVal: 0.0046, minVal: 0, maxVal: 100 },
         E_Slow_mV_VSI: { label: 'Slow undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Slow_ms_VSI: { 
+        tau_open_Slow_ms_VSI: { units: 'ms', 
             label: 'Slow undershoot opening time constant', 
-            units: 'ms', defaultVal: 1000, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Slow_ms_VSI: { 
+            defaultVal: 1000, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Slow_ms_VSI: { units: 'ms', 
             label: 'Slow undershoot closing time constant', 
-            units: 'ms', defaultVal: 2500, minVal: 0.1, maxVal: 1000000 },
+            defaultVal: 2500, minVal: 0.1, maxVal: 1000000 },
         W_E1_uS_VSI: { label: 'Self excitation conductance', 
             units: '\u00B5S', defaultVal: 0.028, minVal: 0, maxVal: 100 },
         E_E1_mV_VSI: { label: 'Self excitation potential', units: 'mV', 
             defaultVal: -10, minVal: -1000, maxVal: 1000 },
-        tau_open_E1_ms_VSI: { 
-            label: 'Self excitation opening time constant', units: 'ms', 
+        tau_open_E1_ms_VSI: { units: 'ms', 
+            label: 'Self excitation opening time constant', 
             defaultVal: 200, minVal: 0.1, maxVal: 1000000 },
-        tau_close_E1_ms_VSI: { 
-            label: 'Self excitation closing time constant', units: 'ms', 
+        tau_close_E1_ms_VSI: { units: 'ms', 
+            label: 'Self excitation closing time constant', 
             defaultVal: 500, minVal: 0.1, maxVal: 1000000 },
     };
     layout = [
@@ -206,28 +212,29 @@ window.addEventListener('load', function () {
         ['VSI Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
             'pulseWidth_ms_VSI', 'isi_ms_VSI', 'numPulses_VSI']],
         ['Simulation Settings', ['totalDuration_ms']],
-        ['C2 Parameters', ['C_nF_C2', 'g_leak_uS_C2', 'E_leak_mV_C2',
-            'theta_ss_mV_C2', 'theta_r_mV_C2', 'theta_tau_ms_C2',
-            'W_Fast_uS_C2', 'E_Fast_mV_C2', 'tau_open_Fast_ms_C2',
-            'tau_close_Fast_ms_C2', 'W_Med_uS_C2', 'E_Med_mV_C2',
-            'tau_open_Med_ms_C2', 'tau_close_Med_ms_C2', 'W_Slow_uS_C2',
-            'E_Slow_mV_C2', 'tau_open_Slow_ms_C2', 'tau_close_Slow_ms_C2']],
-        ['DSI Parameters', ['C_nF_DSI', 'g_leak_uS_DSI', 'E_leak_mV_DSI',
-            'theta_ss_mV_DSI', 'theta_r_mV_DSI', 'theta_tau_ms_DSI',
-            'G_Shunt_uS_DSI', 'E_Shunt_mV_DSI', 'B_m_mV_DSI', 'C_m_mV_DSI',
-            'tau_m_ms_DSI', 'B_h_mV_DSI', 'C_h_mV_DSI', 'tau_h_ms_DSI',
-            'W_Fast_uS_DSI', 'E_Fast_mV_DSI', 'tau_open_Fast_ms_DSI',
-            'tau_close_Fast_ms_DSI', 'W_Slow_uS_DSI',
+        ['C2 Parameters', ['V_init_mV_C2', 'C_nF_C2', 'g_leak_uS_C2', 
+            'E_leak_mV_C2', 'theta_ss_mV_C2', 'theta_r_mV_C2',
+            'theta_tau_ms_C2', 'W_Fast_uS_C2', 'E_Fast_mV_C2',
+            'tau_open_Fast_ms_C2', 'tau_close_Fast_ms_C2', 'W_Med_uS_C2',
+            'E_Med_mV_C2', 'tau_open_Med_ms_C2', 'tau_close_Med_ms_C2',
+            'W_Slow_uS_C2', 'E_Slow_mV_C2', 'tau_open_Slow_ms_C2',
+            'tau_close_Slow_ms_C2']],
+        ['DSI Parameters', ['V_init_mV_DSI', 'C_nF_DSI', 'g_leak_uS_DSI', 
+            'E_leak_mV_DSI', 'theta_ss_mV_DSI', 'theta_r_mV_DSI',
+            'theta_tau_ms_DSI', 'G_Shunt_uS_DSI', 'E_Shunt_mV_DSI',
+            'B_m_mV_DSI', 'C_m_mV_DSI', 'tau_m_ms_DSI', 'B_h_mV_DSI',
+            'C_h_mV_DSI', 'tau_h_ms_DSI', 'W_Fast_uS_DSI', 'E_Fast_mV_DSI',
+            'tau_open_Fast_ms_DSI', 'tau_close_Fast_ms_DSI', 'W_Slow_uS_DSI',
             'E_Slow_mV_DSI', 'tau_open_Slow_ms_DSI', 'tau_close_Slow_ms_DSI']],
-        ['VSI Parameters', ['C_nF_VSI', 'g_leak_uS_VSI', 'E_leak_mV_VSI',
-            'theta_ss_mV_VSI', 'theta_r_mV_VSI', 'theta_tau_ms_VSI',
-            'G_Shunt_uS_VSI', 'E_Shunt_mV_VSI', 'B_m_mV_VSI', 'C_m_mV_VSI',
-            'tau_m_ms_VSI', 'B_h_mV_VSI', 'C_h_mV_VSI', 'tau_h_ms_VSI',
-            'W_Fast_uS_VSI', 'E_Fast_mV_VSI', 'tau_open_Fast_ms_VSI',
-            'tau_close_Fast_ms_VSI', 'W_Slow_uS_VSI', 'E_Slow_mV_VSI', 
-            'tau_open_Slow_ms_VSI', 'tau_close_Slow_ms_VSI',
-            'W_E1_uS_VSI', 'E_E1_mV_VSI', 
-            'tau_open_E1_ms_VSI', 'tau_close_E1_ms_VSI']]
+        ['VSI Parameters', ['V_init_mV_VSI', 'C_nF_VSI', 'g_leak_uS_VSI',
+            'E_leak_mV_VSI', 'theta_ss_mV_VSI', 'theta_r_mV_VSI',
+            'theta_tau_ms_VSI', 'G_Shunt_uS_VSI', 'E_Shunt_mV_VSI',
+            'B_m_mV_VSI', 'C_m_mV_VSI', 'tau_m_ms_VSI', 'B_h_mV_VSI',
+            'C_h_mV_VSI', 'tau_h_ms_VSI', 'W_Fast_uS_VSI', 'E_Fast_mV_VSI',
+            'tau_open_Fast_ms_VSI', 'tau_close_Fast_ms_VSI', 'W_Slow_uS_VSI',
+            'E_Slow_mV_VSI', 'tau_open_Slow_ms_VSI', 'tau_close_Slow_ms_VSI',
+            'W_E1_uS_VSI', 'E_E1_mV_VSI', 'tau_open_E1_ms_VSI',
+            'tau_close_E1_ms_VSI']]
     ];
     controlsPanel = document.getElementById('TritoniaControls');
 
@@ -250,6 +257,7 @@ window.addEventListener('load', function () {
 
         // create the C2 neuron
         C2 = electrophys.gettingIFNeuron(model, { 
+            V_rest: params.V_init_mV_C2 * 1e-3, 
             C: params.C_nF_C2 * 1e-9, 
             g_leak: params.g_leak_uS_C2 * 1e-6, 
             E_leak: params.E_leak_mV_C2 * 1e-3, 
@@ -287,6 +295,7 @@ window.addEventListener('load', function () {
 
         // create the DSI neuron
         DSI = electrophys.gettingIFNeuron(model, { 
+            V_rest: params.V_init_mV_DSI * 1e-3, 
             C: params.C_nF_DSI * 1e-9, 
             g_leak: params.g_leak_uS_DSI * 1e-6, 
             E_leak: params.E_leak_mV_DSI * 1e-3, 
@@ -295,6 +304,7 @@ window.addEventListener('load', function () {
             theta_tau: params.theta_tau_ms_DSI * 1e-3 
         });
         DSIShunt = electrophys.gettingShuntConductance(model, DSI, { 
+            V_rest: params.V_init_mV_DSI * 1e-3, 
             G: params.G_Shunt_uS_DSI * 1e-6, 
             E_rev: params.E_Shunt_mV_DSI * 1e-3,
             B_m: params.B_m_mV_DSI * 1e-3,
@@ -328,6 +338,7 @@ window.addEventListener('load', function () {
 
         // create the VSI neuron
         VSI = electrophys.gettingIFNeuron(model, { 
+            V_rest: params.V_init_mV_VSI * 1e-3, 
             C: params.C_nF_VSI * 1e-9, 
             g_leak: params.g_leak_uS_VSI * 1e-6, 
             E_leak: params.E_leak_mV_VSI * 1e-3, 
@@ -336,6 +347,7 @@ window.addEventListener('load', function () {
             theta_tau: params.theta_tau_ms_VSI * 1e-3 
         });
         VSIShunt = electrophys.gettingShuntConductance(model, VSI, { 
+            V_rest: params.V_init_mV_VSI * 1e-3, 
             G: params.G_Shunt_uS_VSI * 1e-6, 
             E_rev: params.E_Shunt_mV_VSI * 1e-3,
             B_m: params.B_m_mV_VSI * 1e-3,
@@ -375,11 +387,6 @@ window.addEventListener('load', function () {
 
 
         // simulate them
-        
-        result = model.integrate({tMin: -0.6, tMax: 7, tMaxStep: 2e-3});
-        t = result.t;
-        
-        
         t_ms = [];
         v_C2_mV = [];
         iStim_C2_nA = [];
@@ -388,19 +395,26 @@ window.addEventListener('load', function () {
         v_VSI_mV = [];
         iStim_VSI_nA = [];
 
+        // run for a bit to allow the simulation to stabilize
+        result = model.integrate({
+            tMin: -1.5, 
+            tMax: 0, 
+            tMaxStep: 16e-3,
+        });
         t0 = 0;
-        y0 = model.initialValues();
+        y0 = result.y_f;
         runNumber = currentRunNumber += 1;
 
         function updateSim() {
-            if (runNumber != currentRunNumber) {
+            if (runNumber !== currentRunNumber) {
                 return;
             }
 
             result = model.integrate({
                 tMin: t0, 
                 tMax: params.totalDuration_ms * 1e-3, 
-                tMaxStep: Math.min(16e-3, params.totalDuration_ms * 1e-3/500),
+                tMaxStep: Math.min(16e-3, 
+                    params.totalDuration_ms * 1e-3 / 500),
                 y0: y0, 
                 timeout: 500
             });
@@ -415,17 +429,20 @@ window.addEventListener('load', function () {
             v_C2_mV = v_C2_mV.concat(graph.linearAxis(0, 1, 0, 1000)
                     .mapWorldToDisplay(v_C2));
             iStim_C2_nA = iStim_C2_nA.concat(t.map(function (t) {
-                return pulseTrainC2([], t) / 1e-9; }));
+                return pulseTrainC2([], t) / 1e-9; 
+            }));
 
             v_DSI_mV = v_DSI_mV.concat(graph.linearAxis(0, 1, 0, 1000)
                     .mapWorldToDisplay(v_DSI));
             iStim_DSI_nA = iStim_DSI_nA.concat(t.map(function (t) {
-                return pulseTrainDSI([], t) / 1e-9; }));
+                return pulseTrainDSI([], t) / 1e-9; 
+            }));
 
             v_VSI_mV = v_VSI_mV.concat(graph.linearAxis(0, 1, 0, 1000)
                     .mapWorldToDisplay(v_VSI));
             iStim_VSI_nA = iStim_VSI_nA.concat(t.map(function (t) {
-                return pulseTrainVSI([], t) / 1e-9; }));
+                return pulseTrainVSI([], t) / 1e-9; 
+            }));
 
             // plot the results
             plotPanel = document.getElementById('TritoniaPlots');
@@ -436,61 +453,60 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_C2_mV,
-                {xUnits: 'ms', yUnits: 'mV', 
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'mV', 
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
             title.innerHTML = 'C2 Stimulation current (nA)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_C2_nA,
-                {xUnits: 'ms', yUnits: 'nA',
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'nA',
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
             title.innerHTML = 'DSI potential (mV)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_DSI_mV,
-                {xUnits: 'ms', yUnits: 'mV', 
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'mV', 
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
             title.innerHTML = 'DSI Stimulation current (nA)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_DSI_nA,
-                {xUnits: 'ms', yUnits: 'nA',
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'nA',
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
             title.innerHTML = 'VSI potential (mV)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_VSI_mV,
-                {xUnits: 'ms', yUnits: 'mV', 
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'mV', 
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
             title.innerHTML = 'VSI Stimulation current (nA)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_VSI_nA,
-                {xUnits: 'ms', yUnits: 'nA',
-                xMin: -0.02 * params.totalDuration_ms, 
-                xMax: params.totalDuration_ms});
+                { xUnits: 'ms', yUnits: 'nA',
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
 
-            if (result.terminationReason == 'Timeout') {
+            if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
                 y0 = result.y_f;
                 window.setTimeout(updateSim, 0);
-            }
-            else {
+            } else {
                 console.log('Total time: ' + 
                         (new Date().getTime() - startTime));
             }

@@ -445,7 +445,7 @@ TestCase("GettingIFNeuron", {
         assertEquals(2, this.model.numStateVars());
     },
 
-    "test should set initial voltage to be leak potential" : function () {
+    "test should use the leak potential as initial potential by default" : function () {
         assertEquals(-65e-3, this.gettingIFNeuron.V(this.model.initialValues(), 0));
     },
 
@@ -654,13 +654,31 @@ TestCase("GettingShuntConductance", {
     },
 
     "test should set initial m to m_inf" : function () {
-        assertClose(0.0116073164453, 
+        assertClose(0.0116073164453, // calculated in python
                 this.gettingShunt.m(this.model.initialValues(), 1));
     },
 
     "test should set initial h to h_inf" : function () {
-        assertClose(0.9820137900379, 
+        assertClose(0.9820137900379, // calculated in python
                 this.gettingShunt.h(this.model.initialValues(), 1));
+    },
+
+    "test should set initial m to m_inf for V_rest if given" : function () {
+        var gettingShunt = electrophys.gettingShuntConductance(this.model, 
+            this.neuron, 
+            { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
+                B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3, V_rest: -60e-3 });
+        assertClose(0.03444519566621117, // calculated in python
+                gettingShunt.m(this.model.initialValues(), 1));
+    },
+
+    "test should set initial h to h_inf for V_rest if given" : function () {
+        var gettingShunt = electrophys.gettingShuntConductance(this.model, 
+            this.neuron, 
+            { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
+                B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3, V_rest: -60e-3 });
+        assertClose(0.8175744761936437, 
+                gettingShunt.h(this.model.initialValues(), 1));
     },
 
     "test should have expected drift" : function () {

@@ -46,6 +46,157 @@ window.addEventListener('load', function () {
 
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 7000, minVal: 0, maxVal: tMax / 1e-3 },
+        
+        C_nF_C2: { label: 'Membrane capacitance', units: 'nF', 
+            defaultVal: 2.27, minVal: 0.01, maxVal: 100 },
+        g_leak_uS_C2: { label: 'Leak conductance', units: '\u00B5S', 
+            defaultVal: 1 / 23.3, minVal: 0.01, maxVal: 100 },
+        E_leak_mV_C2: { label: 'Leak potential', units: 'mV', 
+            defaultVal: -48, minVal: -1000, maxVal: 1000 },
+        theta_ss_mV_C2: { label: 'Resting threshold', units: 'mV', 
+            defaultVal: -34, minVal: -1000, maxVal: 1000 },
+        theta_r_mV_C2: { label: 'Refractory threshold', units: 'mV', 
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
+        theta_tau_ms_C2: { label: 'Refractory time constant', units: 'ms', 
+            defaultVal: 65, minVal: 0.1, maxVal: 1000000 },
+        W_Fast_uS_C2: { label: 'Fast undershoot conductance', 
+            units: '\u00B5S', defaultVal: 0.12, minVal: 0, maxVal: 100 },
+        E_Fast_mV_C2: { label: 'Fast undershoot potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_Fast_ms_C2: { 
+            label: 'Fast undershoot opening time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Fast_ms_C2: { 
+            label: 'Fast undershoot closing time constant', units: 'ms', 
+            defaultVal: 30, minVal: 0.1, maxVal: 1000000 },
+        W_Med_uS_C2: { label: 'Medium undershoot conductance', 
+            units: '\u00B5S', defaultVal: 0.028, minVal: 0, maxVal: 100 },
+        E_Med_mV_C2: { label: 'Medium undershoot potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_Med_ms_C2: { 
+            label: 'Medium undershoot opening time constant', 
+            units: 'ms', defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Med_ms_C2: { 
+            label: 'Medium undershoot closing time constant', 
+            units: 'ms', defaultVal: 1200, minVal: 0.1, maxVal: 1000000 },
+        W_Slow_uS_C2: { label: 'Slow undershoot conductance', 
+            units: '\u00B5S', defaultVal: 0.003, minVal: 0, maxVal: 100 },
+        E_Slow_mV_C2: { label: 'Slow undershoot potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_Slow_ms_C2: { 
+            label: 'Slow undershoot opening time constant', 
+            units: 'ms', defaultVal: 4000, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Slow_ms_C2: { 
+            label: 'Slow undershoot closing time constant', 
+            units: 'ms', defaultVal: 4000, minVal: 0.1, maxVal: 1000000 },
+        
+        C_nF_DSI: { label: 'Membrane capacitance', units: 'nF', 
+            defaultVal: 1.5714765, minVal: 0.01, maxVal: 100 },
+        g_leak_uS_DSI: { label: 'Leak conductance', units: '\u00B5S', 
+            defaultVal: 1 / 38.8, minVal: 0.01, maxVal: 100 },
+        E_leak_mV_DSI: { label: 'Leak potential', units: 'mV', 
+            defaultVal: -47.5, minVal: -1000, maxVal: 1000 },
+        theta_ss_mV_DSI: { label: 'Resting threshold', units: 'mV', 
+            defaultVal: -50, minVal: -1000, maxVal: 1000 },
+        theta_r_mV_DSI: { label: 'Refractory threshold', units: 'mV', 
+            defaultVal: 200, minVal: -1000, maxVal: 1000 },
+        theta_tau_ms_DSI: { label: 'Refractory time constant', units: 'ms', 
+            defaultVal: 15, minVal: 0.1, maxVal: 1000000 },
+        G_Shunt_uS_DSI: { label: 'Shunt conductance', 
+            units: '\u00B5S', defaultVal: 0.08, minVal: 0, maxVal: 100 },
+        E_Shunt_mV_DSI: { label: 'Shunt potential', units: 'mV', 
+            defaultVal: -47.5, minVal: -1000, maxVal: 1000 },
+        B_m_mV_DSI: { label: 'Shunt m gate threshold', units: 'mV', 
+            defaultVal: 29, minVal: -1000, maxVal: 1000 },
+        C_m_mV_DSI: { label: 'Shunt m gate threshold width', units: 'mV', 
+            defaultVal: -1, minVal: -1000, maxVal: 1000 },
+        tau_m_ms_DSI: { label: 'Shunt m gate time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        B_h_mV_DSI: { label: 'Shunt h gate threshold', units: 'mV', 
+            defaultVal: -100, minVal: -1000, maxVal: 1000 },
+        C_h_mV_DSI: { label: 'Shunt h gate threshold width', units: 'mV', 
+            defaultVal: 1, minVal: -1000, maxVal: 1000 },
+        tau_h_ms_DSI: { label: 'Shunt h gate time constant', units: 'ms', 
+            defaultVal: 100000, minVal: 0.1, maxVal: 1000000 },
+        W_Fast_uS_DSI: { label: 'Fast undershoot conductance', 
+            units: '\u00B5S', defaultVal: 0.3, minVal: 0, maxVal: 100 },
+        E_Fast_mV_DSI: { label: 'Fast undershoot potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_Fast_ms_DSI: { 
+            label: 'Fast undershoot opening time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Fast_ms_DSI: { 
+            label: 'Fast undershoot closing time constant', units: 'ms', 
+            defaultVal: 85, minVal: 0.1, maxVal: 1000000 },
+        W_Slow_uS_DSI: { label: 'Slow undershoot conductance', 
+            units: '\u00B5S', defaultVal: 0.012, minVal: 0, maxVal: 100 },
+        E_Slow_mV_DSI: { label: 'Slow undershoot potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_Slow_ms_DSI: { 
+            label: 'Slow undershoot opening time constant', 
+            units: 'ms', defaultVal: 200, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Slow_ms_DSI: { 
+            label: 'Slow undershoot closing time constant', 
+            units: 'ms', defaultVal: 2800, minVal: 0.1, maxVal: 1000000 },
+        
+        C_nF_VSI: { label: 'Membrane capacitance', units: 'nF', 
+            defaultVal: 3.2, minVal: 0.01, maxVal: 100 },
+        g_leak_uS_VSI: { label: 'Leak conductance', units: '\u00B5S', 
+            defaultVal: 1 / 14, minVal: 0.01, maxVal: 100 },
+        E_leak_mV_VSI: { label: 'Leak potential', units: 'mV', 
+            defaultVal: -56, minVal: -1000, maxVal: 1000 },
+        theta_ss_mV_VSI: { label: 'Resting threshold', units: 'mV', 
+            defaultVal: -38, minVal: -1000, maxVal: 1000 },
+        theta_r_mV_VSI: { label: 'Refractory threshold', units: 'mV', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        theta_tau_ms_VSI: { label: 'Refractory time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        G_Shunt_uS_VSI: { label: 'Shunt conductance', 
+            units: '\u00B5S', defaultVal: 1, minVal: 0, maxVal: 100 },
+        E_Shunt_mV_VSI: { label: 'Shunt potential', units: 'mV', 
+            defaultVal: -70, minVal: -1000, maxVal: 1000 },
+        B_m_mV_VSI: { label: 'Shunt m gate threshold', units: 'mV', 
+            defaultVal: 30, minVal: -1000, maxVal: 1000 },
+        C_m_mV_VSI: { label: 'Shunt m gate threshold width', units: 'mV', 
+            defaultVal: -9, minVal: -1000, maxVal: 1000 },
+        tau_m_ms_VSI: { label: 'Shunt m gate time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        B_h_mV_VSI: { label: 'Shunt h gate threshold', units: 'mV', 
+            defaultVal: 54, minVal: -1000, maxVal: 1000 },
+        C_h_mV_VSI: { label: 'Shunt h gate threshold width', units: 'mV', 
+            defaultVal: 4, minVal: -1000, maxVal: 1000 },
+        tau_h_ms_VSI: { label: 'Shunt h gate time constant', units: 'ms', 
+            defaultVal: 600, minVal: 0.1, maxVal: 1000000 },
+        W_Fast_uS_VSI: { label: 'Fast undershoot conductance', 
+            units: '\u00B5S', defaultVal: 0.54, minVal: 0, maxVal: 100 },
+        E_Fast_mV_VSI: { label: 'Fast undershoot potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_Fast_ms_VSI: { 
+            label: 'Fast undershoot opening time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Fast_ms_VSI: { 
+            label: 'Fast undershoot closing time constant', units: 'ms', 
+            defaultVal: 100, minVal: 0.1, maxVal: 1000000 },
+        W_Slow_uS_VSI: { label: 'Slow undershoot conductance', 
+            units: '\u00B5S', defaultVal: 0.0046, minVal: 0, maxVal: 100 },
+        E_Slow_mV_VSI: { label: 'Slow undershoot potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_Slow_ms_VSI: { 
+            label: 'Slow undershoot opening time constant', 
+            units: 'ms', defaultVal: 1000, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Slow_ms_VSI: { 
+            label: 'Slow undershoot closing time constant', 
+            units: 'ms', defaultVal: 2500, minVal: 0.1, maxVal: 1000000 },
+        W_E1_uS_VSI: { label: 'Self excitation conductance', 
+            units: '\u00B5S', defaultVal: 0.028, minVal: 0, maxVal: 100 },
+        E_E1_mV_VSI: { label: 'Self excitation potential', units: 'mV', 
+            defaultVal: -10, minVal: -1000, maxVal: 1000 },
+        tau_open_E1_ms_VSI: { 
+            label: 'Self excitation opening time constant', units: 'ms', 
+            defaultVal: 200, minVal: 0.1, maxVal: 1000000 },
+        tau_close_E1_ms_VSI: { 
+            label: 'Self excitation closing time constant', units: 'ms', 
+            defaultVal: 500, minVal: 0.1, maxVal: 1000000 },
     };
     layout = [
         ['C2 Current Clamp', ['pulseStart_ms_C2', 'pulseHeight_nA_C2', 
@@ -54,7 +205,29 @@ window.addEventListener('load', function () {
             'pulseWidth_ms_DSI', 'isi_ms_DSI', 'numPulses_DSI']],
         ['VSI Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
             'pulseWidth_ms_VSI', 'isi_ms_VSI', 'numPulses_VSI']],
-        ['Simulation Settings', ['totalDuration_ms']]
+        ['Simulation Settings', ['totalDuration_ms']],
+        ['C2 Parameters', ['C_nF_C2', 'g_leak_uS_C2', 'E_leak_mV_C2',
+            'theta_ss_mV_C2', 'theta_r_mV_C2', 'theta_tau_ms_C2',
+            'W_Fast_uS_C2', 'E_Fast_mV_C2', 'tau_open_Fast_ms_C2',
+            'tau_close_Fast_ms_C2', 'W_Med_uS_C2', 'E_Med_mV_C2',
+            'tau_open_Med_ms_C2', 'tau_close_Med_ms_C2', 'W_Slow_uS_C2',
+            'E_Slow_mV_C2', 'tau_open_Slow_ms_C2', 'tau_close_Slow_ms_C2']],
+        ['DSI Parameters', ['C_nF_DSI', 'g_leak_uS_DSI', 'E_leak_mV_DSI',
+            'theta_ss_mV_DSI', 'theta_r_mV_DSI', 'theta_tau_ms_DSI',
+            'G_Shunt_uS_DSI', 'E_Shunt_mV_DSI', 'B_m_mV_DSI', 'C_m_mV_DSI',
+            'tau_m_ms_DSI', 'B_h_mV_DSI', 'C_h_mV_DSI', 'tau_h_ms_DSI',
+            'W_Fast_uS_DSI', 'E_Fast_mV_DSI', 'tau_open_Fast_ms_DSI',
+            'tau_close_Fast_ms_DSI', 'W_Slow_uS_DSI',
+            'E_Slow_mV_DSI', 'tau_open_Slow_ms_DSI', 'tau_close_Slow_ms_DSI']],
+        ['VSI Parameters', ['C_nF_VSI', 'g_leak_uS_VSI', 'E_leak_mV_VSI',
+            'theta_ss_mV_VSI', 'theta_r_mV_VSI', 'theta_tau_ms_VSI',
+            'G_Shunt_uS_VSI', 'E_Shunt_mV_VSI', 'B_m_mV_VSI', 'C_m_mV_VSI',
+            'tau_m_ms_VSI', 'B_h_mV_VSI', 'C_h_mV_VSI', 'tau_h_ms_VSI',
+            'W_Fast_uS_VSI', 'E_Fast_mV_VSI', 'tau_open_Fast_ms_VSI',
+            'tau_close_Fast_ms_VSI', 'W_Slow_uS_VSI', 'E_Slow_mV_VSI', 
+            'tau_open_Slow_ms_VSI', 'tau_close_Slow_ms_VSI',
+            'W_E1_uS_VSI', 'E_E1_mV_VSI', 
+            'tau_open_E1_ms_VSI', 'tau_close_E1_ms_VSI']]
     ];
     controlsPanel = document.getElementById('TritoniaControls');
 
@@ -76,18 +249,32 @@ window.addEventListener('load', function () {
         model = componentModel.componentModel();
 
         // create the C2 neuron
-        C2 = electrophys.gettingIFNeuron(model, 
-            { C: 2.27e-9, g_leak: 1 / 23.3e6, E_leak: -48e-3, 
-                theta_ss: -34e-3, theta_r: 0e-3, theta_tau: 65.0e-3 });
-        C2Fast = electrophys.gettingSynapse(model, C2, C2, 
-            { W: 0.12000e-6, E_rev: -80e-3, tau_open:   10e-3, 
-                tau_close:   30e-3 });
-        C2Med = electrophys.gettingSynapse(model, C2, C2, 
-            { W: 0.02800e-6, E_rev: -80e-3, tau_open:   10e-3, 
-                tau_close: 1200e-3 });
-        C2Slow = electrophys.gettingSynapse(model, C2, C2, 
-            { W: 0.00300e-6, E_rev: -80e-3, tau_open: 4000e-3, 
-                tau_close: 4000e-3 });
+        C2 = electrophys.gettingIFNeuron(model, { 
+            C: params.C_nF_C2 * 1e-9, 
+            g_leak: params.g_leak_uS_C2 * 1e-6, 
+            E_leak: params.E_leak_mV_C2 * 1e-3, 
+            theta_ss: params.theta_ss_mV_C2 * 1e-3, 
+            theta_r: params.theta_r_mV_C2 * 1e-3, 
+            theta_tau: params.theta_tau_ms_C2 * 1e-3 
+        });
+        C2Fast = electrophys.gettingSynapse(model, C2, C2, { 
+            W: params.W_Fast_uS_C2 * 1e-6, 
+            E_rev: params.E_Fast_mV_C2 * 1e-3, 
+            tau_open: params.tau_open_Fast_ms_C2 * 1e-3, 
+            tau_close: params.tau_close_Fast_ms_C2 * 1e-3, 
+        });
+        C2Med = electrophys.gettingSynapse(model, C2, C2, { 
+            W: params.W_Med_uS_C2 * 1e-6, 
+            E_rev: params.E_Med_mV_C2 * 1e-3, 
+            tau_open: params.tau_open_Med_ms_C2 * 1e-3, 
+            tau_close: params.tau_close_Med_ms_C2 * 1e-3, 
+        });
+        C2Slow = electrophys.gettingSynapse(model, C2, C2, { 
+            W: params.W_Slow_uS_C2 * 1e-6, 
+            E_rev: params.E_Slow_mV_C2 * 1e-3, 
+            tau_open: params.tau_open_Slow_ms_C2 * 1e-3, 
+            tau_close: params.tau_close_Slow_ms_C2 * 1e-3, 
+        });
         pulseTrainC2 = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms_C2, 
             width: params.pulseWidth_ms_C2 * 1e-3, 
@@ -99,18 +286,36 @@ window.addEventListener('load', function () {
         
 
         // create the DSI neuron
-        DSI = electrophys.gettingIFNeuron(model, 
-            { C: 1.5714765e-9, g_leak: 1 / 38.8e6, E_leak: -47.5e-3, 
-                theta_ss: -50e-3, theta_r: 200e-3, theta_tau: 15.0e-3 });
-        DSIShunt = electrophys.gettingShuntConductance(model, DSI,
-            { G: 0.08e-6, E_rev: -47.5e-3, B_m: 29e-3, C_m: -1e-3, 
-                tau_m: 10e-3, B_h: -100e-3, C_h: 1e-3, tau_h: 100000e-3 });
-        DSIFast = electrophys.gettingSynapse(model, DSI, DSI, 
-            { W: 0.30000e-6, E_rev: -80e-3, tau_open:   10e-3, 
-                tau_close:   85e-3 });
-        DSISlow = electrophys.gettingSynapse(model, DSI, DSI, 
-            { W: 0.01200e-6, E_rev: -80e-3, tau_open:  200e-3, 
-                tau_close: 2800e-3 });
+        DSI = electrophys.gettingIFNeuron(model, { 
+            C: params.C_nF_DSI * 1e-9, 
+            g_leak: params.g_leak_uS_DSI * 1e-6, 
+            E_leak: params.E_leak_mV_DSI * 1e-3, 
+            theta_ss: params.theta_ss_mV_DSI * 1e-3, 
+            theta_r: params.theta_r_mV_DSI * 1e-3, 
+            theta_tau: params.theta_tau_ms_DSI * 1e-3 
+        });
+        DSIShunt = electrophys.gettingShuntConductance(model, DSI, { 
+            G: params.G_Shunt_uS_DSI * 1e-6, 
+            E_rev: params.E_Shunt_mV_DSI * 1e-3,
+            B_m: params.B_m_mV_DSI * 1e-3,
+            C_m: params.C_m_mV_DSI * 1e-3,
+            tau_m: params.tau_m_ms_DSI * 1e-3,
+            B_h: params.B_h_mV_DSI * 1e-3,
+            C_h: params.C_h_mV_DSI * 1e-3,
+            tau_h: params.tau_h_ms_DSI * 1e-3,
+        });
+        DSIFast = electrophys.gettingSynapse(model, DSI, DSI, { 
+            W: params.W_Fast_uS_DSI * 1e-6, 
+            E_rev: params.E_Fast_mV_DSI * 1e-3, 
+            tau_open: params.tau_open_Fast_ms_DSI * 1e-3, 
+            tau_close: params.tau_close_Fast_ms_DSI * 1e-3, 
+        });
+        DSISlow = electrophys.gettingSynapse(model, DSI, DSI, { 
+            W: params.W_Slow_uS_DSI * 1e-6, 
+            E_rev: params.E_Slow_mV_DSI * 1e-3, 
+            tau_open: params.tau_open_Slow_ms_DSI * 1e-3, 
+            tau_close: params.tau_close_Slow_ms_DSI * 1e-3, 
+        });
         pulseTrainDSI = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms_DSI, 
             width: params.pulseWidth_ms_DSI * 1e-3, 
@@ -122,21 +327,42 @@ window.addEventListener('load', function () {
         
 
         // create the VSI neuron
-        VSI = electrophys.gettingIFNeuron(model, 
-            { C: 3.2e-9, g_leak: 1 / 14e6, E_leak: -56e-3, 
-                theta_ss: -38e-3, theta_r: 10e-3, theta_tau: 10.0e-3 });
-        VSIShunt = electrophys.gettingShuntConductance(model, VSI,
-            { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
-                    B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3 });
-        VSIFast = electrophys.gettingSynapse(model, VSI, VSI, 
-            { W: 0.54000e-6, E_rev: -80e-3, tau_open:   10e-3, 
-                tau_close:  100e-3 });
-        VSISlow = electrophys.gettingSynapse(model, VSI, VSI, 
-            { W: 0.00460e-6, E_rev: -80e-3, tau_open: 1000e-3, 
-                tau_close: 2500e-3 });
-        VSIToVSI_E1 = electrophys.gettingSynapse(model, VSI, VSI, 
-            { W: 0.02800e-6, E_rev: -10e-3, tau_open: 200e-3, 
-                tau_close: 500e-3 });
+        VSI = electrophys.gettingIFNeuron(model, { 
+            C: params.C_nF_VSI * 1e-9, 
+            g_leak: params.g_leak_uS_VSI * 1e-6, 
+            E_leak: params.E_leak_mV_VSI * 1e-3, 
+            theta_ss: params.theta_ss_mV_VSI * 1e-3, 
+            theta_r: params.theta_r_mV_VSI * 1e-3, 
+            theta_tau: params.theta_tau_ms_VSI * 1e-3 
+        });
+        VSIShunt = electrophys.gettingShuntConductance(model, VSI, { 
+            G: params.G_Shunt_uS_VSI * 1e-6, 
+            E_rev: params.E_Shunt_mV_VSI * 1e-3,
+            B_m: params.B_m_mV_VSI * 1e-3,
+            C_m: params.C_m_mV_VSI * 1e-3,
+            tau_m: params.tau_m_ms_VSI * 1e-3,
+            B_h: params.B_h_mV_VSI * 1e-3,
+            C_h: params.C_h_mV_VSI * 1e-3,
+            tau_h: params.tau_h_ms_VSI * 1e-3,
+        });
+        VSIFast = electrophys.gettingSynapse(model, VSI, VSI, { 
+            W: params.W_Fast_uS_VSI * 1e-6, 
+            E_rev: params.E_Fast_mV_VSI * 1e-3, 
+            tau_open: params.tau_open_Fast_ms_VSI * 1e-3, 
+            tau_close: params.tau_close_Fast_ms_VSI * 1e-3, 
+        });
+        VSISlow = electrophys.gettingSynapse(model, VSI, VSI, { 
+            W: params.W_Slow_uS_VSI * 1e-6, 
+            E_rev: params.E_Slow_mV_VSI * 1e-3, 
+            tau_open: params.tau_open_Slow_ms_VSI * 1e-3, 
+            tau_close: params.tau_close_Slow_ms_VSI * 1e-3, 
+        });
+        VSIToVSI_E1 = electrophys.gettingSynapse(model, VSI, VSI, { 
+            W: params.W_E1_uS_VSI * 1e-6, 
+            E_rev: params.E_E1_mV_VSI * 1e-3, 
+            tau_open: params.tau_open_E1_ms_VSI * 1e-3, 
+            tau_close: params.tau_close_E1_ms_VSI * 1e-3, 
+        });
         pulseTrainVSI = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms_VSI, 
             width: params.pulseWidth_ms_VSI * 1e-3, 

@@ -142,6 +142,16 @@ window.addEventListener('load', function () {
         tau_close_Slow_ms_DSI: { units: 'ms', 
             label: 'Slow undershoot closing time constant', 
             defaultVal: 2800, minVal: 0.1, maxVal: 1000000 },
+        W_E1_uS_DSI: { label: 'Self excitation conductance', 
+            units: '\u00B5S', defaultVal: 0.00058, minVal: 0, maxVal: 100 },
+        E_E1_mV_DSI: { label: 'Self excitation potential', units: 'mV', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        tau_open_E1_ms_DSI: { units: 'ms', 
+            label: 'Self excitation opening time constant', 
+            defaultVal: 850, minVal: 0.1, maxVal: 1000000 },
+        tau_close_E1_ms_DSI: { units: 'ms', 
+            label: 'Self excitation closing time constant', 
+            defaultVal: 1100, minVal: 0.1, maxVal: 1000000 },
         
         V_init_mV_VSI: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -60, minVal: -1000, maxVal: 1000 },
@@ -196,13 +206,76 @@ window.addEventListener('load', function () {
         W_E1_uS_VSI: { label: 'Self excitation conductance', 
             units: '\u00B5S', defaultVal: 0.028, minVal: 0, maxVal: 100 },
         E_E1_mV_VSI: { label: 'Self excitation potential', units: 'mV', 
-            defaultVal: -10, minVal: -1000, maxVal: 1000 },
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
         tau_open_E1_ms_VSI: { units: 'ms', 
             label: 'Self excitation opening time constant', 
             defaultVal: 200, minVal: 0.1, maxVal: 1000000 },
         tau_close_E1_ms_VSI: { units: 'ms', 
             label: 'Self excitation closing time constant', 
             defaultVal: 500, minVal: 0.1, maxVal: 1000000 },
+
+        W_E1_uS_C2toDSI: { label: 'E1 conductance', 
+            units: '\u00B5S', defaultVal: 0.00029, minVal: 0, maxVal: 100 },
+        E_E1_mV_C2toDSI: { label: 'E1 reversal potential', units: 'mV', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        tau_open_E1_ms_C2toDSI: { units: 'ms', 
+            label: 'E1 opening time constant', 
+            defaultVal: 300, minVal: 0.1, maxVal: 1000000 },
+        tau_close_E1_ms_C2toDSI: { units: 'ms', 
+            label: 'E1 closing time constant', 
+            defaultVal: 300, minVal: 0.1, maxVal: 1000000 },
+        W_I1_uS_C2toDSI: { label: 'I1 conductance', 
+            units: '\u00B5S', defaultVal: 0.00063, minVal: 0, maxVal: 100 },
+        E_I1_mV_C2toDSI: { label: 'I1 reversal potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_I1_ms_C2toDSI: { units: 'ms', 
+            label: 'I1 opening time constant', 
+            defaultVal: 400, minVal: 0.1, maxVal: 1000000 },
+        tau_close_I1_ms_C2toDSI: { units: 'ms', 
+            label: 'I1 closing time constant', 
+            defaultVal: 4000, minVal: 0.1, maxVal: 1000000 },
+        W_I2_uS_C2toDSI: { label: 'I2 conductance', 
+            units: '\u00B5S', defaultVal: 0.00018, minVal: 0, maxVal: 100 },
+        E_I2_mV_C2toDSI: { label: 'I2 reversal potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_I2_ms_C2toDSI: { units: 'ms', 
+            label: 'I2 opening time constant', 
+            defaultVal: 5000, minVal: 0.1, maxVal: 1000000 },
+        tau_close_I2_ms_C2toDSI: { units: 'ms', 
+            label: 'I2 closing time constant', 
+            defaultVal: 14000, minVal: 0.1, maxVal: 1000000 },
+
+        W_E1_uS_C2toVSI: { label: 'E1 conductance', 
+            units: '\u00B5S', defaultVal: 0.0016, minVal: 0, maxVal: 100 },
+        E_E1_mV_C2toVSI: { label: 'E1 reversal potential', units: 'mV', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        tau_open_E1_ms_C2toVSI: { units: 'ms', 
+            label: 'E1 opening time constant', 
+            defaultVal: 500, minVal: 0.1, maxVal: 1000000 },
+        tau_close_E1_ms_C2toVSI: { units: 'ms', 
+            label: 'E1 closing time constant', 
+            defaultVal: 500, minVal: 0.1, maxVal: 1000000 },
+        W_I1_uS_C2toVSI: { label: 'I1 conductance', 
+            units: '\u00B5S', defaultVal: 0.006, minVal: 0, maxVal: 100 },
+        E_I1_mV_C2toVSI: { label: 'I1 reversal potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_I1_ms_C2toVSI: { units: 'ms', 
+            label: 'I1 opening time constant', 
+            defaultVal: 1300, minVal: 0.1, maxVal: 1000000 },
+        tau_close_I1_ms_C2toVSI: { units: 'ms', 
+            label: 'I1 closing time constant', 
+            defaultVal: 2300, minVal: 0.1, maxVal: 1000000 },
+        W_I2_uS_C2toVSI: { label: 'I2 conductance', 
+            units: '\u00B5S', defaultVal: 0.0026, minVal: 0, maxVal: 100 },
+        E_I2_mV_C2toVSI: { label: 'I2 reversal potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_I2_ms_C2toVSI: { units: 'ms', 
+            label: 'I2 opening time constant', 
+            defaultVal: 7000, minVal: 0.1, maxVal: 1000000 },
+        tau_close_I2_ms_C2toVSI: { units: 'ms', 
+            label: 'I2 closing time constant', 
+            defaultVal: 7000, minVal: 0.1, maxVal: 1000000 },
+
     };
     layout = [
         ['C2 Current Clamp', ['pulseStart_ms_C2', 'pulseHeight_nA_C2', 
@@ -225,7 +298,9 @@ window.addEventListener('load', function () {
             'B_m_mV_DSI', 'C_m_mV_DSI', 'tau_m_ms_DSI', 'B_h_mV_DSI',
             'C_h_mV_DSI', 'tau_h_ms_DSI', 'W_Fast_uS_DSI', 'E_Fast_mV_DSI',
             'tau_open_Fast_ms_DSI', 'tau_close_Fast_ms_DSI', 'W_Slow_uS_DSI',
-            'E_Slow_mV_DSI', 'tau_open_Slow_ms_DSI', 'tau_close_Slow_ms_DSI']],
+            'E_Slow_mV_DSI', 'tau_open_Slow_ms_DSI', 'tau_close_Slow_ms_DSI',
+            'W_E1_uS_VSI', 'E_E1_mV_VSI', 'tau_open_E1_ms_VSI',
+            'tau_close_E1_ms_VSI']],
         ['VSI Parameters', ['V_init_mV_VSI', 'C_nF_VSI', 'g_leak_uS_VSI',
             'E_leak_mV_VSI', 'theta_ss_mV_VSI', 'theta_r_mV_VSI',
             'theta_tau_ms_VSI', 'G_Shunt_uS_VSI', 'E_Shunt_mV_VSI',
@@ -234,7 +309,17 @@ window.addEventListener('load', function () {
             'tau_open_Fast_ms_VSI', 'tau_close_Fast_ms_VSI', 'W_Slow_uS_VSI',
             'E_Slow_mV_VSI', 'tau_open_Slow_ms_VSI', 'tau_close_Slow_ms_VSI',
             'W_E1_uS_VSI', 'E_E1_mV_VSI', 'tau_open_E1_ms_VSI',
-            'tau_close_E1_ms_VSI']]
+            'tau_close_E1_ms_VSI']],
+        ['C2 to DSI synapse', ['W_E1_uS_C2toDSI', 'E_E1_mV_C2toDSI',
+            'tau_open_E1_ms_C2toDSI', 'tau_close_E1_ms_C2toDSI',
+            'W_I1_uS_C2toDSI', 'E_I1_mV_C2toDSI', 'tau_open_I1_ms_C2toDSI',
+            'tau_close_I1_ms_C2toDSI', 'W_I2_uS_C2toDSI', 'E_I2_mV_C2toDSI',
+            'tau_open_I2_ms_C2toDSI', 'tau_close_I2_ms_C2toDSI']],
+        ['C2 to VSI synapse', ['W_E1_uS_C2toVSI', 'E_E1_mV_C2toVSI',
+            'tau_open_E1_ms_C2toVSI', 'tau_close_E1_ms_C2toVSI',
+            'W_I1_uS_C2toVSI', 'E_I1_mV_C2toVSI', 'tau_open_I1_ms_C2toVSI',
+            'tau_close_I1_ms_C2toVSI', 'W_I2_uS_C2toVSI', 'E_I2_mV_C2toVSI',
+            'tau_open_I2_ms_C2toVSI', 'tau_close_I2_ms_C2toVSI']]
     ];
     controlsPanel = document.getElementById('TritoniaControls');
 
@@ -244,10 +329,12 @@ window.addEventListener('load', function () {
             model, result,
             C2, C2Shunt, C2Fast, C2Med, C2Slow, pulseTrainC2,
             v_C2, v_C2_mV, iStim_C2_nA,
-            DSI, DSIShunt, DSIFast, DSISlow, pulseTrainDSI,
+            DSI, DSIShunt, DSIFast, DSISlow, DSIToDSI_E1, pulseTrainDSI,
             v_DSI, v_DSI_mV, iStim_DSI_nA,
             VSI, VSIShunt, VSIFast, VSISlow, VSIToVSI_E1, pulseTrainVSI,
             v_VSI, v_VSI_mV, iStim_VSI_nA,
+            C2toDSI_E1, C2toDSI_I1, C2toDSI_I2, 
+            C2toVSI_E1, C2toVSI_I1, C2toVSI_I2, 
             t, t_ms, 
             startTime = new Date().getTime(),
             t0, y0, runNumber;
@@ -326,6 +413,12 @@ window.addEventListener('load', function () {
             tau_open: params.tau_open_Slow_ms_DSI * 1e-3, 
             tau_close: params.tau_close_Slow_ms_DSI * 1e-3, 
         });
+        DSIToDSI_E1 = electrophys.gettingSynapse(model, DSI, DSI, { 
+            W: params.W_E1_uS_DSI * 1e-6, 
+            E_rev: params.E_E1_mV_DSI * 1e-3, 
+            tau_open: params.tau_open_E1_ms_DSI * 1e-3, 
+            tau_close: params.tau_close_E1_ms_DSI * 1e-3, 
+        });
         pulseTrainDSI = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms_DSI, 
             width: params.pulseWidth_ms_DSI * 1e-3, 
@@ -384,7 +477,45 @@ window.addEventListener('load', function () {
         });
         VSI.addCurrent(pulseTrainVSI);
         
-
+        // create the C2 to DSI synapse
+        C2toDSI_E1 = electrophys.gettingSynapse(model, C2, DSI, { 
+            W: params.W_E1_uS_C2toDSI * 1e-6, 
+            E_rev: params.E_E1_mV_C2toDSI * 1e-3, 
+            tau_open: params.tau_open_E1_ms_C2toDSI * 1e-3, 
+            tau_close: params.tau_close_E1_ms_C2toDSI * 1e-3, 
+        });
+        C2toDSI_I1 = electrophys.gettingSynapse(model, C2, DSI, { 
+            W: params.W_I1_uS_C2toDSI * 1e-6, 
+            E_rev: params.E_I1_mV_C2toDSI * 1e-3, 
+            tau_open: params.tau_open_I1_ms_C2toDSI * 1e-3, 
+            tau_close: params.tau_close_I1_ms_C2toDSI * 1e-3, 
+        });
+        C2toDSI_I2 = electrophys.gettingSynapse(model, C2, DSI, { 
+            W: params.W_I2_uS_C2toDSI * 1e-6, 
+            E_rev: params.E_I2_mV_C2toDSI * 1e-3, 
+            tau_open: params.tau_open_I2_ms_C2toDSI * 1e-3, 
+            tau_close: params.tau_close_I2_ms_C2toDSI * 1e-3, 
+        });
+        
+        // create the C2 to VSI synapse
+        C2toVSI_E1 = electrophys.gettingSynapse(model, C2, VSI, { 
+            W: params.W_E1_uS_C2toVSI * 1e-6, 
+            E_rev: params.E_E1_mV_C2toVSI * 1e-3, 
+            tau_open: params.tau_open_E1_ms_C2toVSI * 1e-3, 
+            tau_close: params.tau_close_E1_ms_C2toVSI * 1e-3, 
+        });
+        C2toVSI_I1 = electrophys.gettingSynapse(model, C2, VSI, { 
+            W: params.W_I1_uS_C2toVSI * 1e-6, 
+            E_rev: params.E_I1_mV_C2toVSI * 1e-3, 
+            tau_open: params.tau_open_I1_ms_C2toVSI * 1e-3, 
+            tau_close: params.tau_close_I1_ms_C2toVSI * 1e-3, 
+        });
+        C2toVSI_I2 = electrophys.gettingSynapse(model, C2, VSI, { 
+            W: params.W_I2_uS_C2toVSI * 1e-6, 
+            E_rev: params.E_I2_mV_C2toVSI * 1e-3, 
+            tau_open: params.tau_open_I2_ms_C2toVSI * 1e-3, 
+            tau_close: params.tau_close_I2_ms_C2toVSI * 1e-3, 
+        });
 
         // simulate them
         t_ms = [];
@@ -453,7 +584,7 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_C2_mV,
-                { xUnits: 'ms', yUnits: 'mV', 
+                { xUnits: 'ms', yUnits: 'mV', minYRange: 20,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 
@@ -471,7 +602,7 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_DSI_mV,
-                { xUnits: 'ms', yUnits: 'mV', 
+                { xUnits: 'ms', yUnits: 'mV', minYRange: 20,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 
@@ -489,7 +620,7 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_VSI_mV,
-                { xUnits: 'ms', yUnits: 'mV', 
+                { xUnits: 'ms', yUnits: 'mV', minYRange: 20,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 

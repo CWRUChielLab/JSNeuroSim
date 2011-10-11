@@ -473,7 +473,7 @@ window.addEventListener('load', function () {
             'pulseWidth_ms_C2', 'isi_ms_C2', 'numPulses_C2']],
         ['DSI Current Clamp', ['pulseStart_ms_DSI', 'pulseHeight_nA_DSI', 
             'pulseWidth_ms_DSI', 'isi_ms_DSI', 'numPulses_DSI']],
-        ['VSI Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
+        ['VSI-B Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
             'pulseWidth_ms_VSI', 'isi_ms_VSI', 'numPulses_VSI']],
         ['DRI Current Clamp', ['pulseStart_ms_DRI', 'pulseHeight_nA_DRI', 
             'pulseWidth_ms_DRI', 'isi_ms_DRI', 'numPulses_DRI']],
@@ -494,7 +494,7 @@ window.addEventListener('load', function () {
             'E_Slow_mV_DSI', 'tau_open_Slow_ms_DSI', 'tau_close_Slow_ms_DSI',
             'W_E1_uS_VSI', 'E_E1_mV_VSI', 'tau_open_E1_ms_VSI',
             'tau_close_E1_ms_VSI']],
-        ['VSI Parameters', ['V_init_mV_VSI', 'C_nF_VSI', 'g_leak_uS_VSI',
+        ['VSI-B Parameters', ['V_init_mV_VSI', 'C_nF_VSI', 'g_leak_uS_VSI',
             'E_leak_mV_VSI', 'theta_ss_mV_VSI', 'theta_r_mV_VSI',
             'theta_tau_ms_VSI', 'G_Shunt_uS_VSI', 'E_Shunt_mV_VSI',
             'B_m_mV_VSI', 'C_m_mV_VSI', 'tau_m_ms_VSI', 'B_h_mV_VSI',
@@ -512,7 +512,7 @@ window.addEventListener('load', function () {
             'W_I1_uS_C2toDSI', 'E_I1_mV_C2toDSI', 'tau_open_I1_ms_C2toDSI',
             'tau_close_I1_ms_C2toDSI', 'W_I2_uS_C2toDSI', 'E_I2_mV_C2toDSI',
             'tau_open_I2_ms_C2toDSI', 'tau_close_I2_ms_C2toDSI']],
-        ['C2 to VSI synapse', ['W_E1_uS_C2toVSI', 'E_E1_mV_C2toVSI',
+        ['C2 to VSI-B synapse', ['W_E1_uS_C2toVSI', 'E_E1_mV_C2toVSI',
             'tau_open_E1_ms_C2toVSI', 'tau_close_E1_ms_C2toVSI',
             'W_I1_uS_C2toVSI', 'E_I1_mV_C2toVSI', 'tau_open_I1_ms_C2toVSI',
             'tau_close_I1_ms_C2toVSI', 'W_I2_uS_C2toVSI', 'E_I2_mV_C2toVSI',
@@ -521,14 +521,14 @@ window.addEventListener('load', function () {
             'tau_open_E1_ms_DSItoC2', 'tau_close_E1_ms_DSItoC2',
             'W_E2_uS_DSItoC2', 'E_E2_mV_DSItoC2',
             'tau_open_E2_ms_DSItoC2', 'tau_close_E2_ms_DSItoC2']],
-        ['DSI to VSI synapse', ['W_E1_uS_DSItoVSI', 'E_E1_mV_DSItoVSI',
+        ['DSI to VSI-B synapse', ['W_E1_uS_DSItoVSI', 'E_E1_mV_DSItoVSI',
             'tau_open_E1_ms_DSItoVSI', 'tau_close_E1_ms_DSItoVSI',
             'W_I1_uS_DSItoVSI', 'E_I1_mV_DSItoVSI', 'tau_open_I1_ms_DSItoVSI',
             'tau_close_I1_ms_DSItoVSI', 'W_I2_uS_DSItoVSI', 'E_I2_mV_DSItoVSI',
             'tau_open_I2_ms_DSItoVSI', 'tau_close_I2_ms_DSItoVSI']],
-        ['VSI to C2 synapse', ['W_I1_uS_VSItoC2', 'E_I1_mV_VSItoC2', 
+        ['VSI-B to C2 synapse', ['W_I1_uS_VSItoC2', 'E_I1_mV_VSItoC2', 
             'tau_open_I1_ms_VSItoC2', 'tau_close_I1_ms_VSItoC2' ]],
-        ['VSI to DSI synapse', ['W_I1_uS_VSItoDSI', 'E_I1_mV_VSItoDSI', 
+        ['VSI-B to DSI synapse', ['W_I1_uS_VSItoDSI', 'E_I1_mV_VSItoDSI', 
             'tau_open_I1_ms_VSItoDSI', 'tau_close_I1_ms_VSItoDSI',
             'W_I2_uS_VSItoDSI', 'E_I2_mV_VSItoDSI', 'tau_open_I2_ms_VSItoDSI',
             'tau_close_I2_ms_VSItoDSI']],
@@ -956,7 +956,7 @@ window.addEventListener('load', function () {
                     xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
-            title.innerHTML = 'VSI potential (mV)';
+            title.innerHTML = 'VSI-B potential (mV)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_VSI_mV,
@@ -965,7 +965,7 @@ window.addEventListener('load', function () {
                     xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
-            title.innerHTML = 'VSI Stimulation current (nA)';
+            title.innerHTML = 'VSI-B Stimulation current (nA)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_VSI_nA,

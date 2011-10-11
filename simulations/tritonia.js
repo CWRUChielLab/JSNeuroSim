@@ -44,6 +44,17 @@ window.addEventListener('load', function () {
         numPulses_VSI: { label: 'Number of pulses', units: '', 
             defaultVal: 1, minVal: 0, maxVal: 100 },
 
+        pulseStart_ms_DRI: { label: 'Stimulus delay', units: 'ms', 
+            defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseHeight_nA_DRI: { label: 'Stimulus current', units: 'nA', 
+            defaultVal: 5, minVal: -1000, maxVal: 1000 },
+        pulseWidth_ms_DRI: { label: 'Pulse duration', units: 'ms', 
+            defaultVal: 20, minVal: 0, maxVal: tMax / 1e-3 },
+        isi_ms_DRI: { label: 'Inter-stimulus interval', units: 'ms', 
+            defaultVal: 80, minVal: 0, maxVal: tMax / 1e-3 },
+        numPulses_DRI: { label: 'Number of pulses', units: '', 
+            defaultVal: 10, minVal: 0, maxVal: 100 },
+
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 7000, minVal: 0, maxVal: tMax / 1e-3 },
         
@@ -214,6 +225,31 @@ window.addEventListener('load', function () {
             label: 'Self excitation closing time constant', 
             defaultVal: 500, minVal: 0.1, maxVal: 1000000 },
 
+        V_init_mV_DRI: { label: 'Initial membrane potential', units: 'mV', 
+            defaultVal: -50, minVal: -1000, maxVal: 1000 },
+        C_nF_DRI: { label: 'Membrane capacitance', units: 'nF', 
+            defaultVal: 2, minVal: 0.01, maxVal: 100 },
+        g_leak_uS_DRI: { label: 'Leak conductance', units: '\u00B5S', 
+            defaultVal: 0.05, minVal: 0.01, maxVal: 100 },
+        E_leak_mV_DRI: { label: 'Leak potential', units: 'mV', 
+            defaultVal: -50, minVal: -1000, maxVal: 1000 },
+        theta_ss_mV_DRI: { label: 'Resting threshold', units: 'mV', 
+            defaultVal: -34, minVal: -1000, maxVal: 1000 },
+        theta_r_mV_DRI: { label: 'Refractory threshold', units: 'mV', 
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
+        theta_tau_ms_DRI: { label: 'Refractory time constant', units: 'ms', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        W_Fast_uS_DRI: { label: 'Fast undershoot conductance', 
+            units: '\u00B5S', defaultVal: 0.3, minVal: 0, maxVal: 100 },
+        E_Fast_mV_DRI: { label: 'Fast undershoot potential', units: 'mV', 
+            defaultVal: -80, minVal: -1000, maxVal: 1000 },
+        tau_open_Fast_ms_DRI: { units: 'ms', 
+            label: 'Fast undershoot opening time constant', 
+            defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
+        tau_close_Fast_ms_DRI: { units: 'ms', 
+            label: 'Fast undershoot closing time constant', 
+            defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
+
         W_E1_uS_C2toDSI: { label: 'E1 conductance', 
             units: '\u00B5S', defaultVal: 0.00029, minVal: 0, maxVal: 100 },
         E_E1_mV_C2toDSI: { label: 'E1 reversal potential', units: 'mV', 
@@ -360,6 +396,7 @@ window.addEventListener('load', function () {
             label: 'I2 closing time constant', 
             defaultVal: 750, minVal: 0.1, maxVal: 1000000 },
     };
+
     layout = [
         ['C2 Current Clamp', ['pulseStart_ms_C2', 'pulseHeight_nA_C2', 
             'pulseWidth_ms_C2', 'isi_ms_C2', 'numPulses_C2']],
@@ -367,6 +404,8 @@ window.addEventListener('load', function () {
             'pulseWidth_ms_DSI', 'isi_ms_DSI', 'numPulses_DSI']],
         ['VSI Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
             'pulseWidth_ms_VSI', 'isi_ms_VSI', 'numPulses_VSI']],
+        ['DRI Current Clamp', ['pulseStart_ms_DRI', 'pulseHeight_nA_DRI', 
+            'pulseWidth_ms_DRI', 'isi_ms_DRI', 'numPulses_DRI']],
         ['Simulation Settings', ['totalDuration_ms']],
         ['C2 Parameters', ['V_init_mV_C2', 'C_nF_C2', 'g_leak_uS_C2', 
             'E_leak_mV_C2', 'theta_ss_mV_C2', 'theta_r_mV_C2',
@@ -393,6 +432,10 @@ window.addEventListener('load', function () {
             'E_Slow_mV_VSI', 'tau_open_Slow_ms_VSI', 'tau_close_Slow_ms_VSI',
             'W_E1_uS_VSI', 'E_E1_mV_VSI', 'tau_open_E1_ms_VSI',
             'tau_close_E1_ms_VSI']],
+        ['DRI Parameters', ['V_init_mV_DRI', 'C_nF_DRI', 'g_leak_uS_DRI', 
+            'E_leak_mV_DRI', 'theta_ss_mV_DRI', 'theta_r_mV_DRI',
+            'theta_tau_ms_DRI', 'W_Fast_uS_DRI', 'E_Fast_mV_DRI',
+            'tau_open_Fast_ms_DRI', 'tau_close_Fast_ms_DRI']],
         ['C2 to DSI synapse', ['W_E1_uS_C2toDSI', 'E_E1_mV_C2toDSI',
             'tau_open_E1_ms_C2toDSI', 'tau_close_E1_ms_C2toDSI',
             'W_I1_uS_C2toDSI', 'E_I1_mV_C2toDSI', 'tau_open_I1_ms_C2toDSI',
@@ -425,12 +468,14 @@ window.addEventListener('load', function () {
     function runSimulation() {
         var params, plotPanel, title,
             model, result,
-            C2, C2Shunt, C2Fast, C2Med, C2Slow, pulseTrainC2,
+            C2, C2Fast, C2Med, C2Slow, pulseTrainC2,
             v_C2, v_C2_mV, iStim_C2_nA,
             DSI, DSIShunt, DSIFast, DSISlow, DSIToDSI_E1, pulseTrainDSI,
             v_DSI, v_DSI_mV, iStim_DSI_nA,
             VSI, VSIShunt, VSIFast, VSISlow, VSIToVSI_E1, pulseTrainVSI,
             v_VSI, v_VSI_mV, iStim_VSI_nA,
+            DRI, DRIFast, pulseTrainDRI,
+            v_DRI, v_DRI_mV, iStim_DRI_nA,
             C2toDSI_E1, C2toDSI_I1, C2toDSI_I2, 
             C2toVSI_E1, C2toVSI_I1, C2toVSI_I2, 
             DSItoC2_E1, DSItoC2_E2, 
@@ -579,6 +624,33 @@ window.addEventListener('load', function () {
         });
         VSI.addCurrent(pulseTrainVSI);
         
+        
+        // create the DRI neuron
+        DRI = electrophys.gettingIFNeuron(model, { 
+            V_rest: params.V_init_mV_DRI * 1e-3, 
+            C: params.C_nF_DRI * 1e-9, 
+            g_leak: params.g_leak_uS_DRI * 1e-6, 
+            E_leak: params.E_leak_mV_DRI * 1e-3, 
+            theta_ss: params.theta_ss_mV_DRI * 1e-3, 
+            theta_r: params.theta_r_mV_DRI * 1e-3, 
+            theta_tau: params.theta_tau_ms_DRI * 1e-3 
+        });
+        DRIFast = electrophys.gettingSynapse(model, DRI, DRI, { 
+            W: params.W_Fast_uS_DRI * 1e-6, 
+            E_rev: params.E_Fast_mV_DRI * 1e-3, 
+            tau_open: params.tau_open_Fast_ms_DRI * 1e-3, 
+            tau_close: params.tau_close_Fast_ms_DRI * 1e-3, 
+        });
+        pulseTrainDRI = electrophys.pulseTrain({
+            start: 1e-3 * params.pulseStart_ms_DRI, 
+            width: params.pulseWidth_ms_DRI * 1e-3, 
+            height: params.pulseHeight_nA_DRI * 1e-9,
+            gap: params.isi_ms_DRI * 1e-3,
+            num_pulses: params.numPulses_DRI
+        });
+        DRI.addCurrent(pulseTrainDRI);
+        
+
         // create the C2 to DSI synapse
         C2toDSI_E1 = electrophys.gettingSynapse(model, C2, DSI, { 
             W: params.W_E1_uS_C2toDSI * 1e-6, 
@@ -683,6 +755,8 @@ window.addEventListener('load', function () {
         iStim_DSI_nA = [];
         v_VSI_mV = [];
         iStim_VSI_nA = [];
+        v_DRI_mV = [];
+        iStim_DRI_nA = [];
 
         // run for a bit to allow the simulation to stabilize
         result = model.integrate({
@@ -712,6 +786,7 @@ window.addEventListener('load', function () {
             v_C2 = C2.VWithSpikes(result.y, result.t);
             v_DSI = DSI.VWithSpikes(result.y, result.t);
             v_VSI = VSI.VWithSpikes(result.y, result.t);
+            v_DRI = DRI.VWithSpikes(result.y, result.t);
 
             t_ms = t_ms.concat(graph.linearAxis(0, 1, 0, 1000)
                     .mapWorldToDisplay(t));
@@ -731,6 +806,12 @@ window.addEventListener('load', function () {
                     .mapWorldToDisplay(v_VSI));
             iStim_VSI_nA = iStim_VSI_nA.concat(t.map(function (t) {
                 return pulseTrainVSI([], t) / 1e-9; 
+            }));
+
+            v_DRI_mV = v_DRI_mV.concat(graph.linearAxis(0, 1, 0, 1000)
+                    .mapWorldToDisplay(v_DRI));
+            iStim_DRI_nA = iStim_DRI_nA.concat(t.map(function (t) {
+                return pulseTrainDRI([], t) / 1e-9; 
             }));
 
             // plot the results
@@ -787,6 +868,24 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_VSI_nA,
+                { xUnits: 'ms', yUnits: 'nA',
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
+
+            title = document.createElement('h4');
+            title.innerHTML = 'DRI potential (mV)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 60, t_ms, v_DRI_mV,
+                { xUnits: 'ms', yUnits: 'mV', minYRange: 20,
+                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMax: params.totalDuration_ms});
+
+            title = document.createElement('h4');
+            title.innerHTML = 'DRI Stimulation current (nA)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 60, t_ms, iStim_DRI_nA,
                 { xUnits: 'ms', yUnits: 'nA',
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});

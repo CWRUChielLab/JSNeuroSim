@@ -6,11 +6,14 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 600000e-3, 
+    var layout, controlsPanel, controls, tMax = 600000e-3, 
+        paramsUnmodulatedSwim, 
+        paramsModulatedSwim, modulation,
+        paramsIsolatedCells,
         currentRunNumber = 0; 
 
     // set up the controls for the passive membrane simulation
-    params = { 
+    paramsUnmodulatedSwim = { 
         pulseStart_ms_C2: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_C2: { label: 'Stimulus current', units: 'nA', 
@@ -407,6 +410,63 @@ window.addEventListener('load', function () {
             label: 'E1 closing time constant', 
             defaultVal: 15000, minVal: 0.1, maxVal: 1000000 },
     };
+
+
+    // Modulated parameters:
+    // start with a copy of the unmodulated parameters, then adjust
+    modulation = 1;
+    paramsModulatedSwim = JSON.parse(JSON.stringify(paramsUnmodulatedSwim));
+    paramsModulatedSwim.tau_close_E1_ms_DSItoC2.defaultVal *= 1 + 
+        2 * modulation;
+    paramsModulatedSwim.tau_close_E2_ms_DSItoC2.defaultVal *= 3 + 
+        2 * modulation;
+    paramsModulatedSwim.W_E1_uS_DSItoC2.defaultVal *= 1 + 6.5 * modulation;
+    paramsModulatedSwim.W_E2_uS_DSItoC2.defaultVal *= 1 + 6.5 * modulation;
+    paramsModulatedSwim.W_E1_uS_C2toVSI.defaultVal *= 1 + 24 * modulation;
+    paramsModulatedSwim.W_I1_uS_C2toVSI.defaultVal *= 1 + -1 * modulation;
+    paramsModulatedSwim.W_I2_uS_C2toVSI.defaultVal *= 1 + -1 * modulation;
+    paramsModulatedSwim.W_E1_uS_C2toDSI.defaultVal *= 1 + 20 * modulation;
+    
+    // uncorrelated parameter changes from paper
+    //paramsModulatedSwim.tau_close_E1_ms_C2toDSI.defaultVal *= 1 + 
+    //    2.5 * modulation;
+    //paramsModulatedSwim.W_I1_uS_C2toDSI.defaultVal *= 1 + -1 * modulation;
+    //paramsModulatedSwim.W_I2_uS_C2toDSI.defaultVal *= 1 + -1 * modulation;
+    //paramsModulatedSwim.W_I1_uS_VSItoC2.defaultVal *= 1 + 3 * modulation;
+    //paramsModulatedSwim.W_E1_uS_DRItoDSI.defaultVal *= 1 + 9 * modulation;
+    
+    // Stops spontaneous swimming (an addition - not in original paper)
+    paramsModulatedSwim.E_leak_mV_DSI.defaultVal = -51;
+
+
+
+    // Isolated cells
+    // start with a copy of the unmodulated parameters, then remove synapses 
+    modulation = 1;
+    paramsIsolatedCells = JSON.parse(JSON.stringify(paramsUnmodulatedSwim));
+    paramsIsolatedCells.W_E1_uS_C2toDSI.defaultVal = 0;
+    paramsIsolatedCells.W_I1_uS_C2toDSI.defaultVal = 0;
+    paramsIsolatedCells.W_I2_uS_C2toDSI.defaultVal = 0;
+    paramsIsolatedCells.W_E1_uS_C2toVSI.defaultVal = 0;
+    paramsIsolatedCells.W_I1_uS_C2toVSI.defaultVal = 0;
+    paramsIsolatedCells.W_I2_uS_C2toVSI.defaultVal = 0;
+    paramsIsolatedCells.W_E1_uS_DSItoC2.defaultVal = 0;
+    paramsIsolatedCells.W_E2_uS_DSItoC2.defaultVal = 0;
+    paramsIsolatedCells.W_E1_uS_DSItoVSI.defaultVal = 0;
+    paramsIsolatedCells.W_I1_uS_DSItoVSI.defaultVal = 0;
+    paramsIsolatedCells.W_I2_uS_DSItoVSI.defaultVal = 0;
+    paramsIsolatedCells.W_I1_uS_VSItoC2.defaultVal = 0;
+    paramsIsolatedCells.W_I1_uS_VSItoDSI.defaultVal = 0;
+    paramsIsolatedCells.W_I2_uS_VSItoDSI.defaultVal = 0;
+    paramsIsolatedCells.W_E1_uS_DRItoDSI.defaultVal = 0;
+    // set up the simulation to match fig 3 from paper
+    paramsIsolatedCells.totalDuration_ms.defaultVal = 7000;
+    paramsIsolatedCells.pulseHeight_nA_C2.defaultVal = 3;
+    paramsIsolatedCells.pulseHeight_nA_DSI.defaultVal = 3;
+    paramsIsolatedCells.pulseHeight_nA_VSI.defaultVal = 2.5;
+    paramsIsolatedCells.pulseHeight_nA_DRI.defaultVal = 0;
+
+
 
     layout = [
         ['C2 Current Clamp', ['pulseStart_ms_C2', 'pulseHeight_nA_C2', 
@@ -944,18 +1004,34 @@ window.addEventListener('load', function () {
         window.setTimeout(updateSim, 0);
     }
 
-    
-    function reset() {
+   
+    function reset(params) {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
     }
 
+    function resetToUnmodulatedSwim() {
+        reset(paramsUnmodulatedSwim);
+    }
+    
+    function resetToModulatedSwim() {
+        reset(paramsModulatedSwim);
+    }
+    
+    function resetToIsolatedCells() {
+        reset(paramsIsolatedCells);
+    }
+
 
     (document.getElementById('TritoniaRunButton')
         .addEventListener('click', runSimulation, false));
-    (document.getElementById('TritoniaResetButton')
-        .addEventListener('click', reset, false));
+    (document.getElementById('TritoniaUnmodulatedSwimResetButton')
+        .addEventListener('click', resetToUnmodulatedSwim, false));
+    (document.getElementById('TritoniaModulatedSwimResetButton')
+        .addEventListener('click', resetToModulatedSwim, false));
+    (document.getElementById('TritoniaIsolatedCellsResetButton')
+        .addEventListener('click', resetToIsolatedCells, false));
     
 
     // make the enter key run the simulation  
@@ -968,7 +1044,7 @@ window.addEventListener('load', function () {
             }
         }, true);
 
-    reset();
+    resetToModulatedSwim();
 
 }, false);
 

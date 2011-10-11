@@ -438,6 +438,9 @@ window.addEventListener('load', function () {
     // Stops spontaneous swimming (an addition - not in original paper)
     paramsModulatedSwim.E_leak_mV_DSI.defaultVal = -51;
 
+    // choose a more attractive time window
+    paramsModulatedSwim.pulseStart_ms_DRI.defaultVal = 1000;
+    paramsModulatedSwim.totalDuration_ms.defaultVal = 50000;
 
 
     // Isolated cells

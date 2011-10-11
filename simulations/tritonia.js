@@ -860,18 +860,6 @@ window.addEventListener('load', function () {
         y0 = result.y_f;
         runNumber = currentRunNumber += 1;
 
-        function paramCount() {
-            var x, count = 0;
-
-            for (x in params) {
-                if (params.hasOwnProperty(x)) {
-                    count += 1;
-                }
-            }
-            return count;
-        }
-        console.log(y0.length + ' dimensions, ' + paramCount() +'  parameters');
-
         function updateSim() {
             if (runNumber !== currentRunNumber) {
                 return;

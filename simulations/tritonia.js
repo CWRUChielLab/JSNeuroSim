@@ -14,7 +14,7 @@ window.addEventListener('load', function () {
         pulseStart_ms_C2: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_C2: { label: 'Stimulus current', units: 'nA', 
-            defaultVal: 3, minVal: -1000, maxVal: 1000 },
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms_C2: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 5000, minVal: 0, maxVal: tMax / 1e-3 },
         isi_ms_C2: { label: 'Inter-stimulus interval', units: 'ms', 
@@ -25,7 +25,7 @@ window.addEventListener('load', function () {
         pulseStart_ms_DSI: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_DSI: { label: 'Stimulus current', units: 'nA', 
-            defaultVal: 3, minVal: -1000, maxVal: 1000 },
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms_DSI: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 5000, minVal: 0, maxVal: tMax / 1e-3 },
         isi_ms_DSI: { label: 'Inter-stimulus interval', units: 'ms', 
@@ -36,7 +36,7 @@ window.addEventListener('load', function () {
         pulseStart_ms_VSI: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_VSI: { label: 'Stimulus current', units: 'nA', 
-            defaultVal: 3, minVal: -1000, maxVal: 1000 },
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms_VSI: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 5000, minVal: 0, maxVal: tMax / 1e-3 },
         isi_ms_VSI: { label: 'Inter-stimulus interval', units: 'ms', 
@@ -45,7 +45,7 @@ window.addEventListener('load', function () {
             defaultVal: 1, minVal: 0, maxVal: 100 },
 
         pulseStart_ms_DRI: { label: 'Stimulus delay', units: 'ms', 
-            defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 5000, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_DRI: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 5, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms_DRI: { label: 'Pulse duration', units: 'ms', 
@@ -56,7 +56,7 @@ window.addEventListener('load', function () {
             defaultVal: 10, minVal: 0, maxVal: 100 },
 
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
-            defaultVal: 7000, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 65000, minVal: 0, maxVal: tMax / 1e-3 },
         
         V_init_mV_C2: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -48, minVal: -1000, maxVal: 1000 },
@@ -395,6 +395,17 @@ window.addEventListener('load', function () {
         tau_close_I2_ms_VSItoDSI: { units: 'ms', 
             label: 'I2 closing time constant', 
             defaultVal: 750, minVal: 0.1, maxVal: 1000000 },
+
+        W_E1_uS_DRItoDSI: { label: 'E1 conductance', 
+            units: '\u00B5S', defaultVal: 0.02, minVal: 0, maxVal: 100 },
+        E_E1_mV_DRItoDSI: { label: 'E1 reversal potential', units: 'mV', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        tau_open_E1_ms_DRItoDSI: { units: 'ms', 
+            label: 'E1 opening time constant', 
+            defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
+        tau_close_E1_ms_DRItoDSI: { units: 'ms', 
+            label: 'E1 closing time constant', 
+            defaultVal: 15000, minVal: 0.1, maxVal: 1000000 },
     };
 
     layout = [
@@ -460,7 +471,9 @@ window.addEventListener('load', function () {
         ['VSI to DSI synapse', ['W_I1_uS_VSItoDSI', 'E_I1_mV_VSItoDSI', 
             'tau_open_I1_ms_VSItoDSI', 'tau_close_I1_ms_VSItoDSI',
             'W_I2_uS_VSItoDSI', 'E_I2_mV_VSItoDSI', 'tau_open_I2_ms_VSItoDSI',
-            'tau_close_I2_ms_VSItoDSI']]
+            'tau_close_I2_ms_VSItoDSI']],
+        ['DRI to DSI synapse', ['W_E1_uS_DRItoDSI', 'E_E1_mV_DRItoDSI', 
+            'tau_open_E1_ms_DRItoDSI', 'tau_close_E1_ms_DRItoDSI' ]]
     ];
     controlsPanel = document.getElementById('TritoniaControls');
 
@@ -482,6 +495,7 @@ window.addEventListener('load', function () {
             DSItoVSI_E1, DSItoVSI_I1, DSItoVSI_I2, 
             VSItoC2_I1, 
             VSItoDSI_I1, VSItoDSI_I2, 
+            DRItoDSI_E1, 
             t, t_ms, 
             startTime = new Date().getTime(),
             t0, y0, runNumber;
@@ -671,6 +685,7 @@ window.addEventListener('load', function () {
             tau_close: params.tau_close_I2_ms_C2toDSI * 1e-3, 
         });
         
+
         // create the C2 to VSI synapse
         C2toVSI_E1 = electrophys.gettingSynapse(model, C2, VSI, { 
             W: params.W_E1_uS_C2toVSI * 1e-6, 
@@ -691,6 +706,7 @@ window.addEventListener('load', function () {
             tau_close: params.tau_close_I2_ms_C2toVSI * 1e-3, 
         });
 
+
         // create the DSI to C2 synapse
         DSItoC2_E1 = electrophys.gettingSynapse(model, DSI, C2, { 
             W: params.W_E1_uS_DSItoC2 * 1e-6, 
@@ -705,6 +721,7 @@ window.addEventListener('load', function () {
             tau_close: params.tau_close_E2_ms_DSItoC2 * 1e-3, 
         });
         
+
         // create the DSI to VSI synapse
         DSItoVSI_E1 = electrophys.gettingSynapse(model, DSI, VSI, { 
             W: params.W_E1_uS_DSItoVSI * 1e-6, 
@@ -725,6 +742,7 @@ window.addEventListener('load', function () {
             tau_close: params.tau_close_I2_ms_DSItoVSI * 1e-3, 
         });
         
+
         // create the VSI to C2 synapse
         VSItoC2_I1 = electrophys.gettingSynapse(model, VSI, C2, { 
             W: params.W_I1_uS_VSItoC2 * 1e-6, 
@@ -733,6 +751,7 @@ window.addEventListener('load', function () {
             tau_close: params.tau_close_I1_ms_VSItoC2 * 1e-3, 
         });
         
+
         // create the VSI to DSI synapse
         VSItoDSI_I1 = electrophys.gettingSynapse(model, VSI, DSI, { 
             W: params.W_I1_uS_VSItoDSI * 1e-6, 
@@ -746,6 +765,16 @@ window.addEventListener('load', function () {
             tau_open: params.tau_open_I2_ms_VSItoDSI * 1e-3, 
             tau_close: params.tau_close_I2_ms_VSItoDSI * 1e-3, 
         });
+        
+
+        // create the DRI to DSI synapse
+        DRItoDSI_E1 = electrophys.gettingSynapse(model, DRI, DSI, { 
+            W: params.W_E1_uS_DRItoDSI * 1e-6, 
+            E_rev: params.E_E1_mV_DRItoDSI * 1e-3, 
+            tau_open: params.tau_open_E1_ms_DRItoDSI * 1e-3, 
+            tau_close: params.tau_close_E1_ms_DRItoDSI * 1e-3, 
+        });
+
 
         // simulate them
         t_ms = [];
@@ -767,6 +796,18 @@ window.addEventListener('load', function () {
         t0 = 0;
         y0 = result.y_f;
         runNumber = currentRunNumber += 1;
+
+        function paramCount() {
+            var x, count = 0;
+
+            for (x in params) {
+                if (params.hasOwnProperty(x)) {
+                    count += 1;
+                }
+            }
+            return count;
+        }
+        console.log(y0.length + ' dimensions, ' + paramCount() +'  parameters');
 
         function updateSim() {
             if (runNumber !== currentRunNumber) {
@@ -823,7 +864,7 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_C2_mV,
-                { xUnits: 'ms', yUnits: 'mV', minYRange: 20,
+                { xUnits: 'ms', yUnits: 'mV', minYRange: 100,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 
@@ -841,7 +882,7 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_DSI_mV,
-                { xUnits: 'ms', yUnits: 'mV', minYRange: 20,
+                { xUnits: 'ms', yUnits: 'mV', minYRange: 100,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 
@@ -859,7 +900,7 @@ window.addEventListener('load', function () {
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_VSI_mV,
-                { xUnits: 'ms', yUnits: 'mV', minYRange: 20,
+                { xUnits: 'ms', yUnits: 'mV', minYRange: 100,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 

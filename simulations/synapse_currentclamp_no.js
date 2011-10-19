@@ -117,7 +117,7 @@ window.addEventListener('load', function () {
             v_post, v_post_mV, iStim_post_nA,
             params, plotPanel, title, j,
             sum1, sum2, dt, t_delay, k, NO_syn,
-            f_NO, f_Na, f_K,
+            f_NO, f_Na, f_K, f_syn,
             delay_NO = 60, tau_NO = 600, NO_syn_scale = 1 / (0.35 * 60 * 50); 
         
         params = controls.values;
@@ -156,6 +156,7 @@ window.addEventListener('load', function () {
         f_Na = (800 - 350 * f_NO) / 800;
         //f_Na = 1;
         f_K = (140 - 92 * f_NO) / 140;
+        f_syn = 1 - 0.5 * f_NO;
 
         // create the presynaptic passive membrane
         neuron_pre = electrophys.passiveMembrane(model, {
@@ -214,7 +215,7 @@ window.addEventListener('load', function () {
         synapse = electrophys.synapse(model, neuron_pre, neuron_post, {
             g_bar: params.g_syn_uS * 1e-6 / (
                 1 / (1 + params.tau_r_ms / params.tau_d_ms)
-            ), 
+            ) * f_syn, 
             E_rev: params.E_rev_syn_mV * 1e-3,
             a_r: 1 / params.tau_r_ms * 1e3, 
             a_d: 1 / params.tau_d_ms * 1e3, 

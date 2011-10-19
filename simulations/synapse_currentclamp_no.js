@@ -39,13 +39,13 @@ window.addEventListener('load', function () {
         pulseStart_pre_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_pre_nA: { label: 'Stimulus current', units: 'nA', 
-            defaultVal: 2, minVal: -1000, maxVal: 1000 },
+            defaultVal: 4, minVal: -1000, maxVal: 1000 },
         pulseWidth_pre_ms: { label: 'Pulse duration', units: 'ms', 
-            defaultVal: 4, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 0.5, minVal: 0, maxVal: tMax / 1e-3 },
         isi_pre_ms: { label: 'Inter-stimulus interval', units: 'ms', 
-            defaultVal: 30, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_pre: { label: 'Number of pulses', units: '', 
-            defaultVal: 2, minVal: 0, maxVal: 100 },
+            defaultVal: 1, minVal: 0, maxVal: 100 },
 
         g_syn_uS: { label: 'Maximum conductance', units: '\u00B5S', 
             defaultVal: 0.02, minVal: 0, maxVal: 1000 },
@@ -75,18 +75,30 @@ window.addEventListener('load', function () {
         E_K_post_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -70, minVal: -1000, maxVal: 1000 }, 
         pulseStart_post_ms: { label: 'Stimulus delay', units: 'ms', 
+            defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseHeight_post_nA: { label: 'Stimulus current', units: 'nA', 
+            defaultVal: 4, minVal: -1000, maxVal: 1000 },
+        pulseWidth_post_ms: { label: 'Pulse duration', units: 'ms', 
+            defaultVal: 0.5, minVal: 0, maxVal: tMax / 1e-3 },
+        isi_post_ms: { label: 'Inter-stimulus interval', units: 'ms', 
+            defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 },
+        numPulses_post: { label: 'Number of pulses', units: '', 
+            defaultVal: 0, minVal: 0, maxVal: 100 },
+        /*
+        pulseStart_post_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_post_nA: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         pulseWidth_post_ms: { label: 'Pulse duration', units: 'ms', 
-            defaultVal: 4, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 150, minVal: 0, maxVal: tMax / 1e-3 },
         isi_post_ms: { label: 'Inter-stimulus interval', units: 'ms', 
-            defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 100, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_post: { label: 'Number of pulses', units: '', 
-            defaultVal: 2, minVal: 0, maxVal: 100 },
+            defaultVal: 1, minVal: 0, maxVal: 100 },
+        */
 
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
-            defaultVal: 60, minVal: 0, maxVal: tMax / 1e-3 }
+            defaultVal: 20, minVal: 0, maxVal: tMax / 1e-3 }
     };
     layout = [
         ['Pretreatment', ['prestim_freq_Hz', 'prestim_duration_s',
@@ -152,7 +164,7 @@ window.addEventListener('load', function () {
         // oxide is a volume transmitter regulating postsynaptic excitability
         // at a glutamatergic synapse. Neuron 2008 Nov;60(4):642-656.
 
-        f_NO = 1/(1 + 1/(1e-6 + params.SNP_uM/10 + 10*NO_syn*NO_syn));
+        f_NO = 1/(1 + 1/(1e-6 + params.SNP_uM/1 + 10*NO_syn*NO_syn));
         f_TEA = 1 / (1 + 1 / (1e-6 + params.TEA_mM/0.1));
         //f_Na = (800 - 350 * f_NO) / 800;
         f_Na = 1;

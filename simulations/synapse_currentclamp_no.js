@@ -17,8 +17,10 @@ window.addEventListener('load', function () {
         prestim_delay_min: { 
             label: 'Delay between prestimulation and experiment', units: 'min',
             defaultVal: 10, minVal: 0, maxVal: 1000 },
-        SNP_uM: { label: 'Sodium Nitroprusside', units: '\u00B5M',
+        SNP_uM: { label: 'Sodium nitroprusside (SNP)', units: '\u00B5M',
             defaultVal: 0, minVal: 0, maxVal: 2000 },
+        TEA_mM: { label: 'Tetraethyl amonium (TEA)', units: 'mM',
+            defaultVal: 0, minVal: 0, maxVal: 3 },
 
         C_pre_nF: { label: 'Membrane capacitance', units: 'nF',
             defaultVal: 0.1, minVal: 0.001, maxVal: 100 }, 
@@ -88,7 +90,7 @@ window.addEventListener('load', function () {
     };
     layout = [
         ['Pretreatment', ['prestim_freq_Hz', 'prestim_duration_s',
-            'prestim_delay_min', 'SNP_uM']],        
+            'prestim_delay_min', 'SNP_uM', 'TEA_mM']],        
         ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 
             'pulseHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
             'numPulses_pre']],
@@ -117,7 +119,7 @@ window.addEventListener('load', function () {
             v_post, v_post_mV, iStim_post_nA,
             params, plotPanel, title, j,
             sum1, sum2, dt, t_delay, k, NO_syn,
-            f_NO, f_Na, f_K, f_syn,
+            f_NO, f_TEA, f_Kv3, f_Na, f_K, f_syn,
             delay_NO = 60, tau_NO = 600, NO_syn_scale = 1 / (0.35 * 60 * 50); 
         
         params = controls.values;
@@ -143,8 +145,6 @@ window.addEventListener('load', function () {
         sum1 = Math.exp(-t_delay / tau_NO)*sum1;
         sum2 = Math.exp(-t_delay / tau_NO)*sum2;
         NO_syn = NO_syn_scale/tau_NO * (t_delay * sum1 - sum2);
-        NO_syn
-        console.log(NO_syn);
 
         // Based on model and data from
         // Steinert JR, Kopp-Scheinpflug C, Baker C, Challiss RAJ, Mistry R,
@@ -153,9 +153,11 @@ window.addEventListener('load', function () {
         // at a glutamatergic synapse. Neuron 2008 Nov;60(4):642-656.
 
         f_NO = 1/(1 + 1/(1e-6 + params.SNP_uM/10 + 10*NO_syn*NO_syn));
-        f_Na = (800 - 350 * f_NO) / 800;
-        //f_Na = 1;
-        f_K = (140 - 92 * f_NO) / 140;
+        f_TEA = 1 / (1 + 1 / (1e-6 + params.TEA_mM/0.1));
+        //f_Na = (800 - 350 * f_NO) / 800;
+        f_Na = 1;
+        f_Kv3 = (1 - f_NO) * (1 - f_TEA);
+        f_K = (20 + 120 * (0.4 + 0.6 * f_Kv3)) / 140;
         f_syn = 1 - 0.5 * f_NO;
 
         // create the presynaptic passive membrane

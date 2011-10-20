@@ -14,8 +14,8 @@ window.addEventListener('load', function () {
             defaultVal: 50, minVal: 0.001, maxVal: 200 },
         prestim_duration_s: { label: 'Prestimulation duration', units: 's',
             defaultVal: 0, minVal: 0, maxVal: 1000 },
-        prestim_delay_min: { 
-            label: 'Delay between prestimulation and experiment', units: 'min',
+        prestim_delay_min: { label: 
+            'Delay between prestimulation and experiment', units: 'min',
             defaultVal: 10, minVal: 0, maxVal: 1000 },
         SNP_uM: { label: 'Sodium nitroprusside (SNP)', units: '\u00B5M',
             defaultVal: 0, minVal: 0, maxVal: 2000 },
@@ -143,20 +143,20 @@ window.addEventListener('load', function () {
         // Neural Computation 1993 Mar;5(2):200-204.
         sum1 = 0;
         sum2 = 0;
-        dt = 1/params.prestim_freq_Hz;
-        t_delay = params.prestim_delay_min*60 - delay_NO;
-        k = Math.exp(-dt/tau_NO);
+        dt = 1 / params.prestim_freq_Hz;
+        t_delay = params.prestim_delay_min * 60 - delay_NO;
+        k = Math.exp(-dt / tau_NO);
         // process each of the spikes
         for (t = -params.prestim_duration_s - Math.min(0, t_delay); 
                 t < 0; t += dt) {
-            sum1 = k*sum1 + 1;
-            sum2 = k*sum2 + t - dt;
+            sum1 = k * sum1 + 1;
+            sum2 = k * sum2 + t - dt;
         }
         console.log(sum1 + ', ' + sum2 + ', k=' + k);
         // advance time to the beginning of the experiment
-        sum1 = Math.exp(-t_delay / tau_NO)*sum1;
-        sum2 = Math.exp(-t_delay / tau_NO)*sum2;
-        NO_syn = NO_syn_scale/tau_NO * (t_delay * sum1 - sum2);
+        sum1 = Math.exp(-t_delay / tau_NO) * sum1;
+        sum2 = Math.exp(-t_delay / tau_NO) * sum2;
+        NO_syn = NO_syn_scale / tau_NO * (t_delay * sum1 - sum2);
 
         // Based on model and data from
         // Steinert JR, Kopp-Scheinpflug C, Baker C, Challiss RAJ, Mistry R,
@@ -164,8 +164,8 @@ window.addEventListener('load', function () {
         // oxide is a volume transmitter regulating postsynaptic excitability
         // at a glutamatergic synapse. Neuron 2008 Nov;60(4):642-656.
 
-        f_NO = 1/(1 + 1/(1e-6 + params.SNP_uM/1 + 10*NO_syn*NO_syn));
-        f_TEA = 1 / (1 + 1 / (1e-6 + params.TEA_mM/0.1));
+        f_NO = 1 / (1 + 1 / (1e-6 + params.SNP_uM + 10 * NO_syn * NO_syn));
+        f_TEA = 1 / (1 + 1 / (1e-6 + params.TEA_mM / 0.1));
         //f_Na = (800 - 350 * f_NO) / 800;
         f_Na = 1;
         f_Kv3 = (1 - f_NO) * (1 - f_TEA);

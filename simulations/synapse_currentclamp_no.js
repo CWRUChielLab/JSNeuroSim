@@ -109,7 +109,7 @@ window.addEventListener('load', function () {
         ['Postsynaptic Current Clamp', ['pulseStart_post_ms', 
             'pulseHeight_post_nA', 'pulseWidth_post_ms', 'isi_post_ms', 
             'numPulses_post']],
-        ['Simulation Settings', ['totalDuration_ms']],
+        ['Simulation Settings', ['totalDuration_ms']]/*,
         ['Synapse properties', [ 'g_syn_uS', 'E_rev_syn_mV', 'tau_r_ms',
             'tau_d_ms', 'V_thresh_mV', 'K_p']],
         ['Presynaptic Cell Properties', ['C_pre_nF', 'g_leak_pre_uS', 
@@ -117,7 +117,7 @@ window.addEventListener('load', function () {
             'E_K_pre_mV']],
         ['Postsynaptic Cell Properties', ['C_post_nF', 'g_leak_post_uS', 
             'E_leak_post_mV', 'g_Na_post_uS', 'E_Na_post_mV', 'g_K_post_uS', 
-            'E_K_post_mV']]
+            'E_K_post_mV']]*/
     ];
     controlsPanel = document.getElementById('SynapseCurrentClampNOControls');
 

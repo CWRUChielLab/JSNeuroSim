@@ -124,6 +124,13 @@ TestCase("HHKConductance", {
             hhK.n(this.model.initialValues(), 1));
     },
 
+    "test should allow V_rest of 0 mV" : function () {
+        var hhK = electrophys.hhKConductance(this.model, 
+            this.neuron, { g_K: 1e-6, E_K: -70e-3, V_rest: 0, });
+        assertClose(electrophys.hhKConductance.n_infinity(0), 
+            hhK.n(this.model.initialValues(), 1));
+    },
+
     "test should have expected drift" : function () {
         var dy = Array(this.model.numStateVars()),
             y0 = [0.2];
@@ -239,6 +246,15 @@ TestCase("HHNaConductance", {
             hhNa.h(this.model.initialValues(), 1));
     },
 
+    "test should allow V_rest of 0 mV" : function () {
+        var hhNa = electrophys.hhNaConductance(this.model, 
+            this.neuron, { g_Na: 1e-6, E_Na: -70e-3, V_rest: 0 });
+        assertClose(electrophys.hhNaConductance.m_infinity(0), 
+            hhNa.m(this.model.initialValues(), 1));
+        assertClose(electrophys.hhNaConductance.h_infinity(0), 
+            hhNa.h(this.model.initialValues(), 1));
+    },
+
     "test should have expected drift" : function () {
         var dy = Array(this.model.numStateVars()),
             y0 = [0.2, 0.3];
@@ -316,6 +332,9 @@ TestCase("PassiveMembrane", {
         var passiveMembrane = electrophys.passiveMembrane(this.model, 
             { C: 2e-9, g_leak: 50e-9, E_leak: -65e-3, V_rest: -120e-3 });
         assertEquals(-120e-3, passiveMembrane.V(this.model.initialValues(), 0));
+        var passiveMembrane0 = electrophys.passiveMembrane(this.model, 
+            { C: 2e-9, g_leak: 50e-9, E_leak: -65e-3, V_rest: 0 });
+        assertEquals(0, passiveMembrane0.V(this.model.initialValues(), 0));
     },
 
     "test should have expected drift" : function () {
@@ -458,6 +477,10 @@ TestCase("GettingIFNeuron", {
             { C: 2e-9, g_leak: 50e-9, E_leak: -65e-3, 
                 theta_ss: -40e-3, theta_r: 5e-3, theta_tau: 10e-3, V_rest: -123e-3 });
         assertEquals(-123e-3, this.gettingIFNeuron.V(this.model.initialValues(), 0));
+        this.gettingIFNeuron = electrophys.gettingIFNeuron(this.model, 
+            { C: 2e-9, g_leak: 50e-9, E_leak: -65e-3, 
+                theta_ss: -40e-3, theta_r: 5e-3, theta_tau: 10e-3, V_rest: 0 });
+        assertEquals(0, this.gettingIFNeuron.V(this.model.initialValues(), 0));
     },
 
     "test should have expected drift" : function () {
@@ -670,6 +693,12 @@ TestCase("GettingShuntConductance", {
                 B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3, V_rest: -60e-3 });
         assertClose(0.03444519566621117, // calculated in python
                 gettingShunt.m(this.model.initialValues(), 1));
+        var gettingShunt0 = electrophys.gettingShuntConductance(this.model, 
+            this.neuron, 
+            { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
+                B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3, V_rest: 0 });
+        assertClose(0.96555480433378882, // calculated in python
+                gettingShunt0.m(this.model.initialValues(), 1));
     },
 
     "test should set initial h to h_inf for V_rest if given" : function () {
@@ -677,8 +706,14 @@ TestCase("GettingShuntConductance", {
             this.neuron, 
             { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
                 B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3, V_rest: -60e-3 });
-        assertClose(0.8175744761936437, 
+        assertClose(0.8175744761936437, // calculated in python
                 gettingShunt.h(this.model.initialValues(), 1));
+        var gettingShunt0 = electrophys.gettingShuntConductance(this.model, 
+            this.neuron, 
+            { G: 1e-6, E_rev: -70e-3, B_m: 30e-3, C_m: -9e-3, tau_m: 10e-3,
+                B_h: 54e-3, C_h: 4e-3, tau_h: 600e-3, V_rest: 0 });
+        assertClose(1.370957207e-6, // calculated in python
+                gettingShunt0.h(this.model.initialValues(), 1));
     },
 
     "test should have expected drift" : function () {

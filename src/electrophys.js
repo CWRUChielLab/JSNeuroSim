@@ -18,7 +18,7 @@ electrophys.hhKConductance = function (model, neuron, options) {
 
     var g_K = options.g_K, 
         E_K = options.E_K,
-        V_rest = options.V_rest || -65e-3,
+        V_rest = (options.V_rest === undefined ? -65e-3 : options.V_rest),
         iN = model.addStateVar(electrophys.hhKConductance.n_infinity(V_rest));
 
     function drift(result, state, t) {
@@ -99,7 +99,7 @@ electrophys.hhNaConductance = function (model, neuron, options) {
 
     var g_Na = options.g_Na, E_Na = options.E_Na,
         alpha_h, beta_h, alpha_m, beta_m,
-        V_rest = options.V_rest || -65e-3,
+        V_rest = (options.V_rest === undefined ? -65e-3 : options.V_rest),
         im = model.addStateVar(electrophys.hhNaConductance.m_infinity(V_rest)),
         ih = model.addStateVar(electrophys.hhNaConductance.h_infinity(V_rest));
 
@@ -248,7 +248,7 @@ electrophys.passiveMembrane = function (model, options) {
     var C = options.C,
         g_leak = options.g_leak,
         E_leak = options.E_leak,
-        V_rest = options.V_rest || E_leak,
+        V_rest = (options.V_rest === undefined ? E_leak : options.V_rest),
         currents = [],
         leak,
         iV = model.addStateVar(V_rest),
@@ -360,7 +360,7 @@ electrophys.gettingIFNeuron = function (model, options) {
         theta_tau = options.theta_tau,
         currents = [],
         spikeWatchers = [],
-        V_rest = options.V_rest || E_leak,
+        V_rest = (options.V_rest === undefined ? E_leak : options.V_rest),
         iV = model.addStateVar(V_rest),
         iTheta = model.addStateVar(theta_ss);
     
@@ -470,7 +470,7 @@ electrophys.gettingShuntConductance = function (model, neuron, options) {
         B_h = options.B_h,
         C_h = options.C_h,
         tau_h = options.tau_h,
-        V_rest = options.V_rest || E_rev,
+        V_rest = (options.V_rest === undefined ? E_rev : options.V_rest),
         im = model.addStateVar(1 / (Math.exp((V_rest + B_m) / C_m) + 1)),
         ih = model.addStateVar(1 / (Math.exp((V_rest + B_h) / C_h) + 1));
 

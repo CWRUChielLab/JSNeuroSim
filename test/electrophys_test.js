@@ -8,11 +8,10 @@ TestCase("PassiveConductance", {
 
         this.passiveConductance = electrophys.passiveConductance(this.neuron, 
             { g: 1e-6, E_rev: -70e-3 });
-        this.current = this.neuron.addCurrent.args[0][0];
     },
 
     "test should have expected current" : function () {
-        var current = this.current([], 3.14);
+        var current = this.passiveConductance.current([], 3.14);
 
         assertClose(-10e-9, current, 1e-9, 1e-18);
     }
@@ -37,7 +36,6 @@ TestCase("Synapse", {
                 a_r: 1/10e-3, a_d: 1/25e-3, 
                 V_T: 2e-3, K_p: 5e-3 });
         this.drift = this.model.registerDrift.args[0][0];
-        this.current = this.postsynaptic.addCurrent.args[0][0];
     },
 
     "test should have one state var" : function () {
@@ -59,7 +57,7 @@ TestCase("Synapse", {
     "test should have expected current" : function () {
         var state = [ 0.2 ];
 
-        var current = this.current(state, 3.14);
+        var current = this.synapse.current(state, 3.14);
 
         assertClose(0.9e-3, current); // hand calculated
     }
@@ -78,7 +76,6 @@ TestCase("HHKConductance", {
         this.hhK = electrophys.hhKConductance(this.model, 
             this.neuron, { g_K: 1e-6, E_K: -70e-3, V_rest: -60e-3 });
         this.drift = this.model.registerDrift.args[0][0];
-        this.current = this.neuron.addCurrent.args[0][0];
     },
 
     "test should have expected alpha_n" : function () {
@@ -145,7 +142,7 @@ TestCase("HHKConductance", {
     "test should have expected current" : function () {
         var state = [0.2, 0.3];
 
-        var current = this.current(state, 3.14);
+        var current = this.hhK.current(state, 3.14);
 
         assertClose(-64e-12, 
             current, 1e-9, 1e-24);
@@ -165,7 +162,6 @@ TestCase("HHNaConductance", {
         this.hhNa = electrophys.hhNaConductance(this.model, 
             this.neuron, { g_Na: 1e-6, E_Na: -70e-3, V_rest: -60e-3 });
         this.drift = this.model.registerDrift.args[0][0];
-        this.current = this.neuron.addCurrent.args[0][0];
     },
 
     "test should have expected alpha_m" : function () {
@@ -276,7 +272,7 @@ TestCase("HHNaConductance", {
     "test should have expected current" : function () {
         var state = [0.2, 0.3];
 
-        var current = this.current(state, 3.14);
+        var current = this.hhNa.current(state, 3.14);
 
         assertClose(-96e-12, 
             current, 1e-9, 1e-18);
@@ -297,13 +293,11 @@ TestCase("gapJunction", {
         this.gapJunction = electrophys.gapJunction(
             this.neuron1, this.neuron2, { g: 2e-6 }
             );
-        this.current1 = this.neuron1.addCurrent.args[0][0];
-        this.current2 = this.neuron2.addCurrent.args[0][0];
     },
 
     "test should have expected current" : function () {
-        assertClose(160e-9, this.current1([], 3.14));
-        assertClose(-160e-9, this.current2([], 3.14));
+        assertClose(160e-9, this.gapJunction.current1([], 3.14));
+        assertClose(-160e-9, this.gapJunction.current2([], 3.14));
     }
 });
 
@@ -320,6 +314,10 @@ TestCase("PassiveMembrane", {
 
     "test should have one state var" : function () {
         assertEquals(1, this.model.numStateVars());
+    },
+
+    "test should have passive leak conductance" : function () {
+        assertObject(this.passiveMembrane.leak);
     },
 
     "test should set initial condition to be leak potential" : function () {
@@ -377,6 +375,23 @@ TestCase("PassiveMembrane", {
 
         assertClose(1.87, this.passiveMembrane.V(withCurrents, t) 
                 - this.passiveMembrane.V(withoutCurrents, t));
+    }
+});
+
+
+TestCase("ClampedMembrane", {
+    setUp: function () {
+        this.clamp = function (state, t) { return state[0] +t; };
+        this.clampedMembrane = electrophys.clampedMembrane(
+            { V_clamp : this.clamp });
+    },
+
+    "test V should return V_clamp" : function () {
+        assertEquals(this.clamp, this.clampedMembrane.V);
+    },
+
+    "test can add new currents" : function () {
+        assertFunction(this.clampedMembrane.addCurrent);
     }
 });
 

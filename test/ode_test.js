@@ -85,6 +85,28 @@ TestCase("DriftIntegrate", {
         Date = this.oldDate;
     },
 
+    "test integration result should have map function" : function() {
+        var result = ode.integrate({
+            tMin: 0,
+            tMax: 1,
+            tMaxStep: 0.5,
+            drift: function () {},
+            y0: [ 1, 2 ]
+        });
+
+        function func (state, t) {
+           var i, sum = 0;
+           for (i=0; i<state.length; i+=1) {
+               sum += state[i];
+           }
+           return [t,sum];
+        };
+
+        assertNotUndefined(result);
+        assertFunction(result.map);
+        assertEquals([[0, 3], [0.5, 5], [1, 11]], result.map(func));
+    },
+
     "test integrate should return the results of several rk4Steps" : function() {
         var result = ode.integrate({
             tMin: 0,

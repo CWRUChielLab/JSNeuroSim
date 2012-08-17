@@ -10,6 +10,10 @@ electrophys.passiveConductance = function (neuron, options) {
     }
 
     neuron.addCurrent(current);
+
+    return {
+        current: current
+    };
 };
 
 
@@ -30,13 +34,15 @@ electrophys.hhKConductance = function (model, neuron, options) {
     }
     model.registerDrift(drift);
 
-    neuron.addCurrent(function (state, t) {
+    function current(state, t) {
         return g_K * state[iN] * state[iN] * state[iN] * state[iN] * 
             (E_K - neuron.V(state, t));
-    });
+    }
+    neuron.addCurrent(current);
 
     return {
         n: function (state, t) { return state[iN]; },
+        current: current
     };
 };
 
@@ -113,14 +119,16 @@ electrophys.hhNaConductance = function (model, neuron, options) {
     }
     model.registerDrift(drift);
 
-    neuron.addCurrent(function (state, t) {
+    function current (state, t) {
         return g_Na * state[im] * state[im] * state[im] * state[ih] * 
             (E_Na - neuron.V(state, t));
-    });
+    }
+    neuron.addCurrent(current);
 
     return {
         m: function (state, t) { return state[im]; },
-        h: function (state, t) { return state[ih]; }
+        h: function (state, t) { return state[ih]; },
+        current: current
     };
 };
 
@@ -240,6 +248,11 @@ electrophys.gapJunction = function (neuron1, neuron2, options) {
 
     neuron1.addCurrent(current1);
     neuron2.addCurrent(current2);
+
+    return {
+       current1: current1,
+       current2: current2
+    };
 };
 
 
@@ -276,6 +289,18 @@ electrophys.passiveMembrane = function (model, options) {
     that.addCurrent = addCurrent;
     that.leak = electrophys.passiveConductance(that, 
         { E_rev: E_leak, g: g_leak });
+
+    return that;
+};
+
+
+electrophys.clampedMembrane = function (options) {
+    "use strict";
+    var V_clamp = options.V_clamp,
+        that = {};
+
+    that.V = V_clamp;
+    that.addCurrent = function () {};
 
     return that;
 };
@@ -340,12 +365,14 @@ electrophys.synapse = function (model, presynaptic, postsynaptic, options) {
     }
     model.registerDrift(drift);
 
-    postsynaptic.addCurrent(function (state, t) {
+    function current (state, t) {
         return g_bar * state[is] * (E_rev - postsynaptic.V(state, t));
-    });
+    };
+    postsynaptic.addCurrent(current);
 
     return {
-        s: function (state, t) { return state[is]; }
+        s: function (state, t) { return state[is]; },
+        current: current
     };
 };
 

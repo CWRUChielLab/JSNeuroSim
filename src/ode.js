@@ -132,6 +132,18 @@ ode.integrate = function (options) {
         ndim = options.y0.length,
         d, h, h_new, step, atol = 1e-5, delta_max, i,
         startTime = (new Date()).getTime();
+
+    result.map = function (func) {
+        var i, d, new_result = [];
+        for (i = 0; i < this.t.length; i += 1) {
+            var state = [];
+            for (d = 0; d < ndim; d += 1) {
+                state.push(this.y[d][i]);
+            }
+            new_result.push(func(state, this.t[i]));
+        }
+        return new_result;
+    }
     
     result.t.push(t);
     for (d = 0; d < ndim; d += 1) {        

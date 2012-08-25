@@ -113,9 +113,9 @@ window.addEventListener('load', function () {
 
         t_ms = graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(t);
         v_mV = t.map(function (t) {return neuron.V([], t) / 1e-3; });
-        iK_nA    = iK.map   (function (i) {return i / 1e-9;});
-        iNa_nA   = iNa.map  (function (i) {return i / 1e-9;});
-        iLeak_nA = iLeak.map(function (i) {return i / 1e-9;});
+        iK_nA    = iK.map   (function (i) {return -i / 1e-9;});
+        iNa_nA   = iNa.map  (function (i) {return -i / 1e-9;});
+        iLeak_nA = iLeak.map(function (i) {return -i / 1e-9;});
 
         // plot the results
         plotPanel = document.getElementById('VoltageClampPlots');

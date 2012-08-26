@@ -48,9 +48,9 @@ window.addEventListener('load', function () {
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
-        var model, neuron, pulseTrain, hhKCurrent, hhNaCurrent, leakCurrent,
-            result, t, v, iK, iNa, iLeak, hGate, mGate, nGate,
-            t_ms, v_mV, iK_nA, iNa_nA, iLeak_nA, params,
+        var model, neuron, pulseTrain, hhNaCurrent, hhKCurrent, leakCurrent,
+            result, t, v, iNa, iK, iLeak, hGate, mGate, nGate,
+            t_ms, v_mV, iNa_nA, iK_nA, iLeak_nA, params,
             plotPanel, title, j, prerun, y0; 
         
         // create the clamped membrane
@@ -58,7 +58,7 @@ window.addEventListener('load', function () {
         model = componentModel.componentModel();
 
         pulseTrain = electrophys.pulseTrain({
-            start: 1e-3 * params.stepStart_ms, 
+            start: params.stepStart_ms * 1e-3, 
             width: params.stepWidth_ms * 1e-3, 
             height: (params.stepPotential_mV - params.holdingPotential_mV) * 1e-3,
             gap: params.isi_ms * 1e-3,
@@ -67,8 +67,13 @@ window.addEventListener('load', function () {
 
         neuron = electrophys.clampedMembrane({
             V_clamp: function (state, t) {
-                return 1e-3 * params.holdingPotential_mV + pulseTrain(state, t);
+                return pulseTrain(state, t) + params.holdingPotential_mV * 1e-3;
             }
+        });
+
+        hhNaCurrent = electrophys.hhNaConductance(model, neuron, {
+            g_Na: params.g_Na_uS * 1e-6,
+            E_Na: params.E_Na_mV * 1e-3
         });
 
         hhKCurrent = electrophys.hhKConductance(model, neuron, {
@@ -76,11 +81,6 @@ window.addEventListener('load', function () {
             E_K: params.E_K_mV * 1e-3
         });
         
-        hhNaCurrent = electrophys.hhNaConductance(model, neuron, {
-            g_Na: params.g_Na_uS * 1e-6,
-            E_Na: params.E_Na_mV * 1e-3
-        });
-
         leakCurrent = electrophys.passiveConductance(neuron, {
             g:     params.g_leak_uS * 1e-6,
             E_rev: params.E_leak_mV * 1e-3
@@ -102,19 +102,19 @@ window.addEventListener('load', function () {
             y0: prerun.y_f
         });
         
-        t = result.t;
-        v = result.map(neuron.V);
-        iK = result.map(hhKCurrent.current);
-        iNa = result.map(hhNaCurrent.current);
+        t     = result.t;
+        v     = result.map(neuron.V);
+        iNa   = result.map(hhNaCurrent.current);
+        iK    = result.map(hhKCurrent.current);
         iLeak = result.map(leakCurrent.current);
         mGate = result.map(hhNaCurrent.m);
         hGate = result.map(hhNaCurrent.h);
         nGate = result.map(hhKCurrent.n);
 
         t_ms = graph.linearAxis(0, 1, 0, 1000).mapWorldToDisplay(t);
-        v_mV = t.map(function (t) {return neuron.V([], t) / 1e-3; });
-        iK_nA    = iK.map   (function (i) {return -i / 1e-9;});
+        v_mV     = v.map    (function (v) {return  v / 1e-3;});
         iNa_nA   = iNa.map  (function (i) {return -i / 1e-9;});
+        iK_nA    = iK.map   (function (i) {return -i / 1e-9;});
         iLeak_nA = iLeak.map(function (i) {return -i / 1e-9;});
 
         // plot the results

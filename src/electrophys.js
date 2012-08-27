@@ -34,14 +34,18 @@ electrophys.hhKConductance = function (model, neuron, options) {
     }
     model.registerDrift(drift);
 
+    function g(state, t) {
+        return g_K * state[iN] * state[iN] * state[iN] * state[iN];
+    }
+
     function current(state, t) {
-        return g_K * state[iN] * state[iN] * state[iN] * state[iN] * 
-            (E_K - neuron.V(state, t));
+        return g(state, t) * (E_K - neuron.V(state, t));
     }
     neuron.addCurrent(current);
 
     return {
         n: function (state, t) { return state[iN]; },
+        g: g,
         current: current
     };
 };
@@ -119,15 +123,19 @@ electrophys.hhNaConductance = function (model, neuron, options) {
     }
     model.registerDrift(drift);
 
+    function g (state, t) {
+        return g_Na * state[im] * state[im] * state[im] * state[ih];
+    }
+
     function current (state, t) {
-        return g_Na * state[im] * state[im] * state[im] * state[ih] * 
-            (E_Na - neuron.V(state, t));
+        return g(state, t) * (E_Na - neuron.V(state, t));
     }
     neuron.addCurrent(current);
 
     return {
         m: function (state, t) { return state[im]; },
         h: function (state, t) { return state[ih]; },
+        g: g,
         current: current
     };
 };

@@ -137,6 +137,8 @@ window.addEventListener('load', function () {
             cursor: {
                 show: true,
                 zoom: true,
+                useAxesFormatters: false,
+                tooltipFormatString: "%.2f, %.2f",
             },
             axes: {
                 xaxis: {
@@ -161,7 +163,10 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, plotDefaultOptions, {
+        $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
+            cursor: {
+                tooltipFormatString: "%.2f ms, %.2f mV",
+            },
             axes: {
                 xaxis: {label:'Time (ms)'},
                 yaxis: {label:'Membrane Potential (mV)'},
@@ -177,8 +182,11 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, plotDefaultOptions, {
+        $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, plotDefaultOptions, {
             legend: {show: true},
+            cursor: {
+                tooltipFormatString: "%.2f ms, %.2f nA",
+            },
             axes: {
                 xaxis: {label:'Time (ms)'},
                 yaxis: {label:'Current (nA)'},
@@ -196,8 +204,11 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, plotDefaultOptions, {
+        $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, plotDefaultOptions, {
             legend: {show: true},
+            cursor: {
+                tooltipFormatString: "%.2f ms, %.2f \u00B5S",
+            },
             axes: {
                 xaxis: {label:'Time (ms)'},
                 yaxis: {label:'Conductance (\u00B5S)'},
@@ -214,8 +225,11 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, plotDefaultOptions, {
+        $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, plotDefaultOptions, {
             legend: {show: true},
+            cursor: {
+                tooltipFormatString: "%.2f ms, %.2f",
+            },
             axes: {
                 xaxis: {label:'Time (ms)'},
                 yaxis: {

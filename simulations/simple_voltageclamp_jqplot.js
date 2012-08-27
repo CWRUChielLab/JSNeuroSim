@@ -137,8 +137,12 @@ window.addEventListener('load', function () {
             cursor: {
                 show: true,
                 zoom: true,
+                looseZoom: false,
+                followMouse: true,
                 useAxesFormatters: false,
-                tooltipFormatString: "%.2f, %.2f",
+                showVerticalLine: true,
+                showTooltipDataPosition: true,
+                tooltipFormatString: "%s: %.2f, %.2f",
             },
             axes: {
                 xaxis: {
@@ -165,14 +169,14 @@ window.addEventListener('load', function () {
         plotPanel.appendChild(plot);
         $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
             cursor: {
-                tooltipFormatString: "%.2f ms, %.2f mV",
+                tooltipFormatString: "%s: %.2f ms, %.2f mV",
             },
             axes: {
                 xaxis: {label:'Time (ms)'},
                 yaxis: {label:'Membrane Potential (mV)'},
             },
             series: [
-                {color: 'black'},
+                {label: 'V<sub>m</sub>', color: 'black'},
             ],
         }));
 
@@ -185,16 +189,16 @@ window.addEventListener('load', function () {
         $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, plotDefaultOptions, {
             legend: {show: true},
             cursor: {
-                tooltipFormatString: "%.2f ms, %.2f nA",
+                tooltipFormatString: "%s: %.2f ms, %.2f nA",
             },
             axes: {
                 xaxis: {label:'Time (ms)'},
                 yaxis: {label:'Current (nA)'},
             },
             series: [
-                {label: 'Na',   color: 'blue'},
-                {label: 'K',    color: 'red'},
-                {label: 'Leak', color: 'black'},
+                {label: 'I<sub>Na</sub>',   color: 'blue'},
+                {label: 'I<sub>K</sub>',    color: 'red'},
+                {label: 'I<sub>leak</sub>', color: 'black'},
             ],
         }));
 
@@ -207,15 +211,15 @@ window.addEventListener('load', function () {
         $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, plotDefaultOptions, {
             legend: {show: true},
             cursor: {
-                tooltipFormatString: "%.2f ms, %.2f \u00B5S",
+                tooltipFormatString: "%s: %.2f ms, %.2f \u00B5S",
             },
             axes: {
                 xaxis: {label:'Time (ms)'},
                 yaxis: {label:'Conductance (\u00B5S)'},
             },
             series: [
-                {label: 'Na', color: 'blue'},
-                {label: 'K',  color: 'red'},
+                {label: 'g<sub>Na</sub>', color: 'blue'},
+                {label: 'g<sub>K</sub>',  color: 'red'},
             ],
         }));
 
@@ -228,7 +232,7 @@ window.addEventListener('load', function () {
         $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, plotDefaultOptions, {
             legend: {show: true},
             cursor: {
-                tooltipFormatString: "%.2f ms, %.2f",
+                tooltipFormatString: "%s: %.2f ms, %.2f",
             },
             axes: {
                 xaxis: {label:'Time (ms)'},

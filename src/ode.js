@@ -126,7 +126,7 @@ ode.integrate = function (options) {
     var t = options.tMin, y = options.y0,
         maxStep = options.tMaxStep || (options.tMax - options.tMin) / 1024,
         tMinOutput = (options.tMinOutput !== undefined ? 
-            options.tMinOutput : maxStep / 8),
+            options.tMinOutput : maxStep / 50),
         yj,
         result = { t : [], y : [], terminationReason : 'reached tMax' },
         ndim = options.y0.length,

@@ -65,3 +65,7 @@ body
     margin-top: 1ex;
     margin-bottom: 1ex;
 }
+
+.jqplot-yaxis {
+    margin-left: -80px;
+}

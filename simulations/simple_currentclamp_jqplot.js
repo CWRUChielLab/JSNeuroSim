@@ -8,8 +8,10 @@ window.addEventListener('load', function () {
 
     var params, layout, controlsPanel, controls, tMax = 1000e-3; 
 
-    // set up the controls for the voltage clamp simulation
+    // set up the controls for the current clamp simulation
     params = { 
+        C_nF: { label: 'Membrane capacitance', units: 'nF',
+            defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
         g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
             defaultVal: 0.3, minVal: 0.001, maxVal: 100 }, 
         E_leak_mV: { label: 'Leak potential', units: 'mV',
@@ -22,71 +24,63 @@ window.addEventListener('load', function () {
             units: '\u00B5S', defaultVal: 36, minVal: 0.01, maxVal: 1000 }, 
         E_K_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
-        holdingPotential_mV: { label: 'Holding potential', units: 'mV', 
-            defaultVal: -70, minVal: -1000, maxVal: 1000 },
-        stepPotential_mV: { label: 'Step potential', units: 'mV', 
-            defaultVal: 0, minVal: -1000, maxVal: 1000 },
-        stepStart_ms: { label: 'Step delay', units: 'ms', 
+        pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
-        stepWidth_ms: { label: 'Step duration', units: 'ms', 
+        pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        pulseWidth_ms: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 4, minVal: 0, maxVal: tMax / 1e-3 },
-        isi_ms: { label: 'Inter-step interval', units: 'ms', 
+        isi_ms: { label: 'Inter-stimulus interval', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses: { label: 'Number of pulses', units: '', 
-            defaultVal: 1, minVal: 0, maxVal: 100 },
+            defaultVal: 2, minVal: 0, maxVal: 100 },
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 }
     };
     layout = [
-        ['Cell Properties', ['g_leak_uS', 'E_leak_mV',
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV',
             'g_Na_uS', 'E_Na_mV', 'g_K_uS', 'E_K_mV']],
-        ['Voltage Clamp', ['holdingPotential_mV', 'stepPotential_mV',
-            'stepStart_ms', 'stepWidth_ms', 'isi_ms', 'numPulses']],
+        ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
+            'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
-    controlsPanel = document.getElementById('VoltageClampControls');
+    controlsPanel = document.getElementById('CurrentClampControls');
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
-        var model, neuron, pulseTrain, hhNaCurrent, hhKCurrent, leakCurrent,
-            result, v, gNa, gK, iNa, iK, iLeak, mGate, hGate, nGate,
-            v_mV, gNa_uS, gK_uS, iNa_nA, iK_nA, iLeak_nA, params,
+        var model, neuron, pulseTrain, hhNaCurrent, hhKCurrent,
+            result, v, gNa, gK, iNa, iK, iLeak, mGate, hGate, nGate, iStim,
+            v_mV, gNa_uS, gK_uS, iNa_nA, iK_nA, iLeak_nA, params, iStim_nA,
             plotPanel, plot, plotDefaultOptions, j, prerun, y0; 
         
-        // create the clamped membrane
+        // create the passive membrane
         params = controls.values;
         model = componentModel.componentModel();
+        neuron = electrophys.passiveMembrane(model, {
+            C: params.C_nF * 1e-9, 
+            g_leak: params.g_leak_uS * 1e-6, 
+            E_leak: params.E_leak_mV * 1e-3 
+        });
 
         pulseTrain = electrophys.pulseTrain({
-            start: params.stepStart_ms * 1e-3, 
-            width: params.stepWidth_ms * 1e-3, 
-            height: (params.stepPotential_mV - params.holdingPotential_mV) * 1e-3,
+            start: 1e-3 * params.pulseStart_ms, 
+            width: params.pulseWidth_ms * 1e-3, 
+            height: params.pulseHeight_nA * 1e-9,
             gap: params.isi_ms * 1e-3,
             num_pulses: params.numPulses
         });
-
-        neuron = electrophys.clampedMembrane({
-            V_clamp: function (state, t) {
-                return pulseTrain(state, t) + params.holdingPotential_mV * 1e-3;
-            }
-        });
-
-        hhNaCurrent = electrophys.hhNaConductance(model, neuron, {
-            g_Na: params.g_Na_uS * 1e-6,
-            E_Na: params.E_Na_mV * 1e-3
-        });
-
+        neuron.addCurrent(pulseTrain);
+        
         hhKCurrent = electrophys.hhKConductance(model, neuron, {
             g_K: params.g_K_uS * 1e-6,
             E_K: params.E_K_mV * 1e-3
         });
         
-        leakCurrent = electrophys.passiveConductance(neuron, {
-            g:     params.g_leak_uS * 1e-6,
-            E_rev: params.E_leak_mV * 1e-3
+        hhNaCurrent = electrophys.hhNaConductance(model, neuron, {
+            g_Na: params.g_Na_uS * 1e-6,
+            E_Na: params.E_Na_mV * 1e-3
         });
 
-        
         // run it for a bit to let it reach steady state
         prerun = model.integrate({
             tMin: 0, 
@@ -107,10 +101,11 @@ window.addEventListener('load', function () {
         gK    = result.mapOrderedPairs(hhKCurrent.g);
         iNa   = result.mapOrderedPairs(hhNaCurrent.current);
         iK    = result.mapOrderedPairs(hhKCurrent.current);
-        iLeak = result.mapOrderedPairs(leakCurrent.current);
+        iLeak = result.mapOrderedPairs(neuron.leak.current);
         mGate = result.mapOrderedPairs(hhNaCurrent.m);
         hGate = result.mapOrderedPairs(hhNaCurrent.h);
         nGate = result.mapOrderedPairs(hhKCurrent.n);
+        iStim = result.mapOrderedPairs(pulseTrain);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
@@ -123,9 +118,10 @@ window.addEventListener('load', function () {
         mGate    = mGate.map (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         hGate    = hGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
         nGate    = nGate.map (function (n) {return [n[0] / 1e-3,  n[1]       ];});
+        iStim_nA = iStim.map (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
 
         // plot the results
-        plotPanel = document.getElementById('VoltageClampPlots');
+        plotPanel = document.getElementById('CurrentClampPlots');
         plotPanel.innerHTML = '';
         plotDefaultOptions = {
             grid: {
@@ -160,7 +156,26 @@ window.addEventListener('load', function () {
                 shadow: false,
             }
         };
-        
+
+       // Voltage
+       plot = document.createElement('div');
+       plot.id = 'voltagePlot';
+       plot.style.width = '425px';
+       plot.style.height = '200px';
+       plotPanel.appendChild(plot);
+       $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
+            cursor: {
+                tooltipFormatString: "%s: %.2f ms, %.2f mV",
+            },
+            axes: {
+                xaxis: {label:'Time (ms)'},
+                yaxis: {label:'Membrane Potential (mV)'},
+            },
+            series: [
+                {label: 'V<sub>m</sub>', color: 'black'},
+            ],
+        }));
+
         // Currents
         plot = document.createElement('div');
         plot.id = 'currentPlot';
@@ -230,22 +245,23 @@ window.addEventListener('load', function () {
             ],
         }));
 
-        // Voltage
+        // Stimulus current
         plot = document.createElement('div');
-        plot.id = 'voltagePlot';
+        plot.id = 'stimPlot';
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
+        $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
+            legend: {show: true},
             cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f mV",
+                tooltipFormatString: "%s: %.2f ms, %.2f nA",
             },
             axes: {
                 xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Membrane Potential (mV)'},
+                yaxis: {label:'Current (nA)'},
             },
             series: [
-                {label: 'V<sub>m</sub>', color: 'black'},
+                {label: 'I<sub>stim</sub>', color: 'black'},
             ],
         }));
     }
@@ -258,9 +274,9 @@ window.addEventListener('load', function () {
     }
 
 
-    (document.getElementById('VoltageClampRunButton')
+    (document.getElementById('CurrentClampRunButton')
         .addEventListener('click', runSimulation, false));
-    (document.getElementById('VoltageClampResetButton')
+    (document.getElementById('CurrentClampResetButton')
         .addEventListener('click', reset, false));
     
 

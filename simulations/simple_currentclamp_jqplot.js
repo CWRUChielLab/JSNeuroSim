@@ -252,13 +252,12 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-            legend: {show: true},
             cursor: {
                 tooltipFormatString: "%s: %.2f ms, %.2f nA",
             },
             axes: {
                 xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Current (nA)'},
+                yaxis: {label:'Stimulation Current (nA)'},
             },
             series: [
                 {label: 'I<sub>stim</sub>', color: 'black'},

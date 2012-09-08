@@ -83,8 +83,8 @@ window.addEventListener('load', function () {
         
         // run it for a bit to let it reach steady state
         prerun = model.integrate({
-            tMin: 0, 
-            tMax: 60e-3, 
+            tMin: -60e-3, 
+            tMax: 0, 
             tMaxStep: 1e-4,
         });
 

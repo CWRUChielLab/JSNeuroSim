@@ -6,7 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles; 
+    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -36,9 +36,6 @@ window.addEventListener('load', function () {
         ['Simulation Settings', ['totalDuration_ms']]
     ];
     controlsPanel = document.getElementById('PassiveMembraneControls');
-
-    // create an array that will hold jqplots so they can later be destroyed
-    plotHandles = [];
 
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {

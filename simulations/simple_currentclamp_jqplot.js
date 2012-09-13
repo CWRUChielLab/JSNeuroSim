@@ -6,7 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3; 
+    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles; 
 
     // set up the controls for the current clamp simulation
     params = { 
@@ -45,6 +45,9 @@ window.addEventListener('load', function () {
         ['Simulation Settings', ['totalDuration_ms']]
     ];
     controlsPanel = document.getElementById('CurrentClampControls');
+
+    // create an array that will hold jqplots so they can later be destroyed
+    plotHandles = [];
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -120,6 +123,11 @@ window.addEventListener('load', function () {
         nGate    = nGate.map (function (n) {return [n[0] / 1e-3,  n[1]       ];});
         iStim_nA = iStim.map (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
 
+        // free resources from old plots
+        while (plotHandles.length > 0) {
+            plotHandles.pop().destroy();
+        }
+
         // plot the results
         plotPanel = document.getElementById('CurrentClampPlots');
         plotPanel.innerHTML = '';
@@ -157,24 +165,25 @@ window.addEventListener('load', function () {
             }
         };
 
-       // Voltage
-       plot = document.createElement('div');
-       plot.id = 'voltagePlot';
-       plot.style.width = '425px';
-       plot.style.height = '200px';
-       plotPanel.appendChild(plot);
-       $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f mV",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Membrane Potential (mV)'},
-            },
-            series: [
-                {label: 'V<sub>m</sub>', color: 'black'},
-            ],
-        }));
+        // Voltage
+        plot = document.createElement('div');
+        plot.id = 'voltagePlot';
+        plot.style.width = '425px';
+        plot.style.height = '200px';
+        plotPanel.appendChild(plot);
+        plotHandles.push(
+            $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Membrane Potential (mV)'},
+                },
+                series: [
+                    {label: 'V<sub>m</sub>', color: 'black'},
+                ],
+        })));
 
         // Currents
         plot = document.createElement('div');
@@ -182,21 +191,22 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-            legend: {show: true},
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f nA",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Current (nA)'},
-            },
-            series: [
-                {label: 'I<sub>Na</sub>',   color: 'blue'},
-                {label: 'I<sub>K</sub>',    color: 'red'},
-                {label: 'I<sub>leak</sub>', color: 'black'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, plotDefaultOptions, {
+                legend: {show: true},
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Current (nA)'},
+                },
+                series: [
+                    {label: 'I<sub>Na</sub>',   color: 'blue'},
+                    {label: 'I<sub>K</sub>',    color: 'red'},
+                    {label: 'I<sub>leak</sub>', color: 'black'},
+                ],
+        })));
 
         // Conductances
         plot = document.createElement('div');
@@ -204,20 +214,21 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, plotDefaultOptions, {
-            legend: {show: true},
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f \u00B5S",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Conductance (\u00B5S)'},
-            },
-            series: [
-                {label: 'g<sub>Na</sub>', color: 'blue'},
-                {label: 'g<sub>K</sub>',  color: 'red'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, plotDefaultOptions, {
+                legend: {show: true},
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f \u00B5S",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Conductance (\u00B5S)'},
+                },
+                series: [
+                    {label: 'g<sub>Na</sub>', color: 'blue'},
+                    {label: 'g<sub>K</sub>',  color: 'red'},
+                ],
+        })));
 
         // Gates
         plot = document.createElement('div');
@@ -225,25 +236,26 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, plotDefaultOptions, {
-            legend: {show: true},
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {
-                    label:'Gate',
-                    min: 0, max: 1,
-                    numberTicks: 6,
-                }
-            },
-            series: [
-                {label: 'm', color: 'blue'},
-                {label: 'h', color: 'navy'},
-                {label: 'n', color: 'red'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, plotDefaultOptions, {
+                legend: {show: true},
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {
+                        label:'Gate',
+                        min: 0, max: 1,
+                        numberTicks: 6,
+                    }
+                },
+                series: [
+                    {label: 'm', color: 'blue'},
+                    {label: 'h', color: 'navy'},
+                    {label: 'n', color: 'red'},
+                ],
+        })));
 
         // Stimulus current
         plot = document.createElement('div');
@@ -251,18 +263,19 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f nA",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Stimulation Current (nA)'},
-            },
-            series: [
-                {label: 'I<sub>stim</sub>', color: 'black'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Stimulation Current (nA)'},
+                },
+                series: [
+                    {label: 'I<sub>stim</sub>', color: 'black'},
+                ],
+        })));
     }
 
     

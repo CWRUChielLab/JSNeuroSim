@@ -6,7 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3; 
+    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -50,6 +50,9 @@ window.addEventListener('load', function () {
             'numCapSegments', 'cappingFactor'*/]]
     ];
     controlsPanel = document.getElementById('PassiveCableControls');
+
+    // create an array that will hold jqplots so they can later be destroyed
+    plotHandles = [];
 
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
@@ -163,6 +166,11 @@ window.addEventListener('load', function () {
         v_f_mV   = v_f.map   (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
         iStim_nA = iStim.map (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
 
+        // free resources from old plots
+        while (plotHandles.length > 0) {
+            plotHandles.pop().destroy();
+        }
+
         // plot the results
         plotPanel = document.getElementById('PassiveCablePlots');
         plotPanel.innerHTML = '';
@@ -206,18 +214,19 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('voltage1Plot', [v_0_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f mV",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Membrane Potential 1 (mV)'},
-            },
-            series: [
-                {label: 'V<sub>1</sub>', color: 'black'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('voltage1Plot', [v_0_mV], jQuery.extend(true, {}, plotDefaultOptions, {
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Membrane Potential 1 (mV)'},
+                },
+                series: [
+                    {label: 'V<sub>1</sub>', color: 'black'},
+                ],
+        })));
 
 
         // Voltage 2
@@ -226,18 +235,19 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('voltage2Plot', [v_f_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f mV",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Membrane Potential 2 (mV)'},
-            },
-            series: [
-                {label: 'V<sub>2</sub>', color: 'black'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('voltage2Plot', [v_f_mV], jQuery.extend(true, {}, plotDefaultOptions, {
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Membrane Potential 2 (mV)'},
+                },
+                series: [
+                    {label: 'V<sub>2</sub>', color: 'black'},
+                ],
+        })));
 
         // Stimulus current
         plot = document.createElement('div');
@@ -245,18 +255,19 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f nA",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Stimulation Current (nA)'},
-            },
-            series: [
-                {label: 'I<sub>stim</sub>', color: 'black'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Stimulation Current (nA)'},
+                },
+                series: [
+                    {label: 'I<sub>stim</sub>', color: 'black'},
+                ],
+        })));
 
         console.log('Total time: ' + (new Date().getTime() - startTime));
     }

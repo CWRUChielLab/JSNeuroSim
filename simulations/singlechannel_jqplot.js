@@ -6,7 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
     
-    var params, layout, controlsPanel, controls, tMax = 1000e-3; 
+    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -37,6 +37,8 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('SingleChannelControls');
 
+    // create an array that will hold jqplots so they can later be destroyed
+    plotHandles = [];
 
     // simulate and plot a simple harmonic oscillator
     function runSimulation() {
@@ -216,6 +218,11 @@ window.addEventListener('load', function () {
             }
         }
 
+        // free resources from old plots
+        while (plotHandles.length > 0) {
+            console.log(plotHandles.length);
+            plotHandles.pop().destroy();
+        }
 
         // plot the results
         plotPanel = document.getElementById('SingleChannelPlots');
@@ -265,22 +272,23 @@ window.addEventListener('load', function () {
             plot.style.width = '425px';
             plot.style.height = '60px';
             plotPanel.appendChild(plot);
-            $.jqplot('mGatePlot' + j, [m_gates_time[j]], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f",
-                },
-                axesDefaults: {
-                    showTicks: false,
-                },
-                axes: {
-                    yaxis: {
-                        min: -0.5, max: 1.5,
+            plotHandles.push(
+                $.jqplot('mGatePlot' + j, [m_gates_time[j]], jQuery.extend(true, {}, plotDefaultOptions, {
+                    cursor: {
+                        tooltipFormatString: "%s: %.2f ms, %.2f",
                     },
-                },
-                series: [
-                    {label: 'm', color: 'black'},
-                ],
-            }));
+                    axesDefaults: {
+                        showTicks: false,
+                    },
+                    axes: {
+                        yaxis: {
+                            min: -0.5, max: 1.5,
+                        },
+                    },
+                    series: [
+                        {label: 'm', color: 'black'},
+                    ],
+            })));
         }
 
         // h Gates
@@ -294,22 +302,23 @@ window.addEventListener('load', function () {
             plot.style.width = '425px';
             plot.style.height = '60px';
             plotPanel.appendChild(plot);
-            $.jqplot('hGatePlot' + j, [h_gates_time[j]], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f",
-                },
-                axesDefaults: {
-                    showTicks: false,
-                },
-                axes: {
-                    yaxis: {
-                        min: -0.5, max: 1.5,
+            plotHandles.push(
+                $.jqplot('hGatePlot' + j, [h_gates_time[j]], jQuery.extend(true, {}, plotDefaultOptions, {
+                    cursor: {
+                        tooltipFormatString: "%s: %.2f ms, %.2f",
                     },
-                },
-                series: [
-                    {label: 'h', color: 'black'},
-                ],
-            }));
+                    axesDefaults: {
+                        showTicks: false,
+                    },
+                    axes: {
+                        yaxis: {
+                            min: -0.5, max: 1.5,
+                        },
+                    },
+                    series: [
+                        {label: 'h', color: 'black'},
+                    ],
+            })));
         }
 
         // Current
@@ -322,18 +331,19 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('currentPlot', [I_pA], jQuery.extend(true, {}, plotDefaultOptions, {
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f pA",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Channel Current (pA)'},
-            },
-            series: [
-                {label: 'I', color: 'black'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('currentPlot', [I_pA], jQuery.extend(true, {}, plotDefaultOptions, {
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f pA",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Channel Current (pA)'},
+                },
+                series: [
+                    {label: 'I', color: 'black'},
+                ],
+        })));
 
         // Voltage
         title = document.createElement('h4');
@@ -345,18 +355,19 @@ window.addEventListener('load', function () {
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
-        $.jqplot('voltagePlot', [V_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-            cursor: {
-                tooltipFormatString: "%s: %.2f ms, %.2f mV",
-            },
-            axes: {
-                xaxis: {label:'Time (ms)'},
-                yaxis: {label:'Clamp Potential (mV)'},
-            },
-            series: [
-                {label: 'V<sub>m</sub>', color: 'black'},
-            ],
-        }));
+        plotHandles.push(
+            $.jqplot('voltagePlot', [V_mV], jQuery.extend(true, {}, plotDefaultOptions, {
+                cursor: {
+                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
+                },
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Clamp Potential (mV)'},
+                },
+                series: [
+                    {label: 'V<sub>m</sub>', color: 'black'},
+                ],
+        })));
     }
 
     function reset() {

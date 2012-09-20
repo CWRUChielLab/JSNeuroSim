@@ -21,12 +21,12 @@ window.addEventListener('load', function () {
             defaultVal: 0.3, minVal: 0.01, maxVal: 1000 }, 
         E_leak_mV: { label: 'Leak reversal potential', units: 'mV',
             defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
-        g_Na_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 120, minVal: 0.01, maxVal: 1000 }, 
+        g_Na_mS_p_cm2: { label: 'Fast transient sodium conductance', 
+            units: 'mS/cm\u00B2', defaultVal: 120, minVal: 0.01, maxVal: 1000 }, 
         E_Na_mV: { label: 'Sodium Nernst potential', units: 'mV',
             defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
-        g_K_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 36, minVal: 0.01, maxVal: 1000 }, 
+        g_K_mS_p_cm2: { label: 'Delayed rectifier potassium conductance', 
+            units: 'mS/cm\u00B2', defaultVal: 36, minVal: 0.01, maxVal: 1000 }, 
         E_K_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
         dist_electrodes_um: { label: 'Distance between electrodes', 
@@ -52,8 +52,8 @@ window.addEventListener('load', function () {
     };
     layout = [
         ['Cell Properties', ['diameter_um', 'R_axial_ohm_cm', 'C_uF_p_cm2', 
-            'g_leak_mS_p_cm2', 'E_leak_mV', 'g_Na_uS', 'E_Na_mV', 
-            'g_K_uS', 'E_K_mV', 'dist_electrodes_um']],
+            'g_leak_mS_p_cm2', 'E_leak_mV', 'g_Na_mS_p_cm2', 'E_Na_mV', 
+            'g_K_mS_p_cm2', 'E_K_mV', 'dist_electrodes_um']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms', 'numCompartments',
@@ -107,14 +107,14 @@ window.addEventListener('load', function () {
 
             electrophys.hhKConductance(model, 
                 passiveMembranes[i], {
-                    g_K: params.g_K_uS * 1e-6,
+                    g_K: params.g_K_mS_p_cm2 * surfaceArea_cm2 * 1e-3,
                     E_K: params.E_K_mV * 1e-3,
                     V_rest: V_rest
                 });
             
             electrophys.hhNaConductance(model, 
                 passiveMembranes[i], {
-                    g_Na: params.g_Na_uS * 1e-6,
+                    g_Na: params.g_Na_mS_p_cm2 * surfaceArea_cm2 * 1e-3,
                     E_Na: params.E_Na_mV * 1e-3,
                     V_rest: V_rest
                 });

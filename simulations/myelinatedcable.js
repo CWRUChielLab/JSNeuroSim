@@ -24,15 +24,15 @@ window.addEventListener('load', function () {
             defaultVal: 0.3, minVal: 0.01, maxVal: 1000 }, 
         E_leak_node_mV: { label: 'Leak reversal potential', units: 'mV',
             defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
-        g_Na_node_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 120, minVal: 0.0, maxVal: 1000 }, 
+        g_Na_node_mS_p_cm2: { label: 'Fast transient sodium conductance', 
+            units: 'mS/cm\u00B2', defaultVal: 120, minVal: 0.0, maxVal: 1000 }, 
         E_Na_node_mV: { label: 'Sodium Nernst potential', units: 'mV',
             defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
-        g_K_node_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 36, minVal: 0.0, maxVal: 1000 }, 
+        g_K_node_mS_p_cm2: { label: 'Delayed rectifier potassium conductance', 
+            units: 'mS/cm\u00B2', defaultVal: 36, minVal: 0.0, maxVal: 1000 }, 
         E_K_node_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
-        len_node_um: { label: 'node size', 
+        len_node_um: { label: 'node length', 
             units: '\u00B5m', defaultVal: 100, minVal: 0.1, maxVal: 100 },
 
         diameter_myelin_um: { label: 'Axon diameter', units: '\u00B5m',
@@ -47,21 +47,21 @@ window.addEventListener('load', function () {
             defaultVal: 0.01, minVal: 0.001, maxVal: 1000 }, 
         E_leak_myelin_mV: { label: 'Leak reversal potential', units: 'mV',
             defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
-        g_Na_myelin_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 0, minVal: 0, maxVal: 1000 }, 
+        g_Na_myelin_mS_p_cm2: { label: 'Fast transient sodium conductance', 
+            units: 'mS/cm\u00B2', defaultVal: 0, minVal: 0, maxVal: 1000 }, 
         E_Na_myelin_mV: { label: 'Sodium Nernst potential', units: 'mV',
             defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
-        g_K_myelin_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 0, minVal: 0, maxVal: 1000 }, 
+        g_K_myelin_mS_p_cm2: { label: 'Delayed rectifier potassium conductance', 
+            units: 'mS/cm\u00B2', defaultVal: 0, minVal: 0, maxVal: 1000 }, 
         E_K_myelin_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
         len_myelin_um: { label: 'internodal distance', 
-            units: '\u00B5m', defaultVal: 3000, minVal: 100, maxVal: 10000 },
+            units: '\u00B5m', defaultVal: 6000, minVal: 100, maxVal: 100000 },
 
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 0.1, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
-            defaultVal: 3, minVal: -1000, maxVal: 1000 },
+            defaultVal: 0.3, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 0.4, minVal: 0, maxVal: tMax / 1e-3 },
         isi_ms: { label: 'Inter-stimulus interval', units: 'ms', 
@@ -71,19 +71,20 @@ window.addEventListener('load', function () {
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 6, minVal: 0, maxVal: tMax / 1e-3 },
         numCompartments: { label: 'Number of compartments', units: '', 
-            defaultVal: 9, minVal: 4, maxVal: 100 },
+            defaultVal: 5, minVal: 2, maxVal: 100 },
     };
     layout = [
         ['Node of Ranvier Properties', ['diameter_node_um', 
             'R_axial_node_ohm_cm', 
             'C_node_uF_p_cm2', 'g_leak_node_mS_p_cm2', 'E_leak_node_mV', 
-            'g_Na_node_uS', 'E_Na_node_mV', 
-            'g_K_node_uS', 'E_K_node_mV', 'len_node_um']],
+            'g_Na_node_mS_p_cm2', 'E_Na_node_mV', 
+            'g_K_node_mS_p_cm2', 'E_K_node_mV', 'len_node_um']],
         ['Myelinated Segment Properties', ['diameter_myelin_um', 
             'R_axial_myelin_ohm_cm', 
             'C_myelin_uF_p_cm2', 'g_leak_myelin_mS_p_cm2', 'E_leak_myelin_mV', 
-            'g_Na_myelin_uS', 'E_Na_myelin_mV', 
-            'g_K_myelin_uS', 'E_K_myelin_mV', 'len_myelin_um']],
+            //'g_Na_myelin_mS_p_cm2', 'E_Na_myelin_mV', 
+            //'g_K_myelin_mS_p_cm2', 'E_K_myelin_mV', 
+            'len_myelin_um']],
         ['Current Clamp, Node 1', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms', 'numCompartments']]
@@ -155,14 +156,14 @@ window.addEventListener('load', function () {
 
             electrophys.hhKConductance(model, 
                 myelinatedCompartment[i], {
-                    g_K: params.g_K_myelin_uS * 1e-6,
+                    g_K: params.g_K_myelin_mS_p_cm2 * surfaceArea_myelin_cm2 * 1e-3,
                     E_K: params.E_K_myelin_mV * 1e-3,
                     V_rest: V_rest
                 });
             
             electrophys.hhNaConductance(model, 
                 myelinatedCompartment[i], {
-                    g_Na: params.g_Na_myelin_uS * 1e-6,
+                    g_Na: params.g_Na_myelin_mS_p_cm2 * surfaceArea_myelin_cm2 * 1e-3,
                     E_Na: params.E_Na_myelin_mV * 1e-3,
                     V_rest: V_rest
                 });
@@ -193,14 +194,14 @@ window.addEventListener('load', function () {
 
             electrophys.hhKConductance(model, 
                 leftNodeCompartment[i], {
-                    g_K: params.g_K_node_uS * 1e-6,
+                    g_K: params.g_K_node_mS_p_cm2 * surfaceArea_node_cm2 * 1e-3,
                     E_K: params.E_K_node_mV * 1e-3,
                     V_rest: V_rest
                 });
             
             electrophys.hhNaConductance(model, 
                 leftNodeCompartment[i], {
-                    g_Na: params.g_Na_node_uS * 1e-6,
+                    g_Na: params.g_Na_node_mS_p_cm2 * surfaceArea_node_cm2 * 1e-3,
                     E_Na: params.E_Na_node_mV * 1e-3,
                     V_rest: V_rest
                 });
@@ -235,7 +236,7 @@ window.addEventListener('load', function () {
             electrophys.hhKConductance(model, 
                 rightNodeCompartment[i], 
                 {
-                    g_K: params.g_K_node_uS * 1e-6,
+                    g_K: params.g_K_node_mS_p_cm2 * surfaceArea_node_cm2 * 1e-3,
                     E_K: params.E_K_node_mV * 1e-3,
                     V_rest: V_rest
                 });
@@ -243,7 +244,7 @@ window.addEventListener('load', function () {
             electrophys.hhNaConductance(model, 
                 rightNodeCompartment[i], 
                 {
-                    g_Na: params.g_Na_node_uS * 1e-6,
+                    g_Na: params.g_Na_node_mS_p_cm2 * surfaceArea_node_cm2 * 1e-3,
                     E_Na: params.E_Na_node_mV * 1e-3,
                     V_rest: V_rest
                 });
@@ -315,7 +316,7 @@ window.addEventListener('load', function () {
 
             title = document.createElement('h4');
             title.innerHTML = 
-                'Membrane potential, between nodes (mV)';
+                'Membrane potential in mylenated segment (mV)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_c_mV,

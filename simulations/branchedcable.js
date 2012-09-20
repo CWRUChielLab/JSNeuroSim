@@ -372,6 +372,7 @@ window.addEventListener('load', function () {
                 tMin: t0,
                 tMax: params.totalDuration_ms * 1e-3,
                 tMaxStep: 1e-6,
+                tMinOutput: 2e-5,
                 y0: y0,
                 timeout: 100
             });

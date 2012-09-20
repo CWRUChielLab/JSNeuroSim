@@ -42,7 +42,7 @@ window.addEventListener('load', function () {
         numPulses: { label: 'Number of pulses', units: '', 
             defaultVal: 1, minVal: 0, maxVal: 100 },
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
-            defaultVal: 6, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 8, minVal: 0, maxVal: tMax / 1e-3 },
         numCompartments: { label: 'Number of compartments', units: '', 
             defaultVal: 8, minVal: 4, maxVal: 100 },
         numCapSegments: { label: 'Number of capping segments', units: '', 
@@ -149,8 +149,9 @@ window.addEventListener('load', function () {
                 tMin: t0, 
                 tMax: params.totalDuration_ms * 1e-3, 
                 tMaxStep: 1e-6,
+                tMinOutput: 1e-5,
                 y0: y0, 
-                timeout: 750
+                timeout: 100
             });
             
             t = result.t;
@@ -173,6 +174,7 @@ window.addEventListener('load', function () {
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_0_mV,
                 { xUnits: 'ms', yUnits: 'mV', 
+                    minYRange: 100,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 
@@ -182,6 +184,7 @@ window.addEventListener('load', function () {
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 150, t_ms, v_f_mV,
                 { xUnits: 'ms', yUnits: 'mV',
+                    minYRange: 100,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 
@@ -191,6 +194,7 @@ window.addEventListener('load', function () {
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_nA,
                 { xUnits: 'ms', yUnits: 'nA',
+                    minYRange: 100,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 

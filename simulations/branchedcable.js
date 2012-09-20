@@ -1,267 +1,362 @@
 /*jslint browser: true */
-/*global ode: true, graph: true, simcontrols: true, electrophys: true, 
+/*global ode: true, graph: true, simcontrols: true, electrophys: true,
    componentModel: true */
 
 // wait until the document has loaded
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, 
-        currentRunNumber = 0; 
+    var params, layout, controlsPanel, controls, tMax = 1000e-3,
+        currentRunNumber = 0;
 
     // set up the controls for the passive membrane simulation
-    params = { 
+    params = {
 
-        diameter_node_um: { label: 'Axon diameter', units: '\u00B5m',
+        diameter_trunk_um: { label: 'Diameter', units: '\u00B5m',
             defaultVal: 2, minVal: 0.001, maxVal: 1000 },
-        R_axial_node_ohm_cm: { label: 'Axial resistance', units: '\u03A9 cm',
+        R_axial_trunk_ohm_cm: { label: 'Axial resistance', units: '\u03A9 cm',
             defaultVal: 36, minVal: 0.01, maxVal: 10000 },
-        C_node_uF_p_cm2: { label: 'Membrane capacitance', 
+        C_trunk_uF_p_cm2: { label: 'Membrane capacitance',
             units: '\u00B5F/cm\u00B2',
-            defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
-        g_leak_node_mS_p_cm2: { label: 'Leak conductance', 
-            units: 'mS/cm\u00B2', 
-            defaultVal: 0.3, minVal: 0.01, maxVal: 1000 }, 
-        E_leak_node_mV: { label: 'Leak reversal potential', units: 'mV',
-            defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
-        g_Na_node_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 120, minVal: 0.0, maxVal: 1000 }, 
-        E_Na_node_mV: { label: 'Sodium Nernst potential', units: 'mV',
-            defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
-        g_K_node_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 36, minVal: 0.0, maxVal: 1000 }, 
-        E_K_node_mV: { label: 'Potassium Nernst potential', units: 'mV',
-            defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
-        len_node_um: { label: 'node size', 
-            units: '\u00B5m', defaultVal: 100, minVal: 0.1, maxVal: 100 },
+            defaultVal: 1, minVal: 0.01, maxVal: 100 },
+        g_leak_trunk_mS_p_cm2: { label: 'Leak conductance',
+            units: 'mS/cm\u00B2',
+            defaultVal: 0.3, minVal: 0.01, maxVal: 1000 },
+        E_leak_trunk_mV: { label: 'Leak reversal potential', units: 'mV',
+            defaultVal: -54.4, minVal: -1000, maxVal: 1000 },
+        g_Na_trunk_mS_p_cm2: { label: 'Fast transient sodium conductance',
+            units: 'mS/cm\u00B2', defaultVal: 120, minVal: 0.0, maxVal: 1000 },
+        E_Na_trunk_mV: { label: 'Sodium Nernst potential', units: 'mV',
+            defaultVal: 55, minVal: -1000, maxVal: 1000 },
+        g_K_trunk_mS_p_cm2: { label: 'Delayed rectifier potassium conductance',
+            units: 'mS/cm\u00B2', defaultVal: 36, minVal: 0.0, maxVal: 1000 },
+        E_K_trunk_mV: { label: 'Potassium Nernst potential', units: 'mV',
+            defaultVal: -77, minVal: -1000, maxVal: 1000 },
+        len_trunk_um: { label: 'trunk length',
+            units: '\u00B5m', defaultVal: 3000, minVal: 0.1, maxVal: 10000 },
 
-        diameter_myelin_um: { label: 'Axon diameter', units: '\u00B5m',
-            defaultVal: 2, minVal: 0.001, maxVal: 1000 },
-        R_axial_myelin_ohm_cm: { label: 'Axial resistance', units: '\u03A9 cm',
+        diameter_branch1_um: { label: 'Diameter', units: '\u00B5m',
+            defaultVal: 1, minVal: 0.001, maxVal: 1000 },
+        R_axial_branch1_ohm_cm: { label: 'Axial resistance', units: '\u03A9 cm',
             defaultVal: 36, minVal: 0.01, maxVal: 10000 },
-        C_myelin_uF_p_cm2: { label: 'Membrane capacitance', 
+        C_branch1_uF_p_cm2: { label: 'Membrane capacitance',
             units: '\u00B5F/cm\u00B2',
-            defaultVal: 0.001, minVal: 0.0001, maxVal: 100 }, 
-        g_leak_myelin_mS_p_cm2: { label: 'Leak conductance', 
-            units: 'mS/cm\u00B2', 
-            defaultVal: 0.01, minVal: 0.001, maxVal: 1000 }, 
-        E_leak_myelin_mV: { label: 'Leak reversal potential', units: 'mV',
-            defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
-        g_Na_myelin_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 0, minVal: 0, maxVal: 1000 }, 
-        E_Na_myelin_mV: { label: 'Sodium Nernst potential', units: 'mV',
-            defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
-        g_K_myelin_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 0, minVal: 0, maxVal: 1000 }, 
-        E_K_myelin_mV: { label: 'Potassium Nernst potential', units: 'mV',
-            defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
-        len_myelin_um: { label: 'internodal distance', 
+            defaultVal: 1, minVal: 0.0001, maxVal: 100 },
+        g_leak_branch1_mS_p_cm2: { label: 'Leak conductance',
+            units: 'mS/cm\u00B2',
+            defaultVal: 0.3, minVal: 0.001, maxVal: 1000 },
+        E_leak_branch1_mV: { label: 'Leak reversal potential', units: 'mV',
+            defaultVal: -54.4, minVal: -1000, maxVal: 1000 },
+        g_Na_branch1_mS_p_cm2: { label: 'Fast transient sodium conductance',
+            units: 'mS/cm\u00B2', defaultVal: 120, minVal: 0, maxVal: 1000 },
+        E_Na_branch1_mV: { label: 'Sodium Nernst potential', units: 'mV',
+            defaultVal: 55, minVal: -1000, maxVal: 1000 },
+        g_K_branch1_mS_p_cm2: { label: 'Delayed rectifier potassium conductance',
+            units: 'mS/cm\u00B2', defaultVal: 36, minVal: 0, maxVal: 1000 },
+        E_K_branch1_mV: { label: 'Potassium Nernst potential', units: 'mV',
+            defaultVal: -77, minVal: -1000, maxVal: 1000 },
+        len_branch1_um: { label: 'branch 1 length',
             units: '\u00B5m', defaultVal: 3000, minVal: 100, maxVal: 10000 },
 
-        pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
+        diameter_branch2_um: { label: 'Diameter', units: '\u00B5m',
+            defaultVal: 1, minVal: 0.001, maxVal: 1000 },
+        R_axial_branch2_ohm_cm: { label: 'Axial resistance', units: '\u03A9 cm',
+            defaultVal: 36, minVal: 0.01, maxVal: 10000 },
+        C_branch2_uF_p_cm2: { label: 'Membrane capacitance',
+            units: '\u00B5F/cm\u00B2',
+            defaultVal: 1, minVal: 0.0001, maxVal: 100 },
+        g_leak_branch2_mS_p_cm2: { label: 'Leak conductance',
+            units: 'mS/cm\u00B2',
+            defaultVal: 0.3, minVal: 0.001, maxVal: 1000 },
+        E_leak_branch2_mV: { label: 'Leak reversal potential', units: 'mV',
+            defaultVal: -54.4, minVal: -1000, maxVal: 1000 },
+        g_Na_branch2_mS_p_cm2: { label: 'Fast transient sodium conductance',
+            units: 'mS/cm\u00B2', defaultVal: 120, minVal: 0, maxVal: 1000 },
+        E_Na_branch2_mV: { label: 'Sodium Nernst potential', units: 'mV',
+            defaultVal: 55, minVal: -1000, maxVal: 1000 },
+        g_K_branch2_mS_p_cm2: { label: 'Delayed rectifier potassium conductance',
+            units: 'mS/cm\u00B2', defaultVal: 36, minVal: 0, maxVal: 1000 },
+        E_K_branch2_mV: { label: 'Potassium Nernst potential', units: 'mV',
+            defaultVal: -77, minVal: -1000, maxVal: 1000 },
+        len_branch2_um: { label: 'branch 2 length',
+            units: '\u00B5m', defaultVal: 3000, minVal: 100, maxVal: 10000 },
+
+        trunkPulseStart_ms: { label: 'Stimulus delay', units: 'ms',
             defaultVal: 0.1, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
+        trunkPulseHeight_nA: { label: 'Stimulus current', units: 'nA',
             defaultVal: 3, minVal: -1000, maxVal: 1000 },
-        pulseWidth_ms: { label: 'Pulse duration', units: 'ms', 
+        trunkPulseWidth_ms: { label: 'Pulse duration', units: 'ms',
             defaultVal: 0.4, minVal: 0, maxVal: tMax / 1e-3 },
-        isi_ms: { label: 'Inter-stimulus interval', units: 'ms', 
+        trunkIsi_ms: { label: 'Inter-stimulus interval', units: 'ms',
             defaultVal: 1, minVal: 0, maxVal: tMax / 1e-3 },
-        numPulses: { label: 'Number of pulses', units: '', 
+        trunkNumPulses: { label: 'Number of pulses', units: '',
             defaultVal: 1, minVal: 0, maxVal: 100 },
-        totalDuration_ms: { label: 'Total duration', units: 'ms', 
-            defaultVal: 6, minVal: 0, maxVal: tMax / 1e-3 },
-        numCompartments: { label: 'Number of compartments', units: '', 
-            defaultVal: 9, minVal: 4, maxVal: 100 },
+
+        branch1PulseStart_ms: { label: 'Stimulus delay', units: 'ms',
+            defaultVal: 0.1, minVal: 0, maxVal: tMax / 1e-3 },
+        branch1PulseHeight_nA: { label: 'Stimulus current', units: 'nA',
+            defaultVal: 3, minVal: -1000, maxVal: 1000 },
+        branch1PulseWidth_ms: { label: 'Pulse duration', units: 'ms',
+            defaultVal: 0.4, minVal: 0, maxVal: tMax / 1e-3 },
+        branch1Isi_ms: { label: 'Inter-stimulus interval', units: 'ms',
+            defaultVal: 1, minVal: 0, maxVal: tMax / 1e-3 },
+        branch1NumPulses: { label: 'Number of pulses', units: '',
+            defaultVal: 0, minVal: 0, maxVal: 100 },
+
+        branch2PulseStart_ms: { label: 'Stimulus delay', units: 'ms',
+            defaultVal: 0.1, minVal: 0, maxVal: tMax / 1e-3 },
+        branch2PulseHeight_nA: { label: 'Stimulus current', units: 'nA',
+            defaultVal: 3, minVal: -1000, maxVal: 1000 },
+        branch2PulseWidth_ms: { label: 'Pulse duration', units: 'ms',
+            defaultVal: 0.4, minVal: 0, maxVal: tMax / 1e-3 },
+        branch2Isi_ms: { label: 'Inter-stimulus interval', units: 'ms',
+            defaultVal: 1, minVal: 0, maxVal: tMax / 1e-3 },
+        branch2NumPulses: { label: 'Number of pulses', units: '',
+            defaultVal: 0, minVal: 0, maxVal: 100 },
+
+        numCompartments: { label: 'Number of compartments', units: '',
+            defaultVal: 4, minVal: 4, maxVal: 100 },
+        totalDuration_ms: { label: 'Total duration', units: 'ms',
+            defaultVal: 20, minVal: 0, maxVal: tMax / 1e-3 }
     };
     layout = [
-        ['Node of Ranvier Properties', ['diameter_node_um', 
-            'R_axial_node_ohm_cm', 
-            'C_node_uF_p_cm2', 'g_leak_node_mS_p_cm2', 'E_leak_node_mV', 
-            'g_Na_node_uS', 'E_Na_node_mV', 
-            'g_K_node_uS', 'E_K_node_mV', 'len_node_um']],
-        ['Branched Segment Properties', ['diameter_myelin_um', 
-            'R_axial_myelin_ohm_cm', 
-            'C_myelin_uF_p_cm2', 'g_leak_myelin_mS_p_cm2', 'E_leak_myelin_mV', 
-            'g_Na_myelin_uS', 'E_Na_myelin_mV', 
-            'g_K_myelin_uS', 'E_K_myelin_mV', 'len_myelin_um']],
-        ['Current Clamp, Node 1', ['pulseStart_ms', 'pulseHeight_nA', 
-            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+        ['Trunk Properties', ['diameter_trunk_um',
+            'R_axial_trunk_ohm_cm',
+            'C_trunk_uF_p_cm2', 'g_leak_trunk_mS_p_cm2', 'E_leak_trunk_mV',
+            'g_Na_trunk_mS_p_cm2', 'E_Na_trunk_mV',
+            'g_K_trunk_mS_p_cm2', 'E_K_trunk_mV', 'len_trunk_um']],
+        ['Branch 1 Properties', ['diameter_branch1_um',
+            'R_axial_branch1_ohm_cm',
+            'C_branch1_uF_p_cm2', 'g_leak_branch1_mS_p_cm2', 'E_leak_branch1_mV',
+            'g_Na_branch1_mS_p_cm2', 'E_Na_branch1_mV',
+            'g_K_branch1_mS_p_cm2', 'E_K_branch1_mV', 'len_branch1_um']],
+        ['Branch 2 Properties', ['diameter_branch2_um',
+            'R_axial_branch2_ohm_cm',
+            'C_branch2_uF_p_cm2', 'g_leak_branch2_mS_p_cm2', 'E_leak_branch2_mV',
+            'g_Na_branch2_mS_p_cm2', 'E_Na_branch2_mV',
+            'g_K_branch2_mS_p_cm2', 'E_K_branch2_mV', 'len_branch2_um']],
+        ['Current Clamp, Trunk', ['trunkPulseStart_ms', 'trunkPulseHeight_nA',
+            'trunkPulseWidth_ms', 'trunkIsi_ms', 'trunkNumPulses']],
+        ['Current Clamp, Branch 1', ['branch1PulseStart_ms', 'branch1PulseHeight_nA',
+            'branch1PulseWidth_ms', 'branch1Isi_ms', 'branch1NumPulses']],
+        ['Current Clamp, Branch 2', ['branch2PulseStart_ms', 'branch2PulseHeight_nA',
+            'branch2PulseWidth_ms', 'branch2Isi_ms', 'branch2NumPulses']],
         ['Simulation Settings', ['totalDuration_ms', 'numCompartments']]
     ];
     controlsPanel = document.getElementById('BranchedCableControls');
 
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
-        var model, leftNodeCompartment, rightNodeCompartment, 
-            myelinatedCompartment, pulseTrain,
-            result, t, v_0, v_c, v_f, t_ms, v_0_mV, v_c_mV, v_f_mV, 
-            params, iStim_nA,
-            plotPanel, title, i, 
-            l_compartment_myelin_um, surfaceArea_myelin_cm2, 
-            crossSectionalArea_myelin_cm2, 
-            r_intercompartment_myelin, 
-            l_compartment_node_um, surfaceArea_node_cm2, 
-            crossSectionalArea_node_cm2, 
-            r_intercompartment_node, 
-            r_intercompartment_boundary, 
-            V_rest = -73.25e-3,
+        var model, branch1Compartment, branch2Compartment,
+            trunkCompartment, pulseTrainTrunk, pulseTrainBranch1, pulseTrainBranch2,
+            result,
+            t, v_trunk, v_junction, v_branch1, v_branch2,
+            t_ms, v_trunk_mV, v_junction_mV, v_branch1_mV, v_branch2_mV,
+            params,
+            iStim_trunk_nA, iStim_branch1_nA, iStim_branch2_nA,
+            plotPanel, title, i,
+            l_compartment_trunk_um, surfaceArea_trunk_cm2,
+            crossSectionalArea_trunk_cm2,
+            r_intercompartment_trunk,
+            r_trunk_branch1_boundary,
+            r_trunk_branch2_boundary,
+            l_compartment_branch1_um, surfaceArea_branch1_cm2,
+            crossSectionalArea_branch1_cm2,
+            r_intercompartment_branch1,
+            l_compartment_branch2_um, surfaceArea_branch2_cm2,
+            crossSectionalArea_branch2_cm2,
+            r_intercompartment_branch2,
+            V_rest = -64.14e-3,
             startTime = new Date().getTime(),
-            numNodeCompartments = 1, numBranchedCompartments,
+            numBranchCompartments, numTrunkCompartments,
             t0, y0, runNumber;
-       
+
         params = controls.values;
 
 
-        numBranchedCompartments = params.numCompartments;
+        numTrunkCompartments = params.numCompartments;
+        numBranchCompartments = params.numCompartments;
 
-        l_compartment_myelin_um = params.len_myelin_um / params.numCompartments;
-        surfaceArea_myelin_cm2 = Math.PI * params.diameter_myelin_um * 
-            l_compartment_myelin_um * 1e-8;
-        crossSectionalArea_myelin_cm2 = Math.PI * params.diameter_myelin_um * 
-            params.diameter_myelin_um * 1e-8 / 4;
-        r_intercompartment_myelin = params.R_axial_myelin_ohm_cm * 
-            l_compartment_myelin_um / crossSectionalArea_myelin_cm2 * 1e-4;
+        l_compartment_trunk_um = params.len_trunk_um / numBranchCompartments;
+        surfaceArea_trunk_cm2 = Math.PI * params.diameter_trunk_um *
+            l_compartment_trunk_um * 1e-8;
+        crossSectionalArea_trunk_cm2 = Math.PI * params.diameter_trunk_um *
+            params.diameter_trunk_um * 1e-8 / 4;
+        r_intercompartment_trunk = params.R_axial_trunk_ohm_cm *
+            l_compartment_trunk_um / crossSectionalArea_trunk_cm2 * 1e-4;
 
-        l_compartment_node_um = params.len_node_um / numNodeCompartments;
-        surfaceArea_node_cm2 = Math.PI * params.diameter_node_um * 
-            l_compartment_node_um * 1e-8;
-        crossSectionalArea_node_cm2 = Math.PI * params.diameter_node_um * 
-            params.diameter_node_um * 1e-8 / 4;
-        r_intercompartment_node = params.R_axial_node_ohm_cm * 
-            l_compartment_node_um / crossSectionalArea_node_cm2 * 1e-4;
+        l_compartment_branch1_um = params.len_branch1_um / params.numCompartments;
+        surfaceArea_branch1_cm2 = Math.PI * params.diameter_branch1_um *
+            l_compartment_branch1_um * 1e-8;
+        crossSectionalArea_branch1_cm2 = Math.PI * params.diameter_branch1_um *
+            params.diameter_branch1_um * 1e-8 / 4;
+        r_intercompartment_branch1 = params.R_axial_branch1_ohm_cm *
+            l_compartment_branch1_um / crossSectionalArea_branch1_cm2 * 1e-4;
+        r_trunk_branch1_boundary = (r_intercompartment_trunk +
+            r_intercompartment_branch1) / 2;
 
-        r_intercompartment_boundary = (r_intercompartment_node + 
-            r_intercompartment_myelin) / 2;
+        l_compartment_branch2_um = params.len_branch2_um / params.numCompartments;
+        surfaceArea_branch2_cm2 = Math.PI * params.diameter_branch2_um *
+            l_compartment_branch2_um * 1e-8;
+        crossSectionalArea_branch2_cm2 = Math.PI * params.diameter_branch2_um *
+            params.diameter_branch2_um * 1e-8 / 4;
+        r_intercompartment_branch2 = params.R_axial_branch2_ohm_cm *
+            l_compartment_branch2_um / crossSectionalArea_branch2_cm2 * 1e-4;
+        r_trunk_branch2_boundary = (r_intercompartment_trunk +
+            r_intercompartment_branch2) / 2;
+
 
         model = componentModel.componentModel();
 
-        // create the myelinated segment
-        myelinatedCompartment = [];        
-        for (i = 0; i < numBranchedCompartments; i += 1) {
-            myelinatedCompartment[i] = electrophys.passiveMembrane(model, {
-                C: params.C_myelin_uF_p_cm2 * surfaceArea_myelin_cm2 * 1e-6, 
-                g_leak: (params.g_leak_myelin_mS_p_cm2 * 
-                    surfaceArea_myelin_cm2 * 1e-3), 
-                E_leak: params.E_leak_myelin_mV * 1e-3,
+        // create the trunk segment
+        trunkCompartment = [];
+        for (i = 0; i < numTrunkCompartments; i += 1) {
+            trunkCompartment[i] = electrophys.passiveMembrane(model, {
+                C: params.C_trunk_uF_p_cm2 * surfaceArea_trunk_cm2 * 1e-6,
+                g_leak: (params.g_leak_trunk_mS_p_cm2 *
+                    surfaceArea_trunk_cm2 * 1e-3),
+                E_leak: params.E_leak_trunk_mV * 1e-3,
                 V_rest: V_rest
             });
 
             if (i > 0) {
-                electrophys.gapJunction(myelinatedCompartment[i - 1], 
-                    myelinatedCompartment[i], { 
-                        g: 1 / r_intercompartment_myelin 
+                electrophys.gapJunction(trunkCompartment[i - 1],
+                    trunkCompartment[i], {
+                        g: 1 / r_intercompartment_trunk
                     });
             }
 
-            electrophys.hhKConductance(model, 
-                myelinatedCompartment[i], {
-                    g_K: params.g_K_myelin_uS * 1e-6,
-                    E_K: params.E_K_myelin_mV * 1e-3,
+            electrophys.hhKConductance(model,
+                trunkCompartment[i], {
+                    g_K: params.g_K_trunk_mS_p_cm2 * surfaceArea_trunk_cm2 * 1e-3,
+                    E_K: params.E_K_trunk_mV * 1e-3,
                     V_rest: V_rest
                 });
-            
-            electrophys.hhNaConductance(model, 
-                myelinatedCompartment[i], {
-                    g_Na: params.g_Na_myelin_uS * 1e-6,
-                    E_Na: params.E_Na_myelin_mV * 1e-3,
+
+            electrophys.hhNaConductance(model,
+                trunkCompartment[i], {
+                    g_Na: params.g_Na_trunk_mS_p_cm2 * surfaceArea_trunk_cm2 * 1e-3,
+                    E_Na: params.E_Na_trunk_mV * 1e-3,
                     V_rest: V_rest
                 });
         }
 
-        // create the left nodes
-        leftNodeCompartment = [];        
-        for (i = 0; i < numNodeCompartments; i += 1) {
-            leftNodeCompartment[i] = electrophys.passiveMembrane(model, {
-                C: params.C_node_uF_p_cm2 * surfaceArea_node_cm2 * 1e-6, 
-                g_leak: (params.g_leak_node_mS_p_cm2 * 
-                    surfaceArea_node_cm2 * 1e-3), 
-                E_leak: params.E_leak_node_mV * 1e-3,
+        // create the first branch
+        branch1Compartment = [];
+        for (i = 0; i < numBranchCompartments; i += 1) {
+            branch1Compartment[i] = electrophys.passiveMembrane(model, {
+                C: params.C_branch1_uF_p_cm2 * surfaceArea_branch1_cm2 * 1e-6,
+                g_leak: (params.g_leak_branch1_mS_p_cm2 *
+                    surfaceArea_branch1_cm2 * 1e-3),
+                E_leak: params.E_leak_branch1_mV * 1e-3,
                 V_rest: V_rest
             });
 
-            if (i === 0) { 
-                electrophys.gapJunction(myelinatedCompartment[0], 
-                    leftNodeCompartment[i], { 
-                        g: 1 / r_intercompartment_boundary
-                    });
-            } else {
-                electrophys.gapJunction(leftNodeCompartment[i - 1], 
-                    leftNodeCompartment[i], { 
-                        g: 1 / r_intercompartment_node 
-                    });
-            }
-
-            electrophys.hhKConductance(model, 
-                leftNodeCompartment[i], {
-                    g_K: params.g_K_node_uS * 1e-6,
-                    E_K: params.E_K_node_mV * 1e-3,
-                    V_rest: V_rest
-                });
-            
-            electrophys.hhNaConductance(model, 
-                leftNodeCompartment[i], {
-                    g_Na: params.g_Na_node_uS * 1e-6,
-                    E_Na: params.E_Na_node_mV * 1e-3,
-                    V_rest: V_rest
-                });
-        }
-
-        // create the right nodes
-        rightNodeCompartment = [];        
-        for (i = 0; i < numNodeCompartments; i += 1) {
-            rightNodeCompartment[i] = electrophys.passiveMembrane(model, {
-                C: params.C_node_uF_p_cm2 * surfaceArea_node_cm2 * 1e-6, 
-                g_leak: (params.g_leak_node_mS_p_cm2 * 
-                    surfaceArea_node_cm2 * 1e-3), 
-                E_leak: params.E_leak_node_mV * 1e-3,
-                V_rest: V_rest
-            });
-
-            if (i === 0) { 
+            if (i === 0) {
                 electrophys.gapJunction(
-                    myelinatedCompartment[numBranchedCompartments - 1], 
-                    rightNodeCompartment[i], 
-                    { 
-                        g: 1 / r_intercompartment_boundary
-                    }
-                ); 
+                    trunkCompartment[numTrunkCompartments - 1],
+                    branch1Compartment[i], {
+                        g: 1 / r_trunk_branch1_boundary
+                    });
             } else {
-                electrophys.gapJunction(rightNodeCompartment[i - 1], 
-                    rightNodeCompartment[i], 
-                    { 
-                        g: 1 / r_intercompartment_node 
-                    }); 
+                electrophys.gapJunction(branch1Compartment[i - 1],
+                    branch1Compartment[i], {
+                        g: 1 / r_intercompartment_branch1
+                    });
             }
 
-            electrophys.hhKConductance(model, 
-                rightNodeCompartment[i], {
-                    g_K: params.g_K_node_uS * 1e-6,
-                    E_K: params.E_K_node_mV * 1e-3,
+            electrophys.hhKConductance(model,
+                branch1Compartment[i], {
+                    g_K: params.g_K_branch1_mS_p_cm2  * surfaceArea_branch1_cm2 * 1e-3,
+                    E_K: params.E_K_branch1_mV * 1e-3,
                     V_rest: V_rest
                 });
-            
-            electrophys.hhNaConductance(model, 
-                rightNodeCompartment[i], {
-                    g_Na: params.g_Na_node_uS * 1e-6,
-                    E_Na: params.E_Na_node_mV * 1e-3,
+
+            electrophys.hhNaConductance(model,
+                branch1Compartment[i], {
+                    g_Na: params.g_Na_branch1_mS_p_cm2  * surfaceArea_branch1_cm2 * 1e-3,
+                    E_Na: params.E_Na_branch1_mV * 1e-3,
                     V_rest: V_rest
                 });
         }
 
-        pulseTrain = electrophys.pulseTrain({
-            start: 1e-3 * params.pulseStart_ms, 
-            width: params.pulseWidth_ms * 1e-3, 
-            height: params.pulseHeight_nA * 1e-9,
-            gap: params.isi_ms * 1e-3,
-            num_pulses: params.numPulses
+        // create the second branch
+        branch2Compartment = [];
+        for (i = 0; i < numBranchCompartments; i += 1) {
+            branch2Compartment[i] = electrophys.passiveMembrane(model, {
+                C: params.C_branch2_uF_p_cm2 * surfaceArea_branch2_cm2 * 1e-6,
+                g_leak: (params.g_leak_branch2_mS_p_cm2 *
+                    surfaceArea_branch2_cm2 * 1e-3),
+                E_leak: params.E_leak_branch2_mV * 1e-3,
+                V_rest: V_rest
+            });
+
+            if (i === 0) {
+                electrophys.gapJunction(
+                    trunkCompartment[numTrunkCompartments - 1],
+                    branch2Compartment[i],
+                    {
+                        g: 1 / r_trunk_branch2_boundary
+                    }
+                );
+            } else {
+                electrophys.gapJunction(branch2Compartment[i - 1],
+                    branch2Compartment[i],
+                    {
+                        g: 1 / r_intercompartment_branch2
+                    });
+            }
+
+            electrophys.hhKConductance(model,
+                branch2Compartment[i], {
+                    g_K: params.g_K_branch2_mS_p_cm2  * surfaceArea_branch2_cm2 * 1e-3,
+                    E_K: params.E_K_branch2_mV * 1e-3,
+                    V_rest: V_rest
+                });
+
+            electrophys.hhNaConductance(model,
+                branch2Compartment[i], {
+                    g_Na: params.g_Na_branch2_mS_p_cm2  * surfaceArea_branch2_cm2 * 1e-3,
+                    E_Na: params.E_Na_branch2_mV * 1e-3,
+                    V_rest: V_rest
+                });
+        }
+
+        pulseTrainTrunk = electrophys.pulseTrain({
+            start: 1e-3 * params.trunkPulseStart_ms,
+            width: params.trunkPulseWidth_ms * 1e-3,
+            height: params.trunkPulseHeight_nA * 1e-9,
+            gap: params.trunkIsi_ms * 1e-3,
+            num_pulses: params.trunkNumPulses
         });
-        leftNodeCompartment[0].addCurrent(pulseTrain);
-        
+        trunkCompartment[0].addCurrent(pulseTrainTrunk);
+
+        pulseTrainBranch1 = electrophys.pulseTrain({
+            start: 1e-3 * params.branch1PulseStart_ms,
+            width: params.branch1PulseWidth_ms * 1e-3,
+            height: params.branch1PulseHeight_nA * 1e-9,
+            gap: params.branch1Isi_ms * 1e-3,
+            num_pulses: params.branch1NumPulses
+        });
+        branch1Compartment[numBranchCompartments - 1].addCurrent(pulseTrainBranch1);
+
+        pulseTrainBranch2 = electrophys.pulseTrain({
+            start: 1e-3 * params.branch2PulseStart_ms,
+            width: params.branch2PulseWidth_ms * 1e-3,
+            height: params.branch2PulseHeight_nA * 1e-9,
+            gap: params.branch2Isi_ms * 1e-3,
+            num_pulses: params.branch2NumPulses
+        });
+        branch2Compartment[numBranchCompartments - 1].addCurrent(pulseTrainBranch2);
+
         t_ms = [];
-        v_0_mV = [];
-        v_c_mV = [];
-        v_f_mV = [];
-        iStim_nA = [];
+        v_trunk_mV = [];
+        v_junction_mV = [];
+        v_branch1_mV = [];
+        v_branch2_mV = [];
+        iStim_trunk_nA = [];
+        iStim_branch1_nA = [];
+        iStim_branch2_nA = [];
 
         t0 = 0;
         y0 = model.initialValues();
@@ -274,85 +369,121 @@ window.addEventListener('load', function () {
 
             // simulate it
             result = model.integrate({
-                tMin: t0, 
-                tMax: params.totalDuration_ms * 1e-3, 
+                tMin: t0,
+                tMax: params.totalDuration_ms * 1e-3,
                 tMaxStep: 1e-6,
-                y0: y0, 
-                timeout: 750
+                y0: y0,
+                timeout: 100
             });
-            
+
             t = result.t;
-            v_0 = leftNodeCompartment[0].V(result.y, result.t);
-            v_c = myelinatedCompartment[
-                Math.floor(numBranchedCompartments / 2)
-            ].V(result.y, result.t);
-            v_f = rightNodeCompartment[0].V(result.y, result.t);
+            v_trunk = trunkCompartment[0].V(result.y, result.t);
+            v_junction = trunkCompartment[numTrunkCompartments - 1].V(result.y, result.t);
+            v_branch1 = branch1Compartment[numBranchCompartments - 1].V(result.y, result.t);
+            v_branch2 = branch2Compartment[numBranchCompartments - 1].V(result.y, result.t);
 
             t_ms = t_ms.concat(graph.linearAxis(0, 1, 0, 1000).
                     mapWorldToDisplay(t));
-            v_0_mV = v_0_mV.concat(graph.linearAxis(0, 1, 0, 1000).
-                    mapWorldToDisplay(v_0));
-            v_c_mV = v_c_mV.concat(graph.linearAxis(0, 1, 0, 1000).
-                    mapWorldToDisplay(v_c));
-            v_f_mV = v_f_mV.concat(graph.linearAxis(0, 1, 0, 1000).
-                    mapWorldToDisplay(v_f));
-          
-            iStim_nA = iStim_nA.concat(t.map(function (t) {return pulseTrain([], t) / 1e-9; }));
+            v_trunk_mV = v_trunk_mV.concat(graph.linearAxis(0, 1, 0, 1000).
+                    mapWorldToDisplay(v_trunk));
+            v_junction_mV = v_junction_mV.concat(graph.linearAxis(0, 1, 0, 1000).
+                    mapWorldToDisplay(v_junction));
+            v_branch1_mV = v_branch1_mV.concat(graph.linearAxis(0, 1, 0, 1000).
+                    mapWorldToDisplay(v_branch1));
+            v_branch2_mV = v_branch2_mV.concat(graph.linearAxis(0, 1, 0, 1000).
+                    mapWorldToDisplay(v_branch2));
+
+            iStim_trunk_nA = iStim_trunk_nA.concat(t.map(function (t) {return pulseTrainTrunk([], t) / 1e-9; }));
+            iStim_branch1_nA = iStim_branch1_nA.concat(t.map(function (t) {return pulseTrainBranch1([], t) / 1e-9; }));
+            iStim_branch2_nA = iStim_branch2_nA.concat(t.map(function (t) {return pulseTrainBranch2([], t) / 1e-9; }));
 
             // plot the results
             plotPanel = document.getElementById('BranchedCablePlots');
             plotPanel.innerHTML = '';
-            
-            title = document.createElement('h4');
-            title.innerHTML = 'Membrane potential node 1 (mV)';
-            title.className = 'simplotheading';
-            plotPanel.appendChild(title);
-            graph.graph(plotPanel, 425, 150, t_ms, v_0_mV,
-                { xUnits: 'ms', yUnits: 'mV', 
-                    xMin: -0.02 * params.totalDuration_ms, 
-                    xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
-            title.innerHTML = 
-                'Membrane potential, between nodes (mV)';
+            title.innerHTML = 'Membrane potential trunk (mV)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
-            graph.graph(plotPanel, 425, 150, t_ms, v_c_mV,
+            graph.graph(plotPanel, 425, 150, t_ms, v_trunk_mV,
                 { xUnits: 'ms', yUnits: 'mV',
-                    xMin: -0.02 * params.totalDuration_ms, 
+                    minYRange: 100,
+                    xMin: -0.02 * params.totalDuration_ms,
                     xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
-            title.innerHTML = 'Membrane potential node 2 (mV)';
+            title.innerHTML =
+                'Membrane potential at junction (mV)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
-            graph.graph(plotPanel, 425, 150, t_ms, v_f_mV,
+            graph.graph(plotPanel, 425, 150, t_ms, v_junction_mV,
                 { xUnits: 'ms', yUnits: 'mV',
-                    xMin: -0.02 * params.totalDuration_ms, 
+                    minYRange: 100,
+                    xMin: -0.02 * params.totalDuration_ms,
                     xMax: params.totalDuration_ms});
 
             title = document.createElement('h4');
-            title.innerHTML = 'Stimulation current (nA)';
+            title.innerHTML = 'Membrane potential at branch 1 (mV)';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
-            graph.graph(plotPanel, 425, 70, t_ms, iStim_nA,
+            graph.graph(plotPanel, 425, 150, t_ms, v_branch1_mV,
+                { xUnits: 'ms', yUnits: 'mV',
+                    minYRange: 100,
+                    xMin: -0.02 * params.totalDuration_ms,
+                    xMax: params.totalDuration_ms});
+
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane potential at branch 2 (mV)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 150, t_ms, v_branch2_mV,
+                { xUnits: 'ms', yUnits: 'mV',
+                    minYRange: 100,
+                    xMin: -0.02 * params.totalDuration_ms,
+                    xMax: params.totalDuration_ms});
+
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation current trunk (nA)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 70, t_ms, iStim_trunk_nA,
                 { xUnits: 'ms', yUnits: 'nA',
-                    xMin: -0.02 * params.totalDuration_ms, 
+                    xMin: -0.02 * params.totalDuration_ms,
+                    xMax: params.totalDuration_ms});
+
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation current branch 1 (nA)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 70, t_ms, iStim_branch1_nA,
+                { xUnits: 'ms', yUnits: 'nA',
+                    xMin: -0.02 * params.totalDuration_ms,
+                    xMax: params.totalDuration_ms});
+
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation current branch 2 (nA)';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            graph.graph(plotPanel, 425, 70, t_ms, iStim_branch2_nA,
+                { xUnits: 'ms', yUnits: 'nA',
+                    xMin: -0.02 * params.totalDuration_ms,
                     xMax: params.totalDuration_ms});
 
             if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
                 y0 = result.y_f;
                 window.setTimeout(updateSim, 0);
-            } else {
+            } else if (result.terminationReason == 'reached tMax') {
                 console.log('Total time: ' + (new Date().getTime() - startTime));
+            } else {
+                console.log('Integration error: ' + result.terminationReason);
             }
         }
 
         window.setTimeout(updateSim, 0);
     }
 
-    
+
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
@@ -364,12 +495,12 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('BranchedCableResetButton')
         .addEventListener('click', reset, false));
-    
 
-    // make the enter key run the simulation  
-    controlsPanel.addEventListener('keydown',  
+
+    // make the enter key run the simulation
+    controlsPanel.addEventListener('keydown',
         function (evt, element) {
-            if (evt.keyCode === 13) { // enter was pressed 
+            if (evt.keyCode === 13) { // enter was pressed
                 controls.triggerRead();
                 runSimulation();
                 return false;

@@ -9,7 +9,7 @@ window.addEventListener('load', function () {
     var params, layout, controlsPanel, controls, tMax = 1000e-3, 
         currentRunNumber = 0; 
 
-    // set up the controls for the passive membrane simulation
+    // set up the controls
     params = { 
         diameter_um: { label: 'Dendrite diameter', units: '\u00B5m',
             defaultVal: 2, minVal: 0.001, maxVal: 1000 },
@@ -194,7 +194,6 @@ window.addEventListener('load', function () {
             plotPanel.appendChild(title);
             graph.graph(plotPanel, 425, 70, t_ms, iStim_nA,
                 { xUnits: 'ms', yUnits: 'nA',
-                    minYRange: 100,
                     xMin: -0.02 * params.totalDuration_ms, 
                     xMax: params.totalDuration_ms});
 

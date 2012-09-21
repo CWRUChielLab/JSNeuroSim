@@ -105,7 +105,7 @@ window.addEventListener('load', function () {
             crossSectionalArea_node_cm2, 
             r_intercompartment_node, 
             r_intercompartment_boundary, 
-            V_rest = -73.25e-3,
+            V_rest = -65e-3,
             startTime = new Date().getTime(),
             numNodeCompartments = 1, numMyelinatedCompartments,
             t0, y0, runNumber;
@@ -219,7 +219,7 @@ window.addEventListener('load', function () {
             });
 
             if (i === 0) { 
-                electrophys.gapJunction(
+               electrophys.gapJunction(
                     myelinatedCompartment[numMyelinatedCompartments - 1], 
                     rightNodeCompartment[i], 
                     { 

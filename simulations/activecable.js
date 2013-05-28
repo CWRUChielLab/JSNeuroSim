@@ -70,7 +70,7 @@ window.addEventListener('load', function () {
             r_intersegment, 
             numCapSegments, cappingFactor, prevSegment,
             factor,
-            V_rest = -73.25e-3,
+            V_rest = -64.93e-3, // this is the stable resting potential after 40 ms
             startTime = new Date().getTime(),
             t0, y0, runNumber;
        

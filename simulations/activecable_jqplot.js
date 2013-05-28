@@ -65,12 +65,12 @@ window.addEventListener('load', function () {
         var model, passiveMembranes, pulseTrain,
             result, v_0, v_f, iStim,
             v_0_mV, v_f_mV, params, iStim_nA,
-            plotPanel, plot, plotDefaultOptions, title, i, 
+            plotPanel, plot, plotDefaultOptions, debugPanel, title, i, 
             l_segment_um, surfaceArea_cm2, crossSectionalArea_cm2, 
             r_intersegment, 
             numCapSegments, cappingFactor, prevSegment,
             factor,
-            V_rest = -64.93e-3,
+            V_rest = -64.93e-3, // this is the stable resting potential after 40 ms
             startTime = new Date().getTime(),
             t0, y0, runNumber;
        
@@ -150,7 +150,7 @@ window.addEventListener('load', function () {
                 tMaxStep: 1e-6,
                 tMinOutput: 1e-5,
                 y0: y0, 
-                timeout: 1000
+                timeout: 200
             });
             
             v_0   = result.mapOrderedPairs(passiveMembranes[0].V);

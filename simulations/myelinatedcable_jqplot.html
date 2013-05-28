@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Myelinated cable simulation</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="simulations.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
+        <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../lib/jqplot/excanvas.js"></script><![endif]-->
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.jqplot.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+        <script src="../src/ode.js"></script>
+        <script src="../src/graph.js"></script>
+        <script src="../src/component_model.js"></script>
+        <script src="../src/electrophys.js"></script>
+        <script src="../src/sim_controls.js"></script>
+        <script src="myelinatedcable_jqplot.js"></script>
+    </head>
+    <body>
+        <h1 class="simtitle">Myelinated cable simulation</h1>
+        <div id="MyelinatedCablePlots" class="plotpanel"></div>
+        <div id="MyelinatedCableControls" class="controlspanel"></div>
+        <input id="MyelinatedCableRunButton" type="button" value="Run"/>
+        <input type="button" id="MyelinatedCableResetButton" value="Reset"/>
+        <div id="debugPanel"></div>
+    </body>
+</html>

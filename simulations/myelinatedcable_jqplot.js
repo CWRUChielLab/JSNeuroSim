@@ -351,7 +351,7 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Node 1 (mV)'},
+                        yaxis: {label:'Node 1 Voltage (mV)'},
                     },
                     series: [
                         {label: 'V<sub>m1</sub>', color: 'black'},
@@ -371,7 +371,7 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Myelinated Segment (mV)'},
+                        yaxis: {label:'Myelinated Segment Voltage (mV)'},
                     },
                     series: [
                         {label: 'V<sub>mm</sub>', color: 'black'},
@@ -391,7 +391,7 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Node 2 (mV)'},
+                        yaxis: {label:'Node 2 Voltage (mV)'},
                     },
                     series: [
                         {label: 'V<sub>m2</sub>', color: 'black'},

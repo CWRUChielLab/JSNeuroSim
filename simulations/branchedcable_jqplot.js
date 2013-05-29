@@ -435,6 +435,10 @@ window.addEventListener('load', function () {
             };
             
             // Truck voltage
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Trunk';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltageTrunkPlot';
             plot.style.width = '425px';
@@ -445,7 +449,6 @@ window.addEventListener('load', function () {
                     cursor: {
                         tooltipFormatString: "%s: %.2f ms, %.2f mV",
                     },
-                    title: "Membrane Potential at Trunk",
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -456,6 +459,10 @@ window.addEventListener('load', function () {
             })));
 
             // Junction voltage
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Junction';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltageJunctionPlot';
             plot.style.width = '425px';
@@ -466,7 +473,6 @@ window.addEventListener('load', function () {
                     cursor: {
                         tooltipFormatString: "%s: %.2f ms, %.2f mV",
                     },
-                    title: "Membrane Potential at Junction",
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -477,6 +483,10 @@ window.addEventListener('load', function () {
             })));
 
             // Branch 1 voltage
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Branch 1';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltageBranch1Plot';
             plot.style.width = '425px';
@@ -487,7 +497,6 @@ window.addEventListener('load', function () {
                     cursor: {
                         tooltipFormatString: "%s: %.2f ms, %.2f mV",
                     },
-                    title: "Membrane Potential at Branch 1",
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -498,6 +507,10 @@ window.addEventListener('load', function () {
             })));
 
             // Branch 2 voltage
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Branch 2';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltageBranch2Plot';
             plot.style.width = '425px';
@@ -508,7 +521,6 @@ window.addEventListener('load', function () {
                     cursor: {
                         tooltipFormatString: "%s: %.2f ms, %.2f mV",
                     },
-                    title: "Membrane Potential at Branch 2",
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -519,6 +531,10 @@ window.addEventListener('load', function () {
             })));
 
             // Trunck stimulus current
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation Current at Trunk';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'stimTrunkPlot';
             plot.style.width = '425px';
@@ -529,7 +545,6 @@ window.addEventListener('load', function () {
                     cursor: {
                         tooltipFormatString: "%s: %.2f ms, %.2f nA",
                     },
-                    title: "Stimulation Current at Trunk",
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -540,6 +555,10 @@ window.addEventListener('load', function () {
             })));
 
             // Branch 1 stimulus current
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation Current at Branch 1';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'stimBranch1Plot';
             plot.style.width = '425px';
@@ -550,7 +569,6 @@ window.addEventListener('load', function () {
                     cursor: {
                         tooltipFormatString: "%s: %.2f ms, %.2f nA",
                     },
-                    title: "Stimulation Current at Branch 1",
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -561,6 +579,10 @@ window.addEventListener('load', function () {
             })));
 
             // Branch 2 stimulus current
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation Current at Branch 2';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'stimBranch2Plot';
             plot.style.width = '425px';
@@ -571,7 +593,6 @@ window.addEventListener('load', function () {
                     cursor: {
                         tooltipFormatString: "%s: %.2f ms, %.2f nA",
                     },
-                    title: "Stimulation Current at Branch 2",
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},

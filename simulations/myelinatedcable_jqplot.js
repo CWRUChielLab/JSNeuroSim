@@ -339,6 +339,10 @@ window.addEventListener('load', function () {
             };
             
             // Voltage 1
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Node 1';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltage1Plot';
             plot.style.width = '425px';
@@ -351,14 +355,18 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Node 1 Voltage (mV)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
                     },
                     series: [
-                        {label: 'V<sub>m1</sub>', color: 'black'},
+                        {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
 
             // Voltage myelinated
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Myelinated Segment';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltageMyelinatedPlot';
             plot.style.width = '425px';
@@ -371,14 +379,18 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Myelinated Segment Voltage (mV)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
                     },
                     series: [
-                        {label: 'V<sub>mm</sub>', color: 'black'},
+                        {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
 
             // Voltage 2
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Node 2';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltage2Plot';
             plot.style.width = '425px';
@@ -391,14 +403,18 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Node 2 Voltage (mV)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
                     },
                     series: [
-                        {label: 'V<sub>m2</sub>', color: 'black'},
+                        {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
 
             // Stimulus current
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation Current at Node 1';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'stimPlot';
             plot.style.width = '425px';
@@ -411,7 +427,7 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Stimulation Current (nA)'},
+                        yaxis: {label:'Current (nA)'},
                     },
                     series: [
                         {label: 'I<sub>stim</sub>', color: 'black'},

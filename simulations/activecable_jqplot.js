@@ -206,6 +206,10 @@ window.addEventListener('load', function () {
             };
 
             // Voltage 1
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Electrode 1';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltage1Plot';
             plot.style.width = '425px';
@@ -218,14 +222,18 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Membrane Potential 1 (mV)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
                     },
                     series: [
-                        {label: 'V<sub>m1</sub>', color: 'black'},
+                        {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
 
             // Voltage 2
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential at Electrode 2';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'voltage2Plot';
             plot.style.width = '425px';
@@ -238,14 +246,18 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Membrane Potential 2 (mV)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
                     },
                     series: [
-                        {label: 'V<sub>m2</sub>', color: 'black'},
+                        {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
 
             // Stimulus current
+            title = document.createElement('h4');
+            title.innerHTML = 'Stimulation Current at Electrode 1';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
             plot = document.createElement('div');
             plot.id = 'stimPlot';
             plot.style.width = '425px';
@@ -258,7 +270,7 @@ window.addEventListener('load', function () {
                     },
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Stimulation Current (nA)'},
+                        yaxis: {label:'Current (nA)'},
                     },
                     series: [
                         {label: 'I<sub>stim</sub>', color: 'black'},

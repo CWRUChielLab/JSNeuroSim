@@ -259,7 +259,7 @@ window.addEventListener('load', function () {
 
         // m Gates
         title = document.createElement('h4');
-        title.innerHTML = 'Activation gates';
+        title.innerHTML = 'Activation Gates';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         for (j = 0; j < m_gates_time.length; j += 1) {
@@ -289,7 +289,7 @@ window.addEventListener('load', function () {
 
         // h Gates
         title = document.createElement('h4');
-        title.innerHTML = 'Inactivation gates';
+        title.innerHTML = 'Inactivation Gates';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         for (j = 0; j < h_gates_time.length; j += 1) {
@@ -319,7 +319,7 @@ window.addEventListener('load', function () {
 
         // Current
         title = document.createElement('h4');
-        title.innerHTML = 'Channel current';
+        title.innerHTML = 'Channel Current';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         plot = document.createElement('div');
@@ -343,7 +343,7 @@ window.addEventListener('load', function () {
 
         // Voltage
         title = document.createElement('h4');
-        title.innerHTML = 'Voltage step';
+        title.innerHTML = 'Voltage Step';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         plot = document.createElement('div');

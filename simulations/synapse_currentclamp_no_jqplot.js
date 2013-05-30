@@ -6,107 +6,171 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, controls, tMax = 10000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     params = { 
+        prestim_freq_Hz: { label: 'Prestimulation frequency', units: 'Hz',
+            defaultVal: 50, minVal: 0.001, maxVal: 200 },
+        prestim_duration_s: { label: 'Prestimulation duration', units: 's',
+            defaultVal: 0, minVal: 0, maxVal: 1000 },
+        prestim_delay_min: { label: 
+            'Delay between prestimulation and experiment', units: 'min',
+            defaultVal: 10, minVal: 0, maxVal: 1000 },
+        SNP_uM: { label: 'Sodium nitroprusside (SNP)', units: '\u00B5M',
+            defaultVal: 0, minVal: 0, maxVal: 2000 },
+        TEA_mM: { label: 'Tetraethyl amonium (TEA)', units: 'mM',
+            defaultVal: 0, minVal: 0, maxVal: 3 },
+
         C_pre_nF: { label: 'Membrane capacitance', units: 'nF',
-            defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
+            defaultVal: 0.1, minVal: 0.001, maxVal: 100 }, 
         g_leak_pre_uS: { label: 'Leak conductance', units: '\u00B5S', 
-            defaultVal: 0.3, minVal: 0.001, maxVal: 100 }, 
+            defaultVal: 0.007, minVal: 0.0001, maxVal: 100 }, 
         E_leak_pre_mV: { label: 'Leak potential', units: 'mV',
-            defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
+            defaultVal: -67, minVal: -1000, maxVal: 1000 }, 
         g_Na_pre_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 120, minVal: 0, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 0.8, minVal: 0, maxVal: 1000 }, 
         E_Na_pre_mV: { label: 'Sodium Nernst potential', units: 'mV',
-            defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
+            defaultVal: 50, minVal: -1000, maxVal: 1000 }, 
         g_K_pre_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 36, minVal: 0, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 0.14, minVal: 0, maxVal: 1000 }, 
         E_K_pre_mV: { label: 'Potassium Nernst potential', units: 'mV',
-            defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
+            defaultVal: -70, minVal: -1000, maxVal: 1000 }, 
         pulseStart_pre_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_pre_nA: { label: 'Stimulus current', units: 'nA', 
-            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+            defaultVal: 4, minVal: -1000, maxVal: 1000 },
         pulseWidth_pre_ms: { label: 'Pulse duration', units: 'ms', 
-            defaultVal: 4, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 0.5, minVal: 0, maxVal: tMax / 1e-3 },
         isi_pre_ms: { label: 'Inter-stimulus interval', units: 'ms', 
-            defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_pre: { label: 'Number of pulses', units: '', 
-            defaultVal: 2, minVal: 0, maxVal: 100 },
+            defaultVal: 1, minVal: 0, maxVal: 100 },
 
         g_syn_uS: { label: 'Maximum conductance', units: '\u00B5S', 
-            defaultVal: 0.5, minVal: 0, maxVal: 1000 },
+            defaultVal: 0.02, minVal: 0, maxVal: 1000 },
         E_rev_syn_mV: { label: 'Reversal potential', units: 'mV', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         tau_r_ms: { label: 'Rise time constant', units: 'ms', 
-            defaultVal: 10, minVal: 0.1, maxVal: 1000 },
+            defaultVal: 1, minVal: 0.1, maxVal: 1000 },
         tau_d_ms: { label: 'Decay time constant', units: 'ms', 
-            defaultVal: 10, minVal: 0.1, maxVal: 1000 },
+            defaultVal: 2, minVal: 0.001, maxVal: 1000 },
         V_thresh_mV: { label: 'Threshold potential', units: 'mV', 
-            defaultVal: 2, minVal: -1000, maxVal: 1000 },
+            defaultVal: -10, minVal: -1000, maxVal: 1000 },
         K_p: { label: 'Threshold width', units: 'mV', 
-            defaultVal: 5, minVal: 0.1, maxVal: 1000 },
+            defaultVal: 10, minVal: 0.1, maxVal: 1000 },
 
         C_post_nF: { label: 'Membrane capacitance', units: 'nF',
-            defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
+            defaultVal: 0.1, minVal: 0.001, maxVal: 100 }, 
         g_leak_post_uS: { label: 'Leak conductance', units: '\u00B5S', 
-            defaultVal: 0.3, minVal: 0.001, maxVal: 100 }, 
+            defaultVal: 0.007, minVal: 0.001, maxVal: 100 }, 
         E_leak_post_mV: { label: 'Leak potential', units: 'mV',
-            defaultVal: -54.4, minVal: -1000, maxVal: 1000 }, 
+            defaultVal: -67, minVal: -1000, maxVal: 1000 }, 
         g_Na_post_uS: { label: 'Fast transient sodium conductance', 
-            units: '\u00B5S', defaultVal: 120, minVal: 0, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 0.8, minVal: 0, maxVal: 1000 }, 
         E_Na_post_mV: { label: 'Sodium Nernst potential', units: 'mV',
-            defaultVal: 55, minVal: -1000, maxVal: 1000 }, 
+            defaultVal: 50, minVal: -1000, maxVal: 1000 }, 
         g_K_post_uS: { label: 'Delayed rectifier potassium conductance', 
-            units: '\u00B5S', defaultVal: 36, minVal: 0, maxVal: 1000 }, 
+            units: '\u00B5S', defaultVal: 0.14, minVal: 0, maxVal: 1000 }, 
         E_K_post_mV: { label: 'Potassium Nernst potential', units: 'mV',
-            defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
+            defaultVal: -70, minVal: -1000, maxVal: 1000 }, 
+        pulseStart_post_ms: { label: 'Stimulus delay', units: 'ms', 
+            defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseHeight_post_nA: { label: 'Stimulus current', units: 'nA', 
+            defaultVal: 4, minVal: -1000, maxVal: 1000 },
+        pulseWidth_post_ms: { label: 'Pulse duration', units: 'ms', 
+            defaultVal: 0.5, minVal: 0, maxVal: tMax / 1e-3 },
+        isi_post_ms: { label: 'Inter-stimulus interval', units: 'ms', 
+            defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 },
+        numPulses_post: { label: 'Number of pulses', units: '', 
+            defaultVal: 0, minVal: 0, maxVal: 100 },
+        /*
         pulseStart_post_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_post_nA: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         pulseWidth_post_ms: { label: 'Pulse duration', units: 'ms', 
-            defaultVal: 4, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 150, minVal: 0, maxVal: tMax / 1e-3 },
         isi_post_ms: { label: 'Inter-stimulus interval', units: 'ms', 
-            defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 100, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_post: { label: 'Number of pulses', units: '', 
-            defaultVal: 2, minVal: 0, maxVal: 100 },
+            defaultVal: 1, minVal: 0, maxVal: 100 },
+        */
 
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
-            defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 }
+            defaultVal: 20, minVal: 0, maxVal: tMax / 1e-3 }
     };
     layout = [
-        ['Presynaptic Cell Properties', ['C_pre_nF', 'g_leak_pre_uS', 
-            'E_leak_pre_mV', 'g_Na_pre_uS', 'E_Na_pre_mV', 'g_K_pre_uS', 
-            'E_K_pre_mV']],
+        ['Pretreatment', ['prestim_freq_Hz', 'prestim_duration_s',
+            'prestim_delay_min', 'SNP_uM', 'TEA_mM']],        
         ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 
             'pulseHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
             'numPulses_pre']],
-        ['Synapse properties', [ 'g_syn_uS', 'E_rev_syn_mV', 'tau_r_ms',
-            'tau_d_ms', 'V_thresh_mV', 'K_p']],
-        ['Postsynaptic Cell Properties', ['C_post_nF', 'g_leak_post_uS', 
-            'E_leak_post_mV', 'g_Na_post_uS', 'E_Na_post_mV', 'g_K_post_uS', 
-            'E_K_post_mV']],
         ['Postsynaptic Current Clamp', ['pulseStart_post_ms', 
             'pulseHeight_post_nA', 'pulseWidth_post_ms', 'isi_post_ms', 
             'numPulses_post']],
-        ['Simulation Settings', ['totalDuration_ms']]
+        ['Simulation Settings', ['totalDuration_ms']]/*,
+        ['Synapse properties', [ 'g_syn_uS', 'E_rev_syn_mV', 'tau_r_ms',
+            'tau_d_ms', 'V_thresh_mV', 'K_p']],
+        ['Presynaptic Cell Properties', ['C_pre_nF', 'g_leak_pre_uS', 
+            'E_leak_pre_mV', 'g_Na_pre_uS', 'E_Na_pre_mV', 'g_K_pre_uS', 
+            'E_K_pre_mV']],
+        ['Postsynaptic Cell Properties', ['C_post_nF', 'g_leak_post_uS', 
+            'E_leak_post_mV', 'g_Na_post_uS', 'E_Na_post_mV', 'g_K_post_uS', 
+            'E_K_post_mV']]*/
     ];
-    controlsPanel = document.getElementById('SynapseCurrentClampControls');
+    controlsPanel = document.getElementById('SynapseCurrentClampNOControls');
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
         var model, synapse,
             neuron_pre, pulseTrain_pre, hhKCurrent_pre, hhNaCurrent_pre,
             neuron_post, pulseTrain_post, hhKCurrent_post, hhNaCurrent_post,
-            prerun, result,
+            prerun, result, t,
             v_pre, v_pre_mV, iStim_pre, iStim_pre_nA, 
             v_post, v_post_mV, iStim_post, iStim_post_nA,
-            params, plot, plotPanel, plotDefaultOptions, title, j; 
+            params, plot, plotPanel, plotDefaultOptions, title, j,
+            sum1, sum2, dt, t_delay, k, NO_syn,
+            f_NO, f_TEA, f_Kv3, f_Na, f_K, f_syn,
+            delay_NO = 60, tau_NO = 600, NO_syn_scale = 1 / (0.35 * 60 * 50); 
         
         params = controls.values;
         model = componentModel.componentModel();
+
+        // sum up the effects of the presynaptic stimulation as a series of
+        // alpha functions.  Algorithm for summation from
+        // Srinivasan R, Chiel HJ. Fast Calculation of Synaptic Conductances.
+        // Neural Computation 1993 Mar;5(2):200-204.
+        sum1 = 0;
+        sum2 = 0;
+        dt = 1 / params.prestim_freq_Hz;
+        t_delay = params.prestim_delay_min * 60 - delay_NO;
+        k = Math.exp(-dt / tau_NO);
+        // process each of the spikes
+        for (t = -params.prestim_duration_s - Math.min(0, t_delay); 
+                t < 0; t += dt) {
+            sum1 = k * sum1 + 1;
+            sum2 = k * sum2 + t - dt;
+        }
+        console.log(sum1 + ', ' + sum2 + ', k=' + k);
+        // advance time to the beginning of the experiment
+        sum1 = Math.exp(-t_delay / tau_NO) * sum1;
+        sum2 = Math.exp(-t_delay / tau_NO) * sum2;
+        NO_syn = NO_syn_scale / tau_NO * (t_delay * sum1 - sum2);
+
+        // Based on model and data from
+        // Steinert JR, Kopp-Scheinpflug C, Baker C, Challiss RAJ, Mistry R,
+        // Haustein MD, Griffin SJ, Tong H, Graham BP, Forsythe ID. Nitric
+        // oxide is a volume transmitter regulating postsynaptic excitability
+        // at a glutamatergic synapse. Neuron 2008 Nov;60(4):642-656.
+
+        f_NO = 1 / (1 + 1 / (1e-6 + params.SNP_uM + 10 * NO_syn * NO_syn));
+        f_TEA = 1 / (1 + 1 / (1e-6 + params.TEA_mM / 0.1));
+        //f_Na = (800 - 350 * f_NO) / 800;
+        f_Na = 1;
+        f_Kv3 = (1 - f_NO) * (1 - f_TEA);
+        f_K = (20 + 120 * (0.4 + 0.6 * f_Kv3)) / 140;
+        f_syn = 1 - 0.5 * f_NO;
 
         // create the presynaptic passive membrane
         neuron_pre = electrophys.passiveMembrane(model, {
@@ -125,12 +189,12 @@ window.addEventListener('load', function () {
         neuron_pre.addCurrent(pulseTrain_pre);
         
         hhKCurrent_pre = electrophys.hhKConductance(model, neuron_pre, {
-            g_K: params.g_K_pre_uS * 1e-6,
+            g_K: params.g_K_pre_uS * 1e-6 * f_K,
             E_K: params.E_K_pre_mV * 1e-3
         });
         
         hhNaCurrent_pre = electrophys.hhNaConductance(model, neuron_pre, {
-            g_Na: params.g_Na_pre_uS * 1e-6,
+            g_Na: params.g_Na_pre_uS * 1e-6 * f_Na,
             E_Na: params.E_Na_pre_mV * 1e-3
         });
         
@@ -151,12 +215,12 @@ window.addEventListener('load', function () {
         neuron_post.addCurrent(pulseTrain_post);
         
         hhKCurrent_post = electrophys.hhKConductance(model, neuron_post, {
-            g_K: params.g_K_post_uS * 1e-6,
+            g_K: params.g_K_post_uS * 1e-6 * f_K,
             E_K: params.E_K_post_mV * 1e-3
         });
         
         hhNaCurrent_post = electrophys.hhNaConductance(model, neuron_post, {
-            g_Na: params.g_Na_post_uS * 1e-6,
+            g_Na: params.g_Na_post_uS * 1e-6 * f_Na,
             E_Na: params.E_Na_post_mV * 1e-3
         });
 
@@ -165,7 +229,7 @@ window.addEventListener('load', function () {
         synapse = electrophys.synapse(model, neuron_pre, neuron_post, {
             g_bar: params.g_syn_uS * 1e-6 / (
                 1 / (1 + params.tau_r_ms / params.tau_d_ms)
-            ), 
+            ) * f_syn, 
             E_rev: params.E_rev_syn_mV * 1e-3,
             a_r: 1 / params.tau_r_ms * 1e3, 
             a_d: 1 / params.tau_d_ms * 1e3, 
@@ -188,7 +252,7 @@ window.addEventListener('load', function () {
             tMaxStep: 1e-4,
             y0: prerun.y_f
         });
-        
+
         v_pre      = result.mapOrderedPairs(neuron_pre.V);
         v_post     = result.mapOrderedPairs(neuron_post.V);
         iStim_pre  = result.mapOrderedPairs(pulseTrain_pre);
@@ -207,7 +271,7 @@ window.addEventListener('load', function () {
         }
 
         // plot the results
-        plotPanel = document.getElementById('SynapseCurrentClampPlots');
+        plotPanel = document.getElementById('SynapseCurrentClampNOPlots');
         plotPanel.innerHTML = '';
         plotDefaultOptions = {
             grid: {
@@ -340,6 +404,7 @@ window.addEventListener('load', function () {
         })));
     }
 
+    
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
@@ -347,9 +412,9 @@ window.addEventListener('load', function () {
     }
 
 
-    (document.getElementById('SynapseCurrentClampRunButton')
+    (document.getElementById('SynapseCurrentClampNORunButton')
         .addEventListener('click', runSimulation, false));
-    (document.getElementById('SynapseCurrentClampResetButton')
+    (document.getElementById('SynapseCurrentClampNOResetButton')
         .addEventListener('click', reset, false));
     
 

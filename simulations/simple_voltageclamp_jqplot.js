@@ -60,15 +60,14 @@ window.addEventListener('load', function () {
         pulseTrain = electrophys.pulseTrain({
             start: params.stepStart_ms * 1e-3, 
             width: params.stepWidth_ms * 1e-3, 
+            baseline: params.holdingPotential_mV * 1e-3,
             height: (params.stepPotential_mV - params.holdingPotential_mV) * 1e-3,
             gap: params.isi_ms * 1e-3,
             num_pulses: params.numPulses
         });
 
         neuron = electrophys.clampedMembrane({
-            V_clamp: function (state, t) {
-                return pulseTrain(state, t) + params.holdingPotential_mV * 1e-3;
-            }
+            V_clamp: pulseTrain
         });
 
         hhNaCurrent = electrophys.hhNaConductance(model, neuron, {

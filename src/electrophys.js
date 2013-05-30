@@ -6,7 +6,11 @@ electrophys.passiveConductance = function (neuron, options) {
         E_rev = options.E_rev;
 
     function current(state, t) {
-        return g * (E_rev - neuron.V(state, t));
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state) {return current(state, null);});
+        } else {
+            return g * (E_rev - neuron.V(state, t));
+        }
     }
 
     neuron.addCurrent(current);
@@ -35,11 +39,19 @@ electrophys.hhKConductance = function (model, neuron, options) {
     model.registerDrift(drift);
 
     function g(state, t) {
-        return g_K * state[iN] * state[iN] * state[iN] * state[iN];
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state) {return g(state, null);});
+        } else {
+            return g_K * state[iN] * state[iN] * state[iN] * state[iN];
+        }
     }
 
     function current(state, t) {
-        return g(state, t) * (E_K - neuron.V(state, t));
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state) {return current(state, null);});
+        } else {
+            return g(state, t) * (E_K - neuron.V(state, t));
+        }
     }
     neuron.addCurrent(current);
 
@@ -124,11 +136,19 @@ electrophys.hhNaConductance = function (model, neuron, options) {
     model.registerDrift(drift);
 
     function g (state, t) {
-        return g_Na * state[im] * state[im] * state[im] * state[ih];
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state) {return g(state, null);});
+        } else {
+            return g_Na * state[im] * state[im] * state[im] * state[ih];
+        }
     }
 
     function current (state, t) {
-        return g(state, t) * (E_Na - neuron.V(state, t));
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state) {return current(state, null);});
+        } else {
+            return g(state, t) * (E_Na - neuron.V(state, t));
+        }
     }
     neuron.addCurrent(current);
 
@@ -247,11 +267,19 @@ electrophys.gapJunction = function (neuron1, neuron2, options) {
     var g = options.g;
 
     function current1(state, t) {
-        return g * (neuron2.V(state, t) - neuron1.V(state, t));
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state) {return current1(state, null);});
+        } else {
+            return g * (neuron2.V(state, t) - neuron1.V(state, t));
+        }
     }
 
     function current2(state, t) {
-        return g * (neuron1.V(state, t) - neuron2.V(state, t));
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state) {return current2(state, null);});
+        } else {
+            return g * (neuron1.V(state, t) - neuron2.V(state, t));
+        }
     }
 
     neuron1.addCurrent(current1);
@@ -318,15 +346,20 @@ electrophys.pulse = function (options) {
     "use strict";
     var start = options.start,
         width = options.width,
+        baseline = options.baseline || 0,
         height = options.height;
 
-    return function (state, t) {
-        if (t >= start && t < start + width) {
-            return height;
+    function pulse (state, t) {
+        if (t instanceof Array) {
+            return t.map(function (t) {return pulse([], t);});
+        } else if (t >= start && t < end) {
+            return baseline + height;
         } else {
-            return 0;
+            return baseline;
         }
     };
+
+    return pulse;
 };
 
 
@@ -334,19 +367,24 @@ electrophys.pulseTrain = function (options) {
     "use strict";
     var start = options.start,
         width = options.width,
+        baseline = options.baseline || 0,
         height = options.height,
         gap = options.gap,
         num_pulses = options.num_pulses,
         period = width + gap,
         end = start + period * num_pulses - gap;
 
-    return function (state, t) {
-        if (t >= start && t < end && (t - start) % period < width) {
-            return height;
+    function pulse (state, t) {
+        if (t instanceof Array) {
+            return t.map(function (t) {return pulse([], t);});
+        } else if (t >= start && t < end && (t - start) % period < width) {
+            return baseline + height;
         } else {
-            return 0;
+            return baseline;
         }
     };
+
+    return pulse;
 };
 
 
@@ -374,8 +412,12 @@ electrophys.synapse = function (model, presynaptic, postsynaptic, options) {
     model.registerDrift(drift);
 
     function current (state, t) {
-        return g_bar * state[is] * (E_rev - postsynaptic.V(state, t));
-    };
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state) {return current(state, null);});
+        } else {
+            return g_bar * state[is] * (E_rev - postsynaptic.V(state, t));
+        }
+    }
     postsynaptic.addCurrent(current);
 
     return {

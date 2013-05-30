@@ -1,5 +1,22 @@
 var ode = {};
 
+ode.transpose = function (matrix) {
+    "use strict";
+    var i, j, result = [];
+
+    for (j = 0; j < matrix[0].length; j++ ) {
+        result[j] = [];
+    }
+
+    for (i = 0; i < matrix.length; i++ ) {
+        for (j = 0; j < matrix[i].length; j++ ) {
+            result[j][i] = matrix[i][j];
+        }
+    }
+
+    return result;
+};
+
 ode.eulerStep = function (dy, y, t, dt) {
     "use strict";
     var dy1 = dy(y, t),

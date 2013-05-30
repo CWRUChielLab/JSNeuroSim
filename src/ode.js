@@ -146,14 +146,14 @@ ode.integrate = function (options) {
     }
     
     result.mapOrderedPairs = function (func) {
-        var i, d, new_result = [];
+        var i, d, new_result = [], yVar;
+
+        yVar = func(this.y, this.t);
+        
         for (i = 0; i < this.t.length; i += 1) {
-            var state = [];
-            for (d = 0; d < ndim; d += 1) {
-                state.push(this.y[d][i]);
-            }
-            new_result.push([this.t[i], func(state, this.t[i])]);
+            new_result.push([this.t[i], yVar[i]]);
         }
+
         return new_result;
     }
 

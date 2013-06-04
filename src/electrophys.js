@@ -347,7 +347,8 @@ electrophys.pulse = function (options) {
     var start = options.start,
         width = options.width,
         baseline = options.baseline || 0,
-        height = options.height;
+        height = options.height,
+        end = start + width;
 
     function pulse (state, t) {
         if (t instanceof Array) {

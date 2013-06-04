@@ -24,7 +24,9 @@ window.addEventListener('load', function () {
             defaultVal: -77, minVal: -1000, maxVal: 1000 }, 
         holdingPotential_mV: { label: 'Holding potential', units: 'mV', 
             defaultVal: -70, minVal: -1000, maxVal: 1000 },
-        stepPotential_mV: { label: 'Step potential', units: 'mV', 
+        stepPotential_mV: { label: 'First step potential', units: 'mV', 
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
+        subsequentStepPotential_mV: { label: 'Subsequent step potential', units: 'mV', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         stepStart_ms: { label: 'Step delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
@@ -41,7 +43,8 @@ window.addEventListener('load', function () {
         ['Cell Properties', ['g_leak_uS', 'E_leak_mV',
             'g_Na_uS', 'E_Na_mV', 'g_K_uS', 'E_K_mV']],
         ['Voltage Clamp', ['holdingPotential_mV', 'stepPotential_mV',
-            'stepStart_ms', 'stepWidth_ms', 'isi_ms', 'numPulses']],
+            'subsequentStepPotential_mV', 'stepStart_ms', 'stepWidth_ms',
+            'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
     controlsPanel = document.getElementById('VoltageClampControls');
@@ -62,6 +65,7 @@ window.addEventListener('load', function () {
             width: params.stepWidth_ms * 1e-3, 
             baseline: params.holdingPotential_mV * 1e-3,
             height: (params.stepPotential_mV - params.holdingPotential_mV) * 1e-3,
+            subsequentHeight: params.subsequentStepPotential_mV * 1e-3,
             gap: params.isi_ms * 1e-3,
             num_pulses: params.numPulses
         });

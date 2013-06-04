@@ -458,7 +458,18 @@ TestCase("PulseTrain", {
 
         assertEquals(0.525, this.pulseTrain([], 1.7));
         assertEquals(0.525, this.pulseTrain([], 1.7999));
-    }
+    },
+
+    "test should be equal to the specified amplitude during subsequent pulses" : function () {
+        this.pulseTrain = electrophys.pulseTrain(
+            {start: 0.1, width: 0.2, height: 0.525, subsequentHeight: 0.875, gap: 0.3, num_pulses: 4});
+
+        assertEquals(0.875, this.pulseTrain([], 0.6001));
+        assertEquals(0.875, this.pulseTrain([], 0.7));
+        assertEquals(0.875, this.pulseTrain([], 0.7999));
+        assertEquals(0.875, this.pulseTrain([], 1.2));
+        assertEquals(0.875, this.pulseTrain([], 1.7));
+    },
 });
 
 

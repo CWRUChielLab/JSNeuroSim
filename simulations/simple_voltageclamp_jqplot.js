@@ -65,7 +65,7 @@ window.addEventListener('load', function () {
             width: params.stepWidth_ms * 1e-3, 
             baseline: params.holdingPotential_mV * 1e-3,
             height: (params.stepPotential_mV - params.holdingPotential_mV) * 1e-3,
-            subsequentHeight: params.subsequentStepPotential_mV * 1e-3,
+            subsequentHeight: (params.subsequentStepPotential_mV - params.holdingPotential_mV) * 1e-3,
             gap: params.isi_ms * 1e-3,
             num_pulses: params.numPulses
         });

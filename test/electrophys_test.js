@@ -470,6 +470,13 @@ TestCase("PulseTrain", {
         assertEquals(0.875, this.pulseTrain([], 1.2));
         assertEquals(0.875, this.pulseTrain([], 1.7));
     },
+
+    "test should be off when num_pulses is 0" : function () {
+        this.pulseTrain = electrophys.pulseTrain(
+            {start: 0.1, width: 0.2, height: 0.525, gap: 0.3, num_pulses: 0});
+
+        assertEquals(0, this.pulseTrain([], 0.2));
+    },
 });
 
 

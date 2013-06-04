@@ -379,7 +379,7 @@ electrophys.pulseTrain = function (options) {
     function pulse (state, t) {
         if (t instanceof Array) {
             return t.map(function (t) {return pulse([], t);});
-        } else if (t >= start && t < start + width) {
+        } else if (t >= start && t < end && t < start + width) {
             return baseline + height;
         } else if (t >= start + period && t < end && (t - (start + period)) % period < width) {
             return baseline + subsequentHeight;

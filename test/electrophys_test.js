@@ -416,7 +416,11 @@ TestCase("Pulse", {
         assertEquals(0.525, this.pulse([], 0.1001));
         assertEquals(0.525, this.pulse([], 0.2));
         assertEquals(0.525, this.pulse([], 0.2999));
-    }
+    },
+
+    "test should return null when time is null" : function () {
+        assertEquals(null, this.pulse([], null));
+    },
 });
 
 
@@ -458,6 +462,10 @@ TestCase("PulseTrain", {
 
         assertEquals(0.525, this.pulseTrain([], 1.7));
         assertEquals(0.525, this.pulseTrain([], 1.7999));
+    },
+
+    "test should return null when time is null" : function () {
+        assertEquals(null, this.pulseTrain([], null));
     },
 
     "test should be equal to the specified amplitude during subsequent pulses" : function () {

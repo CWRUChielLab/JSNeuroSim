@@ -7,7 +7,7 @@ electrophys.passiveConductance = function (neuron, options) {
 
     function current(state, t) {
         if (t instanceof Array) {
-            return ode.transpose(state).map(function (state) {return current(state, null);});
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
         } else {
             return g * (E_rev - neuron.V(state, t));
         }
@@ -40,7 +40,7 @@ electrophys.hhKConductance = function (model, neuron, options) {
 
     function g(state, t) {
         if (t instanceof Array) {
-            return ode.transpose(state).map(function (state) {return g(state, null);});
+            return ode.transpose(state).map(function (state, i) {return g(state, t[i]);});
         } else {
             return g_K * state[iN] * state[iN] * state[iN] * state[iN];
         }
@@ -48,7 +48,7 @@ electrophys.hhKConductance = function (model, neuron, options) {
 
     function current(state, t) {
         if (t instanceof Array) {
-            return ode.transpose(state).map(function (state) {return current(state, null);});
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
         } else {
             return g(state, t) * (E_K - neuron.V(state, t));
         }
@@ -137,7 +137,7 @@ electrophys.hhNaConductance = function (model, neuron, options) {
 
     function g (state, t) {
         if (t instanceof Array) {
-            return ode.transpose(state).map(function (state) {return g(state, null);});
+            return ode.transpose(state).map(function (state, i) {return g(state, t[i]);});
         } else {
             return g_Na * state[im] * state[im] * state[im] * state[ih];
         }
@@ -145,7 +145,7 @@ electrophys.hhNaConductance = function (model, neuron, options) {
 
     function current (state, t) {
         if (t instanceof Array) {
-            return ode.transpose(state).map(function (state) {return current(state, null);});
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
         } else {
             return g(state, t) * (E_Na - neuron.V(state, t));
         }
@@ -268,7 +268,7 @@ electrophys.gapJunction = function (neuron1, neuron2, options) {
 
     function current1(state, t) {
         if (t instanceof Array) {
-            return ode.transpose(state).map(function (state) {return current1(state, null);});
+            return ode.transpose(state).map(function (state, i) {return current1(state, t[i]);});
         } else {
             return g * (neuron2.V(state, t) - neuron1.V(state, t));
         }
@@ -276,7 +276,7 @@ electrophys.gapJunction = function (neuron1, neuron2, options) {
 
     function current2(state, t) {
         if (t instanceof Array) {
-            return ode.transpose(state).map(function (state) {return current2(state, null);});
+            return ode.transpose(state).map(function (state, i) {return current2(state, t[i]);});
         } else {
             return g * (neuron1.V(state, t) - neuron2.V(state, t));
         }
@@ -355,8 +355,11 @@ electrophys.pulse = function (options) {
             return t.map(function (t) {return pulse([], t);});
         } else if (t >= start && t < end) {
             return baseline + height;
-        } else {
+        } else if (t != null) {
             return baseline;
+        } else {
+            console.log('t for pulse is null');
+            return null;
         }
     };
 
@@ -383,8 +386,11 @@ electrophys.pulseTrain = function (options) {
             return baseline + height;
         } else if (t >= start + period && t < end && (t - (start + period)) % period < width) {
             return baseline + subsequentHeight;
-        } else {
+        } else if (t != null) {
             return baseline;
+        } else {
+            console.log('t for pulseTrain is null');
+            return null;
         }
     };
 
@@ -417,7 +423,7 @@ electrophys.synapse = function (model, presynaptic, postsynaptic, options) {
 
     function current (state, t) {
         if (t instanceof Array) {
-            return ode.transpose(state).map(function (state) {return current(state, null);});
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
         } else {
             return g_bar * state[is] * (E_rev - postsynaptic.V(state, t));
         }

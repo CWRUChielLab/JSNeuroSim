@@ -49,7 +49,9 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('CurrentClampControls');
     pointsPanel = document.getElementById('CurrentClampPoints');
+    pointsPanel.className = 'pointspanel';
     pointsTable = document.createElement('table');
+    pointsTable.className = 'pointstable';
     pointsPanel.appendChild(pointsTable);
 
     // simulate and plot an hh neuron with a pulse
@@ -218,7 +220,7 @@ window.addEventListener('load', function () {
         // the cursor with the value of the x-coordinate
         $('#currentPlot').bind('jqplotRightClick',
             function (ev, gridpos, datapos, neighbor, plot) {
-                var row, cell, i, cursor_x, low, mid, high, nearest_point,
+                var caption, row, cell, i, cursor_x, low, mid, high, nearest_point,
                     low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
 
                 // determine which point is closest to the cursor
@@ -248,15 +250,22 @@ window.addEventListener('load', function () {
 
                 // if a table heading does not already exist, create it
                 if (!pointsTable.firstChild) {
+                    caption = document.createElement('caption');
+                    caption.className = 'pointstablecaption';
+                    caption.innerHTML = 'Currents';
+                    pointsTable.appendChild(caption);
+
                     row = document.createElement('tr');
                     pointsTable.appendChild(row);
 
-                    cell = document.createElement('th');
+                    cell = document.createElement('td');
+                    cell.className = 'pointstableheading';
                     cell.innerHTML = 'Time';
                     row.appendChild(cell);
 
                     for (i=0; i<plot.data.length; i++) {
-                        cell = document.createElement('th');
+                        cell = document.createElement('td');
+                        cell.className = 'pointstableheading';
                         cell.innerHTML = plot.series[i].label;
                         row.appendChild(cell);
                     }

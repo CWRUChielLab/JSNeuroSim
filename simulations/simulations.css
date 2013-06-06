@@ -66,6 +66,33 @@ body
     margin-bottom: 1ex;
 }
 
+.pointspanel
+{
+    padding-left: 1em;
+    padding-top: 2em;
+    padding-bottom: 2em;
+}
+
+.pointstable
+{
+    border-collapse:collapse;
+}
+
+.pointstablecaption
+{
+    text-align:left;
+    font-weight:bold;
+}
+
+.pointstableheading
+{
+    width:4em;
+    text-align:left;
+    border-top:thin solid black;
+    border-bottom:thin solid black;
+    padding:0px;
+}
+
 .jqplot-yaxis {
     margin-left: -80px;
 }

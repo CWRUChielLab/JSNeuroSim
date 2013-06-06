@@ -6,7 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, pointsPanel, pointsTable, controls, tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     params = { 
@@ -48,6 +48,9 @@ window.addEventListener('load', function () {
         ['Simulation Settings', ['totalDuration_ms']]
     ];
     controlsPanel = document.getElementById('CurrentClampControls');
+    pointsPanel = document.getElementById('CurrentClampPoints');
+    pointsTable = document.createElement('table');
+    pointsPanel.appendChild(pointsTable);
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -149,6 +152,7 @@ window.addEventListener('load', function () {
                 showTooltipDataPosition: true,
                 tooltipFormatString: "%s: %.2f, %.2f",
             },
+            captureRightClick: true,
             axes: {
                 xaxis: {
                     min: 0,
@@ -208,6 +212,131 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>leak</sub>', color: 'black'},
                 ],
         })));
+
+//        $('#currentPlot').bind('jqplotDataRightClick',
+//            function (ev, seriesIndex, pointIndex, data) {                
+//                var row, cell;
+//
+//                row = document.createElement('tr');
+//                pointsTable.appendChild(row);
+//
+//                cell = document.createElement('td');
+//                cell.innerHTML = Math.round(data[0]*100)/100;
+//                row.appendChild(cell);
+//
+//                cell = document.createElement('td');
+//                cell.innerHTML = Math.round(data[1]*100)/100;
+//                row.appendChild(cell);
+//
+//                cell = document.createElement('td');
+//                cell.innerHTML = Math.round(data[2]*100)/100;
+//                row.appendChild(cell);
+//
+//                cell = document.createElement('td');
+//                cell.innerHTML = Math.round(data[3]*100)/100;
+//                row.appendChild(cell);
+//            }
+//        );
+
+        $('#currentPlot').bind('jqplotRightClick',
+            function (ev, gridpos, datapos, neighbor, plot) {
+                var row, cell;
+
+                row = document.createElement('tr');
+                pointsTable.appendChild(row);
+
+                var c_x = datapos.xaxis;
+                var index_x = -1;
+                var pos_index = 0;
+                var low = 0;
+                var high = plot.data[0].length-1;
+                while(high - low > 1){
+                    var mid = Math.round((low+high)/2);
+                    var current = plot.data[0][mid][0];
+                    if(current <= c_x)
+                        low = mid;
+                    else
+                        high = mid;
+                }
+                if(plot.data[0][low][0] == c_x){
+                    high = low;
+                    index_x = high;
+                }else{
+                    var c_low = plot.data[0][low][0];
+                    var c_high = plot.data[0][high][0];
+                    if(Math.abs(c_low - c_x) < Math.abs(c_high - c_x)){
+                        index_x = low;
+                    }else{
+                        index_x = high;   
+                    }
+                }
+
+                if(plot.series[0].data[index_x]){
+                    var val_x = plot.data[0][index_x][0];
+                    cell = document.createElement('td');
+                    cell.innerHTML = Math.round(val_x*100)/100;
+                    row.appendChild(cell);
+                }
+
+                var i;
+                for (i=0; i<plot.series.length; i++) {
+                    if(plot.series[i].data[index_x]){
+                        var val_y = plot.data[i][index_x][1];
+                        cell = document.createElement('td');
+                        cell.innerHTML = Math.round(val_y*100)/100;
+                        row.appendChild(cell);
+                    }
+                }
+            }
+        );
+
+        $('#currentPlot').bind('jqplotMouseMove',
+            function (ev, gridpos, datapos, neighbor, plot) {
+                var tooltipHTML = '';
+
+                var c_x = datapos.xaxis;
+                var index_x = -1;
+                var pos_index = 0;
+                var low = 0;
+                var high = plot.data[0].length-1;
+                while(high - low > 1){
+                    var mid = Math.round((low+high)/2);
+                    var current = plot.data[0][mid][0];
+                    if(current <= c_x)
+                        low = mid;
+                    else
+                        high = mid;
+                }
+                if(plot.data[0][low][0] == c_x){
+                    high = low;
+                    index_x = high;
+                }else{
+                    var c_low = plot.data[0][low][0];
+                    var c_high = plot.data[0][high][0];
+                    if(Math.abs(c_low - c_x) < Math.abs(c_high - c_x)){
+                        index_x = low;
+                    }else{
+                        index_x = high;   
+                    }
+                }
+
+                if(plot.series[0].data[index_x]){
+                    var val_x = plot.data[0][index_x][0];
+                    tooltipHTML = tooltipHTML + "Time: " + Math.round(val_x*100)/100 + " ms";
+                }
+
+                var i;
+                for (i=0; i<plot.series.length; i++) {
+                    if(plot.series[i].data[index_x]){
+                        var val_y = plot.data[i][index_x][1];
+                        tooltipHTML = tooltipHTML + "<br/>" + plot.series[i].label + ": " + Math.round(val_y*100)/100 + " nA";
+                    }
+                }
+
+                var cursorTooltip = $(".jqplot-cursor-tooltip");
+                cursorTooltip.html(tooltipHTML);
+            }
+        );
 
         // Conductances
         plot = document.createElement('div');
@@ -283,7 +412,34 @@ window.addEventListener('load', function () {
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
+        resetPoints();
         runSimulation();
+    }
+
+
+    function resetPoints() {
+        var row, cell;
+
+        pointsTable.innerHTML = '';
+
+        row = document.createElement('tr');
+        pointsTable.appendChild(row);
+
+        cell = document.createElement('th');
+        cell.innerHTML = 'Time';
+        row.appendChild(cell);
+
+        cell = document.createElement('th');
+        cell.innerHTML = 'Value';
+        row.appendChild(cell);
+
+        cell = document.createElement('th');
+        cell.innerHTML = '...';
+        row.appendChild(cell);
+
+        cell = document.createElement('th');
+        cell.innerHTML = '...';
+        row.appendChild(cell);
     }
 
 
@@ -291,6 +447,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('CurrentClampResetButton')
         .addEventListener('click', reset, false));
+    (document.getElementById('CurrentClampPointsResetButton')
+        .addEventListener('click', resetPoints, false));
     
 
     // make the enter key run the simulation  

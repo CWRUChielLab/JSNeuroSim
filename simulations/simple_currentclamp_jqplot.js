@@ -213,128 +213,123 @@ window.addEventListener('load', function () {
                 ],
         })));
 
-//        $('#currentPlot').bind('jqplotDataRightClick',
-//            function (ev, seriesIndex, pointIndex, data) {                
-//                var row, cell;
-//
-//                row = document.createElement('tr');
-//                pointsTable.appendChild(row);
-//
-//                cell = document.createElement('td');
-//                cell.innerHTML = Math.round(data[0]*100)/100;
-//                row.appendChild(cell);
-//
-//                cell = document.createElement('td');
-//                cell.innerHTML = Math.round(data[1]*100)/100;
-//                row.appendChild(cell);
-//
-//                cell = document.createElement('td');
-//                cell.innerHTML = Math.round(data[2]*100)/100;
-//                row.appendChild(cell);
-//
-//                cell = document.createElement('td');
-//                cell.innerHTML = Math.round(data[3]*100)/100;
-//                row.appendChild(cell);
-//            }
-//        );
-
+        // when the user right-clicks, append to the points table the values
+        // from each series for the data points nearest (in the x-coordinate)
+        // the cursor with the value of the x-coordinate
         $('#currentPlot').bind('jqplotRightClick',
             function (ev, gridpos, datapos, neighbor, plot) {
-                var row, cell;
+                var row, cell, i, cursor_x, low, mid, high, nearest_point,
+                    low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
 
-                row = document.createElement('tr');
-                pointsTable.appendChild(row);
-
-                var c_x = datapos.xaxis;
-                var index_x = -1;
-                var pos_index = 0;
-                var low = 0;
-                var high = plot.data[0].length-1;
-                while(high - low > 1){
-                    var mid = Math.round((low+high)/2);
-                    var current = plot.data[0][mid][0];
-                    if(current <= c_x)
+                // determine which point is closest to the cursor
+                cursor_x = datapos.xaxis;
+                nearest_point = -1;
+                low = 0;
+                high = plot.data[0].length-1;
+                while (high - low > 1) {
+                    mid = Math.round((low+high)/2);
+                    mid_x = plot.data[0][mid][0];
+                    if (mid_x <= cursor_x)
                         low = mid;
                     else
                         high = mid;
                 }
-                if(plot.data[0][low][0] == c_x){
+                if (plot.data[0][low][0] == cursor_x) {
                     high = low;
-                    index_x = high;
-                }else{
-                    var c_low = plot.data[0][low][0];
-                    var c_high = plot.data[0][high][0];
-                    if(Math.abs(c_low - c_x) < Math.abs(c_high - c_x)){
-                        index_x = low;
-                    }else{
-                        index_x = high;   
-                    }
+                    nearest_point = high;
+                } else {
+                    low_x = plot.data[0][low][0];
+                    high_x = plot.data[0][high][0];
+                    if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
+                        nearest_point = low;
+                    else
+                        nearest_point = high;   
                 }
 
-                if(plot.series[0].data[index_x]){
-                    var val_x = plot.data[0][index_x][0];
-                    cell = document.createElement('td');
-                    cell.innerHTML = Math.round(val_x*100)/100;
+                // if a table heading does not already exist, create it
+                if (!pointsTable.firstChild) {
+                    row = document.createElement('tr');
+                    pointsTable.appendChild(row);
+
+                    cell = document.createElement('th');
+                    cell.innerHTML = 'Time';
                     row.appendChild(cell);
-                }
 
-                var i;
-                for (i=0; i<plot.series.length; i++) {
-                    if(plot.series[i].data[index_x]){
-                        var val_y = plot.data[i][index_x][1];
-                        cell = document.createElement('td');
-                        cell.innerHTML = Math.round(val_y*100)/100;
+                    for (i=0; i<plot.data.length; i++) {
+                        cell = document.createElement('th');
+                        cell.innerHTML = plot.series[i].label;
                         row.appendChild(cell);
                     }
+                }
+
+                // create a new table row for the captured point
+                row = document.createElement('tr');
+                pointsTable.appendChild(row);
+
+                // add the x-coordinate value to the table
+                nearest_point_x = plot.data[0][nearest_point][0];
+                cell = document.createElement('td');
+                cell.innerHTML = Math.round(nearest_point_x*100)/100;
+                row.appendChild(cell);
+
+                // add each series value to the table
+                for (i=0; i<plot.data.length; i++) {
+                    nearest_point_y = plot.data[i][nearest_point][1];
+                    cell = document.createElement('td');
+                    cell.innerHTML = Math.round(nearest_point_y*100)/100;
+                    row.appendChild(cell);
                 }
             }
         );
 
+        // create a cursor tooltip that displays the values from each series
+        // for the data points nearest (in the x-coordinate) the cursor with
+        // the value of the x-coordinate
         $('#currentPlot').bind('jqplotMouseMove',
             function (ev, gridpos, datapos, neighbor, plot) {
-                var tooltipHTML = '';
-
-                var c_x = datapos.xaxis;
-                var index_x = -1;
-                var pos_index = 0;
-                var low = 0;
-                var high = plot.data[0].length-1;
-                while(high - low > 1){
-                    var mid = Math.round((low+high)/2);
-                    var current = plot.data[0][mid][0];
-                    if(current <= c_x)
+                var tooltipHTML, i, cursor_x, low, mid, high, nearest_point,
+                    low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
+                
+                // determine which point is closest to the cursor
+                cursor_x = datapos.xaxis;
+                nearest_point = -1;
+                low = 0;
+                high = plot.data[0].length-1;
+                while (high - low > 1) {
+                    mid = Math.round((low+high)/2);
+                    mid_x = plot.data[0][mid][0];
+                    if (mid_x <= cursor_x)
                         low = mid;
                     else
                         high = mid;
                 }
-                if(plot.data[0][low][0] == c_x){
+                if (plot.data[0][low][0] == cursor_x) {
                     high = low;
-                    index_x = high;
-                }else{
-                    var c_low = plot.data[0][low][0];
-                    var c_high = plot.data[0][high][0];
-                    if(Math.abs(c_low - c_x) < Math.abs(c_high - c_x)){
-                        index_x = low;
-                    }else{
-                        index_x = high;   
-                    }
+                    nearest_point = high;
+                } else {
+                    low_x = plot.data[0][low][0];
+                    high_x = plot.data[0][high][0];
+                    if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
+                        nearest_point = low;
+                    else
+                        nearest_point = high;   
                 }
 
-                if(plot.series[0].data[index_x]){
-                    var val_x = plot.data[0][index_x][0];
-                    tooltipHTML = tooltipHTML + "Time: " + Math.round(val_x*100)/100 + " ms";
+                // clear the tooltip
+                tooltipHTML = '';
+
+                // add the x-coordinate value to the tooltip
+                nearest_point_x = plot.data[0][nearest_point][0];
+                tooltipHTML = tooltipHTML + "Time: " + Math.round(nearest_point_x*100)/100 + " ms";
+
+                // add each series value to the tooltip
+                for (i=0; i<plot.data.length; i++) {
+                    nearest_point_y = plot.data[i][nearest_point][1];
+                    tooltipHTML = tooltipHTML + "<br/>" + plot.series[i].label + ": " + Math.round(nearest_point_y*100)/100 + " nA";
                 }
 
-                var i;
-                for (i=0; i<plot.series.length; i++) {
-                    if(plot.series[i].data[index_x]){
-                        var val_y = plot.data[i][index_x][1];
-                        tooltipHTML = tooltipHTML + "<br/>" + plot.series[i].label + ": " + Math.round(val_y*100)/100 + " nA";
-                    }
-                }
-
-                var cursorTooltip = $(".jqplot-cursor-tooltip");
-                cursorTooltip.html(tooltipHTML);
+                // display the tooltip
+                $(".jqplot-cursor-tooltip").html(tooltipHTML);
             }
         );
 
@@ -418,28 +413,7 @@ window.addEventListener('load', function () {
 
 
     function resetPoints() {
-        var row, cell;
-
         pointsTable.innerHTML = '';
-
-        row = document.createElement('tr');
-        pointsTable.appendChild(row);
-
-        cell = document.createElement('th');
-        cell.innerHTML = 'Time';
-        row.appendChild(cell);
-
-        cell = document.createElement('th');
-        cell.innerHTML = 'Value';
-        row.appendChild(cell);
-
-        cell = document.createElement('th');
-        cell.innerHTML = '...';
-        row.appendChild(cell);
-
-        cell = document.createElement('th');
-        cell.innerHTML = '...';
-        row.appendChild(cell);
     }
 
 

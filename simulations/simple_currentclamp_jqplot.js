@@ -407,12 +407,11 @@ window.addEventListener('load', function () {
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
-        resetPoints();
         runSimulation();
     }
 
 
-    function resetPoints() {
+    function clearPoints() {
         pointsTable.innerHTML = '';
     }
 
@@ -421,8 +420,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('CurrentClampResetButton')
         .addEventListener('click', reset, false));
-    (document.getElementById('CurrentClampPointsResetButton')
-        .addEventListener('click', resetPoints, false));
+    (document.getElementById('CurrentClampClearPointsButton')
+        .addEventListener('click', clearPoints, false));
     
 
     // make the enter key run the simulation  

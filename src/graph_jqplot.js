@@ -1,5 +1,44 @@
 var graphJqplot = {};
 
+// default options for jqPlots
+graphJqplot.defaultOptions = function (params) {
+    return {
+        grid: {
+            shadow: false,
+        },
+        legend: {
+            placement: 'outside',
+        },
+        cursor: {
+            show: true,
+            zoom: true,
+            looseZoom: false,
+            followMouse: true,
+            useAxesFormatters: false,
+            showVerticalLine: true,
+            showTooltipDataPosition: true,
+            tooltipFormatString: "%s: %.2f, %.2f"
+        },
+        captureRightClick: true,
+        axes: {
+            xaxis: {
+                min: 0,
+                max: params.totalDuration_ms,
+                tickOptions: {formatString: '%.2f'},
+            },
+        },
+        axesDefaults: {
+            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+        },
+        seriesDefaults: {
+            showMarker: false,
+            lineWidth: 1,
+            shadow: false,
+        },
+    };
+};
+
+
 // determine the index of the data point in the first
 // series nearest (in the x-coordinate) the cursor
 graphJqplot.nearestPoint = function (datapos, plot) {

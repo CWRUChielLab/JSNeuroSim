@@ -80,7 +80,7 @@ window.addEventListener('load', function () {
         var model, neuron, pulseTrain, hhNaCurrent, hhKCurrent,
             result, v, gNa, gK, iNa, iK, iLeak, mGate, hGate, nGate, iStim,
             v_mV, gNa_uS, gK_uS, iNa_nA, iK_nA, iLeak_nA, params, iStim_nA,
-            plotPanel, plot, plotDefaultOptions, j, prerun, y0; 
+            plotPanel, plot, j, prerun, y0; 
         
         // create the passive membrane
         params = controls.values;
@@ -158,38 +158,6 @@ window.addEventListener('load', function () {
         // plot the results
         plotPanel = document.getElementById('CurrentClampPlots');
         plotPanel.innerHTML = '';
-        plotDefaultOptions = {
-            grid: {
-                shadow: false,
-            },
-            legend: {
-                placement: 'outside',
-            },
-            cursor: {
-                show: true,
-                zoom: true,
-                looseZoom: false,
-                followMouse: true,
-                useAxesFormatters: false,
-                showVerticalLine: true,
-            },
-            captureRightClick: true,
-            axes: {
-                xaxis: {
-                    min: 0,
-                    max: params.totalDuration_ms,
-                    tickOptions: {formatString: '%.2f'},
-                },
-            },
-            axesDefaults: {
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-            },
-            seriesDefaults: {
-                showMarker: false,
-                lineWidth: 1,
-                shadow: false,
-            }
-        };
 
         // Voltage
         plot = document.createElement('div');
@@ -198,7 +166,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Potential (mV)'},
@@ -217,7 +185,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -239,7 +207,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -260,7 +228,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -286,7 +254,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Stimulation Current (nA)'},

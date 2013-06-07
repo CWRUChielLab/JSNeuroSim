@@ -6,7 +6,9 @@
 window.addEventListener('load', function () {
     'use strict';
     
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, controls, dataPanel, mGateDataTable,
+        hGateDataTable, currentDataTable, voltageDataTable,
+        tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -37,6 +39,26 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('SingleChannelControls');
 
+    // prepare tables for displaying captured data points
+    dataPanel = document.getElementById('SingleChannelData');
+    dataPanel.className = 'datapanel';
+
+    mGateDataTable = document.createElement('table');
+    mGateDataTable.className = 'datatable';
+    dataPanel.appendChild(mGateDataTable);
+
+    hGateDataTable = document.createElement('table');
+    hGateDataTable.className = 'datatable';
+    dataPanel.appendChild(hGateDataTable);
+
+    currentDataTable = document.createElement('table');
+    currentDataTable.className = 'datatable';
+    dataPanel.appendChild(currentDataTable);
+
+    voltageDataTable = document.createElement('table');
+    voltageDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageDataTable);
+
     // simulate and plot a simple harmonic oscillator
     function runSimulation() {
 
@@ -44,7 +66,7 @@ window.addEventListener('load', function () {
             m_gates_time, h_gates_time, V_mV, I_pA,
             eventTimeFuncs = [], eventFuncs = [], 
             t_next, t_event, nextEventFunc, done = false, i, j,
-            plotPanel, plotDefaultOptions, plot, title;
+            plotPanel, plot, title;
 
         // set up the simulation
         j = 0;
@@ -223,39 +245,6 @@ window.addEventListener('load', function () {
         // plot the results
         plotPanel = document.getElementById('SingleChannelPlots');
         plotPanel.innerHTML = '';
-        plotDefaultOptions = {
-            grid: {
-                shadow: false,
-            },
-            legend: {
-                placement: 'outside',
-            },
-            cursor: {
-                show: true,
-                zoom: true,
-                looseZoom: false,
-                followMouse: true,
-                useAxesFormatters: false,
-                showVerticalLine: true,
-                showTooltipDataPosition: true,
-                tooltipFormatString: "%s: %.2f, %.2f",
-            },
-            axes: {
-                xaxis: {
-                    min: 0,
-                    max: params.totalDuration_ms,
-                    tickOptions: {formatString: '%.2f'},
-                },
-            },
-            axesDefaults: {
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-            },
-            seriesDefaults: {
-                showMarker: false,
-                lineWidth: 1,
-                shadow: false,
-            }
-        };
 
         // m Gates
         title = document.createElement('h4');
@@ -269,10 +258,7 @@ window.addEventListener('load', function () {
             plot.style.height = '60px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-                $.jqplot('mGatePlot' + j, [m_gates_time[j]], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f",
-                    },
+                $.jqplot('mGatePlot' + j, [m_gates_time[j]], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axesDefaults: {
                         showTicks: false,
                     },
@@ -285,6 +271,8 @@ window.addEventListener('load', function () {
                         {label: 'm', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#mGatePlot' + j, mGateDataTable, 'Activation Gates', 'Time');
+            graphJqplot.bindCursorTooltip('#mGatePlot' + j, 'Time', 'ms', '');
         }
 
         // h Gates
@@ -299,10 +287,7 @@ window.addEventListener('load', function () {
             plot.style.height = '60px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-                $.jqplot('hGatePlot' + j, [h_gates_time[j]], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f",
-                    },
+                $.jqplot('hGatePlot' + j, [h_gates_time[j]], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axesDefaults: {
                         showTicks: false,
                     },
@@ -315,6 +300,8 @@ window.addEventListener('load', function () {
                         {label: 'h', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#hGatePlot' + j, hGateDataTable, 'Inactivation Gates', 'Time');
+            graphJqplot.bindCursorTooltip('#hGatePlot' + j, 'Time', 'ms', '');
         }
 
         // Current
@@ -328,10 +315,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlot', [I_pA], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f pA",
-                },
+            $.jqplot('currentPlot', [I_pA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Channel Current (pA)'},
@@ -340,10 +324,12 @@ window.addEventListener('load', function () {
                     {label: 'I', color: 'black'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#currentPlot', currentDataTable, 'Channel Current', 'Time');
+        graphJqplot.bindCursorTooltip('#currentPlot', 'Time', 'ms', 'pA');
 
         // Voltage
         title = document.createElement('h4');
-        title.innerHTML = 'Voltage Step';
+        title.innerHTML = 'Clamp Potential';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         plot = document.createElement('div');
@@ -352,10 +338,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('voltagePlot', [V_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                },
+            $.jqplot('voltagePlot', [V_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Clamp Potential (mV)'},
@@ -364,7 +347,10 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, 'Clamp Potential', 'Time');
+        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
     }
+
 
     function reset() {
         controlsPanel.innerHTML = '';
@@ -372,10 +358,31 @@ window.addEventListener('load', function () {
         runSimulation();
     }
 
+
+    function clearDataTables() {
+        mGateDataTable.innerHTML = '';
+        mGateDataTable.style.display = 'none';
+
+        hGateDataTable.innerHTML = '';
+        hGateDataTable.style.display = 'none';
+
+        currentDataTable.innerHTML = '';
+        currentDataTable.style.display = 'none';
+
+        voltageDataTable.innerHTML = '';
+        voltageDataTable.style.display = 'none';
+
+        gateDataTable.innerHTML = '';
+        gateDataTable.style.display = 'none';
+    }
+
+
     (document.getElementById('SingleChannelRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('SingleChannelResetButton')
         .addEventListener('click', reset, false));
+    (document.getElementById('SingleChannelClearDataButton')
+        .addEventListener('click', clearDataTables, false));
     
     // make the enter key run the simulation  
     controlsPanel.addEventListener('keydown',  
@@ -388,5 +395,6 @@ window.addEventListener('load', function () {
         }, true);
 
     reset();
+    clearDataTables();
    
 }, false);

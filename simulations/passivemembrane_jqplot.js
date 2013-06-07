@@ -6,7 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, controls, pointsPanel, voltagePoints,
+        currentPoints, stimPoints, tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -37,12 +38,28 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('PassiveMembraneControls');
 
+    // prepare tables for displaying captured points
+    pointsPanel = document.getElementById('PassiveMembranePoints');
+    pointsPanel.className = 'pointspanel';
+
+    voltagePoints = document.createElement('table');
+    voltagePoints.className = 'pointstable';
+    pointsPanel.appendChild(voltagePoints);
+
+    currentPoints = document.createElement('table');
+    currentPoints.className = 'pointstable';
+    pointsPanel.appendChild(currentPoints);
+
+    stimPoints = document.createElement('table');
+    stimPoints.className = 'pointstable';
+    pointsPanel.appendChild(stimPoints);
+
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, passiveMembrane, pulseTrain,
             result, v, iLeak, iStim,
             v_mV, iLeak_nA, params, iStim_nA,
-            plotPanel, plot, plotDefaultOptions;
+            plotPanel, plot;
         
         // create the passive membrane
         params = controls.values;
@@ -88,39 +105,6 @@ window.addEventListener('load', function () {
         // plot the results
         plotPanel = document.getElementById('PassiveMembranePlots');
         plotPanel.innerHTML = '';
-        plotDefaultOptions = {
-            grid: {
-                shadow: false,
-            },
-            legend: {
-                placement: 'outside',
-            },
-            cursor: {
-                show: true,
-                zoom: true,
-                looseZoom: false,
-                followMouse: true,
-                useAxesFormatters: false,
-                showVerticalLine: true,
-                showTooltipDataPosition: true,
-                tooltipFormatString: "%s: %.2f, %.2f",
-            },
-            axes: {
-                xaxis: {
-                    min: 0,
-                    max: params.totalDuration_ms,
-                    tickOptions: {formatString: '%.2f'},
-                },
-            },
-            axesDefaults: {
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-            },
-            seriesDefaults: {
-                showMarker: false,
-                lineWidth: 1,
-                shadow: false,
-            }
-        };
 
         // Voltage
         plot = document.createElement('div');
@@ -129,10 +113,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-           $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                },
+           $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Potential (mV)'},
@@ -141,6 +122,8 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindPointCapture('#voltagePlot', voltagePoints, 'Membrane Potential', 'Time');
+        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
 
         // Currents
         plot = document.createElement('div');
@@ -149,10 +132,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlot', [iLeak_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
+            $.jqplot('currentPlot', [iLeak_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Current (nA)'},
@@ -161,6 +141,8 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>leak</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindPointCapture('#currentPlot', currentPoints, 'Membrane Current', 'Time');
+        graphJqplot.bindCursorTooltip('#currentPlot', 'Time', 'ms', 'nA');
 
         // Stimulus current
         plot = document.createElement('div');
@@ -169,10 +151,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
+            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Stimulation Current (nA)'},
@@ -181,13 +160,28 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>stim</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindPointCapture('#stimPlot', stimPoints, 'Stimulation Current', 'Time');
+        graphJqplot.bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
     }
 
     
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
+        clearPoints();
         runSimulation();
+    }
+
+
+    function clearPoints() {
+        voltagePoints.innerHTML = '';
+        voltagePoints.style.display = 'none';
+
+        currentPoints.innerHTML = '';
+        currentPoints.style.display = 'none';
+
+        stimPoints.innerHTML = '';
+        stimPoints.style.display = 'none';
     }
 
 
@@ -195,6 +189,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('PassiveMembraneResetButton')
         .addEventListener('click', reset, false));
+    (document.getElementById('PassiveMembraneClearPointsButton')
+        .addEventListener('click', clearPoints, false));
     
 
     // make the enter key run the simulation  

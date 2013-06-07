@@ -6,7 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, controls, dataPanel, voltageDataTable,
+        currentDataTable, stimDataTable, tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -46,12 +47,28 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('NernstPassiveMembraneControls');
 
+    // prepare tables for displaying captured data points
+    dataPanel = document.getElementById('NernstPassiveMembraneData');
+    dataPanel.className = 'datapanel';
+
+    voltageDataTable = document.createElement('table');
+    voltageDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageDataTable);
+
+    currentDataTable = document.createElement('table');
+    currentDataTable.className = 'datatable';
+    dataPanel.appendChild(currentDataTable);
+
+    stimDataTable = document.createElement('table');
+    stimDataTable.className = 'datatable';
+    dataPanel.appendChild(stimDataTable);
+
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, nernstPassiveMembrane, pulseTrain, V_steadyState, NaCurrent, KCurrent, ClCurrent,
             result, v, iNa, iK, iCl, iStim,
             v_mV, iNa_nA, iK_nA, iCl_nA, params, iStim_nA,
-            plotPanel, plot, plotDefaultOptions;
+            plotPanel, plot;
         
         params = controls.values;
 
@@ -117,39 +134,6 @@ window.addEventListener('load', function () {
         // plot the results
         plotPanel = document.getElementById('NernstPassiveMembranePlots');
         plotPanel.innerHTML = '';
-        plotDefaultOptions = {
-            grid: {
-                shadow: false,
-            },
-            legend: {
-                placement: 'outside',
-            },
-            cursor: {
-                show: true,
-                zoom: true,
-                looseZoom: false,
-                followMouse: true,
-                useAxesFormatters: false,
-                showVerticalLine: true,
-                showTooltipDataPosition: true,
-                tooltipFormatString: "%s: %.2f, %.2f",
-            },
-            axes: {
-                xaxis: {
-                    min: 0,
-                    max: params.totalDuration_ms,
-                    tickOptions: {formatString: '%.2f'},
-                },
-            },
-            axesDefaults: {
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-            },
-            seriesDefaults: {
-                showMarker: false,
-                lineWidth: 1,
-                shadow: false,
-            }
-        };
 
         // Voltage
         plot = document.createElement('div');
@@ -158,10 +142,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                },
+            $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Potential (mV)'},
@@ -170,6 +151,8 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, 'Membrane Potential', 'Time');
+        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
 
         // Currents
         plot = document.createElement('div');
@@ -178,11 +161,8 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlot', [iNa_nA, iK_nA, iCl_nA], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('currentPlot', [iNa_nA, iK_nA, iCl_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Current (nA)'},
@@ -193,6 +173,8 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>Cl</sub>',   color: 'green'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#currentPlot', currentDataTable, 'Membrane Current', 'Time');
+        graphJqplot.bindCursorTooltip('#currentPlot', 'Time', 'ms', 'nA');
 
         // Stimulus current
         plot = document.createElement('div');
@@ -201,10 +183,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
+            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Stimulation Current (nA)'},
@@ -213,19 +192,39 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>stim</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#stimPlot', stimDataTable, 'Stimulation Current', 'Time');
+        graphJqplot.bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
     }
     
+
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
+        clearDataTables();
         runSimulation();
     }
+
+
+    function clearDataTables() {
+        voltageDataTable.innerHTML = '';
+        voltageDataTable.style.display = 'none';
+
+        currentDataTable.innerHTML = '';
+        currentDataTable.style.display = 'none';
+
+        stimDataTable.innerHTML = '';
+        stimDataTable.style.display = 'none';
+    }
+
 
     (document.getElementById('NernstPassiveMembraneRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('NernstPassiveMembraneResetButton')
         .addEventListener('click', reset, false));
+    (document.getElementById('NernstPassiveMembraneClearDataButton')
+        .addEventListener('click', clearDataTables, false));
     
+
     // make the enter key run the simulation (after a slight delay to allow
     // the edit box to fire a change event first).  
     controlsPanel.addEventListener('keydown',  

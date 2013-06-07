@@ -75,39 +75,54 @@ window.addEventListener('load', function () {
     stimPoints.className = 'pointstable hidden';
     pointsPanel.appendChild(stimPoints);
 
+    // determine the index of the data point in the first
+    // series nearest (in the x-coordinate) the cursor
+    function nearestPoint (datapos, plot) {
+        var low, mid, high, nearest_point,
+            low_x, mid_x, high_x, cursor_x;
+
+        cursor_x = datapos.xaxis;
+        nearest_point = -1;
+        low = 0;
+        high = plot.data[0].length-1;
+
+        // perform a binary search
+        while (high - low > 1) {
+            mid = Math.round((low+high)/2);
+            mid_x = plot.data[0][mid][0];
+            if (mid_x <= cursor_x)
+                low = mid;
+            else
+                high = mid;
+        }
+
+        // identify the nearest point
+        if (plot.data[0][low][0] == cursor_x) {
+            high = low;
+            nearest_point = high;
+        } else {
+            low_x = plot.data[0][low][0];
+            high_x = plot.data[0][high][0];
+            if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
+                nearest_point = low;
+            else
+                nearest_point = high;   
+        }
+
+        return nearest_point;
+    }
+
     // when the user right-clicks, append to the points table the values
     // from each series for the data points nearest (in the x-coordinate)
     // the cursor with the value of the x-coordinate
     function bindPointCapture (plotID, table, tableTitle, xTitle) {
         $(plotID).bind('jqplotRightClick',
             function (ev, gridpos, datapos, neighbor, plot) {
-                var caption, row, cell, i, cursor_x, low, mid, high, nearest_point,
-                    low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
+                var caption, row, cell, i,
+                    nearest_point, nearest_point_x, nearest_point_y;
 
                 // determine which point is closest to the cursor
-                cursor_x = datapos.xaxis;
-                nearest_point = -1;
-                low = 0;
-                high = plot.data[0].length-1;
-                while (high - low > 1) {
-                    mid = Math.round((low+high)/2);
-                    mid_x = plot.data[0][mid][0];
-                    if (mid_x <= cursor_x)
-                        low = mid;
-                    else
-                        high = mid;
-                }
-                if (plot.data[0][low][0] == cursor_x) {
-                    high = low;
-                    nearest_point = high;
-                } else {
-                    low_x = plot.data[0][low][0];
-                    high_x = plot.data[0][high][0];
-                    if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
-                        nearest_point = low;
-                    else
-                        nearest_point = high;   
-                }
+                nearest_point = nearestPoint(datapos, plot);
 
                 // if the table has no contents, unhide the table,
                 // create a caption, and create a heading
@@ -165,33 +180,11 @@ window.addEventListener('load', function () {
     function bindCursorTooltip (plotID, xTitle, xUnits, yUnits) {
         $(plotID).bind('jqplotMouseMove',
             function (ev, gridpos, datapos, neighbor, plot) {
-                var tooltipHTML, i, cursor_x, low, mid, high, nearest_point,
-                    low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
+                var tooltipHTML, i,
+                    nearest_point, nearest_point_x, nearest_point_y;
                 
                 // determine which point is closest to the cursor
-                cursor_x = datapos.xaxis;
-                nearest_point = -1;
-                low = 0;
-                high = plot.data[0].length-1;
-                while (high - low > 1) {
-                    mid = Math.round((low+high)/2);
-                    mid_x = plot.data[0][mid][0];
-                    if (mid_x <= cursor_x)
-                        low = mid;
-                    else
-                        high = mid;
-                }
-                if (plot.data[0][low][0] == cursor_x) {
-                    high = low;
-                    nearest_point = high;
-                } else {
-                    low_x = plot.data[0][low][0];
-                    high_x = plot.data[0][high][0];
-                    if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
-                        nearest_point = low;
-                    else
-                        nearest_point = high;   
-                }
+                nearest_point = nearestPoint(datapos, plot);
 
                 // clear the tooltip
                 tooltipHTML = '';

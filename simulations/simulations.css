@@ -70,12 +70,13 @@ body
 {
     padding-left: 1em;
     padding-top: 2em;
-    padding-bottom: 2em;
 }
 
 .pointstable
 {
+    width:20em;
     border-collapse:collapse;
+    margin-bottom:1em;
 }
 
 .pointstablecaption

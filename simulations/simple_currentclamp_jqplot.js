@@ -6,7 +6,9 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, pointsPanel, pointsTable, controls, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, controls, pointsPanel, voltagePoints,
+        currentPoints, conductancePoints, gatePoints, stimPoints,
+        tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     params = { 
@@ -48,11 +50,161 @@ window.addEventListener('load', function () {
         ['Simulation Settings', ['totalDuration_ms']]
     ];
     controlsPanel = document.getElementById('CurrentClampControls');
+
+    // prepare tables for displaying captured points
     pointsPanel = document.getElementById('CurrentClampPoints');
     pointsPanel.className = 'pointspanel';
-    pointsTable = document.createElement('table');
-    pointsTable.className = 'pointstable';
-    pointsPanel.appendChild(pointsTable);
+
+    voltagePoints = document.createElement('table');
+    voltagePoints.className = 'pointstable';
+    pointsPanel.appendChild(voltagePoints);
+
+    currentPoints = document.createElement('table');
+    currentPoints.className = 'pointstable';
+    pointsPanel.appendChild(currentPoints);
+
+    conductancePoints = document.createElement('table');
+    conductancePoints.className = 'pointstable';
+    pointsPanel.appendChild(conductancePoints);
+
+    gatePoints = document.createElement('table');
+    gatePoints.className = 'pointstable';
+    pointsPanel.appendChild(gatePoints);
+
+    stimPoints = document.createElement('table');
+    stimPoints.className = 'pointstable';
+    pointsPanel.appendChild(stimPoints);
+
+    // when the user right-clicks, append to the points table the values
+    // from each series for the data points nearest (in the x-coordinate)
+    // the cursor with the value of the x-coordinate
+    function bindPointCapture (plotID, table, tableTitle, xTitle) {
+        $(plotID).bind('jqplotRightClick',
+            function (ev, gridpos, datapos, neighbor, plot) {
+                var caption, row, cell, i, cursor_x, low, mid, high, nearest_point,
+                    low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
+
+                // determine which point is closest to the cursor
+                cursor_x = datapos.xaxis;
+                nearest_point = -1;
+                low = 0;
+                high = plot.data[0].length-1;
+                while (high - low > 1) {
+                    mid = Math.round((low+high)/2);
+                    mid_x = plot.data[0][mid][0];
+                    if (mid_x <= cursor_x)
+                        low = mid;
+                    else
+                        high = mid;
+                }
+                if (plot.data[0][low][0] == cursor_x) {
+                    high = low;
+                    nearest_point = high;
+                } else {
+                    low_x = plot.data[0][low][0];
+                    high_x = plot.data[0][high][0];
+                    if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
+                        nearest_point = low;
+                    else
+                        nearest_point = high;   
+                }
+
+                // if a table heading does not already exist, create it
+                if (!table.firstChild) {
+                    caption = document.createElement('caption');
+                    caption.className = 'pointstablecaption';
+                    caption.innerHTML = tableTitle;
+                    table.appendChild(caption);
+
+                    row = document.createElement('tr');
+                    table.appendChild(row);
+
+                    cell = document.createElement('td');
+                    cell.className = 'pointstableheading';
+                    cell.innerHTML = xTitle;
+                    row.appendChild(cell);
+
+                    for (i=0; i<plot.data.length; i++) {
+                        cell = document.createElement('td');
+                        cell.className = 'pointstableheading';
+                        cell.innerHTML = plot.series[i].label;
+                        row.appendChild(cell);
+                    }
+                }
+
+                // create a new table row for the captured point
+                row = document.createElement('tr');
+                table.appendChild(row);
+
+                // add the x-coordinate value to the table
+                nearest_point_x = plot.data[0][nearest_point][0];
+                cell = document.createElement('td');
+                cell.innerHTML = Math.round(nearest_point_x*100)/100;
+                row.appendChild(cell);
+
+                // add each series value to the table
+                for (i=0; i<plot.data.length; i++) {
+                    nearest_point_y = plot.data[i][nearest_point][1];
+                    cell = document.createElement('td');
+                    cell.innerHTML = Math.round(nearest_point_y*100)/100;
+                    row.appendChild(cell);
+                }
+            }
+        );
+    }
+
+    // create a cursor tooltip that displays the values from each series
+    // for the data points nearest (in the x-coordinate) the cursor with
+    // the value of the x-coordinate
+    function bindCursorTooltip (plotID, xTitle, xUnits, yUnits) {
+        $(plotID).bind('jqplotMouseMove',
+            function (ev, gridpos, datapos, neighbor, plot) {
+                var tooltipHTML, i, cursor_x, low, mid, high, nearest_point,
+                    low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
+                
+                // determine which point is closest to the cursor
+                cursor_x = datapos.xaxis;
+                nearest_point = -1;
+                low = 0;
+                high = plot.data[0].length-1;
+                while (high - low > 1) {
+                    mid = Math.round((low+high)/2);
+                    mid_x = plot.data[0][mid][0];
+                    if (mid_x <= cursor_x)
+                        low = mid;
+                    else
+                        high = mid;
+                }
+                if (plot.data[0][low][0] == cursor_x) {
+                    high = low;
+                    nearest_point = high;
+                } else {
+                    low_x = plot.data[0][low][0];
+                    high_x = plot.data[0][high][0];
+                    if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
+                        nearest_point = low;
+                    else
+                        nearest_point = high;   
+                }
+
+                // clear the tooltip
+                tooltipHTML = '';
+
+                // add the x-coordinate value to the tooltip
+                nearest_point_x = plot.data[0][nearest_point][0];
+                tooltipHTML = tooltipHTML + xTitle + ": " + Math.round(nearest_point_x*100)/100 + " " + xUnits;
+
+                // add each series value to the tooltip
+                for (i=0; i<plot.data.length; i++) {
+                    nearest_point_y = plot.data[i][nearest_point][1];
+                    tooltipHTML = tooltipHTML + "<br/>" + plot.series[i].label + ": " + Math.round(nearest_point_y*100)/100 + " " + yUnits;
+                }
+
+                // display the tooltip
+                $(".jqplot-cursor-tooltip").html(tooltipHTML);
+            }
+        );
+    }
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -151,8 +303,6 @@ window.addEventListener('load', function () {
                 followMouse: true,
                 useAxesFormatters: false,
                 showVerticalLine: true,
-                showTooltipDataPosition: true,
-                tooltipFormatString: "%s: %.2f, %.2f",
             },
             captureRightClick: true,
             axes: {
@@ -180,9 +330,6 @@ window.addEventListener('load', function () {
         plotPanel.appendChild(plot);
         plotHandles.push(
             $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Potential (mV)'},
@@ -191,6 +338,8 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
+        bindPointCapture('#voltagePlot', voltagePoints, 'Membrane Potential', 'Time');
+        bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
 
         // Currents
         plot = document.createElement('div');
@@ -201,9 +350,6 @@ window.addEventListener('load', function () {
         plotHandles.push(
             $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, plotDefaultOptions, {
                 legend: {show: true},
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Current (nA)'},
@@ -214,133 +360,8 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>leak</sub>', color: 'black'},
                 ],
         })));
-
-        // when the user right-clicks, append to the points table the values
-        // from each series for the data points nearest (in the x-coordinate)
-        // the cursor with the value of the x-coordinate
-        $('#currentPlot').bind('jqplotRightClick',
-            function (ev, gridpos, datapos, neighbor, plot) {
-                var caption, row, cell, i, cursor_x, low, mid, high, nearest_point,
-                    low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
-
-                // determine which point is closest to the cursor
-                cursor_x = datapos.xaxis;
-                nearest_point = -1;
-                low = 0;
-                high = plot.data[0].length-1;
-                while (high - low > 1) {
-                    mid = Math.round((low+high)/2);
-                    mid_x = plot.data[0][mid][0];
-                    if (mid_x <= cursor_x)
-                        low = mid;
-                    else
-                        high = mid;
-                }
-                if (plot.data[0][low][0] == cursor_x) {
-                    high = low;
-                    nearest_point = high;
-                } else {
-                    low_x = plot.data[0][low][0];
-                    high_x = plot.data[0][high][0];
-                    if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
-                        nearest_point = low;
-                    else
-                        nearest_point = high;   
-                }
-
-                // if a table heading does not already exist, create it
-                if (!pointsTable.firstChild) {
-                    caption = document.createElement('caption');
-                    caption.className = 'pointstablecaption';
-                    caption.innerHTML = 'Currents';
-                    pointsTable.appendChild(caption);
-
-                    row = document.createElement('tr');
-                    pointsTable.appendChild(row);
-
-                    cell = document.createElement('td');
-                    cell.className = 'pointstableheading';
-                    cell.innerHTML = 'Time';
-                    row.appendChild(cell);
-
-                    for (i=0; i<plot.data.length; i++) {
-                        cell = document.createElement('td');
-                        cell.className = 'pointstableheading';
-                        cell.innerHTML = plot.series[i].label;
-                        row.appendChild(cell);
-                    }
-                }
-
-                // create a new table row for the captured point
-                row = document.createElement('tr');
-                pointsTable.appendChild(row);
-
-                // add the x-coordinate value to the table
-                nearest_point_x = plot.data[0][nearest_point][0];
-                cell = document.createElement('td');
-                cell.innerHTML = Math.round(nearest_point_x*100)/100;
-                row.appendChild(cell);
-
-                // add each series value to the table
-                for (i=0; i<plot.data.length; i++) {
-                    nearest_point_y = plot.data[i][nearest_point][1];
-                    cell = document.createElement('td');
-                    cell.innerHTML = Math.round(nearest_point_y*100)/100;
-                    row.appendChild(cell);
-                }
-            }
-        );
-
-        // create a cursor tooltip that displays the values from each series
-        // for the data points nearest (in the x-coordinate) the cursor with
-        // the value of the x-coordinate
-        $('#currentPlot').bind('jqplotMouseMove',
-            function (ev, gridpos, datapos, neighbor, plot) {
-                var tooltipHTML, i, cursor_x, low, mid, high, nearest_point,
-                    low_x, mid_x, high_x, nearest_point_x, nearest_point_y;
-                
-                // determine which point is closest to the cursor
-                cursor_x = datapos.xaxis;
-                nearest_point = -1;
-                low = 0;
-                high = plot.data[0].length-1;
-                while (high - low > 1) {
-                    mid = Math.round((low+high)/2);
-                    mid_x = plot.data[0][mid][0];
-                    if (mid_x <= cursor_x)
-                        low = mid;
-                    else
-                        high = mid;
-                }
-                if (plot.data[0][low][0] == cursor_x) {
-                    high = low;
-                    nearest_point = high;
-                } else {
-                    low_x = plot.data[0][low][0];
-                    high_x = plot.data[0][high][0];
-                    if (Math.abs(low_x - cursor_x) < Math.abs(high_x - cursor_x))
-                        nearest_point = low;
-                    else
-                        nearest_point = high;   
-                }
-
-                // clear the tooltip
-                tooltipHTML = '';
-
-                // add the x-coordinate value to the tooltip
-                nearest_point_x = plot.data[0][nearest_point][0];
-                tooltipHTML = tooltipHTML + "Time: " + Math.round(nearest_point_x*100)/100 + " ms";
-
-                // add each series value to the tooltip
-                for (i=0; i<plot.data.length; i++) {
-                    nearest_point_y = plot.data[i][nearest_point][1];
-                    tooltipHTML = tooltipHTML + "<br/>" + plot.series[i].label + ": " + Math.round(nearest_point_y*100)/100 + " nA";
-                }
-
-                // display the tooltip
-                $(".jqplot-cursor-tooltip").html(tooltipHTML);
-            }
-        );
+        bindPointCapture('#currentPlot', currentPoints, 'Current', 'Time');
+        bindCursorTooltip('#currentPlot', 'Time', 'ms', 'nA');
 
         // Conductances
         plot = document.createElement('div');
@@ -351,9 +372,6 @@ window.addEventListener('load', function () {
         plotHandles.push(
             $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, plotDefaultOptions, {
                 legend: {show: true},
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f \u00B5S",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Conductance (\u00B5S)'},
@@ -363,6 +381,8 @@ window.addEventListener('load', function () {
                     {label: 'g<sub>K</sub>',  color: 'red'},
                 ],
         })));
+        bindPointCapture('#conductancePlot', conductancePoints, 'Conductance', 'Time');
+        bindCursorTooltip('#conductancePlot', 'Time', 'ms', '\u00B5S');
 
         // Gates
         plot = document.createElement('div');
@@ -373,9 +393,6 @@ window.addEventListener('load', function () {
         plotHandles.push(
             $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, plotDefaultOptions, {
                 legend: {show: true},
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {
@@ -390,6 +407,8 @@ window.addEventListener('load', function () {
                     {label: 'n', color: 'red'},
                 ],
         })));
+        bindPointCapture('#gatePlot', gatePoints, 'Gate', 'Time');
+        bindCursorTooltip('#gatePlot', 'Time', 'ms', '');
 
         // Stimulus current
         plot = document.createElement('div');
@@ -399,9 +418,6 @@ window.addEventListener('load', function () {
         plotPanel.appendChild(plot);
         plotHandles.push(
             $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Stimulation Current (nA)'},
@@ -410,18 +426,25 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>stim</sub>', color: 'black'},
                 ],
         })));
+        bindPointCapture('#stimPlot', stimPoints, 'Stimulation Current', 'Time');
+        bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
     }
 
     
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
+        clearPoints();
         runSimulation();
     }
 
 
     function clearPoints() {
-        pointsTable.innerHTML = '';
+        voltagePoints.innerHTML = '';
+        currentPoints.innerHTML = '';
+        conductancePoints.innerHTML = '';
+        gatePoints.innerHTML = '';
+        stimPoints.innerHTML = '';
     }
 
 

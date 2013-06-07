@@ -6,7 +6,9 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = [], currentRunNumber = 0; 
+    var params, layout, controlsPanel, controls, dataPanel, voltage1DataTable,
+        voltage2DataTable, stimDataTable, tMax = 1000e-3, plotHandles = [],
+        currentRunNumber = 0; 
 
     // set up the controls
     params = { 
@@ -60,12 +62,28 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('ActiveCableControls');
 
+    // prepare tables for displaying captured data points
+    dataPanel = document.getElementById('ActiveCableData');
+    dataPanel.className = 'datapanel';
+
+    voltage1DataTable = document.createElement('table');
+    voltage1DataTable.className = 'datatable';
+    dataPanel.appendChild(voltage1DataTable);
+
+    voltage2DataTable = document.createElement('table');
+    voltage2DataTable.className = 'datatable';
+    dataPanel.appendChild(voltage2DataTable);
+
+    stimDataTable = document.createElement('table');
+    stimDataTable.className = 'datatable';
+    dataPanel.appendChild(stimDataTable);
+
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, passiveMembranes, pulseTrain,
             result, v_0, v_f, iStim,
             v_0_mV, v_f_mV, params, iStim_nA,
-            plotPanel, plot, plotDefaultOptions, debugPanel, title, i, 
+            plotPanel, plot, debugPanel, title, i, 
             l_segment_um, surfaceArea_cm2, crossSectionalArea_cm2, 
             r_intersegment, 
             numCapSegments, cappingFactor, prevSegment,
@@ -171,39 +189,6 @@ window.addEventListener('load', function () {
             // plot the results
             plotPanel = document.getElementById('ActiveCablePlots');
             plotPanel.innerHTML = '';
-            plotDefaultOptions = {
-                grid: {
-                    shadow: false,
-                },
-                legend: {
-                    placement: 'outside',
-                },
-                cursor: {
-                    show: true,
-                    zoom: true,
-                    looseZoom: false,
-                    followMouse: true,
-                    useAxesFormatters: false,
-                    showVerticalLine: true,
-                    showTooltipDataPosition: true,
-                    tooltipFormatString: "%s: %.2f, %.2f",
-                },
-                axes: {
-                    xaxis: {
-                        min: 0,
-                        max: params.totalDuration_ms,
-                        tickOptions: {formatString: '%.2f'},
-                    },
-                },
-                axesDefaults: {
-                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                },
-                seriesDefaults: {
-                    showMarker: false,
-                    lineWidth: 1,
-                    shadow: false,
-                }
-            };
 
             // Voltage 1
             title = document.createElement('h4');
@@ -216,10 +201,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltage1Plot', [v_0_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltage1Plot', [v_0_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -228,6 +210,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltage1Plot', voltage1DataTable, 'Membrane Potential at Electrode 1', 'Time');
+            graphJqplot.bindCursorTooltip('#voltage1Plot', 'Time', 'ms', 'mV');
 
             // Voltage 2
             title = document.createElement('h4');
@@ -240,10 +224,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltage2Plot', [v_f_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltage2Plot', [v_f_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -252,6 +233,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltage2Plot', voltage2DataTable, 'Membrane Potential at Electrode 2', 'Time');
+            graphJqplot.bindCursorTooltip('#voltage2Plot', 'Time', 'ms', 'mV');
 
             // Stimulus current
             title = document.createElement('h4');
@@ -264,10 +247,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                    },
+               $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -276,6 +256,8 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#stimPlot', stimDataTable, 'Stimulation Current at Electrode 1', 'Time');
+            graphJqplot.bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
 
             if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
@@ -299,10 +281,24 @@ window.addEventListener('load', function () {
     }
 
 
+    function clearDataTables() {
+        voltage1DataTable.innerHTML = '';
+        voltage1DataTable.style.display = 'none';
+
+        voltage2DataTable.innerHTML = '';
+        voltage2DataTable.style.display = 'none';
+
+        stimDataTable.innerHTML = '';
+        stimDataTable.style.display = 'none';
+    }
+
+
     (document.getElementById('ActiveCableRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('ActiveCableResetButton')
         .addEventListener('click', reset, false));
+    (document.getElementById('ActiveCableClearDataButton')
+        .addEventListener('click', clearDataTables, false));
     
 
     // make the enter key run the simulation  
@@ -316,6 +312,7 @@ window.addEventListener('load', function () {
         }, true);
 
     reset();
+    clearDataTables();
 
 }, false);
 

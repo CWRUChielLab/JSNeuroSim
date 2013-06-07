@@ -77,10 +77,10 @@ graphJqplot.nearestPoint = function (datapos, plot) {
 };
 
 
-// when the user right-clicks, append to the points table the values
+// when the user right-clicks, append to the data table the values
 // from each series for the data points nearest (in the x-coordinate)
 // the cursor with the value of the x-coordinate
-graphJqplot.bindPointCapture = function (plotID, table, tableTitle, xTitle) {
+graphJqplot.bindDataCapture = function (plotID, dataTable, dataTableTitle, xTitle) {
     $(plotID).bind('jqplotRightClick',
         function (ev, gridpos, datapos, neighbor, plot) {
             var caption, row, cell, i,
@@ -91,36 +91,36 @@ graphJqplot.bindPointCapture = function (plotID, table, tableTitle, xTitle) {
 
             // if the table has no contents, unhide the table,
             // create a caption, and create a heading
-            if (!table.firstChild) {
+            if (!dataTable.firstChild) {
                 // unhide the table
-                table.style.display = 'table';
+                dataTable.style.display = 'table';
 
                 // create a table title
                 caption = document.createElement('caption');
-                caption.className = 'pointstablecaption';
-                caption.innerHTML = tableTitle;
-                table.appendChild(caption);
+                caption.className = 'datatablecaption';
+                caption.innerHTML = dataTableTitle;
+                dataTable.appendChild(caption);
 
                 // create a heading row
                 row = document.createElement('tr');
-                table.appendChild(row);
+                dataTable.appendChild(row);
 
                 cell = document.createElement('td');
-                cell.className = 'pointstableheading';
+                cell.className = 'datatableheading';
                 cell.innerHTML = xTitle;
                 row.appendChild(cell);
 
                 for (i=0; i<plot.data.length; i++) {
                     cell = document.createElement('td');
-                    cell.className = 'pointstableheading';
+                    cell.className = 'datatableheading';
                     cell.innerHTML = plot.series[i].label;
                     row.appendChild(cell);
                 }
             }
 
-            // create a new table row for the captured point
+            // create a new table row for the captured data point
             row = document.createElement('tr');
-            table.appendChild(row);
+            dataTable.appendChild(row);
 
             // add the x-coordinate value to the table
             nearest_point_x = plot.data[0][nearest_point][0];

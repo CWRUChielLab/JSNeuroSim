@@ -6,8 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, pointsPanel, voltagePoints,
-        currentPoints, stimPoints, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, controls, dataPanel, voltageDataTable,
+        currentDataTable, stimDataTable, tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
     params = { 
@@ -38,21 +38,21 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('PassiveMembraneControls');
 
-    // prepare tables for displaying captured points
-    pointsPanel = document.getElementById('PassiveMembranePoints');
-    pointsPanel.className = 'pointspanel';
+    // prepare tables for displaying captured data points
+    dataPanel = document.getElementById('PassiveMembraneData');
+    dataPanel.className = 'datapanel';
 
-    voltagePoints = document.createElement('table');
-    voltagePoints.className = 'pointstable';
-    pointsPanel.appendChild(voltagePoints);
+    voltageDataTable = document.createElement('table');
+    voltageDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageDataTable);
 
-    currentPoints = document.createElement('table');
-    currentPoints.className = 'pointstable';
-    pointsPanel.appendChild(currentPoints);
+    currentDataTable = document.createElement('table');
+    currentDataTable.className = 'datatable';
+    dataPanel.appendChild(currentDataTable);
 
-    stimPoints = document.createElement('table');
-    stimPoints.className = 'pointstable';
-    pointsPanel.appendChild(stimPoints);
+    stimDataTable = document.createElement('table');
+    stimDataTable.className = 'datatable';
+    dataPanel.appendChild(stimDataTable);
 
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
@@ -122,7 +122,7 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindPointCapture('#voltagePlot', voltagePoints, 'Membrane Potential', 'Time');
+        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, 'Membrane Potential', 'Time');
         graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
 
         // Currents
@@ -141,7 +141,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>leak</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindPointCapture('#currentPlot', currentPoints, 'Membrane Current', 'Time');
+        graphJqplot.bindDataCapture('#currentPlot', currentDataTable, 'Membrane Current', 'Time');
         graphJqplot.bindCursorTooltip('#currentPlot', 'Time', 'ms', 'nA');
 
         // Stimulus current
@@ -160,7 +160,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>stim</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindPointCapture('#stimPlot', stimPoints, 'Stimulation Current', 'Time');
+        graphJqplot.bindDataCapture('#stimPlot', stimDataTable, 'Stimulation Current', 'Time');
         graphJqplot.bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
     }
 
@@ -168,20 +168,20 @@ window.addEventListener('load', function () {
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
-        clearPoints();
+        clearDataTables();
         runSimulation();
     }
 
 
-    function clearPoints() {
-        voltagePoints.innerHTML = '';
-        voltagePoints.style.display = 'none';
+    function clearDataTables() {
+        voltageDataTable.innerHTML = '';
+        voltageDataTable.style.display = 'none';
 
-        currentPoints.innerHTML = '';
-        currentPoints.style.display = 'none';
+        currentDataTable.innerHTML = '';
+        currentDataTable.style.display = 'none';
 
-        stimPoints.innerHTML = '';
-        stimPoints.style.display = 'none';
+        stimDataTable.innerHTML = '';
+        stimDataTable.style.display = 'none';
     }
 
 
@@ -189,8 +189,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('PassiveMembraneResetButton')
         .addEventListener('click', reset, false));
-    (document.getElementById('PassiveMembraneClearPointsButton')
-        .addEventListener('click', clearPoints, false));
+    (document.getElementById('PassiveMembraneClearDataButton')
+        .addEventListener('click', clearDataTables, false));
     
 
     // make the enter key run the simulation  

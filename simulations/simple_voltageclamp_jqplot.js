@@ -6,8 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, pointsPanel, currentPoints,
-        conductancePoints, gatePoints, voltagePoints,
+    var params, layout, controlsPanel, controls, dataPanel, currentDataTable,
+        conductanceDataTable, gateDataTable, voltageDataTable,
         tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the voltage clamp simulation
@@ -51,25 +51,25 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('VoltageClampControls');
 
-    // prepare tables for displaying captured points
-    pointsPanel = document.getElementById('VoltageClampPoints');
-    pointsPanel.className = 'pointspanel';
+    // prepare tables for displaying captured data points
+    dataPanel = document.getElementById('VoltageClampData');
+    dataPanel.className = 'datapanel';
 
-    currentPoints = document.createElement('table');
-    currentPoints.className = 'pointstable';
-    pointsPanel.appendChild(currentPoints);
+    currentDataTable = document.createElement('table');
+    currentDataTable.className = 'datatable';
+    dataPanel.appendChild(currentDataTable);
 
-    conductancePoints = document.createElement('table');
-    conductancePoints.className = 'pointstable';
-    pointsPanel.appendChild(conductancePoints);
+    conductanceDataTable = document.createElement('table');
+    conductanceDataTable.className = 'datatable';
+    dataPanel.appendChild(conductanceDataTable);
 
-    gatePoints = document.createElement('table');
-    gatePoints.className = 'pointstable';
-    pointsPanel.appendChild(gatePoints);
+    gateDataTable = document.createElement('table');
+    gateDataTable.className = 'datatable';
+    dataPanel.appendChild(gateDataTable);
 
-    voltagePoints = document.createElement('table');
-    voltagePoints.className = 'pointstable';
-    pointsPanel.appendChild(voltagePoints);
+    voltageDataTable = document.createElement('table');
+    voltageDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageDataTable);
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -177,7 +177,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>leak</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindPointCapture('#currentPlot', currentPoints, 'Current', 'Time');
+        graphJqplot.bindDataCapture('#currentPlot', currentDataTable, 'Current', 'Time');
         graphJqplot.bindCursorTooltip('#currentPlot', 'Time', 'ms', 'nA');
 
         // Conductances
@@ -198,7 +198,7 @@ window.addEventListener('load', function () {
                     {label: 'g<sub>K</sub>',  color: 'red'},
                 ],
         })));
-        graphJqplot.bindPointCapture('#conductancePlot', conductancePoints, 'Conductance', 'Time');
+        graphJqplot.bindDataCapture('#conductancePlot', conductanceDataTable, 'Conductance', 'Time');
         graphJqplot.bindCursorTooltip('#conductancePlot', 'Time', 'ms', '\u00B5S');
 
         // Gates
@@ -224,7 +224,7 @@ window.addEventListener('load', function () {
                     {label: 'n', color: 'red'},
                 ],
         })));
-        graphJqplot.bindPointCapture('#gatePlot', gatePoints, 'Gate', 'Time');
+        graphJqplot.bindDataCapture('#gatePlot', gateDataTable, 'Gate', 'Time');
         graphJqplot.bindCursorTooltip('#gatePlot', 'Time', 'ms', '');
 
         // Voltage
@@ -243,7 +243,7 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindPointCapture('#voltagePlot', voltagePoints, 'Membrane Potential', 'Time');
+        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, 'Membrane Potential', 'Time');
         graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
     }
 
@@ -251,23 +251,23 @@ window.addEventListener('load', function () {
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
-        clearPoints();
+        clearDataTables();
         runSimulation();
     }
 
 
-    function clearPoints() {
-        currentPoints.innerHTML = '';
-        currentPoints.style.display = 'none';
+    function clearDataTables() {
+        currentDataTable.innerHTML = '';
+        currentDataTable.style.display = 'none';
 
-        conductancePoints.innerHTML = '';
-        conductancePoints.style.display = 'none';
+        conductanceDataTable.innerHTML = '';
+        conductanceDataTable.style.display = 'none';
 
-        gatePoints.innerHTML = '';
-        gatePoints.style.display = 'none';
+        gateDataTable.innerHTML = '';
+        gateDataTable.style.display = 'none';
 
-        voltagePoints.innerHTML = '';
-        voltagePoints.style.display = 'none';
+        voltageDataTable.innerHTML = '';
+        voltageDataTable.style.display = 'none';
     }
 
 
@@ -275,8 +275,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('VoltageClampResetButton')
         .addEventListener('click', reset, false));
-    (document.getElementById('VoltageClampClearPointsButton')
-        .addEventListener('click', clearPoints, false));
+    (document.getElementById('VoltageClampClearDataButton')
+        .addEventListener('click', clearDataTables, false));
     
 
     // make the enter key run the simulation  

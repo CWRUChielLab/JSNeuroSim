@@ -66,26 +66,26 @@ body
     margin-bottom: 1ex;
 }
 
-.pointspanel
+.datapanel
 {
     padding-left: 1em;
     padding-top: 2em;
 }
 
-.pointstable
+.datatable
 {
     width:20em;
     border-collapse:collapse;
     margin-bottom:1em;
 }
 
-.pointstablecaption
+.datatablecaption
 {
     text-align:left;
     font-weight:bold;
 }
 
-.pointstableheading
+.datatableheading
 {
     width:4em;
     text-align:left;

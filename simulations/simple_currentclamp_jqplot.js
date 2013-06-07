@@ -56,23 +56,23 @@ window.addEventListener('load', function () {
     pointsPanel.className = 'pointspanel';
 
     voltagePoints = document.createElement('table');
-    voltagePoints.className = 'pointstable';
+    voltagePoints.className = 'pointstable hidden';
     pointsPanel.appendChild(voltagePoints);
 
     currentPoints = document.createElement('table');
-    currentPoints.className = 'pointstable';
+    currentPoints.className = 'pointstable hidden';
     pointsPanel.appendChild(currentPoints);
 
     conductancePoints = document.createElement('table');
-    conductancePoints.className = 'pointstable';
+    conductancePoints.className = 'pointstable hidden';
     pointsPanel.appendChild(conductancePoints);
 
     gatePoints = document.createElement('table');
-    gatePoints.className = 'pointstable';
+    gatePoints.className = 'pointstable hidden';
     pointsPanel.appendChild(gatePoints);
 
     stimPoints = document.createElement('table');
-    stimPoints.className = 'pointstable';
+    stimPoints.className = 'pointstable hidden';
     pointsPanel.appendChild(stimPoints);
 
     // when the user right-clicks, append to the points table the values
@@ -109,13 +109,19 @@ window.addEventListener('load', function () {
                         nearest_point = high;   
                 }
 
-                // if a table heading does not already exist, create it
+                // if the table has no contents, unhide the table,
+                // create a caption, and create a heading
                 if (!table.firstChild) {
+                    // unhide the table
+                    table.className = 'pointstable';
+
+                    // create a table title
                     caption = document.createElement('caption');
                     caption.className = 'pointstablecaption';
                     caption.innerHTML = tableTitle;
                     table.appendChild(caption);
 
+                    // create a heading row
                     row = document.createElement('tr');
                     table.appendChild(row);
 
@@ -441,10 +447,19 @@ window.addEventListener('load', function () {
 
     function clearPoints() {
         voltagePoints.innerHTML = '';
+        voltagePoints.className = 'pointstable hidden';
+
         currentPoints.innerHTML = '';
+        currentPoints.className = 'pointstable hidden';
+
         conductancePoints.innerHTML = '';
+        conductancePoints.className = 'pointstable hidden';
+
         gatePoints.innerHTML = '';
+        gatePoints.className = 'pointstable hidden';
+
         stimPoints.innerHTML = '';
+        stimPoints.className = 'pointstable hidden';
     }
 
 

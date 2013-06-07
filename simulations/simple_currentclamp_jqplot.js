@@ -56,23 +56,23 @@ window.addEventListener('load', function () {
     pointsPanel.className = 'pointspanel';
 
     voltagePoints = document.createElement('table');
-    voltagePoints.className = 'pointstable hidden';
+    voltagePoints.className = 'pointstable';
     pointsPanel.appendChild(voltagePoints);
 
     currentPoints = document.createElement('table');
-    currentPoints.className = 'pointstable hidden';
+    currentPoints.className = 'pointstable';
     pointsPanel.appendChild(currentPoints);
 
     conductancePoints = document.createElement('table');
-    conductancePoints.className = 'pointstable hidden';
+    conductancePoints.className = 'pointstable';
     pointsPanel.appendChild(conductancePoints);
 
     gatePoints = document.createElement('table');
-    gatePoints.className = 'pointstable hidden';
+    gatePoints.className = 'pointstable';
     pointsPanel.appendChild(gatePoints);
 
     stimPoints = document.createElement('table');
-    stimPoints.className = 'pointstable hidden';
+    stimPoints.className = 'pointstable';
     pointsPanel.appendChild(stimPoints);
 
     // determine the index of the data point in the first
@@ -128,7 +128,7 @@ window.addEventListener('load', function () {
                 // create a caption, and create a heading
                 if (!table.firstChild) {
                     // unhide the table
-                    table.className = 'pointstable';
+                    table.style.display = 'table';
 
                     // create a table title
                     caption = document.createElement('caption');
@@ -440,19 +440,19 @@ window.addEventListener('load', function () {
 
     function clearPoints() {
         voltagePoints.innerHTML = '';
-        voltagePoints.className = 'pointstable hidden';
+        voltagePoints.style.display = 'none';
 
         currentPoints.innerHTML = '';
-        currentPoints.className = 'pointstable hidden';
+        currentPoints.style.display = 'none';
 
         conductancePoints.innerHTML = '';
-        conductancePoints.className = 'pointstable hidden';
+        conductancePoints.style.display = 'none';
 
         gatePoints.innerHTML = '';
-        gatePoints.className = 'pointstable hidden';
+        gatePoints.style.display = 'none';
 
         stimPoints.innerHTML = '';
-        stimPoints.className = 'pointstable hidden';
+        stimPoints.style.display = 'none';
     }
 
 

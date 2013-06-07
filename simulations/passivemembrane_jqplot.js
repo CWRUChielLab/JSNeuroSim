@@ -168,7 +168,6 @@ window.addEventListener('load', function () {
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
-        clearDataTables();
         runSimulation();
     }
 
@@ -204,6 +203,7 @@ window.addEventListener('load', function () {
         }, true);
 
     reset();
+    clearDataTables();
 
 }, false);
 

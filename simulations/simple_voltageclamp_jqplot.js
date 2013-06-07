@@ -6,7 +6,9 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, controls, pointsPanel, currentPoints,
+        conductancePoints, gatePoints, voltagePoints,
+        tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the voltage clamp simulation
     params = { 
@@ -49,12 +51,32 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('VoltageClampControls');
 
+    // prepare tables for displaying captured points
+    pointsPanel = document.getElementById('VoltageClampPoints');
+    pointsPanel.className = 'pointspanel';
+
+    currentPoints = document.createElement('table');
+    currentPoints.className = 'pointstable';
+    pointsPanel.appendChild(currentPoints);
+
+    conductancePoints = document.createElement('table');
+    conductancePoints.className = 'pointstable';
+    pointsPanel.appendChild(conductancePoints);
+
+    gatePoints = document.createElement('table');
+    gatePoints.className = 'pointstable';
+    pointsPanel.appendChild(gatePoints);
+
+    voltagePoints = document.createElement('table');
+    voltagePoints.className = 'pointstable';
+    pointsPanel.appendChild(voltagePoints);
+
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
         var model, neuron, pulseTrain, hhNaCurrent, hhKCurrent, leakCurrent,
             result, v, gNa, gK, iNa, iK, iLeak, mGate, hGate, nGate,
             v_mV, gNa_uS, gK_uS, iNa_nA, iK_nA, iLeak_nA, params,
-            plotPanel, plot, plotDefaultOptions, j, prerun, y0; 
+            plotPanel, plot, j, prerun, y0; 
         
         // create the clamped membrane
         params = controls.values;
@@ -135,39 +157,6 @@ window.addEventListener('load', function () {
         // plot the results
         plotPanel = document.getElementById('VoltageClampPlots');
         plotPanel.innerHTML = '';
-        plotDefaultOptions = {
-            grid: {
-                shadow: false,
-            },
-            legend: {
-                placement: 'outside',
-            },
-            cursor: {
-                show: true,
-                zoom: true,
-                looseZoom: false,
-                followMouse: true,
-                useAxesFormatters: false,
-                showVerticalLine: true,
-                showTooltipDataPosition: true,
-                tooltipFormatString: "%s: %.2f, %.2f",
-            },
-            axes: {
-                xaxis: {
-                    min: 0,
-                    max: params.totalDuration_ms,
-                    tickOptions: {formatString: '%.2f'},
-                },
-            },
-            axesDefaults: {
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-            },
-            seriesDefaults: {
-                showMarker: false,
-                lineWidth: 1,
-                shadow: false,
-            }
-        };
         
         // Currents
         plot = document.createElement('div');
@@ -176,11 +165,8 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('currentPlot', [iNa_nA, iK_nA, iLeak_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Current (nA)'},
@@ -191,6 +177,8 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>leak</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindPointCapture('#currentPlot', currentPoints, 'Current', 'Time');
+        graphJqplot.bindCursorTooltip('#currentPlot', 'Time', 'ms', 'nA');
 
         // Conductances
         plot = document.createElement('div');
@@ -199,11 +187,8 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('conductancePlot', [gNa_uS, gK_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f \u00B5S",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Conductance (\u00B5S)'},
@@ -213,6 +198,8 @@ window.addEventListener('load', function () {
                     {label: 'g<sub>K</sub>',  color: 'red'},
                 ],
         })));
+        graphJqplot.bindPointCapture('#conductancePlot', conductancePoints, 'Conductance', 'Time');
+        graphJqplot.bindCursorTooltip('#conductancePlot', 'Time', 'ms', '\u00B5S');
 
         // Gates
         plot = document.createElement('div');
@@ -221,11 +208,8 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, plotDefaultOptions, {
+            $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f",
-                },
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {
@@ -240,6 +224,8 @@ window.addEventListener('load', function () {
                     {label: 'n', color: 'red'},
                 ],
         })));
+        graphJqplot.bindPointCapture('#gatePlot', gatePoints, 'Gate', 'Time');
+        graphJqplot.bindCursorTooltip('#gatePlot', 'Time', 'ms', '');
 
         // Voltage
         plot = document.createElement('div');
@@ -248,10 +234,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                },
+            $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Potential (mV)'},
@@ -260,13 +243,31 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindPointCapture('#voltagePlot', voltagePoints, 'Membrane Potential', 'Time');
+        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
     }
 
     
     function reset() {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
+        clearPoints();
         runSimulation();
+    }
+
+
+    function clearPoints() {
+        currentPoints.innerHTML = '';
+        currentPoints.style.display = 'none';
+
+        conductancePoints.innerHTML = '';
+        conductancePoints.style.display = 'none';
+
+        gatePoints.innerHTML = '';
+        gatePoints.style.display = 'none';
+
+        voltagePoints.innerHTML = '';
+        voltagePoints.style.display = 'none';
     }
 
 
@@ -274,6 +275,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('VoltageClampResetButton')
         .addEventListener('click', reset, false));
+    (document.getElementById('VoltageClampClearPointsButton')
+        .addEventListener('click', clearPoints, false));
     
 
     // make the enter key run the simulation  

@@ -6,7 +6,10 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = [], currentRunNumber = 0;
+    var params, layout, controlsPanel, controls, dataPanel, voltageTrunkDataTable,
+        voltageJunctionDataTable, voltageBranch1DataTable, voltageBranch2DataTable,
+        stimTrunkDataTable, stimBranch1DataTable, stimBranch2DataTable,
+        tMax = 1000e-3, plotHandles = [], currentRunNumber = 0;
 
     // set up the controls for the passive membrane simulation
     params = {
@@ -144,13 +147,45 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('BranchedCableControls');
 
+    // prepare tables for displaying captured data points
+    dataPanel = document.getElementById('BranchedCableData');
+    dataPanel.className = 'datapanel';
+
+    voltageTrunkDataTable = document.createElement('table');
+    voltageTrunkDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageTrunkDataTable);
+
+    voltageJunctionDataTable = document.createElement('table');
+    voltageJunctionDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageJunctionDataTable);
+
+    voltageBranch1DataTable = document.createElement('table');
+    voltageBranch1DataTable.className = 'datatable';
+    dataPanel.appendChild(voltageBranch1DataTable);
+
+    voltageBranch2DataTable = document.createElement('table');
+    voltageBranch2DataTable.className = 'datatable';
+    dataPanel.appendChild(voltageBranch2DataTable);
+
+    stimTrunkDataTable = document.createElement('table');
+    stimTrunkDataTable.className = 'datatable';
+    dataPanel.appendChild(stimTrunkDataTable);
+
+    stimBranch1DataTable = document.createElement('table');
+    stimBranch1DataTable.className = 'datatable';
+    dataPanel.appendChild(stimBranch1DataTable);
+
+    stimBranch2DataTable = document.createElement('table');
+    stimBranch2DataTable.className = 'datatable';
+    dataPanel.appendChild(stimBranch2DataTable);
+
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, branch1Compartment, branch2Compartment,
             trunkCompartment, pulseTrainTrunk, pulseTrainBranch1, pulseTrainBranch2,
             result, v_trunk, v_junction, v_branch1, v_branch2, iStim_trunk, iStim_branch1, iStim_branch2,
             v_trunk_mV, v_junction_mV, v_branch1_mV, v_branch2_mV, params, iStim_trunk_nA, iStim_branch1_nA, iStim_branch2_nA,
-            plotPanel, plot, plotDefaultOptions, debugPanel, title, i,
+            plotPanel, plot, debugPanel, title, i,
             l_compartment_trunk_um, surfaceArea_trunk_cm2,
             crossSectionalArea_trunk_cm2,
             r_intercompartment_trunk,
@@ -400,39 +435,6 @@ window.addEventListener('load', function () {
             // plot the results
             plotPanel = document.getElementById('BranchedCablePlots');
             plotPanel.innerHTML = '';
-            plotDefaultOptions = {
-                grid: {
-                    shadow: false,
-                },
-                legend: {
-                    placement: 'outside',
-                },
-                cursor: {
-                    show: true,
-                    zoom: true,
-                    looseZoom: false,
-                    followMouse: true,
-                    useAxesFormatters: false,
-                    showVerticalLine: true,
-                    showTooltipDataPosition: true,
-                    tooltipFormatString: "%s: %.2f, %.2f",
-                },
-                axes: {
-                    xaxis: {
-                        min: 0,
-                        max: params.totalDuration_ms,
-                        tickOptions: {formatString: '%.2f'},
-                    },
-                },
-                axesDefaults: {
-                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                },
-                seriesDefaults: {
-                    showMarker: false,
-                    lineWidth: 1,
-                    shadow: false,
-                }
-            };
             
             // Truck voltage
             title = document.createElement('h4');
@@ -445,10 +447,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageTrunkPlot', [v_trunk_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltageTrunkPlot', [v_trunk_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -457,6 +456,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltageTrunkPlot', voltageTrunkDataTable, 'Membrane Potential at Trunk', 'Time');
+            graphJqplot.bindCursorTooltip('#voltageTrunkPlot', 'Time', 'ms', 'mV');
 
             // Junction voltage
             title = document.createElement('h4');
@@ -469,10 +470,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageJunctionPlot', [v_junction_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltageJunctionPlot', [v_junction_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -481,6 +479,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltageJunctionPlot', voltageJunctionDataTable, 'Membrane Potential at Junction', 'Time');
+            graphJqplot.bindCursorTooltip('#voltageJunctionPlot', 'Time', 'ms', 'mV');
 
             // Branch 1 voltage
             title = document.createElement('h4');
@@ -493,10 +493,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageBranch1Plot', [v_branch1_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltageBranch1Plot', [v_branch1_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -505,6 +502,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltageBranch1Plot', voltageBranch1DataTable, 'Membrane Potential at Branch 1', 'Time');
+            graphJqplot.bindCursorTooltip('#voltageBranch1Plot', 'Time', 'ms', 'mV');
 
             // Branch 2 voltage
             title = document.createElement('h4');
@@ -517,10 +516,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageBranch2Plot', [v_branch2_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltageBranch2Plot', [v_branch2_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -529,8 +525,10 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltageBranch2Plot', voltageBranch2DataTable, 'Membrane Potential at Branch 2', 'Time');
+            graphJqplot.bindCursorTooltip('#voltageBranch2Plot', 'Time', 'ms', 'mV');
 
-            // Trunck stimulus current
+            // Trunk stimulus current
             title = document.createElement('h4');
             title.innerHTML = 'Stimulation Current at Trunk';
             title.className = 'simplotheading';
@@ -541,10 +539,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('stimTrunkPlot', [iStim_trunk_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                    },
+               $.jqplot('stimTrunkPlot', [iStim_trunk_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -553,6 +548,8 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#stimTrunkPlot', stimTrunkDataTable, 'Stimulation Current at Trunk', 'Time');
+            graphJqplot.bindCursorTooltip('#stimTrunkPlot', 'Time', 'ms', 'nA');
 
             // Branch 1 stimulus current
             title = document.createElement('h4');
@@ -565,10 +562,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('stimBranch1Plot', [iStim_branch1_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                    },
+               $.jqplot('stimBranch1Plot', [iStim_branch1_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -577,6 +571,8 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#stimBranch1Plot', stimBranch1DataTable, 'Stimulation Current at Branch 1', 'Time');
+            graphJqplot.bindCursorTooltip('#stimBranch1Plot', 'Time', 'ms', 'nA');
 
             // Branch 2 stimulus current
             title = document.createElement('h4');
@@ -589,10 +585,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('stimBranch2Plot', [iStim_branch2_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                    },
+               $.jqplot('stimBranch2Plot', [iStim_branch2_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -601,6 +594,8 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#stimBranch2Plot', stimBranch2DataTable, 'Stimulation Current at Branch 2', 'Time');
+            graphJqplot.bindCursorTooltip('#stimBranch2Plot', 'Time', 'ms', 'nA');
 
             if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
@@ -624,10 +619,36 @@ window.addEventListener('load', function () {
     }
 
 
+    function clearDataTables() {
+        voltageTrunkDataTable.innerHTML = '';
+        voltageTrunkDataTable.style.display = 'none';
+
+        voltageJunctionDataTable.innerHTML = '';
+        voltageJunctionDataTable.style.display = 'none';
+
+        voltageBranch1DataTable.innerHTML = '';
+        voltageBranch1DataTable.style.display = 'none';
+
+        voltageBranch2DataTable.innerHTML = '';
+        voltageBranch2DataTable.style.display = 'none';
+
+        stimTrunkDataTable.innerHTML = '';
+        stimTrunkDataTable.style.display = 'none';
+
+        stimBranch1DataTable.innerHTML = '';
+        stimBranch1DataTable.style.display = 'none';
+
+        stimBranch2DataTable.innerHTML = '';
+        stimBranch2DataTable.style.display = 'none';
+    }
+
+
     (document.getElementById('BranchedCableRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('BranchedCableResetButton')
         .addEventListener('click', reset, false));
+    (document.getElementById('BranchedCableClearDataButton')
+        .addEventListener('click', clearDataTables, false));
 
 
     // make the enter key run the simulation
@@ -641,6 +662,7 @@ window.addEventListener('load', function () {
         }, true);
 
     reset();
+    clearDataTables();
 
 }, false);
 

@@ -271,7 +271,7 @@ window.addEventListener('load', function () {
                         {label: 'm', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#mGatePlot' + j, mGateDataTable, 'Activation Gates', 'Time');
+            graphJqplot.bindDataCapture('#mGatePlot' + j, mGateDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#mGatePlot' + j, 'Time', 'ms', '');
         }
 
@@ -300,7 +300,7 @@ window.addEventListener('load', function () {
                         {label: 'h', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#hGatePlot' + j, hGateDataTable, 'Inactivation Gates', 'Time');
+            graphJqplot.bindDataCapture('#hGatePlot' + j, hGateDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#hGatePlot' + j, 'Time', 'ms', '');
         }
 
@@ -324,7 +324,7 @@ window.addEventListener('load', function () {
                     {label: 'I', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#currentPlot', currentDataTable, 'Channel Current', 'Time');
+        graphJqplot.bindDataCapture('#currentPlot', currentDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#currentPlot', 'Time', 'ms', 'pA');
 
         // Voltage
@@ -347,7 +347,7 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, 'Clamp Potential', 'Time');
+        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
     }
 

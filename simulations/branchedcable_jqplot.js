@@ -456,7 +456,7 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#voltageTrunkPlot', voltageTrunkDataTable, 'Membrane Potential at Trunk', 'Time');
+            graphJqplot.bindDataCapture('#voltageTrunkPlot', voltageTrunkDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltageTrunkPlot', 'Time', 'ms', 'mV');
 
             // Junction voltage
@@ -479,7 +479,7 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#voltageJunctionPlot', voltageJunctionDataTable, 'Membrane Potential at Junction', 'Time');
+            graphJqplot.bindDataCapture('#voltageJunctionPlot', voltageJunctionDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltageJunctionPlot', 'Time', 'ms', 'mV');
 
             // Branch 1 voltage
@@ -502,7 +502,7 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#voltageBranch1Plot', voltageBranch1DataTable, 'Membrane Potential at Branch 1', 'Time');
+            graphJqplot.bindDataCapture('#voltageBranch1Plot', voltageBranch1DataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltageBranch1Plot', 'Time', 'ms', 'mV');
 
             // Branch 2 voltage
@@ -525,7 +525,7 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#voltageBranch2Plot', voltageBranch2DataTable, 'Membrane Potential at Branch 2', 'Time');
+            graphJqplot.bindDataCapture('#voltageBranch2Plot', voltageBranch2DataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltageBranch2Plot', 'Time', 'ms', 'mV');
 
             // Trunk stimulus current
@@ -548,7 +548,7 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#stimTrunkPlot', stimTrunkDataTable, 'Stimulation Current at Trunk', 'Time');
+            graphJqplot.bindDataCapture('#stimTrunkPlot', stimTrunkDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#stimTrunkPlot', 'Time', 'ms', 'nA');
 
             // Branch 1 stimulus current
@@ -571,7 +571,7 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#stimBranch1Plot', stimBranch1DataTable, 'Stimulation Current at Branch 1', 'Time');
+            graphJqplot.bindDataCapture('#stimBranch1Plot', stimBranch1DataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#stimBranch1Plot', 'Time', 'ms', 'nA');
 
             // Branch 2 stimulus current
@@ -594,7 +594,7 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#stimBranch2Plot', stimBranch2DataTable, 'Stimulation Current at Branch 2', 'Time');
+            graphJqplot.bindDataCapture('#stimBranch2Plot', stimBranch2DataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#stimBranch2Plot', 'Time', 'ms', 'nA');
 
             if (result.terminationReason === 'Timeout') {

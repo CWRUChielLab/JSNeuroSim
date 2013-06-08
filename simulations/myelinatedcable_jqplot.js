@@ -347,7 +347,7 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#voltage1Plot', voltage1DataTable, 'Membrane Potential at Node 1', 'Time');
+            graphJqplot.bindDataCapture('#voltage1Plot', voltage1DataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltage1Plot', 'Time', 'ms', 'mV');
 
             // Voltage myelinated
@@ -370,7 +370,7 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#voltageMyelinatedPlot', voltageMyelinatedDataTable, 'Membrane Potential at Myelinated Segment', 'Time');
+            graphJqplot.bindDataCapture('#voltageMyelinatedPlot', voltageMyelinatedDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltageMyelinatedPlot', 'Time', 'ms', 'mV');
 
             // Voltage 2
@@ -393,7 +393,7 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#voltage2Plot', voltage2DataTable, 'Membrane Potential at Node 2', 'Time');
+            graphJqplot.bindDataCapture('#voltage2Plot', voltage2DataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltage2Plot', 'Time', 'ms', 'mV');
 
             // Stimulus current
@@ -416,7 +416,7 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#stimPlot', stimDataTable, 'Stimulation Current at Node 1', 'Time');
+            graphJqplot.bindDataCapture('#stimPlot', stimDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
 
             if (result.terminationReason === 'Timeout') {

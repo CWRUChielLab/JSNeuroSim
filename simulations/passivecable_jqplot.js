@@ -209,7 +209,7 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#voltage1Plot', voltage1DataTable, 'Membrane Potential at Electrode 1', 'Time');
+        graphJqplot.bindDataCapture('#voltage1Plot', voltage1DataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#voltage1Plot', 'Time', 'ms', 'mV');
 
 
@@ -233,7 +233,7 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#voltage2Plot', voltage2DataTable, 'Membrane Potential at Electrode 2', 'Time');
+        graphJqplot.bindDataCapture('#voltage2Plot', voltage2DataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#voltage2Plot', 'Time', 'ms', 'mV');
 
         // Stimulus current
@@ -256,7 +256,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>stim</sub>', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#stimPlot', stimDataTable, 'Stimulation Current at Electrode 1', 'Time');
+        graphJqplot.bindDataCapture('#stimPlot', stimDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
 
         console.log('Total time: ' + (new Date().getTime() - startTime));

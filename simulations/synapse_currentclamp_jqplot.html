@@ -11,12 +11,13 @@
         <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
         <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
         <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
-        <script src="../src/ode.js"></script>
-        <script src="../src/graph.js"></script>
-        <script src="../src/component_model.js"></script>
-        <script src="../src/electrophys.js"></script>
-        <script src="../src/sim_controls.js"></script>
-        <script src="synapse_currentclamp_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="synapse_currentclamp_jqplot.js"></script>
     </head>
     <body>
         <h1 class="simtitle">Synapse current clamp simulation</h1>
@@ -24,6 +25,8 @@
         <div id="SynapseCurrentClampControls" class="controlspanel"></div>
         <input id="SynapseCurrentClampRunButton" type="button" value="Run"/>
         <input type="button" id="SynapseCurrentClampResetButton" value="Reset"/>
+        <input type="button" id="SynapseCurrentClampClearDataButton" value="Clear Data Points"/>
+        <div id="SynapseCurrentClampData" class="datapanel"></div>
         <div id="debugPanel"></div>
     </body>
 </html>

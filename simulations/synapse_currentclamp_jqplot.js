@@ -6,7 +6,9 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, tMax = 1000e-3, plotHandles = []; 
+    var params, layout, controlsPanel, controls, dataPanel, preVoltageDataTable,
+        preCurrentDataTable, postVoltageDataTable, postCurrentDataTable,
+        tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     params = { 
@@ -95,6 +97,26 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('SynapseCurrentClampControls');
 
+    // prepare tables for displaying captured data points
+    dataPanel = document.getElementById('SynapseCurrentClampData');
+    dataPanel.className = 'datapanel';
+
+    preVoltageDataTable = document.createElement('table');
+    preVoltageDataTable.className = 'datatable';
+    dataPanel.appendChild(preVoltageDataTable);
+
+    preCurrentDataTable = document.createElement('table');
+    preCurrentDataTable.className = 'datatable';
+    dataPanel.appendChild(preCurrentDataTable);
+
+    postVoltageDataTable = document.createElement('table');
+    postVoltageDataTable.className = 'datatable';
+    dataPanel.appendChild(postVoltageDataTable);
+
+    postCurrentDataTable = document.createElement('table');
+    postCurrentDataTable.className = 'datatable';
+    dataPanel.appendChild(postCurrentDataTable);
+
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
         var model, synapse,
@@ -103,7 +125,7 @@ window.addEventListener('load', function () {
             prerun, result,
             v_pre, v_pre_mV, iStim_pre, iStim_pre_nA, 
             v_post, v_post_mV, iStim_post, iStim_post_nA,
-            params, plot, plotPanel, plotDefaultOptions, title, j; 
+            params, plot, plotPanel, title, j; 
         
         params = controls.values;
         model = componentModel.componentModel();
@@ -209,39 +231,6 @@ window.addEventListener('load', function () {
         // plot the results
         plotPanel = document.getElementById('SynapseCurrentClampPlots');
         plotPanel.innerHTML = '';
-        plotDefaultOptions = {
-            grid: {
-                shadow: false,
-            },
-            legend: {
-                placement: 'outside',
-            },
-            cursor: {
-                show: true,
-                zoom: true,
-                looseZoom: false,
-                followMouse: true,
-                useAxesFormatters: false,
-                showVerticalLine: true,
-                showTooltipDataPosition: true,
-                tooltipFormatString: "%s: %.2f, %.2f",
-            },
-            axes: {
-                xaxis: {
-                    min: 0,
-                    max: params.totalDuration_ms,
-                    tickOptions: {formatString: '%.2f'},
-                },
-            },
-            axesDefaults: {
-                labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-            },
-            seriesDefaults: {
-                showMarker: false,
-                lineWidth: 1,
-                shadow: false,
-            }
-        };
 
         // Pre Voltage
         title = document.createElement('h4');
@@ -254,10 +243,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-           $.jqplot('preVoltagePlot', [v_pre_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                },
+           $.jqplot('preVoltagePlot', [v_pre_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Potential (mV)'},
@@ -266,6 +252,8 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#preVoltagePlot', preVoltageDataTable, title.innerHTML, 'Time');
+        graphJqplot.bindCursorTooltip('#preVoltagePlot', 'Time', 'ms', 'mV');
 
         // Pre Current
         title = document.createElement('h4');
@@ -278,10 +266,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-           $.jqplot('preCurrentPlot', [iStim_pre_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
+           $.jqplot('preCurrentPlot', [iStim_pre_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Current (nA)'},
@@ -290,6 +275,8 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>stim</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#preCurrentPlot', preCurrentDataTable, title.innerHTML, 'Time');
+        graphJqplot.bindCursorTooltip('#preCurrentPlot', 'Time', 'ms', 'nA');
 
         // Post Voltage
         title = document.createElement('h4');
@@ -302,10 +289,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-           $.jqplot('postVoltagePlot', [v_post_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                },
+           $.jqplot('postVoltagePlot', [v_post_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Membrane Potential (mV)'},
@@ -314,6 +298,8 @@ window.addEventListener('load', function () {
                     {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#postVoltagePlot', postVoltageDataTable, title.innerHTML, 'Time');
+        graphJqplot.bindCursorTooltip('#postVoltagePlot', 'Time', 'ms', 'mV');
 
         // Post Current
         title = document.createElement('h4');
@@ -326,10 +312,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-           $.jqplot('postCurrentPlot', [iStim_post_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                cursor: {
-                    tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                },
+           $.jqplot('postCurrentPlot', [iStim_post_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Current (nA)'},
@@ -338,7 +321,10 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>stim</sub>', color: 'black'},
                 ],
         })));
+        graphJqplot.bindDataCapture('#postCurrentPlot', postCurrentDataTable, title.innerHTML, 'Time');
+        graphJqplot.bindCursorTooltip('#postCurrentPlot', 'Time', 'ms', 'nA');
     }
+
 
     function reset() {
         controlsPanel.innerHTML = '';
@@ -347,10 +333,27 @@ window.addEventListener('load', function () {
     }
 
 
+    function clearDataTables() {
+        preVoltageDataTable.innerHTML = '';
+        preVoltageDataTable.style.display = 'none';
+
+        preCurrentDataTable.innerHTML = '';
+        preCurrentDataTable.style.display = 'none';
+
+        postVoltageDataTable.innerHTML = '';
+        postVoltageDataTable.style.display = 'none';
+
+        postCurrentDataTable.innerHTML = '';
+        postCurrentDataTable.style.display = 'none';
+    }
+
+
     (document.getElementById('SynapseCurrentClampRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('SynapseCurrentClampResetButton')
         .addEventListener('click', reset, false));
+    (document.getElementById('SynapseCurrentClampClearDataButton')
+        .addEventListener('click', clearDataTables, false));
     
 
     // make the enter key run the simulation  
@@ -364,6 +367,7 @@ window.addEventListener('load', function () {
         }, true);
 
     reset();
+    clearDataTables();
 
 }, false);
 

@@ -11,12 +11,13 @@
         <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
         <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
         <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
-        <script src="../src/ode.js"></script>
-        <script src="../src/graph.js"></script>
-        <script src="../src/component_model.js"></script>
-        <script src="../src/electrophys.js"></script>
-        <script src="../src/sim_controls.js"></script>
-        <script src="tritonia_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="tritonia_jqplot.js"></script>
     </head>
     <body>
         <h1 class="simtitle">Tritonia swim CPG simulation</h1>
@@ -29,6 +30,9 @@
             value="Unmodulated Swim Defaults"/>
         <input type="button" id="TritoniaIsolatedCellsResetButton" 
             value="Isolated Cells Defaults"/>
+        <input type="button" id="TritoniaClearDataButton"
+            value="Clear Data Points"/>
+        <div id="TritoniaData" class="datapanel"></div>
         <div id="debugPanel"></div>
     </body>
 </html>

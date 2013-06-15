@@ -6,7 +6,11 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var layout, controlsPanel, controls, tMax = 600000e-3, 
+    var layout, controlsPanel, controls, dataPanel, voltageC2DataTable,
+        currentC2DataTable, voltageDSIDataTable, currentDSIDataTable,
+        voltageVSIDataTable, currentVSIDataTable, voltageDRIDataTable,
+        currentDRIDataTable,
+        tMax = 600000e-3,
         paramsUnmodulatedSwim, 
         paramsModulatedSwim, modulation,
         paramsIsolatedCells,
@@ -541,9 +545,45 @@ window.addEventListener('load', function () {
     ];
     controlsPanel = document.getElementById('TritoniaControls');
 
+    // prepare tables for displaying captured data points
+    dataPanel = document.getElementById('TritoniaData');
+    dataPanel.className = 'datapanel';
+
+    voltageC2DataTable = document.createElement('table');
+    voltageC2DataTable.className = 'datatable';
+    dataPanel.appendChild(voltageC2DataTable);
+
+    currentC2DataTable = document.createElement('table');
+    currentC2DataTable.className = 'datatable';
+    dataPanel.appendChild(currentC2DataTable);
+
+    voltageDSIDataTable = document.createElement('table');
+    voltageDSIDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageDSIDataTable);
+
+    currentDSIDataTable = document.createElement('table');
+    currentDSIDataTable.className = 'datatable';
+    dataPanel.appendChild(currentDSIDataTable);
+
+    voltageVSIDataTable = document.createElement('table');
+    voltageVSIDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageVSIDataTable);
+
+    currentVSIDataTable = document.createElement('table');
+    currentVSIDataTable.className = 'datatable';
+    dataPanel.appendChild(currentVSIDataTable);
+
+    voltageDRIDataTable = document.createElement('table');
+    voltageDRIDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageDRIDataTable);
+
+    currentDRIDataTable = document.createElement('table');
+    currentDRIDataTable.className = 'datatable';
+    dataPanel.appendChild(currentDRIDataTable);
+
     // simulate and plot the tritonia swim CPG from Calin-Jageman et al 2007
     function runSimulation() {
-        var params, plot, plotPanel, plotDefaultOptions, title,
+        var params, plot, plotPanel, title,
             model, result,
             C2, C2Fast, C2Med, C2Slow, pulseTrainC2,
             v_C2, v_C2_mV, iStim_C2, iStim_C2_nA,
@@ -901,39 +941,6 @@ window.addEventListener('load', function () {
             // plot the results
             plotPanel = document.getElementById('TritoniaPlots');
             plotPanel.innerHTML = '';
-            plotDefaultOptions = {
-                grid: {
-                    shadow: false,
-                },
-                legend: {
-                    placement: 'outside',
-                },
-                cursor: {
-                    show: true,
-                    zoom: true,
-                    looseZoom: false,
-                    followMouse: true,
-                    useAxesFormatters: false,
-                    showVerticalLine: true,
-                    showTooltipDataPosition: true,
-                    tooltipFormatString: "%s: %.2f, %.2f",
-                },
-                axes: {
-                    xaxis: {
-                        min: 0,
-                        max: params.totalDuration_ms,
-                        tickOptions: {formatString: '%.2f'},
-                    },
-                },
-                axesDefaults: {
-                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                },
-                seriesDefaults: {
-                    showMarker: false,
-                    lineWidth: 1,
-                    shadow: false,
-                }
-            };
 
             // C2 Voltage
             title = document.createElement('h4');
@@ -946,10 +953,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageC2Plot', [v_C2_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltageC2Plot', [v_C2_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -958,6 +962,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltageC2Plot', voltageC2DataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#voltageC2Plot', 'Time', 'ms', 'mV');
 
             // C2 Current
             title = document.createElement('h4');
@@ -970,10 +976,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('currentC2Plot', [iStim_C2_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                    },
+               $.jqplot('currentC2Plot', [iStim_C2_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -982,6 +985,8 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#currentC2Plot', currentC2DataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#currentC2Plot', 'Time', 'ms', 'nA');
 
             // DSI Voltage
             title = document.createElement('h4');
@@ -994,10 +999,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageDSIPlot', [v_DSI_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltageDSIPlot', [v_DSI_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -1006,6 +1008,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltageDSIPlot', voltageDSIDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#voltageDSIPlot', 'Time', 'ms', 'mV');
 
             // DSI Current
             title = document.createElement('h4');
@@ -1018,10 +1022,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('currentDSIPlot', [iStim_DSI_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                    },
+               $.jqplot('currentDSIPlot', [iStim_DSI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -1030,6 +1031,8 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#currentDSIPlot', currentDSIDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#currentDSIPlot', 'Time', 'ms', 'nA');
 
             // VSI Voltage
             title = document.createElement('h4');
@@ -1042,10 +1045,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageVSIPlot', [v_VSI_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltageVSIPlot', [v_VSI_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -1054,6 +1054,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltageVSIPlot', voltageVSIDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#voltageVSIPlot', 'Time', 'ms', 'mV');
 
             // VSI Current
             title = document.createElement('h4');
@@ -1066,10 +1068,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('currentVSIPlot', [iStim_VSI_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                    },
+               $.jqplot('currentVSIPlot', [iStim_VSI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -1078,6 +1077,8 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#currentVSIPlot', currentVSIDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#currentVSIPlot', 'Time', 'ms', 'nA');
 
             // DRI Voltage
             title = document.createElement('h4');
@@ -1090,10 +1091,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageDRIPlot', [v_DRI_mV], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f mV",
-                    },
+               $.jqplot('voltageDRIPlot', [v_DRI_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -1102,6 +1100,8 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#voltageDRIPlot', voltageDRIDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#voltageDRIPlot', 'Time', 'ms', 'mV');
 
             // DRI Current
             title = document.createElement('h4');
@@ -1114,10 +1114,7 @@ window.addEventListener('load', function () {
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('currentDRIPlot', [iStim_DRI_nA], jQuery.extend(true, {}, plotDefaultOptions, {
-                    cursor: {
-                        tooltipFormatString: "%s: %.2f ms, %.2f nA",
-                    },
+               $.jqplot('currentDRIPlot', [iStim_DRI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Current (nA)'},
@@ -1126,6 +1123,8 @@ window.addEventListener('load', function () {
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
+            graphJqplot.bindDataCapture('#currentDRIPlot', currentDRIDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#currentDRIPlot', 'Time', 'ms', 'nA');
 
             if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
@@ -1162,6 +1161,33 @@ window.addEventListener('load', function () {
     }
 
 
+    function clearDataTables() {
+        voltageC2DataTable.innerHTML = '';
+        voltageC2DataTable.style.display = 'none';
+
+        currentC2DataTable.innerHTML = '';
+        currentC2DataTable.style.display = 'none';
+
+        voltageDSIDataTable.innerHTML = '';
+        voltageDSIDataTable.style.display = 'none';
+
+        currentDSIDataTable.innerHTML = '';
+        currentDSIDataTable.style.display = 'none';
+
+        voltageVSIDataTable.innerHTML = '';
+        voltageVSIDataTable.style.display = 'none';
+
+        currentVSIDataTable.innerHTML = '';
+        currentVSIDataTable.style.display = 'none';
+
+        voltageDRIDataTable.innerHTML = '';
+        voltageDRIDataTable.style.display = 'none';
+
+        currentDRIDataTable.innerHTML = '';
+        currentDRIDataTable.style.display = 'none';
+    }
+
+
     (document.getElementById('TritoniaRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('TritoniaUnmodulatedSwimResetButton')
@@ -1170,6 +1196,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToModulatedSwim, false));
     (document.getElementById('TritoniaIsolatedCellsResetButton')
         .addEventListener('click', resetToIsolatedCells, false));
+    (document.getElementById('TritoniaClearDataButton')
+        .addEventListener('click', clearDataTables, false));
     
 
     // make the enter key run the simulation  
@@ -1183,6 +1211,7 @@ window.addEventListener('load', function () {
         }, true);
 
     resetToModulatedSwim();
+    clearDataTables();
 
 }, false);
 

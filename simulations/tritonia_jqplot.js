@@ -1135,7 +1135,7 @@ window.addEventListener('load', function () {
                 console.log('Total time: ' + 
                         (new Date().getTime() - startTime));
                 debugPanel = document.getElementById('debugPanel');
-                debugPanel.innerHTML = 'hello world';
+                //debugPanel.innerHTML = 'hello world';
             }
         }
 

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Multiple conductance simulation</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="simulations.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
+        <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../lib/jqplot/excanvas.js"></script><![endif]-->
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.jqplot.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="multiconductance_jqplot.js"></script>
+    </head>
+    <body>
+        <h1 class="simtitle">Multiple conductance simulation</h1>
+        <div id="MultiConductancePlots" class="plotpanel"></div>
+        <div id="MultiConductanceControls" class="controlspanel"></div>
+        <input id="MultiConductanceRunButton" type="button" value="Run"/>
+        <input type="button" id="MultiConductanceResetButton" value="Reset"/>
+        <input type="button" id="MultiConductanceClearDataButton" value="Clear Data Points"/>
+        <div id="MultiConductanceData" class="datapanel"></div>
+    </body>
+</html>

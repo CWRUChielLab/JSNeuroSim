@@ -220,7 +220,7 @@ window.addEventListener('load', function () {
                 },
                 series: [
                     {label: 'm', color: 'blue'},
-                    {label: 'h', color: 'navy'},
+                    {label: 'h', color: 'purple'},
                     {label: 'n', color: 'red'},
                 ],
         })));

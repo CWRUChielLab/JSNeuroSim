@@ -292,14 +292,14 @@ electrophys.multiConductance_hhKConductance = function (model, neuron, options) 
 
     var g_K = options.g_K, 
         E_K = options.E_K,
-        n_inf_sigma = options.n_inf_sigma || -30,
-        n_inf_theta = options.n_inf_theta || -25,
-        tau_n_A = options.tau_n_A || 2.5,
-        tau_n_B = options.tau_n_B || 0.01,
-        tau_n_theta1 = options.tau_n_theta1 || -30,
-        tau_n_sigma1 = options.tau_n_sigma1 || 40,
-        tau_n_theta2 = options.tau_n_theta2 || -30,
-        tau_n_sigma2 = options.tau_n_sigma2 || -50,
+        n_inf_sigma = options.n_inf_sigma || -30e-3,
+        n_inf_theta = options.n_inf_theta || -25e-3,
+        tau_n_A = options.tau_n_A || 2.5e-3,
+        tau_n_B = options.tau_n_B || 0.01e-3,
+        tau_n_theta1 = options.tau_n_theta1 || -30e-3,
+        tau_n_sigma1 = options.tau_n_sigma1 || 40e-3,
+        tau_n_theta2 = options.tau_n_theta2 || -30e-3,
+        tau_n_sigma2 = options.tau_n_sigma2 || -50e-3,
         V_rest = (options.V_rest === undefined ? -65e-3 : options.V_rest),
         iN = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, n_inf_sigma, n_inf_theta));
 

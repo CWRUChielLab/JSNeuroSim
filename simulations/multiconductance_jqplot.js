@@ -13,7 +13,7 @@ window.addEventListener('load', function () {
     // set up the controls for the passive membrane simulation
     params = { 
         C_nF: { label: 'Membrane capacitance', units: 'nF',
-            defaultVal: 2, minVal: 0.01, maxVal: 100 }, 
+            defaultVal: 0.04, minVal: 0.01, maxVal: 100 }, 
         g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
             defaultVal: 0.005, minVal: 0.001, maxVal: 100 }, 
         E_leak_mV: { label: 'Leak potential', units: 'mV',
@@ -71,6 +71,7 @@ window.addEventListener('load', function () {
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, neuron, pulseTrain,
+            V_rest = -71.847e-3, 
             hhKCurrent,
             result, v, iLeak, iStim,
             iHHK, gHHK,
@@ -84,7 +85,8 @@ window.addEventListener('load', function () {
         neuron = electrophys.passiveMembrane(model, {
             C: params.C_nF * 1e-9, 
             g_leak: params.g_leak_uS * 1e-6, 
-            E_leak: params.E_leak_mV * 1e-3 
+            E_leak: params.E_leak_mV * 1e-3,
+            V_rest: V_rest
         });
 
         pulseTrain = electrophys.pulseTrain({
@@ -98,7 +100,8 @@ window.addEventListener('load', function () {
         
         hhKCurrent = electrophys.multiConductance_hhKConductance(model, neuron, {
             g_K: params.g_hhK_uS * 1e-6,
-            E_K: params.E_K_mV * 1e-3
+            E_K: params.E_K_mV * 1e-3,
+            V_rest: V_rest
         });
         
 

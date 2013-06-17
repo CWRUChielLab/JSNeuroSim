@@ -20,11 +20,11 @@ window.addEventListener('load', function () {
             defaultVal: -50, minVal: -1000, maxVal: 1000 }, 
         E_K_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -80, minVal: -1000, maxVal: 1000},
-        g_hhK_uS: { label: 'Delayed rectifier potassium conductance', units: '\u00B5S',
+        g_K_uS: { label: 'Delayed rectifier potassium conductance', units: '\u00B5S',
             defaultVal: 1.3, minVal: 0.001, maxVal: 100},
         E_Na_mV: { label: 'Sodium Nernst potential', units: 'mV',
             defaultVal: 60, minVal: -1000, maxVal: 1000},
-        g_hhNa_uS: { label: 'Fast transient sodium conductance', units: '\u00B5S',
+        g_Na_uS: { label: 'Fast transient sodium conductance', units: '\u00B5S',
             defaultVal: 0.7, minVal: 0.001, maxVal: 100},
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
@@ -41,8 +41,8 @@ window.addEventListener('load', function () {
     };
     layout = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
-        ['Potassium Currents', ['E_K_mV', 'g_hhK_uS']],
-        ['Sodium Currents', ['E_Na_mV', 'g_hhNa_uS']],
+        ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -77,11 +77,11 @@ window.addEventListener('load', function () {
     function runSimulation() {
         var model, neuron, pulseTrain,
             V_rest = -71.847e-3, 
-            hhKCurrent, hhNaCurrent,
+            KCurrent, NaCurrent,
             result, v, iLeak, iStim,
-            iHHK, iHHNa, gHHK, gHHNa,
+            iK, iNa, gK, gNa,
             v_mV, iLeak_nA, params, iStim_nA,
-            iHHK_nA, iHHNa_nA, gHHK_uS, gHHNa_uS,
+            iK_nA, iNa_nA, gK_uS, gNa_uS,
             nGate, mGate, hGate,
             plotPanel, plot;
         
@@ -104,14 +104,14 @@ window.addEventListener('load', function () {
         });
         neuron.addCurrent(pulseTrain);
         
-        hhKCurrent = electrophys.multiConductance.hhKConductance(model, neuron, {
-            g_K: params.g_hhK_uS * 1e-6,
+        KCurrent = electrophys.multiConductance.KConductance(model, neuron, {
+            g_K: params.g_K_uS * 1e-6,
             E_K: params.E_K_mV * 1e-3,
             V_rest: V_rest
         });
         
-        hhNaCurrent = electrophys.multiConductance.hhNaConductance(model, neuron, {
-            g_Na: params.g_hhNa_uS * 1e-6,
+        NaCurrent = electrophys.multiConductance.NaConductance(model, neuron, {
+            g_Na: params.g_Na_uS * 1e-6,
             E_Na: params.E_Na_mV * 1e-3,
             V_rest: V_rest
         });
@@ -126,23 +126,23 @@ window.addEventListener('load', function () {
         
         v     = result.mapOrderedPairs(neuron.V);
         iLeak = result.mapOrderedPairs(neuron.leak.current);
-        iHHK  = result.mapOrderedPairs(hhKCurrent.current);
-        iHHNa = result.mapOrderedPairs(hhNaCurrent.current);
-        gHHK  = result.mapOrderedPairs(hhKCurrent.g);
-        gHHNa = result.mapOrderedPairs(hhNaCurrent.g);
-        nGate = result.mapOrderedPairs(hhKCurrent.n);
-        mGate = result.mapOrderedPairs(hhNaCurrent.m);
-        hGate = result.mapOrderedPairs(hhNaCurrent.h);
+        iK    = result.mapOrderedPairs(KCurrent.current);
+        iNa   = result.mapOrderedPairs(NaCurrent.current);
+        gK    = result.mapOrderedPairs(KCurrent.g);
+        gNa   = result.mapOrderedPairs(NaCurrent.g);
+        nGate = result.mapOrderedPairs(KCurrent.n);
+        mGate = result.mapOrderedPairs(NaCurrent.m);
+        hGate = result.mapOrderedPairs(NaCurrent.h);
         iStim = result.mapOrderedPairs(pulseTrain);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
         v_mV     = v.map     (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
         iLeak_nA = iLeak.map (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iHHK_nA  = iHHK.map  (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iHHNa_nA = iHHNa.map (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        gHHK_uS  = gHHK.map  (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gHHNa_uS = gHHNa.map (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        iK_nA    = iK.map    (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iNa_nA   = iNa.map   (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        gK_uS    = gK.map    (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gNa_uS   = gNa.map   (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         nGate    = nGate.map (function (n) {return [n[0] / 1e-3,  n[1]       ];});
         mGate    = mGate.map (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         hGate    = hGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
@@ -183,7 +183,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlot', [iLeak_nA, iHHK_nA, iHHNa_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('currentPlot', [iLeak_nA, iK_nA, iNa_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -205,7 +205,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('conductancePlot', [gHHK_uS, gHHNa_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('conductancePlot', [gK_uS, gNa_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},

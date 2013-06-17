@@ -287,7 +287,7 @@ electrophys.multiConductance.tau_x = function (V, A, B, theta1, sigma1, theta2, 
 // Based on
 // Purvis LK, Butera RJ. (2005). Ionic Current Model of
 // a Hypoglossal Motorneuron. J Neurophysiol 93: 723-733.
-electrophys.multiConductance.hhKConductance = function (model, neuron, options) {
+electrophys.multiConductance.KConductance = function (model, neuron, options) {
     "use strict";
 
     var g_K = options.g_K, 
@@ -342,7 +342,7 @@ electrophys.multiConductance.hhKConductance = function (model, neuron, options) 
 // Based on
 // Purvis LK, Butera RJ. (2005). Ionic Current Model of
 // a Hypoglossal Motorneuron. J Neurophysiol 93: 723-733.
-electrophys.multiConductance.hhNaConductance = function (model, neuron, options) {
+electrophys.multiConductance.NaConductance = function (model, neuron, options) {
     "use strict";
 
     var g_Na = options.g_Na, 

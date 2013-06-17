@@ -15,17 +15,19 @@ window.addEventListener('load', function () {
         C_nF: { label: 'Membrane capacitance', units: 'nF',
             defaultVal: 0.04, minVal: 0.01, maxVal: 100 }, 
         g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
-            defaultVal: 0.005, minVal: 0.001, maxVal: 100 }, 
+            defaultVal: 0.005, minVal: 0, maxVal: 100 }, 
         E_leak_mV: { label: 'Leak potential', units: 'mV',
             defaultVal: -50, minVal: -1000, maxVal: 1000 }, 
         E_K_mV: { label: 'Potassium Nernst potential', units: 'mV',
             defaultVal: -80, minVal: -1000, maxVal: 1000},
         g_K_uS: { label: 'Delayed rectifier potassium conductance', units: '\u00B5S',
-            defaultVal: 1.3, minVal: 0.001, maxVal: 100},
+            defaultVal: 1.3, minVal: 0, maxVal: 100},
         E_Na_mV: { label: 'Sodium Nernst potential', units: 'mV',
             defaultVal: 60, minVal: -1000, maxVal: 1000},
         g_Na_uS: { label: 'Fast transient sodium conductance', units: '\u00B5S',
-            defaultVal: 0.7, minVal: 0.001, maxVal: 100},
+            defaultVal: 0.7, minVal: 0, maxVal: 100},
+        g_NaP_uS: { label: 'Persistent sodium conductance', units: '\u00B5S',
+            defaultVal: 0.05, minVal: 0, maxVal: 100},
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
@@ -42,7 +44,7 @@ window.addEventListener('load', function () {
     layout = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
-        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -77,12 +79,14 @@ window.addEventListener('load', function () {
     function runSimulation() {
         var model, neuron, pulseTrain,
             V_rest = -71.847e-3, 
-            KCurrent, NaCurrent,
+            KCurrent, NaCurrent, NaPCurrent,
             result, v, iLeak, iStim,
-            iK, iNa, gK, gNa,
+            iK, iNa, iNaP,
+            gK, gNa, gNaP,
             v_mV, iLeak_nA, params, iStim_nA,
-            iK_nA, iNa_nA, gK_uS, gNa_uS,
-            nGate, mGate, hGate,
+            iK_nA, iNa_nA, iNaP_nA,
+            gK_uS, gNa_uS, gNaP_uS,
+            nGate, mGate, hGate, mNaPGate, hNaPGate,
             plotPanel, plot;
         
         // create the passive membrane
@@ -116,6 +120,12 @@ window.addEventListener('load', function () {
             V_rest: V_rest
         });
         
+        NaPCurrent = electrophys.multiConductance.NaPConductance(model, neuron, {
+            g_NaP: params.g_NaP_uS * 1e-6,
+            E_Na: params.E_Na_mV * 1e-3,
+            V_rest: V_rest
+        });
+        
 
         // simulate it
         result = model.integrate({
@@ -124,29 +134,37 @@ window.addEventListener('load', function () {
             tMaxStep: Math.min(1e-4, params.C_nF / params.g_leak_uS * 1e-3) 
         });
         
-        v     = result.mapOrderedPairs(neuron.V);
-        iLeak = result.mapOrderedPairs(neuron.leak.current);
-        iK    = result.mapOrderedPairs(KCurrent.current);
-        iNa   = result.mapOrderedPairs(NaCurrent.current);
-        gK    = result.mapOrderedPairs(KCurrent.g);
-        gNa   = result.mapOrderedPairs(NaCurrent.g);
-        nGate = result.mapOrderedPairs(KCurrent.n);
-        mGate = result.mapOrderedPairs(NaCurrent.m);
-        hGate = result.mapOrderedPairs(NaCurrent.h);
-        iStim = result.mapOrderedPairs(pulseTrain);
+        v        = result.mapOrderedPairs(neuron.V);
+        iLeak    = result.mapOrderedPairs(neuron.leak.current);
+        iK       = result.mapOrderedPairs(KCurrent.current);
+        iNa      = result.mapOrderedPairs(NaCurrent.current);
+        iNaP     = result.mapOrderedPairs(NaPCurrent.current);
+        gK       = result.mapOrderedPairs(KCurrent.g);
+        gNa      = result.mapOrderedPairs(NaCurrent.g);
+        gNaP     = result.mapOrderedPairs(NaPCurrent.g);
+        nGate    = result.mapOrderedPairs(KCurrent.n);
+        mGate    = result.mapOrderedPairs(NaCurrent.m);
+        hGate    = result.mapOrderedPairs(NaCurrent.h);
+        mNaPGate = result.mapOrderedPairs(NaPCurrent.m);
+        hNaPGate = result.mapOrderedPairs(NaPCurrent.h);
+        iStim    = result.mapOrderedPairs(pulseTrain);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
-        v_mV     = v.map     (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
-        iLeak_nA = iLeak.map (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iK_nA    = iK.map    (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iNa_nA   = iNa.map   (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        gK_uS    = gK.map    (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gNa_uS   = gNa.map   (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        nGate    = nGate.map (function (n) {return [n[0] / 1e-3,  n[1]       ];});
-        mGate    = mGate.map (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        hGate    = hGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
-        iStim_nA = iStim.map (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
+        v_mV     = v.map        (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
+        iLeak_nA = iLeak.map    (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iK_nA    = iK.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iNa_nA   = iNa.map      (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iNaP_nA  = iNaP.map     (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        gK_uS    = gK.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gNa_uS   = gNa.map      (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gNaP_uS  = gNaP.map     (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        nGate    = nGate.map    (function (n) {return [n[0] / 1e-3,  n[1]       ];});
+        mGate    = mGate.map    (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        hGate    = hGate.map    (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        mNaPGate = mNaPGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        hNaPGate = hNaPGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        iStim_nA = iStim.map    (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
 
         // free resources from old plots
         while (plotHandles.length > 0) {
@@ -183,7 +201,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlot', [iLeak_nA, iK_nA, iNa_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('currentPlot', [iLeak_nA, iK_nA, iNa_nA, iNaP_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -193,6 +211,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>leak</sub>', color: 'black'},
                     {label: 'I<sub>K</sub>',  color: 'red'},
                     {label: 'I<sub>Na</sub>',   color: 'blue'},
+                    {label: 'I<sub>NaP</sub>',   color: 'green'},
                 ],
         })));
         graphJqplot.bindDataCapture('#currentPlot', currentDataTable, 'Current', 'Time');
@@ -205,7 +224,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('conductancePlot', [gK_uS, gNa_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('conductancePlot', [gK_uS, gNa_uS, gNaP_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -214,6 +233,7 @@ window.addEventListener('load', function () {
                 series: [
                     {label: 'g<sub>K</sub>',  color: 'red'},
                     {label: 'g<sub>Na</sub>', color: 'blue'},
+                    {label: 'g<sub>NaP</sub>', color: 'green'},
                 ],
         })));
         graphJqplot.bindDataCapture('#conductancePlot', conductanceDataTable, 'Conductance', 'Time');
@@ -226,7 +246,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('gatePlot', [nGate, mGate, hGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('gatePlot', [nGate, mGate, hGate, mNaPGate, hNaPGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -240,6 +260,8 @@ window.addEventListener('load', function () {
                     {label: 'n', color: 'red'},
                     {label: 'm', color: 'blue'},
                     {label: 'h', color: 'purple'},
+                    {label: 'm<sub>NaP</sub>', color: 'green'},
+                    {label: 'h<sub>NaP</sub>', color: 'lime'},
                 ],
         })));
         graphJqplot.bindDataCapture('#gatePlot', gateDataTable, 'Gate', 'Time');

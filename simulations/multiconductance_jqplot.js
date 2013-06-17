@@ -98,7 +98,7 @@ window.addEventListener('load', function () {
         });
         neuron.addCurrent(pulseTrain);
         
-        hhKCurrent = electrophys.multiConductance_hhKConductance(model, neuron, {
+        hhKCurrent = electrophys.multiConductance.hhKConductance(model, neuron, {
             g_K: params.g_hhK_uS * 1e-6,
             E_K: params.E_K_mV * 1e-3,
             V_rest: V_rest

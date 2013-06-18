@@ -30,6 +30,10 @@ window.addEventListener('load', function () {
             defaultVal: 0.7, minVal: 0, maxVal: 100},
         g_NaP_uS: { label: 'Persistent sodium conductance', units: '\u00B5S',
             defaultVal: 0.05, minVal: 0, maxVal: 100},
+        E_H_mV: { label: 'H-current Nernst potential', units: 'mV',
+            defaultVal: -38.8, minVal: -1000, maxVal: 1000},
+        g_H_uS: { label: 'H-current conductance', units: '\u00B5S',
+            defaultVal: 0.005, minVal: 0, maxVal: 100},
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
@@ -47,6 +51,7 @@ window.addEventListener('load', function () {
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
+        ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -81,15 +86,16 @@ window.addEventListener('load', function () {
     function runSimulation() {
         var model, neuron, pulseTrain,
             V_rest = -71.847e-3, 
-            KCurrent, NaCurrent, NaPCurrent, ACurrent,
+            KCurrent, NaCurrent, NaPCurrent,
+            ACurrent, HCurrent,
             result, v, iLeak, iStim,
-            iK, iNa, iNaP, iA,
-            gK, gNa, gNaP, gA,
+            iK, iNa, iNaP, iA, iH,
+            gK, gNa, gNaP, gA, gH,
             v_mV, iLeak_nA, params, iStim_nA,
-            iK_nA, iNa_nA, iNaP_nA, iA_nA,
-            gK_uS, gNa_uS, gNaP_uS, gA_uS,
+            iK_nA, iNa_nA, iNaP_nA, iA_nA, iH_nA,
+            gK_uS, gNa_uS, gNaP_uS, gA_uS, gH_uS,
             nGate, mGate, hGate, mNaPGate, hNaPGate,
-            mAGate, hAGate,
+            mAGate, hAGate, mHGate,
             plotPanel, plot;
         
         // create the passive membrane
@@ -135,6 +141,12 @@ window.addEventListener('load', function () {
             V_rest: V_rest
         });
         
+        HCurrent = electrophys.multiConductance.HConductance(model, neuron, {
+            g_H: params.g_H_uS * 1e-6,
+            E_H: params.E_H_mV * 1e-3,
+            V_rest: V_rest
+        });
+        
 
         // simulate it
         result = model.integrate({
@@ -149,10 +161,12 @@ window.addEventListener('load', function () {
         iNa      = result.mapOrderedPairs(NaCurrent.current);
         iNaP     = result.mapOrderedPairs(NaPCurrent.current);
         iA       = result.mapOrderedPairs(ACurrent.current);
+        iH       = result.mapOrderedPairs(HCurrent.current);
         gK       = result.mapOrderedPairs(KCurrent.g);
         gNa      = result.mapOrderedPairs(NaCurrent.g);
         gNaP     = result.mapOrderedPairs(NaPCurrent.g);
         gA       = result.mapOrderedPairs(ACurrent.g);
+        gH       = result.mapOrderedPairs(HCurrent.g);
         nGate    = result.mapOrderedPairs(KCurrent.n);
         mGate    = result.mapOrderedPairs(NaCurrent.m);
         hGate    = result.mapOrderedPairs(NaCurrent.h);
@@ -160,6 +174,7 @@ window.addEventListener('load', function () {
         hNaPGate = result.mapOrderedPairs(NaPCurrent.h);
         mAGate   = result.mapOrderedPairs(ACurrent.m);
         hAGate   = result.mapOrderedPairs(ACurrent.h);
+        mHGate   = result.mapOrderedPairs(HCurrent.m);
         iStim    = result.mapOrderedPairs(pulseTrain);
 
         // convert to the right units
@@ -170,10 +185,12 @@ window.addEventListener('load', function () {
         iNa_nA   = iNa.map      (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         iNaP_nA  = iNaP.map     (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         iA_nA    = iA.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iH_nA    = iH.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         gK_uS    = gK.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gNa_uS   = gNa.map      (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gNaP_uS  = gNaP.map     (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gA_uS    = gA.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gH_uS    = gH.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         nGate    = nGate.map    (function (n) {return [n[0] / 1e-3,  n[1]       ];});
         mGate    = mGate.map    (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         hGate    = hGate.map    (function (h) {return [h[0] / 1e-3,  h[1]       ];});
@@ -181,6 +198,7 @@ window.addEventListener('load', function () {
         hNaPGate = hNaPGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
         mAGate   = mAGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         hAGate   = hAGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        mHGate   = mHGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         iStim_nA = iStim.map    (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
 
         // free resources from old plots
@@ -218,7 +236,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlot', [iLeak_nA, iK_nA, iNa_nA, iNaP_nA, iA_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('currentPlot', [iLeak_nA, iK_nA, iNa_nA, iNaP_nA, iA_nA, iH_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -230,6 +248,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>Na</sub>',   color: 'blue'},
                     {label: 'I<sub>NaP</sub>',  color: 'green'},
                     {label: 'I<sub>A</sub>',    color: 'orange'},
+                    {label: 'I<sub>H</sub>',    color: 'gray'},
                 ],
         })));
         graphJqplot.bindDataCapture('#currentPlot', currentDataTable, 'Current', 'Time');
@@ -242,7 +261,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('conductancePlot', [gK_uS, gNa_uS, gNaP_uS, gA_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('conductancePlot', [gK_uS, gNa_uS, gNaP_uS, gA_uS, gH_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -253,6 +272,7 @@ window.addEventListener('load', function () {
                     {label: 'g<sub>Na</sub>',  color: 'blue'},
                     {label: 'g<sub>NaP</sub>', color: 'green'},
                     {label: 'g<sub>A</sub>',   color: 'orange'},
+                    {label: 'g<sub>H</sub>',   color: 'gray'},
                 ],
         })));
         graphJqplot.bindDataCapture('#conductancePlot', conductanceDataTable, 'Conductance', 'Time');
@@ -265,7 +285,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('gatePlot', [nGate, mGate, hGate, mNaPGate, hNaPGate, mAGate, hAGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('gatePlot', [nGate, mGate, hGate, mNaPGate, hNaPGate, mAGate, hAGate, mHGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -283,6 +303,7 @@ window.addEventListener('load', function () {
                     {label: 'h<sub>NaP</sub>', color: 'lime'},
                     {label: 'm<sub>A</sub>',   color: 'orange'},
                     {label: 'h<sub>A</sub>',   color: 'yellow'},
+                    {label: 'm<sub>H</sub>',   color: 'gray'},
                 ],
         })));
         graphJqplot.bindDataCapture('#gatePlot', gateDataTable, 'Gate', 'Time');

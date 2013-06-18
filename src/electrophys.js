@@ -460,6 +460,69 @@ electrophys.multiConductance.NaPConductance = function (model, neuron, options) 
 };
 
 
+// Based on
+// Purvis LK, Butera RJ. (2005). Ionic Current Model of
+// a Hypoglossal Motorneuron. J Neurophysiol 93: 723-733.
+electrophys.multiConductance.AConductance = function (model, neuron, options) {
+    "use strict";
+
+    var g_A = options.g_A, 
+        E_K = options.E_K,
+
+        m_inf_theta = options.m_inf_theta || -27e-3,
+        m_inf_sigma = options.m_inf_sigma || -16e-3,
+        tau_m_A = options.tau_m_A || 1e-3,
+        tau_m_B = options.tau_m_B || 0.37e-3,
+        tau_m_theta1 = options.tau_m_theta1 || -40e-3,
+        tau_m_sigma1 = options.tau_m_sigma1 || 5e-3,
+        tau_m_theta2 = options.tau_m_theta2 || -74e-3,
+        tau_m_sigma2 = options.tau_m_sigma2 || -7.5e-3,
+
+        h_inf_theta = options.h_inf_theta || -80e-3,
+        h_inf_sigma = options.h_inf_sigma || 11e-3,
+        tau_h = options.tau_h || 20e-3,
+
+        V_rest = (options.V_rest === undefined ? -65e-3 : options.V_rest),
+        im = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, m_inf_theta, m_inf_sigma)),
+        ih = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, h_inf_theta, h_inf_sigma));
+
+    function drift(result, state, t) {
+        
+        var v = neuron.V(state, t);
+        
+        result[im] = (electrophys.multiConductance.x_infinity(v, m_inf_theta, m_inf_sigma) - state[im]) /
+            electrophys.multiConductance.tau_x(v, tau_m_A, tau_m_B, tau_m_theta1, tau_m_sigma1, tau_m_theta2, tau_m_sigma2);
+        result[ih] = (electrophys.multiConductance.x_infinity(v, h_inf_theta, h_inf_sigma) - state[ih]) /
+            tau_h;
+    }
+    model.registerDrift(drift);
+
+    function g(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return g(state, t[i]);});
+        } else {
+            return g_A * state[im] * state[ih];
+        }
+    }
+
+    function current(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            return g(state, t) * (E_K - neuron.V(state, t));
+        }
+    }
+    neuron.addCurrent(current);
+
+    return {
+        m: function (state, t) { return state[im]; },
+        h: function (state, t) { return state[ih]; },
+        g: g,
+        current: current
+    };
+};
+
+
 electrophys.gapJunction = function (neuron1, neuron2, options) {
     "use strict";
     var g = options.g;

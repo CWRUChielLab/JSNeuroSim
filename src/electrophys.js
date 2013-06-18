@@ -523,6 +523,61 @@ electrophys.multiConductance.AConductance = function (model, neuron, options) {
 };
 
 
+// Based on
+// Purvis LK, Butera RJ. (2005). Ionic Current Model of
+// a Hypoglossal Motorneuron. J Neurophysiol 93: 723-733.
+electrophys.multiConductance.HConductance = function (model, neuron, options) {
+    "use strict";
+
+    var g_H = options.g_H, 
+        E_H = options.E_H,
+
+        m_inf_theta = options.m_inf_theta || -79.8e-3,
+        m_inf_sigma = options.m_inf_sigma || 5.3e-3,
+        tau_m_A = options.tau_m_A || 475e-3,
+        tau_m_B = options.tau_m_B || 50e-3,
+        tau_m_theta1 = options.tau_m_theta1 || -70e-3,
+        tau_m_sigma1 = options.tau_m_sigma1 || 11e-3,
+        tau_m_theta2 = options.tau_m_theta2 || -70e-3,
+        tau_m_sigma2 = options.tau_m_sigma2 || -11e-3,
+
+        V_rest = (options.V_rest === undefined ? -65e-3 : options.V_rest),
+        im = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, m_inf_theta, m_inf_sigma));
+
+    function drift(result, state, t) {
+        
+        var v = neuron.V(state, t);
+        
+        result[im] = (electrophys.multiConductance.x_infinity(v, m_inf_theta, m_inf_sigma) - state[im]) /
+            electrophys.multiConductance.tau_x(v, tau_m_A, tau_m_B, tau_m_theta1, tau_m_sigma1, tau_m_theta2, tau_m_sigma2);
+    }
+    model.registerDrift(drift);
+
+    function g(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return g(state, t[i]);});
+        } else {
+            return g_H * state[im];
+        }
+    }
+
+    function current(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            return g(state, t) * (E_H - neuron.V(state, t));
+        }
+    }
+    neuron.addCurrent(current);
+
+    return {
+        m: function (state, t) { return state[im]; },
+        g: g,
+        current: current
+    };
+};
+
+
 electrophys.gapJunction = function (neuron1, neuron2, options) {
     "use strict";
     var g = options.g;

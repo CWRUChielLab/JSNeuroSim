@@ -10,6 +10,7 @@ window.addEventListener('load', function () {
         stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPandADataTable, conductanceNaPandADataTable, gateNaPandADataTable,
         currentSagDataTable, conductanceSagDataTable, gateSagDataTable,
+        currentCaDataTable, conductanceCaDataTable, gateCaDataTable,
         tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
@@ -36,6 +37,10 @@ window.addEventListener('load', function () {
             defaultVal: -38.8, minVal: -1000, maxVal: 1000},
         g_H_uS: { label: 'H-current conductance', units: '\u00B5S',
             defaultVal: 0.005, minVal: 0, maxVal: 100},
+        E_Ca_mV: { label: 'Calcium Nernst potential', units: 'mV',
+            defaultVal: 40, minVal: -1000, maxVal: 1000},
+        g_T_uS: { label: 'T-current conductance', units: '\u00B5S',
+            defaultVal: 0.1, minVal: 0, maxVal: 100},
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
@@ -54,6 +59,7 @@ window.addEventListener('load', function () {
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
         ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
+        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -108,20 +114,32 @@ window.addEventListener('load', function () {
     gateSagDataTable.className = 'datatable';
     dataPanel.appendChild(gateSagDataTable);
 
+    currentCaDataTable = document.createElement('table');
+    currentCaDataTable.className = 'datatable';
+    dataPanel.appendChild(currentCaDataTable);
+
+    conductanceCaDataTable = document.createElement('table');
+    conductanceCaDataTable.className = 'datatable';
+    dataPanel.appendChild(conductanceCaDataTable);
+
+    gateCaDataTable = document.createElement('table');
+    gateCaDataTable.className = 'datatable';
+    dataPanel.appendChild(gateCaDataTable);
+
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, neuron, pulseTrain,
             V_rest = -71.847e-3, 
             KCurrent, NaCurrent, NaPCurrent,
-            ACurrent, HCurrent,
+            ACurrent, HCurrent, TCurrent,
             result, v, iLeak, iStim,
-            iK, iNa, iNaP, iA, iH,
-            gK, gNa, gNaP, gA, gH,
+            iK, iNa, iNaP, iA, iH, iT,
+            gK, gNa, gNaP, gA, gH, gT,
             v_mV, iLeak_nA, params, iStim_nA,
-            iK_nA, iNa_nA, iNaP_nA, iA_nA, iH_nA,
-            gK_uS, gNa_uS, gNaP_uS, gA_uS, gH_uS,
+            iK_nA, iNa_nA, iNaP_nA, iA_nA, iH_nA, iT_nA,
+            gK_uS, gNa_uS, gNaP_uS, gA_uS, gH_uS, gT_uS,
             nGate, mGate, hGate, mNaPGate, hNaPGate,
-            mAGate, hAGate, mHGate,
+            mAGate, hAGate, mHGate, mTGate, hTGate,
             plotPanel, plot, title;
         
         // create the passive membrane
@@ -173,6 +191,12 @@ window.addEventListener('load', function () {
             V_rest: V_rest
         });
         
+        TCurrent = electrophys.multiConductance.TConductance(model, neuron, {
+            g_T: params.g_T_uS * 1e-6,
+            E_Ca: params.E_Ca_mV * 1e-3,
+            V_rest: V_rest
+        });
+        
 
         // simulate it
         result = model.integrate({
@@ -188,11 +212,13 @@ window.addEventListener('load', function () {
         iNaP     = result.mapOrderedPairs(NaPCurrent.current);
         iA       = result.mapOrderedPairs(ACurrent.current);
         iH       = result.mapOrderedPairs(HCurrent.current);
+        iT       = result.mapOrderedPairs(TCurrent.current);
         gK       = result.mapOrderedPairs(KCurrent.g);
         gNa      = result.mapOrderedPairs(NaCurrent.g);
         gNaP     = result.mapOrderedPairs(NaPCurrent.g);
         gA       = result.mapOrderedPairs(ACurrent.g);
         gH       = result.mapOrderedPairs(HCurrent.g);
+        gT       = result.mapOrderedPairs(TCurrent.g);
         nGate    = result.mapOrderedPairs(KCurrent.n);
         mGate    = result.mapOrderedPairs(NaCurrent.m);
         hGate    = result.mapOrderedPairs(NaCurrent.h);
@@ -201,6 +227,8 @@ window.addEventListener('load', function () {
         mAGate   = result.mapOrderedPairs(ACurrent.m);
         hAGate   = result.mapOrderedPairs(ACurrent.h);
         mHGate   = result.mapOrderedPairs(HCurrent.m);
+        mTGate   = result.mapOrderedPairs(TCurrent.m);
+        hTGate   = result.mapOrderedPairs(TCurrent.h);
         iStim    = result.mapOrderedPairs(pulseTrain);
 
         // convert to the right units
@@ -212,11 +240,13 @@ window.addEventListener('load', function () {
         iNaP_nA  = iNaP.map     (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         iA_nA    = iA.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         iH_nA    = iH.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iT_nA    = iT.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         gK_uS    = gK.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gNa_uS   = gNa.map      (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gNaP_uS  = gNaP.map     (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gA_uS    = gA.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gH_uS    = gH.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gT_uS    = gT.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         nGate    = nGate.map    (function (n) {return [n[0] / 1e-3,  n[1]       ];});
         mGate    = mGate.map    (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         hGate    = hGate.map    (function (h) {return [h[0] / 1e-3,  h[1]       ];});
@@ -225,6 +255,8 @@ window.addEventListener('load', function () {
         mAGate   = mAGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         hAGate   = hAGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
         mHGate   = mHGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        mTGate   = mTGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        hTGate   = hTGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
         iStim_nA = iStim.map    (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
 
         // free resources from old plots
@@ -515,6 +547,81 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#gatePlotSag', gateSagDataTable, 'Sag Gate', 'Time');
         graphJqplot.bindCursorTooltip('#gatePlotSag', 'Time', 'ms', '');
+
+        //*****************
+        // CALCIUM
+        //*****************
+
+        // Section title
+        title = document.createElement('h4');
+        title.innerHTML = 'Calcium Currents, Conductances, and Gates';
+        title.className = 'simplotheading';
+        plotPanel.appendChild(title);
+
+        // Currents
+        plot = document.createElement('div');
+        plot.id = 'currentPlotCa';
+        plot.style.width = '425px';
+        plot.style.height = '200px';
+        plotPanel.appendChild(plot);
+        plotHandles.push(
+            $.jqplot('currentPlotCa', [iT_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                legend: {show: true},
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Current (nA)'},
+                },
+                series: [
+                    {label: 'I<sub>T</sub>',    color: 'magenta'},
+                ],
+        })));
+        graphJqplot.bindDataCapture('#currentPlotCa', currentCaDataTable, 'Ca Current', 'Time');
+        graphJqplot.bindCursorTooltip('#currentPlotCa', 'Time', 'ms', 'nA');
+
+        // Conductances
+        plot = document.createElement('div');
+        plot.id = 'conductancePlotCa';
+        plot.style.width = '425px';
+        plot.style.height = '200px';
+        plotPanel.appendChild(plot);
+        plotHandles.push(
+            $.jqplot('conductancePlotCa', [gT_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                legend: {show: true},
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Conductance (\u00B5S)'},
+                },
+                series: [
+                    {label: 'g<sub>T</sub>',   color: 'magenta'},
+                ],
+        })));
+        graphJqplot.bindDataCapture('#conductancePlotCa', conductanceCaDataTable, 'Ca Conductance', 'Time');
+        graphJqplot.bindCursorTooltip('#conductancePlotCa', 'Time', 'ms', '\u00B5S');
+
+        // Gates
+        plot = document.createElement('div');
+        plot.id = 'gatePlotCa';
+        plot.style.width = '425px';
+        plot.style.height = '200px';
+        plotPanel.appendChild(plot);
+        plotHandles.push(
+            $.jqplot('gatePlotCa', [mTGate, hTGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                legend: {show: true},
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {
+                        label:'Gate',
+                        min: 0, max: 1,
+                        numberTicks: 6,
+                    }
+                },
+                series: [
+                    {label: 'm<sub>T</sub>',   color: 'magenta'},
+                    {label: 'h<sub>T</sub>',   color: 'chartreuse'},
+                ],
+        })));
+        graphJqplot.bindDataCapture('#gatePlotCa', gateCaDataTable, 'Ca Gate', 'Time');
+        graphJqplot.bindCursorTooltip('#gatePlotCa', 'Time', 'ms', '');
     }
 
     
@@ -558,6 +665,15 @@ window.addEventListener('load', function () {
 
         gateSagDataTable.innerHTML = '';
         gateSagDataTable.style.display = 'none';
+
+        currentCaDataTable.innerHTML = '';
+        currentCaDataTable.style.display = 'none';
+
+        conductanceCaDataTable.innerHTML = '';
+        conductanceCaDataTable.style.display = 'none';
+
+        gateCaDataTable.innerHTML = '';
+        gateCaDataTable.style.display = 'none';
     }
 
 

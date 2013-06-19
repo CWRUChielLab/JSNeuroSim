@@ -672,9 +672,9 @@ electrophys.multiConductance.NConductance = function (model, neuron, options) {
         var v = neuron.V(state, t);
         
         result[im] = (electrophys.multiConductance.x_infinity(v, m_inf_theta, m_inf_sigma) - state[im]) /
-            tau_m
+            tau_m;
         result[ih] = (electrophys.multiConductance.x_infinity(v, h_inf_theta, h_inf_sigma) - state[ih]) /
-            tau_h
+            tau_h;
     }
     model.registerDrift(drift);
 
@@ -698,6 +698,56 @@ electrophys.multiConductance.NConductance = function (model, neuron, options) {
     return {
         m: function (state, t) { return state[im]; },
         h: function (state, t) { return state[ih]; },
+        g: g,
+        current: current
+    };
+};
+
+
+// Based on
+// Purvis LK, Butera RJ. (2005). Ionic Current Model of
+// a Hypoglossal Motorneuron. J Neurophysiol 93: 723-733.
+electrophys.multiConductance.PConductance = function (model, neuron, options) {
+    "use strict";
+
+    var g_P = options.g_P, 
+        E_Ca = options.E_Ca,
+
+        m_inf_theta = options.m_inf_theta || -17e-3,
+        m_inf_sigma = options.m_inf_sigma || -3e-3,
+        tau_m = options.tau_m || 10e-3,
+
+        V_rest = (options.V_rest === undefined ? -65e-3 : options.V_rest),
+        im = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, m_inf_theta, m_inf_sigma));
+
+    function drift(result, state, t) {
+        
+        var v = neuron.V(state, t);
+        
+        result[im] = (electrophys.multiConductance.x_infinity(v, m_inf_theta, m_inf_sigma) - state[im]) /
+            tau_m;
+    }
+    model.registerDrift(drift);
+
+    function g(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return g(state, t[i]);});
+        } else {
+            return g_P * state[im];
+        }
+    }
+
+    function current(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            return g(state, t) * (E_Ca - neuron.V(state, t));
+        }
+    }
+    neuron.addCurrent(current);
+
+    return {
+        m: function (state, t) { return state[im]; },
         g: g,
         current: current
     };

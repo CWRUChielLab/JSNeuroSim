@@ -43,6 +43,8 @@ window.addEventListener('load', function () {
             defaultVal: 0.1, minVal: 0, maxVal: 100},
         g_N_uS: { label: 'N-current conductance', units: '\u00B5S',
             defaultVal: 0.05, minVal: 0, maxVal: 100},
+        g_P_uS: { label: 'P-current conductance', units: '\u00B5S',
+            defaultVal: 0.05, minVal: 0, maxVal: 100},
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
@@ -61,7 +63,7 @@ window.addEventListener('load', function () {
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
         ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
-        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS']],
+        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -135,15 +137,15 @@ window.addEventListener('load', function () {
             KCurrent, NaCurrent,
             NaPCurrent, ACurrent,
             HCurrent,
-            TCurrent, NCurrent,
+            TCurrent, NCurrent, PCurrent,
             result, v, iLeak, iStim,
-            iK, iNa, iNaP, iA, iH, iT, iN,
-            gK, gNa, gNaP, gA, gH, gT, gN,
+            iK, iNa, iNaP, iA, iH, iT, iN, iP,
+            gK, gNa, gNaP, gA, gH, gT, gN, gP,
             v_mV, iLeak_nA, params, iStim_nA,
-            iK_nA, iNa_nA, iNaP_nA, iA_nA, iH_nA, iT_nA, iN_nA,
-            gK_uS, gNa_uS, gNaP_uS, gA_uS, gH_uS, gT_uS, gN_uS,
+            iK_nA, iNa_nA, iNaP_nA, iA_nA, iH_nA, iT_nA, iN_nA, iP_nA,
+            gK_uS, gNa_uS, gNaP_uS, gA_uS, gH_uS, gT_uS, gN_uS, gP_uS,
             nGate, mGate, hGate, mNaPGate, hNaPGate,
-            mAGate, hAGate, mHGate, mTGate, hTGate, mNGate, hNGate,
+            mAGate, hAGate, mHGate, mTGate, hTGate, mNGate, hNGate, mPGate,
             plotPanel, plot, title;
         
         // create the passive membrane
@@ -207,6 +209,12 @@ window.addEventListener('load', function () {
             V_rest: V_rest
         });
         
+        PCurrent = electrophys.multiConductance.PConductance(model, neuron, {
+            g_P: params.g_P_uS * 1e-6,
+            E_Ca: params.E_Ca_mV * 1e-3,
+            V_rest: V_rest
+        });
+        
 
         // simulate it
         result = model.integrate({
@@ -224,6 +232,7 @@ window.addEventListener('load', function () {
         iH       = result.mapOrderedPairs(HCurrent.current);
         iT       = result.mapOrderedPairs(TCurrent.current);
         iN       = result.mapOrderedPairs(NCurrent.current);
+        iP       = result.mapOrderedPairs(PCurrent.current);
         gK       = result.mapOrderedPairs(KCurrent.g);
         gNa      = result.mapOrderedPairs(NaCurrent.g);
         gNaP     = result.mapOrderedPairs(NaPCurrent.g);
@@ -231,6 +240,7 @@ window.addEventListener('load', function () {
         gH       = result.mapOrderedPairs(HCurrent.g);
         gT       = result.mapOrderedPairs(TCurrent.g);
         gN       = result.mapOrderedPairs(NCurrent.g);
+        gP       = result.mapOrderedPairs(PCurrent.g);
         nGate    = result.mapOrderedPairs(KCurrent.n);
         mGate    = result.mapOrderedPairs(NaCurrent.m);
         hGate    = result.mapOrderedPairs(NaCurrent.h);
@@ -243,6 +253,7 @@ window.addEventListener('load', function () {
         hTGate   = result.mapOrderedPairs(TCurrent.h);
         mNGate   = result.mapOrderedPairs(NCurrent.m);
         hNGate   = result.mapOrderedPairs(NCurrent.h);
+        mPGate   = result.mapOrderedPairs(PCurrent.m);
         iStim    = result.mapOrderedPairs(pulseTrain);
 
         // convert to the right units
@@ -256,6 +267,7 @@ window.addEventListener('load', function () {
         iH_nA    = iH.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         iT_nA    = iT.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         iN_nA    = iN.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iP_nA    = iP.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         gK_uS    = gK.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gNa_uS   = gNa.map      (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gNaP_uS  = gNaP.map     (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
@@ -263,6 +275,7 @@ window.addEventListener('load', function () {
         gH_uS    = gH.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gT_uS    = gT.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         gN_uS    = gN.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gP_uS    = gP.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
         nGate    = nGate.map    (function (n) {return [n[0] / 1e-3,  n[1]       ];});
         mGate    = mGate.map    (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         hGate    = hGate.map    (function (h) {return [h[0] / 1e-3,  h[1]       ];});
@@ -275,6 +288,7 @@ window.addEventListener('load', function () {
         hTGate   = hTGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
         mNGate   = mNGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         hNGate   = hNGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        mPGate   = mPGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
         iStim_nA = iStim.map    (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
 
         // free resources from old plots
@@ -583,7 +597,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('currentPlotCa', [iT_nA, iN_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('currentPlotCa', [iT_nA, iN_nA, iP_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -592,6 +606,7 @@ window.addEventListener('load', function () {
                 series: [
                     {label: 'I<sub>T</sub>', color: 'magenta'},
                     {label: 'I<sub>N</sub>', color: 'cyan'},
+                    {label: 'I<sub>P</sub>', color: 'darkblue'},
                 ],
         })));
         graphJqplot.bindDataCapture('#currentPlotCa', currentCaDataTable, 'Ca Currents', 'Time');
@@ -604,7 +619,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('conductancePlotCa', [gT_uS, gN_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('conductancePlotCa', [gT_uS, gN_uS, gP_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -613,6 +628,7 @@ window.addEventListener('load', function () {
                 series: [
                     {label: 'g<sub>T</sub>', color: 'magenta'},
                     {label: 'g<sub>N</sub>', color: 'cyan'},
+                    {label: 'g<sub>P</sub>', color: 'darkblue'},
                 ],
         })));
         graphJqplot.bindDataCapture('#conductancePlotCa', conductanceCaDataTable, 'Ca Conductances', 'Time');
@@ -625,7 +641,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('gatePlotCa', [mTGate, hTGate, mNGate, hNGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('gatePlotCa', [mTGate, hTGate, mNGate, hNGate, mPGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
@@ -640,6 +656,7 @@ window.addEventListener('load', function () {
                     {label: 'h<sub>T</sub>',   color: 'chartreuse'},
                     {label: 'm<sub>N</sub>',   color: 'cyan'},
                     {label: 'h<sub>N</sub>',   color: 'brown'},
+                    {label: 'm<sub>P</sub>',   color: 'darkblue'},
                 ],
         })));
         graphJqplot.bindDataCapture('#gatePlotCa', gateCaDataTable, 'Ca Gates', 'Time');

@@ -646,6 +646,64 @@ electrophys.multiConductance.TConductance = function (model, neuron, options) {
 };
 
 
+// Based on
+// Purvis LK, Butera RJ. (2005). Ionic Current Model of
+// a Hypoglossal Motorneuron. J Neurophysiol 93: 723-733.
+electrophys.multiConductance.NConductance = function (model, neuron, options) {
+    "use strict";
+
+    var g_N = options.g_N, 
+        E_Ca = options.E_Ca,
+
+        m_inf_theta = options.m_inf_theta || -30e-3,
+        m_inf_sigma = options.m_inf_sigma || -6e-3,
+        tau_m = options.tau_m || 5e-3,
+
+        h_inf_theta = options.h_inf_theta || -70e-3,
+        h_inf_sigma = options.h_inf_sigma || 3e-3,
+        tau_h = options.tau_h || 25e-3,
+
+        V_rest = (options.V_rest === undefined ? -65e-3 : options.V_rest),
+        im = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, m_inf_theta, m_inf_sigma)),
+        ih = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, h_inf_theta, h_inf_sigma));
+
+    function drift(result, state, t) {
+        
+        var v = neuron.V(state, t);
+        
+        result[im] = (electrophys.multiConductance.x_infinity(v, m_inf_theta, m_inf_sigma) - state[im]) /
+            tau_m
+        result[ih] = (electrophys.multiConductance.x_infinity(v, h_inf_theta, h_inf_sigma) - state[ih]) /
+            tau_h
+    }
+    model.registerDrift(drift);
+
+    function g(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return g(state, t[i]);});
+        } else {
+            return g_N * state[im] * state[ih];
+        }
+    }
+
+    function current(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            return g(state, t) * (E_Ca - neuron.V(state, t));
+        }
+    }
+    neuron.addCurrent(current);
+
+    return {
+        m: function (state, t) { return state[im]; },
+        h: function (state, t) { return state[ih]; },
+        g: g,
+        current: current
+    };
+};
+
+
 electrophys.gapJunction = function (neuron1, neuron2, options) {
     "use strict";
     var g = options.g;

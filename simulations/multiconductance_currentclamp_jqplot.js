@@ -345,7 +345,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>Na</sub>',   color: 'blue'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#currentPlotHH', currentHHDataTable, 'Hodgkin-Huxley Current', 'Time');
+        graphJqplot.bindDataCapture('#currentPlotHH', currentHHDataTable, 'Hodgkin-Huxley Currents', 'Time');
         graphJqplot.bindCursorTooltip('#currentPlotHH', 'Time', 'ms', 'nA');
 
         // Conductances
@@ -366,7 +366,7 @@ window.addEventListener('load', function () {
                     {label: 'g<sub>Na</sub>',  color: 'blue'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#conductancePlotHH', conductanceHHDataTable, 'Hodgkin-Huxley Conductance', 'Time');
+        graphJqplot.bindDataCapture('#conductancePlotHH', conductanceHHDataTable, 'Hodgkin-Huxley Conductances', 'Time');
         graphJqplot.bindCursorTooltip('#conductancePlotHH', 'Time', 'ms', '\u00B5S');
 
         // Gates
@@ -392,7 +392,7 @@ window.addEventListener('load', function () {
                     {label: 'h', color: 'purple'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#gatePlotHH', gateHHDataTable, 'Hodgkin-Huxley Gate', 'Time');
+        graphJqplot.bindDataCapture('#gatePlotHH', gateHHDataTable, 'Hodgkin-Huxley Gates', 'Time');
         graphJqplot.bindCursorTooltip('#gatePlotHH', 'Time', 'ms', '');
 
         //*****************
@@ -423,7 +423,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>A</sub>',    color: 'orange'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#currentPlotNaPandA', currentNaPandADataTable, 'Persistent Na and Fast K Current', 'Time');
+        graphJqplot.bindDataCapture('#currentPlotNaPandA', currentNaPandADataTable, 'Persistent Na and Fast K Currents', 'Time');
         graphJqplot.bindCursorTooltip('#currentPlotNaPandA', 'Time', 'ms', 'nA');
 
         // Conductances
@@ -444,7 +444,7 @@ window.addEventListener('load', function () {
                     {label: 'g<sub>A</sub>',   color: 'orange'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#conductancePlotNaPandA', conductanceNaPandADataTable, 'Persistent Na and Fast K Conductance', 'Time');
+        graphJqplot.bindDataCapture('#conductancePlotNaPandA', conductanceNaPandADataTable, 'Persistent Na and Fast K Conductances', 'Time');
         graphJqplot.bindCursorTooltip('#conductancePlotNaPandA', 'Time', 'ms', '\u00B5S');
 
         // Gates
@@ -471,7 +471,7 @@ window.addEventListener('load', function () {
                     {label: 'h<sub>A</sub>',   color: 'yellow'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#gatePlotNaPandA', gateNaPandADataTable, 'Persistent Na and Fast K Gate', 'Time');
+        graphJqplot.bindDataCapture('#gatePlotNaPandA', gateNaPandADataTable, 'Persistent Na and Fast K Gates', 'Time');
         graphJqplot.bindCursorTooltip('#gatePlotNaPandA', 'Time', 'ms', '');
 
         //*****************
@@ -575,7 +575,7 @@ window.addEventListener('load', function () {
                     {label: 'I<sub>T</sub>',    color: 'magenta'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#currentPlotCa', currentCaDataTable, 'Ca Current', 'Time');
+        graphJqplot.bindDataCapture('#currentPlotCa', currentCaDataTable, 'Ca Currents', 'Time');
         graphJqplot.bindCursorTooltip('#currentPlotCa', 'Time', 'ms', 'nA');
 
         // Conductances
@@ -595,7 +595,7 @@ window.addEventListener('load', function () {
                     {label: 'g<sub>T</sub>',   color: 'magenta'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#conductancePlotCa', conductanceCaDataTable, 'Ca Conductance', 'Time');
+        graphJqplot.bindDataCapture('#conductancePlotCa', conductanceCaDataTable, 'Ca Conductances', 'Time');
         graphJqplot.bindCursorTooltip('#conductancePlotCa', 'Time', 'ms', '\u00B5S');
 
         // Gates
@@ -620,7 +620,7 @@ window.addEventListener('load', function () {
                     {label: 'h<sub>T</sub>',   color: 'chartreuse'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#gatePlotCa', gateCaDataTable, 'Ca Gate', 'Time');
+        graphJqplot.bindDataCapture('#gatePlotCa', gateCaDataTable, 'Ca Gates', 'Time');
         graphJqplot.bindCursorTooltip('#gatePlotCa', 'Time', 'ms', '');
     }
 

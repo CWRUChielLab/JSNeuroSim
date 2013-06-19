@@ -578,6 +578,74 @@ electrophys.multiConductance.HConductance = function (model, neuron, options) {
 };
 
 
+// Based on
+// Purvis LK, Butera RJ. (2005). Ionic Current Model of
+// a Hypoglossal Motorneuron. J Neurophysiol 93: 723-733.
+electrophys.multiConductance.TConductance = function (model, neuron, options) {
+    "use strict";
+
+    var g_T = options.g_T, 
+        E_Ca = options.E_Ca,
+
+        m_inf_theta = options.m_inf_theta || -38e-3,
+        m_inf_sigma = options.m_inf_sigma || -5e-3,
+        tau_m_A = options.tau_m_A || 5e-3,
+        tau_m_B = options.tau_m_B || 2e-3,
+        tau_m_theta1 = options.tau_m_theta1 || -28e-3,
+        tau_m_sigma1 = options.tau_m_sigma1 || 25e-3,
+        tau_m_theta2 = options.tau_m_theta2 || -28e-3,
+        tau_m_sigma2 = options.tau_m_sigma2 || -70e-3,
+
+        h_inf_theta = options.h_inf_theta || -70.1e-3,
+        h_inf_sigma = options.h_inf_sigma || 7e-3,
+        tau_h_A = options.tau_h_A || 20e-3,
+        tau_h_B = options.tau_h_B || 1e-3,
+        tau_h_theta1 = options.tau_h_theta1 || -70e-3,
+        tau_h_sigma1 = options.tau_h_sigma1 || 65e-3,
+        tau_h_theta2 = options.tau_h_theta2 || -70e-3,
+        tau_h_sigma2 = options.tau_h_sigma2 || -65e-3,
+
+        V_rest = (options.V_rest === undefined ? -65e-3 : options.V_rest),
+        im = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, m_inf_theta, m_inf_sigma)),
+        ih = model.addStateVar(electrophys.multiConductance.x_infinity(V_rest, h_inf_theta, h_inf_sigma));
+
+    function drift(result, state, t) {
+        
+        var v = neuron.V(state, t);
+        
+        result[im] = (electrophys.multiConductance.x_infinity(v, m_inf_theta, m_inf_sigma) - state[im]) /
+            electrophys.multiConductance.tau_x(v, tau_m_A, tau_m_B, tau_m_theta1, tau_m_sigma1, tau_m_theta2, tau_m_sigma2);
+        result[ih] = (electrophys.multiConductance.x_infinity(v, h_inf_theta, h_inf_sigma) - state[ih]) /
+            electrophys.multiConductance.tau_x(v, tau_h_A, tau_h_B, tau_h_theta1, tau_h_sigma1, tau_h_theta2, tau_h_sigma2);
+    }
+    model.registerDrift(drift);
+
+    function g(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return g(state, t[i]);});
+        } else {
+            return g_T * state[im] * state[ih];
+        }
+    }
+
+    function current(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            return g(state, t) * (E_Ca - neuron.V(state, t));
+        }
+    }
+    neuron.addCurrent(current);
+
+    return {
+        m: function (state, t) { return state[im]; },
+        h: function (state, t) { return state[ih]; },
+        g: g,
+        current: current
+    };
+};
+
+
 electrophys.gapJunction = function (neuron1, neuron2, options) {
     "use strict";
     var g = options.g;

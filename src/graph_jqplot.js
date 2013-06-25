@@ -125,14 +125,14 @@ graphJqplot.bindDataCapture = function (plotID, dataTable, dataTableTitle, xTitl
             // add the x-coordinate value to the table
             nearest_point_x = plot.data[0][nearest_point][0];
             cell = document.createElement('td');
-            cell.innerHTML = Math.round(nearest_point_x*100)/100;
+            cell.innerHTML = Math.round(nearest_point_x*1000)/1000;
             row.appendChild(cell);
 
             // add each series value to the table
             for (i=0; i<plot.data.length; i++) {
                 nearest_point_y = plot.data[i][nearest_point][1];
                 cell = document.createElement('td');
-                cell.innerHTML = Math.round(nearest_point_y*100)/100;
+                cell.innerHTML = Math.round(nearest_point_y*1000)/1000;
                 row.appendChild(cell);
             }
         }
@@ -157,12 +157,12 @@ graphJqplot.bindCursorTooltip = function (plotID, xTitle, xUnits, yUnits) {
 
             // add the x-coordinate value to the tooltip
             nearest_point_x = plot.data[0][nearest_point][0];
-            tooltipHTML = tooltipHTML + xTitle + ": " + Math.round(nearest_point_x*100)/100 + " " + xUnits;
+            tooltipHTML = tooltipHTML + xTitle + ": " + Math.round(nearest_point_x*1000)/1000 + " " + xUnits;
 
             // add each series value to the tooltip
             for (i=0; i<plot.data.length; i++) {
                 nearest_point_y = plot.data[i][nearest_point][1];
-                tooltipHTML = tooltipHTML + "<br/>" + plot.series[i].label + ": " + Math.round(nearest_point_y*100)/100 + " " + yUnits;
+                tooltipHTML = tooltipHTML + "<br/>" + plot.series[i].label + ": " + Math.round(nearest_point_y*1000)/1000 + " " + yUnits;
             }
 
             // display the tooltip

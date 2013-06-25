@@ -10,7 +10,7 @@ window.addEventListener('load', function () {
         stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPandADataTable, conductanceNaPandADataTable, gateNaPandADataTable,
         currentSagDataTable, conductanceSagDataTable, gateSagDataTable,
-        currentCaDataTable, conductanceCaDataTable, gateCaDataTable,
+        currentCaDataTable, conductanceCaDataTable, gateCaDataTable, CaConcDataTable,
         tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
@@ -130,14 +130,20 @@ window.addEventListener('load', function () {
     gateCaDataTable.className = 'datatable';
     dataPanel.appendChild(gateCaDataTable);
 
+    CaConcDataTable = document.createElement('table');
+    CaConcDataTable.className = 'datatable';
+    dataPanel.appendChild(CaConcDataTable);
+
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, neuron, pulseTrain,
             V_rest = -71.847e-3, 
+            Ca_init = 0.0604,
             KCurrent, NaCurrent,
             NaPCurrent, ACurrent,
             HCurrent,
             TCurrent, NCurrent, PCurrent,
+            CaConc,
             result, v, iLeak, iStim,
             iK, iNa, iNaP, iA, iH, iT, iN, iP,
             gK, gNa, gNaP, gA, gH, gT, gN, gP,
@@ -155,7 +161,10 @@ window.addEventListener('load', function () {
             C: params.C_nF * 1e-9, 
             g_leak: params.g_leak_uS * 1e-6, 
             E_leak: params.E_leak_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: V_rest,
+            Ca_init: Ca_init,
+            K1: 5e8, // uM C^-1
+            K2: 4e1  // ms^-1
         });
 
         pulseTrain = electrophys.pulseTrain({
@@ -224,6 +233,7 @@ window.addEventListener('load', function () {
         });
         
         v        = result.mapOrderedPairs(neuron.V);
+        CaConc   = result.mapOrderedPairs(neuron.Ca);
         iLeak    = result.mapOrderedPairs(neuron.leak.current);
         iK       = result.mapOrderedPairs(KCurrent.current);
         iNa      = result.mapOrderedPairs(NaCurrent.current);
@@ -259,6 +269,7 @@ window.addEventListener('load', function () {
         // convert to the right units
         // each ordered pair consists of a time and another variable
         v_mV     = v.map        (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
+        CaConc   = CaConc.map   (function (c) {return [c[0] / 1e-3,  c[1]       ];});
         iLeak_nA = iLeak.map    (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         iK_nA    = iK.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         iNa_nA   = iNa.map      (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
@@ -661,6 +672,26 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#gatePlotCa', gateCaDataTable, 'Ca Gates', 'Time');
         graphJqplot.bindCursorTooltip('#gatePlotCa', 'Time', 'ms', '');
+
+        // Ca Concentration
+        plot = document.createElement('div');
+        plot.id = 'CaConcPlot';
+        plot.style.width = '425px';
+        plot.style.height = '200px';
+        plotPanel.appendChild(plot);
+        plotHandles.push(
+            $.jqplot('CaConcPlot', [CaConc], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                legend: {show: true},
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Calcium Concentration (\u00B5M)'},
+                },
+                series: [
+                    {label: '[Ca]', color: 'black'},
+                ],
+        })));
+        graphJqplot.bindDataCapture('#CaConcPlot', CaConcDataTable, 'Ca Concentration', 'Time');
+        graphJqplot.bindCursorTooltip('#CaConcPlot', 'Time', 'ms', '\u00B5M');
     }
 
     
@@ -713,6 +744,9 @@ window.addEventListener('load', function () {
 
         gateCaDataTable.innerHTML = '';
         gateCaDataTable.style.display = 'none';
+
+        CaConcDataTable.innerHTML = '';
+        CaConcDataTable.style.display = 'none';
     }
 
 

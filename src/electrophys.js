@@ -790,30 +790,49 @@ electrophys.passiveMembrane = function (model, options) {
         g_leak = options.g_leak,
         E_leak = options.E_leak,
         V_rest = (options.V_rest === undefined ? E_leak : options.V_rest),
+        Ca_init = options.Ca_init || 0,
+        K1 = options.K1 || 0,
+        K2 = options.K2 || 0,
         currents = [],
+        CaCurrents = [],
         leak,
         iV = model.addStateVar(V_rest),
+        iCa = model.addStateVar(Ca_init),
         that = {};
     
-    function addCurrent(I) {
+    function addCurrent(I, isCaCurrent) {
+        var isCaCurrent = isCaCurrent || false;
+
         currents.push(I);
+        if (isCaCurrent) {
+            CaCurrents.push(I);
+        }
     }
 
     function drift(result, state, t) {
         var i = currents.length,
-            I_inj = 0;
+            I_inj = 0,
+            I_Ca = 0;
         
         while (i > 0) {
             i -= 1;
             I_inj += currents[i](state, t);
         }
 
+        i = CaCurrents.length;
+        while (i > 0) {
+            i -= 1;
+            I_Ca += CaCurrents[i](state, t);
+        }
+
         result[iV] = I_inj / C;
+        result[iCa] = K1 * I_Ca - K2 * state[iCa];
     }
 
     model.registerDrift(drift);
     
     that.V = function (state, t) { return state[iV]; };
+    that.Ca = function (state, t) { return state[iCa]; };
     that.addCurrent = addCurrent;
     that.leak = electrophys.passiveConductance(that, 
         { E_rev: E_leak, g: g_leak });

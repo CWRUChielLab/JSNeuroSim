@@ -754,6 +754,54 @@ electrophys.multiConductance.PConductance = function (model, neuron, options) {
 };
 
 
+// Based on
+// Purvis LK, Butera RJ. (2005). Ionic Current Model of
+// a Hypoglossal Motorneuron. J Neurophysiol 93: 723-733.
+electrophys.multiConductance.SKConductance = function (model, neuron, options) {
+    "use strict";
+
+    var g_SK = options.g_SK, 
+        E_K = options.E_K,
+
+        z_inf_theta = options.z_inf_theta || 0.003,
+        tau_z = options.tau_z || 1e-3,
+
+        Ca_init = options.Ca_init || 0,
+        iz = model.addStateVar(1 / (1 + (z_inf_theta / Ca_init) * (z_inf_theta / Ca_init)));
+
+    function drift(result, state, t) {
+        
+        var v = neuron.V(state, t);
+        
+        result[iz] = ((1 / (1 + (z_inf_theta / neuron.Ca(state, t)) * (z_inf_theta / neuron.Ca(state, t)))) - state[iz]) / tau_z;
+    }
+    model.registerDrift(drift);
+
+    function g(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return g(state, t[i]);});
+        } else {
+            return g_SK * state[iz] * state[iz];
+        }
+    }
+
+    function current(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            return g(state, t) * (E_K - neuron.V(state, t));
+        }
+    }
+    neuron.addCurrent(current);
+
+    return {
+        z: function (state, t) { return state[iz]; },
+        g: g,
+        current: current
+    };
+};
+
+
 electrophys.gapJunction = function (neuron1, neuron2, options) {
     "use strict";
     var g = options.g;

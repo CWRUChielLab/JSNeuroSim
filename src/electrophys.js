@@ -635,7 +635,7 @@ electrophys.multiConductance.TConductance = function (model, neuron, options) {
             return g(state, t) * (E_Ca - neuron.V(state, t));
         }
     }
-    neuron.addCurrent(current);
+    neuron.addCurrent(current, true);
 
     return {
         m: function (state, t) { return state[im]; },
@@ -693,7 +693,7 @@ electrophys.multiConductance.NConductance = function (model, neuron, options) {
             return g(state, t) * (E_Ca - neuron.V(state, t));
         }
     }
-    neuron.addCurrent(current);
+    neuron.addCurrent(current, true);
 
     return {
         m: function (state, t) { return state[im]; },
@@ -744,7 +744,7 @@ electrophys.multiConductance.PConductance = function (model, neuron, options) {
             return g(state, t) * (E_Ca - neuron.V(state, t));
         }
     }
-    neuron.addCurrent(current);
+    neuron.addCurrent(current, true);
 
     return {
         m: function (state, t) { return state[im]; },

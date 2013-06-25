@@ -92,7 +92,7 @@ window.addEventListener('load', function () {
             num_pulses: params.numPulses
         });
 
-        neuron = electrophys.clampedMembrane({
+        neuron = electrophys.clampedMembrane(model, {
             V_clamp: pulseTrain
         });
 

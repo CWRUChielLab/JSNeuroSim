@@ -889,13 +889,41 @@ electrophys.passiveMembrane = function (model, options) {
 };
 
 
-electrophys.clampedMembrane = function (options) {
+electrophys.clampedMembrane = function (model, options) {
     "use strict";
     var V_clamp = options.V_clamp,
+        Ca_init = options.Ca_init || 0,
+        CaCurrents = [],
+        K1 = options.K1 || 0,
+        K2 = options.K2 || 0,
+        iCa = model.addStateVar(Ca_init),
         that = {};
 
+    function addCurrent(I, isCaCurrent) {
+        var isCaCurrent = isCaCurrent || false;
+
+        if (isCaCurrent) {
+            CaCurrents.push(I);
+        }
+    }
+
+    function drift(result, state, t) {
+        var i = CaCurrents.length,
+            I_Ca = 0;
+        
+        while (i > 0) {
+            i -= 1;
+            I_Ca += CaCurrents[i](state, t);
+        }
+
+        result[iCa] = K1 * I_Ca - K2 * state[iCa];
+    }
+
+    model.registerDrift(drift);
+
     that.V = V_clamp;
-    that.addCurrent = function () {};
+    that.Ca = function (state, t) { return state[iCa]; };
+    that.addCurrent = addCurrent;
 
     return that;
 };

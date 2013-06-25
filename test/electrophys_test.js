@@ -381,8 +381,9 @@ TestCase("PassiveMembrane", {
 
 TestCase("ClampedMembrane", {
     setUp: function () {
+        this.model = componentModel.componentModel();
         this.clamp = function (state, t) { return state[0] +t; };
-        this.clampedMembrane = electrophys.clampedMembrane(
+        this.clampedMembrane = electrophys.clampedMembrane(model,
             { V_clamp : this.clamp });
     },
 

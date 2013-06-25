@@ -153,7 +153,6 @@ window.addEventListener('load', function () {
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, neuron, pulseTrain,
-            V_rest = -70e-3, 
             Ca_init = 0.0604,
             leakCurrent, KCurrent, NaCurrent,
             NaPCurrent, ACurrent, HCurrent, TCurrent, NCurrent, PCurrent, SKCurrent,
@@ -197,49 +196,49 @@ window.addEventListener('load', function () {
         KCurrent = electrophys.multiConductance.KConductance(model, neuron, {
             g_K: params.g_K_uS * 1e-6,
             E_K: params.E_K_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: params.holdingPotential_mV * 1e-3
         });
         
         NaCurrent = electrophys.multiConductance.NaConductance(model, neuron, {
             g_Na: params.g_Na_uS * 1e-6,
             E_Na: params.E_Na_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: params.holdingPotential_mV * 1e-3
         });
         
         NaPCurrent = electrophys.multiConductance.NaPConductance(model, neuron, {
             g_NaP: params.g_NaP_uS * 1e-6,
             E_Na: params.E_Na_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: params.holdingPotential_mV * 1e-3
         });
         
         ACurrent = electrophys.multiConductance.AConductance(model, neuron, {
             g_A: params.g_A_uS * 1e-6,
             E_K: params.E_K_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: params.holdingPotential_mV * 1e-3
         });
         
         HCurrent = electrophys.multiConductance.HConductance(model, neuron, {
             g_H: params.g_H_uS * 1e-6,
             E_H: params.E_H_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: params.holdingPotential_mV * 1e-3
         });
         
         TCurrent = electrophys.multiConductance.TConductance(model, neuron, {
             g_T: params.g_T_uS * 1e-6,
             E_Ca: params.E_Ca_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: params.holdingPotential_mV * 1e-3
         });
         
         NCurrent = electrophys.multiConductance.NConductance(model, neuron, {
             g_N: params.g_N_uS * 1e-6,
             E_Ca: params.E_Ca_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: params.holdingPotential_mV * 1e-3
         });
         
         PCurrent = electrophys.multiConductance.PConductance(model, neuron, {
             g_P: params.g_P_uS * 1e-6,
             E_Ca: params.E_Ca_mV * 1e-3,
-            V_rest: V_rest
+            V_rest: params.holdingPotential_mV * 1e-3
         });
         
         SKCurrent = electrophys.multiConductance.SKConductance(model, neuron, {

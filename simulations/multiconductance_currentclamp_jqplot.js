@@ -6,7 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, dataPanel, voltageDataTable,
+    var paramsFullSim, paramsSimpleSim, layoutFullSim, layoutSimpleSim,
+        controlsPanel, controls, dataPanel, voltageDataTable,
         stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPandADataTable, conductanceNaPandADataTable, gateNaPandADataTable,
         currentSagDataTable, conductanceSagDataTable, gateSagDataTable,
@@ -15,7 +16,7 @@ window.addEventListener('load', function () {
         tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
-    params = { 
+    paramsFullSim = { 
         C_nF: { label: 'Membrane capacitance', units: 'nF',
             defaultVal: 0.04, minVal: 0.01, maxVal: 100 }, 
         g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
@@ -61,7 +62,17 @@ window.addEventListener('load', function () {
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 }
     };
-    layout = [
+
+    paramsSimpleSim = JSON.parse(JSON.stringify(paramsFullSim));
+    paramsSimpleSim.g_A_uS.defaultVal = 0;
+    paramsSimpleSim.g_SK_uS.defaultVal = 0;
+    paramsSimpleSim.g_NaP_uS.defaultVal = 0;
+    paramsSimpleSim.g_H_uS.defaultVal = 0;
+    paramsSimpleSim.g_T_uS.defaultVal = 0;
+    paramsSimpleSim.g_N_uS.defaultVal = 0;
+    paramsSimpleSim.g_P_uS.defaultVal = 0;
+
+    layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
@@ -71,6 +82,16 @@ window.addEventListener('load', function () {
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
+
+    layoutSimpleSim = [
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
+        ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
+            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+        ['Simulation Settings', ['totalDuration_ms']]
+    ];
+
     controlsPanel = document.getElementById('MultiConductanceControls');
 
     // prepare tables for displaying captured data points
@@ -342,6 +363,7 @@ window.addEventListener('load', function () {
 
         // Section title
         title = document.createElement('h4');
+        title.id = 'titleVoltageandStim'
         title.innerHTML = 'Membrane Potential and Stimulation Current';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
@@ -390,6 +412,7 @@ window.addEventListener('load', function () {
 
         // Section title
         title = document.createElement('h4');
+        title.id = 'titleHH'
         title.innerHTML = 'Hodgkin-Huxley Currents, Conductances, and Gates';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
@@ -469,6 +492,7 @@ window.addEventListener('load', function () {
 
         // Section title
         title = document.createElement('h4');
+        title.id = 'titleNaPandA'
         title.innerHTML = 'Persistent Sodium and Fast Potassium Currents, Conductances, and Gates';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
@@ -548,6 +572,7 @@ window.addEventListener('load', function () {
 
         // Section title
         title = document.createElement('h4');
+        title.id = 'titleSag'
         title.innerHTML = 'Sag Current, Conductance, and Gate';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
@@ -622,6 +647,7 @@ window.addEventListener('load', function () {
 
         // Section title
         title = document.createElement('h4');
+        title.id = 'titleCa'
         title.innerHTML = 'Calcium Currents, Conductances, and Gates';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
@@ -704,6 +730,7 @@ window.addEventListener('load', function () {
 
         // Section title
         title = document.createElement('h4');
+        title.id = 'titleSK'
         title.innerHTML = 'Calcium-Dependent Potassium Current, Conductance, and Gate';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
@@ -794,10 +821,41 @@ window.addEventListener('load', function () {
     }
 
     
-    function reset() {
+    function reset(params, layout) {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
+    }
+
+
+    function resetToFullSim() {
+        reset(paramsFullSim, layoutFullSim);
+    }
+
+
+    function resetToSimpleSim() {
+        reset(paramsSimpleSim, layoutSimpleSim);
+
+        document.getElementById('titleNaPandA').style.display = 'none';
+        document.getElementById('currentPlotNaPandA').style.display = 'none';
+        document.getElementById('conductancePlotNaPandA').style.display = 'none';
+        document.getElementById('gatePlotNaPandA').style.display = 'none';
+
+        document.getElementById('titleSag').style.display = 'none';
+        document.getElementById('currentPlotSag').style.display = 'none';
+        document.getElementById('conductancePlotSag').style.display = 'none';
+        document.getElementById('gatePlotSag').style.display = 'none';
+
+        document.getElementById('titleCa').style.display = 'none';
+        document.getElementById('currentPlotCa').style.display = 'none';
+        document.getElementById('conductancePlotCa').style.display = 'none';
+        document.getElementById('gatePlotCa').style.display = 'none';
+
+        document.getElementById('titleSK').style.display = 'none';
+        document.getElementById('CaConcPlot').style.display = 'none';
+        document.getElementById('currentPlotSK').style.display = 'none';
+        document.getElementById('conductancePlotSK').style.display = 'none';
+        document.getElementById('gatePlotSK').style.display = 'none';
     }
 
 
@@ -860,8 +918,10 @@ window.addEventListener('load', function () {
 
     (document.getElementById('MultiConductanceRunButton')
         .addEventListener('click', runSimulation, false));
-    (document.getElementById('MultiConductanceResetButton')
-        .addEventListener('click', reset, false));
+    (document.getElementById('MultiConductanceFullSimButton')
+        .addEventListener('click', resetToFullSim, false));
+    (document.getElementById('MultiConductanceSimpleSimButton')
+        .addEventListener('click', resetToSimpleSim, false));
     (document.getElementById('MultiConductanceClearDataButton')
         .addEventListener('click', clearDataTables, false));
     
@@ -876,7 +936,7 @@ window.addEventListener('load', function () {
             }
         }, true);
 
-    reset();
+    resetToFullSim();
     clearDataTables();
 
 }, false);

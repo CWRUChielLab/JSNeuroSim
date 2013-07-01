@@ -6,8 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var paramsFullSim, paramsSimpleSim, paramsNaPSim, paramsASim, paramsHSim, paramsCaSim,
-        layoutFullSim, layoutSimpleSim, layoutNaPSim, layoutASim, layoutHSim, layoutCaSim,
+    var paramsFullSim, paramsSimpleSim, paramsNaPSim, paramsASim, paramsHSim, paramsCaSim, paramsSKSim,
+        layoutFullSim, layoutSimpleSim, layoutNaPSim, layoutASim, layoutHSim, layoutCaSim, layoutSKSim,
         controlsPanel, controls, dataPanel, voltageDataTable,
         stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPDataTable, conductanceNaPDataTable, gateNaPDataTable,
@@ -104,6 +104,11 @@ window.addEventListener('load', function () {
     paramsCaSim.g_NaP_uS.defaultVal = 0;
     paramsCaSim.g_H_uS.defaultVal = 0;
 
+    paramsSKSim = JSON.parse(JSON.stringify(paramsFullSim));
+    paramsSKSim.g_A_uS.defaultVal = 0;
+    paramsSKSim.g_NaP_uS.defaultVal = 0;
+    paramsSKSim.g_H_uS.defaultVal = 0;
+
     layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
@@ -155,6 +160,16 @@ window.addEventListener('load', function () {
     layoutCaSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
+        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
+        ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
+            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+        ['Simulation Settings', ['totalDuration_ms']]
+    ];
+
+    layoutSKSim = [
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_SK_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
         ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
@@ -812,7 +827,7 @@ window.addEventListener('load', function () {
         // CALCIUM CURRENTS
         //*****************
 
-        if (plotFlag == 'full' || plotFlag == 'Ca') {
+        if (plotFlag == 'full' || plotFlag == 'Ca' || plotFlag == 'SK') {
 
             // Section title
             title = document.createElement('h4');
@@ -898,7 +913,7 @@ window.addEventListener('load', function () {
         // CA CONCENTRATION
         //*****************
 
-        if (plotFlag == 'full' || plotFlag == 'Ca') {
+        if (plotFlag == 'full' || plotFlag == 'Ca' || plotFlag == 'SK') {
 
             // Section title
             title = document.createElement('h4');
@@ -933,7 +948,7 @@ window.addEventListener('load', function () {
         // CA DEPENDENT K
         //*****************
 
-        if (plotFlag == 'full') {
+        if (plotFlag == 'full' || plotFlag == 'SK') {
 
             // Section title
             title = document.createElement('h4');
@@ -1064,6 +1079,14 @@ window.addEventListener('load', function () {
     }
 
 
+    function resetToSKSim() {
+        plotFlag = 'SK';
+        V_rest = -59.02145e-3;
+        Ca_init = 0.00032;
+        reset(paramsSKSim, layoutSKSim);
+    }
+
+
     function clearDataTables() {
         voltageDataTable.innerHTML = '';
         voltageDataTable.style.display = 'none';
@@ -1144,6 +1167,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToHSim, false));
     (document.getElementById('MultiConductanceCaSimButton')
         .addEventListener('click', resetToCaSim, false));
+    (document.getElementById('MultiConductanceSKSimButton')
+        .addEventListener('click', resetToSKSim, false));
     (document.getElementById('MultiConductanceClearDataButton')
         .addEventListener('click', clearDataTables, false));
     

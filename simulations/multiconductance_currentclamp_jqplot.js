@@ -6,15 +6,15 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var paramsFullSim, paramsSimpleSim, layoutFullSim, layoutSimpleSim,
+    var paramsFullSim, paramsSimpleSim, paramsNaPSim,
+        layoutFullSim, layoutSimpleSim, layoutNaPSim,
         controlsPanel, controls, dataPanel, voltageDataTable,
         stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPandADataTable, conductanceNaPandADataTable, gateNaPandADataTable,
         currentSagDataTable, conductanceSagDataTable, gateSagDataTable,
         currentCaDataTable, conductanceCaDataTable, gateCaDataTable, CaConcDataTable,
         currentSKDataTable, conductanceSKDataTable, gateSKDataTable,
-        tMax = 1000e-3, plotHandles = []; 
-
+        tMax = 1000e-3, V_rest, Ca_init, plotHandles = [], plotFlag = ''; 
     // set up the controls for the passive membrane simulation
     paramsFullSim = { 
         C_nF: { label: 'Membrane capacitance', units: 'nF',
@@ -54,7 +54,7 @@ window.addEventListener('load', function () {
         pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms: { label: 'Pulse duration', units: 'ms', 
-            defaultVal: 4, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 1, minVal: 0, maxVal: tMax / 1e-3 },
         isi_ms: { label: 'Inter-stimulus interval', units: 'ms', 
             defaultVal: 1, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses: { label: 'Number of pulses', units: '', 
@@ -72,6 +72,15 @@ window.addEventListener('load', function () {
     paramsSimpleSim.g_N_uS.defaultVal = 0;
     paramsSimpleSim.g_P_uS.defaultVal = 0;
 
+    paramsNaPSim = JSON.parse(JSON.stringify(paramsFullSim));
+    paramsNaPSim.g_A_uS.defaultVal = 0;
+    paramsNaPSim.g_SK_uS.defaultVal = 0;
+    paramsNaPSim.g_H_uS.defaultVal = 0;
+    paramsNaPSim.g_T_uS.defaultVal = 0;
+    paramsNaPSim.g_N_uS.defaultVal = 0;
+    paramsNaPSim.g_P_uS.defaultVal = 0;
+    paramsNaPSim.numPulses.defaultVal = 0;
+
     layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
@@ -87,6 +96,15 @@ window.addEventListener('load', function () {
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
+        ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
+            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+        ['Simulation Settings', ['totalDuration_ms']]
+    ];
+
+    layoutNaPSim = [
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -173,8 +191,6 @@ window.addEventListener('load', function () {
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, neuron, pulseTrain,
-            V_rest = -71.847e-3, 
-            Ca_init = 0.0604,
             KCurrent, NaCurrent,
             NaPCurrent, ACurrent, HCurrent, TCurrent, NCurrent, PCurrent, SKCurrent,
             CaConc,
@@ -361,463 +377,496 @@ window.addEventListener('load', function () {
         // VOLTAGE AND STIMULATION CURRENT
         //*****************
 
-        // Section title
-        title = document.createElement('h4');
-        title.id = 'titleVoltageandStim'
-        title.innerHTML = 'Membrane Potential and Stimulation Current';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
+        if (true) {
 
-        // Voltage
-        plot = document.createElement('div');
-        plot.id = 'voltagePlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Membrane Potential (mV)'},
-                },
-                series: [
-                    {label: 'V<sub>m</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, 'Membrane Potential', 'Time');
-        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
+            // Section title
+            title = document.createElement('h4');
+            title.innerHTML = 'Membrane Potential and Stimulation Current';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
 
-        // Stimulus current
-        plot = document.createElement('div');
-        plot.id = 'stimPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Stimulation Current (nA)'},
-                },
-                series: [
-                    {label: 'I<sub>stim</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#stimPlot', stimDataTable, 'Stimulation Current', 'Time');
-        graphJqplot.bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
+            // Voltage
+            plot = document.createElement('div');
+            plot.id = 'voltagePlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('voltagePlot', [v_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
+                    },
+                    series: [
+                        {label: 'V<sub>m</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, 'Membrane Potential', 'Time');
+            graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
+
+            // Stimulus current
+            plot = document.createElement('div');
+            plot.id = 'stimPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('stimPlot', [iStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Stimulation Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>stim</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#stimPlot', stimDataTable, 'Stimulation Current', 'Time');
+            graphJqplot.bindCursorTooltip('#stimPlot', 'Time', 'ms', 'nA');
+
+        }
 
         //*****************
         // HODGKIN-HUXLEY
         //*****************
 
-        // Section title
-        title = document.createElement('h4');
-        title.id = 'titleHH'
-        title.innerHTML = 'Hodgkin-Huxley Currents, Conductances, and Gates';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
+        if (true) {
 
-        // Currents
-        plot = document.createElement('div');
-        plot.id = 'currentPlotHH';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('currentPlotHH', [iLeak_nA, iK_nA, iNa_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Current (nA)'},
-                },
-                series: [
-                    {label: 'I<sub>leak</sub>', color: 'black'},
-                    {label: 'I<sub>K</sub>',    color: 'red'},
-                    {label: 'I<sub>Na</sub>',   color: 'blue'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#currentPlotHH', currentHHDataTable, 'Hodgkin-Huxley Currents', 'Time');
-        graphJqplot.bindCursorTooltip('#currentPlotHH', 'Time', 'ms', 'nA');
+            // Section title
+            title = document.createElement('h4');
+            title.innerHTML = 'Hodgkin-Huxley Currents, Conductances, and Gates';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
 
-        // Conductances
-        plot = document.createElement('div');
-        plot.id = 'conductancePlotHH';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('conductancePlotHH', [gK_uS, gNa_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Conductance (\u00B5S)'},
-                },
-                series: [
-                    {label: 'g<sub>K</sub>',   color: 'red'},
-                    {label: 'g<sub>Na</sub>',  color: 'blue'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#conductancePlotHH', conductanceHHDataTable, 'Hodgkin-Huxley Conductances', 'Time');
-        graphJqplot.bindCursorTooltip('#conductancePlotHH', 'Time', 'ms', '\u00B5S');
+            // Currents
+            plot = document.createElement('div');
+            plot.id = 'currentPlotHH';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('currentPlotHH', [iLeak_nA, iK_nA, iNa_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>leak</sub>', color: 'black'},
+                        {label: 'I<sub>K</sub>',    color: 'red'},
+                        {label: 'I<sub>Na</sub>',   color: 'blue'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#currentPlotHH', currentHHDataTable, 'Hodgkin-Huxley Currents', 'Time');
+            graphJqplot.bindCursorTooltip('#currentPlotHH', 'Time', 'ms', 'nA');
 
-        // Gates
-        plot = document.createElement('div');
-        plot.id = 'gatePlotHH';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('gatePlotHH', [nGate, mGate, hGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {
-                        label:'Gate',
-                        min: 0, max: 1,
-                        numberTicks: 6,
-                    }
-                },
-                series: [
-                    {label: 'n', color: 'red'},
-                    {label: 'm', color: 'blue'},
-                    {label: 'h', color: 'purple'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#gatePlotHH', gateHHDataTable, 'Hodgkin-Huxley Gates', 'Time');
-        graphJqplot.bindCursorTooltip('#gatePlotHH', 'Time', 'ms', '');
+            // Conductances
+            plot = document.createElement('div');
+            plot.id = 'conductancePlotHH';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('conductancePlotHH', [gK_uS, gNa_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Conductance (\u00B5S)'},
+                    },
+                    series: [
+                        {label: 'g<sub>K</sub>',   color: 'red'},
+                        {label: 'g<sub>Na</sub>',  color: 'blue'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#conductancePlotHH', conductanceHHDataTable, 'Hodgkin-Huxley Conductances', 'Time');
+            graphJqplot.bindCursorTooltip('#conductancePlotHH', 'Time', 'ms', '\u00B5S');
+
+            // Gates
+            plot = document.createElement('div');
+            plot.id = 'gatePlotHH';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('gatePlotHH', [nGate, mGate, hGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {
+                            label:'Gate',
+                            min: 0, max: 1,
+                            numberTicks: 6,
+                        }
+                    },
+                    series: [
+                        {label: 'n', color: 'red'},
+                        {label: 'm', color: 'blue'},
+                        {label: 'h', color: 'purple'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#gatePlotHH', gateHHDataTable, 'Hodgkin-Huxley Gates', 'Time');
+            graphJqplot.bindCursorTooltip('#gatePlotHH', 'Time', 'ms', '');
+
+        }
 
         //*****************
         // PERSISTENT SODIUM AND FAST POTASSIUM
         //*****************
 
-        // Section title
-        title = document.createElement('h4');
-        title.id = 'titleNaPandA'
-        title.innerHTML = 'Persistent Sodium and Fast Potassium Currents, Conductances, and Gates';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
+        if (plotFlag == 'full' || plotFlag == 'NaP') {
 
-        // Currents
-        plot = document.createElement('div');
-        plot.id = 'currentPlotNaPandA';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('currentPlotNaPandA', [iNaP_nA, iA_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Current (nA)'},
-                },
-                series: [
-                    {label: 'I<sub>NaP</sub>',  color: 'green'},
-                    {label: 'I<sub>A</sub>',    color: 'orange'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#currentPlotNaPandA', currentNaPandADataTable, 'Persistent Na and Fast K Currents', 'Time');
-        graphJqplot.bindCursorTooltip('#currentPlotNaPandA', 'Time', 'ms', 'nA');
+            // Section title
+            title = document.createElement('h4');
+            title.innerHTML = 'Persistent Sodium and Fast Potassium Currents, Conductances, and Gates';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
 
-        // Conductances
-        plot = document.createElement('div');
-        plot.id = 'conductancePlotNaPandA';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('conductancePlotNaPandA', [gNaP_uS, gA_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Conductance (\u00B5S)'},
-                },
-                series: [
-                    {label: 'g<sub>NaP</sub>', color: 'green'},
-                    {label: 'g<sub>A</sub>',   color: 'orange'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#conductancePlotNaPandA', conductanceNaPandADataTable, 'Persistent Na and Fast K Conductances', 'Time');
-        graphJqplot.bindCursorTooltip('#conductancePlotNaPandA', 'Time', 'ms', '\u00B5S');
+            // Currents
+            plot = document.createElement('div');
+            plot.id = 'currentPlotNaPandA';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('currentPlotNaPandA', [iNaP_nA, iA_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>NaP</sub>',  color: 'green'},
+                        {label: 'I<sub>A</sub>',    color: 'orange'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#currentPlotNaPandA', currentNaPandADataTable, 'Persistent Na and Fast K Currents', 'Time');
+            graphJqplot.bindCursorTooltip('#currentPlotNaPandA', 'Time', 'ms', 'nA');
 
-        // Gates
-        plot = document.createElement('div');
-        plot.id = 'gatePlotNaPandA';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('gatePlotNaPandA', [mNaPGate, hNaPGate, mAGate, hAGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {
-                        label:'Gate',
-                        min: 0, max: 1,
-                        numberTicks: 6,
-                    }
-                },
-                series: [
-                    {label: 'm<sub>NaP</sub>', color: 'green'},
-                    {label: 'h<sub>NaP</sub>', color: 'lime'},
-                    {label: 'm<sub>A</sub>',   color: 'orange'},
-                    {label: 'h<sub>A</sub>',   color: 'yellow'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#gatePlotNaPandA', gateNaPandADataTable, 'Persistent Na and Fast K Gates', 'Time');
-        graphJqplot.bindCursorTooltip('#gatePlotNaPandA', 'Time', 'ms', '');
+            // Conductances
+            plot = document.createElement('div');
+            plot.id = 'conductancePlotNaPandA';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('conductancePlotNaPandA', [gNaP_uS, gA_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Conductance (\u00B5S)'},
+                    },
+                    series: [
+                        {label: 'g<sub>NaP</sub>', color: 'green'},
+                        {label: 'g<sub>A</sub>',   color: 'orange'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#conductancePlotNaPandA', conductanceNaPandADataTable, 'Persistent Na and Fast K Conductances', 'Time');
+            graphJqplot.bindCursorTooltip('#conductancePlotNaPandA', 'Time', 'ms', '\u00B5S');
+
+            // Gates
+            plot = document.createElement('div');
+            plot.id = 'gatePlotNaPandA';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('gatePlotNaPandA', [mNaPGate, hNaPGate, mAGate, hAGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {
+                            label:'Gate',
+                            min: 0, max: 1,
+                            numberTicks: 6,
+                        }
+                    },
+                    series: [
+                        {label: 'm<sub>NaP</sub>', color: 'green'},
+                        {label: 'h<sub>NaP</sub>', color: 'lime'},
+                        {label: 'm<sub>A</sub>',   color: 'orange'},
+                        {label: 'h<sub>A</sub>',   color: 'yellow'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#gatePlotNaPandA', gateNaPandADataTable, 'Persistent Na and Fast K Gates', 'Time');
+            graphJqplot.bindCursorTooltip('#gatePlotNaPandA', 'Time', 'ms', '');
+
+        }
 
         //*****************
         // SAG
         //*****************
 
-        // Section title
-        title = document.createElement('h4');
-        title.id = 'titleSag'
-        title.innerHTML = 'Sag Current, Conductance, and Gate';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
+        if (plotFlag == 'full') {
 
-        // Currents
-        plot = document.createElement('div');
-        plot.id = 'currentPlotSag';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('currentPlotSag', [iH_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Current (nA)'},
-                },
-                series: [
-                    {label: 'I<sub>H</sub>',    color: 'gray'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#currentPlotSag', currentSagDataTable, 'Sag Current', 'Time');
-        graphJqplot.bindCursorTooltip('#currentPlotSag', 'Time', 'ms', 'nA');
+            // Section title
+            title = document.createElement('h4');
+            title.innerHTML = 'Sag Current, Conductance, and Gate';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
 
-        // Conductances
-        plot = document.createElement('div');
-        plot.id = 'conductancePlotSag';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('conductancePlotSag', [gH_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Conductance (\u00B5S)'},
-                },
-                series: [
-                    {label: 'g<sub>H</sub>',   color: 'gray'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#conductancePlotSag', conductanceSagDataTable, 'Sag Conductance', 'Time');
-        graphJqplot.bindCursorTooltip('#conductancePlotSag', 'Time', 'ms', '\u00B5S');
+            // Currents
+            plot = document.createElement('div');
+            plot.id = 'currentPlotSag';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('currentPlotSag', [iH_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>H</sub>',    color: 'gray'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#currentPlotSag', currentSagDataTable, 'Sag Current', 'Time');
+            graphJqplot.bindCursorTooltip('#currentPlotSag', 'Time', 'ms', 'nA');
 
-        // Gates
-        plot = document.createElement('div');
-        plot.id = 'gatePlotSag';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('gatePlotSag', [mHGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {
-                        label:'Gate',
-                        min: 0, max: 1,
-                        numberTicks: 6,
-                    }
-                },
-                series: [
-                    {label: 'm<sub>H</sub>',   color: 'gray'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#gatePlotSag', gateSagDataTable, 'Sag Gate', 'Time');
-        graphJqplot.bindCursorTooltip('#gatePlotSag', 'Time', 'ms', '');
+            // Conductances
+            plot = document.createElement('div');
+            plot.id = 'conductancePlotSag';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('conductancePlotSag', [gH_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Conductance (\u00B5S)'},
+                    },
+                    series: [
+                        {label: 'g<sub>H</sub>',   color: 'gray'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#conductancePlotSag', conductanceSagDataTable, 'Sag Conductance', 'Time');
+            graphJqplot.bindCursorTooltip('#conductancePlotSag', 'Time', 'ms', '\u00B5S');
+
+            // Gates
+            plot = document.createElement('div');
+            plot.id = 'gatePlotSag';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('gatePlotSag', [mHGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {
+                            label:'Gate',
+                            min: 0, max: 1,
+                            numberTicks: 6,
+                        }
+                    },
+                    series: [
+                        {label: 'm<sub>H</sub>',   color: 'gray'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#gatePlotSag', gateSagDataTable, 'Sag Gate', 'Time');
+            graphJqplot.bindCursorTooltip('#gatePlotSag', 'Time', 'ms', '');
+
+        }
 
         //*****************
         // CALCIUM CURRENTS
         //*****************
 
-        // Section title
-        title = document.createElement('h4');
-        title.id = 'titleCa'
-        title.innerHTML = 'Calcium Currents, Conductances, and Gates';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
+        if (plotFlag == 'full') {
 
-        // Currents
-        plot = document.createElement('div');
-        plot.id = 'currentPlotCa';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('currentPlotCa', [iT_nA, iN_nA, iP_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Current (nA)'},
-                },
-                series: [
-                    {label: 'I<sub>T</sub>', color: 'magenta'},
-                    {label: 'I<sub>N</sub>', color: 'cyan'},
-                    {label: 'I<sub>P</sub>', color: 'darkblue'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#currentPlotCa', currentCaDataTable, 'Ca Currents', 'Time');
-        graphJqplot.bindCursorTooltip('#currentPlotCa', 'Time', 'ms', 'nA');
+            // Section title
+            title = document.createElement('h4');
+            title.innerHTML = 'Calcium Currents, Conductances, and Gates';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
 
-        // Conductances
-        plot = document.createElement('div');
-        plot.id = 'conductancePlotCa';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('conductancePlotCa', [gT_uS, gN_uS, gP_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Conductance (\u00B5S)'},
-                },
-                series: [
-                    {label: 'g<sub>T</sub>', color: 'magenta'},
-                    {label: 'g<sub>N</sub>', color: 'cyan'},
-                    {label: 'g<sub>P</sub>', color: 'darkblue'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#conductancePlotCa', conductanceCaDataTable, 'Ca Conductances', 'Time');
-        graphJqplot.bindCursorTooltip('#conductancePlotCa', 'Time', 'ms', '\u00B5S');
+            // Currents
+            plot = document.createElement('div');
+            plot.id = 'currentPlotCa';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('currentPlotCa', [iT_nA, iN_nA, iP_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>T</sub>', color: 'magenta'},
+                        {label: 'I<sub>N</sub>', color: 'cyan'},
+                        {label: 'I<sub>P</sub>', color: 'darkblue'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#currentPlotCa', currentCaDataTable, 'Ca Currents', 'Time');
+            graphJqplot.bindCursorTooltip('#currentPlotCa', 'Time', 'ms', 'nA');
 
-        // Gates
-        plot = document.createElement('div');
-        plot.id = 'gatePlotCa';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('gatePlotCa', [mTGate, hTGate, mNGate, hNGate, mPGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {
-                        label:'Gate',
-                        min: 0, max: 1,
-                        numberTicks: 6,
-                    }
-                },
-                series: [
-                    {label: 'm<sub>T</sub>',   color: 'magenta'},
-                    {label: 'h<sub>T</sub>',   color: 'chartreuse'},
-                    {label: 'm<sub>N</sub>',   color: 'cyan'},
-                    {label: 'h<sub>N</sub>',   color: 'brown'},
-                    {label: 'm<sub>P</sub>',   color: 'darkblue'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#gatePlotCa', gateCaDataTable, 'Ca Gates', 'Time');
-        graphJqplot.bindCursorTooltip('#gatePlotCa', 'Time', 'ms', '');
+            // Conductances
+            plot = document.createElement('div');
+            plot.id = 'conductancePlotCa';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('conductancePlotCa', [gT_uS, gN_uS, gP_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Conductance (\u00B5S)'},
+                    },
+                    series: [
+                        {label: 'g<sub>T</sub>', color: 'magenta'},
+                        {label: 'g<sub>N</sub>', color: 'cyan'},
+                        {label: 'g<sub>P</sub>', color: 'darkblue'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#conductancePlotCa', conductanceCaDataTable, 'Ca Conductances', 'Time');
+            graphJqplot.bindCursorTooltip('#conductancePlotCa', 'Time', 'ms', '\u00B5S');
+
+            // Gates
+            plot = document.createElement('div');
+            plot.id = 'gatePlotCa';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('gatePlotCa', [mTGate, hTGate, mNGate, hNGate, mPGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {
+                            label:'Gate',
+                            min: 0, max: 1,
+                            numberTicks: 6,
+                        }
+                    },
+                    series: [
+                        {label: 'm<sub>T</sub>',   color: 'magenta'},
+                        {label: 'h<sub>T</sub>',   color: 'chartreuse'},
+                        {label: 'm<sub>N</sub>',   color: 'cyan'},
+                        {label: 'h<sub>N</sub>',   color: 'brown'},
+                        {label: 'm<sub>P</sub>',   color: 'darkblue'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#gatePlotCa', gateCaDataTable, 'Ca Gates', 'Time');
+            graphJqplot.bindCursorTooltip('#gatePlotCa', 'Time', 'ms', '');
+
+        }
+
+        //*****************
+        // CA CONCENTRATION
+        //*****************
+
+        if (plotFlag == 'full') {
+
+            // Section title
+            title = document.createElement('h4');
+            title.innerHTML = 'Calcium Concentration';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+
+
+            // Ca Concentration
+            plot = document.createElement('div');
+            plot.id = 'CaConcPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('CaConcPlot', [CaConc], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Calcium Concentration (\u00B5M)'},
+                    },
+                    series: [
+                        {label: '[Ca]', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#CaConcPlot', CaConcDataTable, 'Ca Concentration', 'Time');
+            graphJqplot.bindCursorTooltip('#CaConcPlot', 'Time', 'ms', '\u00B5M');
+
+        }
 
         //*****************
         // CA DEPENDENT K
         //*****************
 
-        // Section title
-        title = document.createElement('h4');
-        title.id = 'titleSK'
-        title.innerHTML = 'Calcium-Dependent Potassium Current, Conductance, and Gate';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
+        if (plotFlag == 'full') {
 
-        // Ca Concentration
-        plot = document.createElement('div');
-        plot.id = 'CaConcPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('CaConcPlot', [CaConc], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Calcium Concentration (\u00B5M)'},
-                },
-                series: [
-                    {label: '[Ca]', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#CaConcPlot', CaConcDataTable, 'Ca Concentration', 'Time');
-        graphJqplot.bindCursorTooltip('#CaConcPlot', 'Time', 'ms', '\u00B5M');
+            // Section title
+            title = document.createElement('h4');
+            title.innerHTML = 'Calcium-Dependent Potassium Current, Conductance, and Gate';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
 
-        // Currents
-        plot = document.createElement('div');
-        plot.id = 'currentPlotSK';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('currentPlotSK', [iSK_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Current (nA)'},
-                },
-                series: [
-                    {label: 'I<sub>SK</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#currentPlotSK', currentSKDataTable, 'Calcium Dependent Potassium Current', 'Time');
-        graphJqplot.bindCursorTooltip('#currentPlotSK', 'Time', 'ms', 'nA');
+            // Currents
+            plot = document.createElement('div');
+            plot.id = 'currentPlotSK';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('currentPlotSK', [iSK_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>SK</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#currentPlotSK', currentSKDataTable, 'Calcium Dependent Potassium Current', 'Time');
+            graphJqplot.bindCursorTooltip('#currentPlotSK', 'Time', 'ms', 'nA');
 
-        // Conductances
-        plot = document.createElement('div');
-        plot.id = 'conductancePlotSK';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('conductancePlotSK', [gSK_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Conductance (\u00B5S)'},
-                },
-                series: [
-                    {label: 'g<sub>SK</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#conductancePlotSK', conductanceSKDataTable, 'Calcium Dependent Potassium Conductance', 'Time');
-        graphJqplot.bindCursorTooltip('#conductancePlotSK', 'Time', 'ms', '\u00B5S');
+            // Conductances
+            plot = document.createElement('div');
+            plot.id = 'conductancePlotSK';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('conductancePlotSK', [gSK_uS], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Conductance (\u00B5S)'},
+                    },
+                    series: [
+                        {label: 'g<sub>SK</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#conductancePlotSK', conductanceSKDataTable, 'Calcium Dependent Potassium Conductance', 'Time');
+            graphJqplot.bindCursorTooltip('#conductancePlotSK', 'Time', 'ms', '\u00B5S');
 
-        // Gates
-        plot = document.createElement('div');
-        plot.id = 'gatePlotSK';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('gatePlotSK', [zSKGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {
-                        label:'Gate',
-                        min: 0, max: 1,
-                        numberTicks: 6,
-                    }
-                },
-                series: [
-                    {label: 'z<sub>SK</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#gatePlotSK', gateSKDataTable, 'Calcium Dependent Potassium Gate', 'Time');
-        graphJqplot.bindCursorTooltip('#gatePlotSK', 'Time', 'ms', '');
+            // Gates
+            plot = document.createElement('div');
+            plot.id = 'gatePlotSK';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('gatePlotSK', [zSKGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    legend: {show: true},
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {
+                            label:'Gate',
+                            min: 0, max: 1,
+                            numberTicks: 6,
+                        }
+                    },
+                    series: [
+                        {label: 'z<sub>SK</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#gatePlotSK', gateSKDataTable, 'Calcium Dependent Potassium Gate', 'Time');
+            graphJqplot.bindCursorTooltip('#gatePlotSK', 'Time', 'ms', '');
+
+        }
     }
 
     
@@ -829,33 +878,26 @@ window.addEventListener('load', function () {
 
 
     function resetToFullSim() {
+        plotFlag = 'full';
+        V_rest = -71.63003e-3;
+        Ca_init = 0.00014;
         reset(paramsFullSim, layoutFullSim);
     }
 
 
     function resetToSimpleSim() {
+        plotFlag = 'simple';
+        V_rest = -60.83611e-3;
+        Ca_init = 0.00001;
         reset(paramsSimpleSim, layoutSimpleSim);
+    }
 
-        document.getElementById('titleNaPandA').style.display = 'none';
-        document.getElementById('currentPlotNaPandA').style.display = 'none';
-        document.getElementById('conductancePlotNaPandA').style.display = 'none';
-        document.getElementById('gatePlotNaPandA').style.display = 'none';
 
-        document.getElementById('titleSag').style.display = 'none';
-        document.getElementById('currentPlotSag').style.display = 'none';
-        document.getElementById('conductancePlotSag').style.display = 'none';
-        document.getElementById('gatePlotSag').style.display = 'none';
-
-        document.getElementById('titleCa').style.display = 'none';
-        document.getElementById('currentPlotCa').style.display = 'none';
-        document.getElementById('conductancePlotCa').style.display = 'none';
-        document.getElementById('gatePlotCa').style.display = 'none';
-
-        document.getElementById('titleSK').style.display = 'none';
-        document.getElementById('CaConcPlot').style.display = 'none';
-        document.getElementById('currentPlotSK').style.display = 'none';
-        document.getElementById('conductancePlotSK').style.display = 'none';
-        document.getElementById('gatePlotSK').style.display = 'none';
+    function resetToNaPSim() {
+        plotFlag = 'NaP';
+        V_rest = -66.62910e-3;
+        Ca_init = 0.00001;
+        reset(paramsNaPSim, layoutNaPSim);
     }
 
 
@@ -922,6 +964,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToFullSim, false));
     (document.getElementById('MultiConductanceSimpleSimButton')
         .addEventListener('click', resetToSimpleSim, false));
+    (document.getElementById('MultiConductanceNaPSimButton')
+        .addEventListener('click', resetToNaPSim, false));
     (document.getElementById('MultiConductanceClearDataButton')
         .addEventListener('click', clearDataTables, false));
     

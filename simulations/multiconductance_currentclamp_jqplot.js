@@ -6,8 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var paramsFullSim, paramsSimpleSim, paramsNaPSim,
-        layoutFullSim, layoutSimpleSim, layoutNaPSim,
+    var paramsFullSim, paramsSimpleSim, paramsNaPSim, paramsASim,
+        layoutFullSim, layoutSimpleSim, layoutNaPSim, layoutASim,
         controlsPanel, controls, dataPanel, voltageDataTable,
         stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPDataTable, conductanceNaPDataTable, gateNaPDataTable,
@@ -82,6 +82,14 @@ window.addEventListener('load', function () {
     paramsNaPSim.g_P_uS.defaultVal = 0;
     paramsNaPSim.numPulses.defaultVal = 0;
 
+    paramsASim = JSON.parse(JSON.stringify(paramsFullSim));
+    paramsASim.g_SK_uS.defaultVal = 0;
+    paramsASim.g_NaP_uS.defaultVal = 0;
+    paramsASim.g_H_uS.defaultVal = 0;
+    paramsASim.g_T_uS.defaultVal = 0;
+    paramsASim.g_N_uS.defaultVal = 0;
+    paramsASim.g_P_uS.defaultVal = 0;
+
     layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
@@ -106,6 +114,15 @@ window.addEventListener('load', function () {
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
+        ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
+            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+        ['Simulation Settings', ['totalDuration_ms']]
+    ];
+
+    layoutASim = [
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -604,7 +621,7 @@ window.addEventListener('load', function () {
         // FAST POTASSIUM
         //*****************
 
-        if (plotFlag == 'full') {
+        if (plotFlag == 'full' || plotFlag == 'A') {
 
             // Section title
             title = document.createElement('h4');
@@ -989,6 +1006,14 @@ window.addEventListener('load', function () {
     }
 
 
+    function resetToASim() {
+        plotFlag = 'A';
+        V_rest = -73.76911e-3;
+        Ca_init = 0.00001;
+        reset(paramsASim, layoutASim);
+    }
+
+
     function clearDataTables() {
         voltageDataTable.innerHTML = '';
         voltageDataTable.style.display = 'none';
@@ -1063,6 +1088,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToSimpleSim, false));
     (document.getElementById('MultiConductanceNaPSimButton')
         .addEventListener('click', resetToNaPSim, false));
+    (document.getElementById('MultiConductanceASimButton')
+        .addEventListener('click', resetToASim, false));
     (document.getElementById('MultiConductanceClearDataButton')
         .addEventListener('click', clearDataTables, false));
     

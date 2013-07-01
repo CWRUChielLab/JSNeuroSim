@@ -917,7 +917,7 @@ window.addEventListener('load', function () {
 
             // Section title
             title = document.createElement('h4');
-            title.innerHTML = 'Calcium Concentration';
+            title.innerHTML = 'Intracellular Calcium Concentration';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
 
@@ -939,7 +939,7 @@ window.addEventListener('load', function () {
                         {label: '[Ca]', color: 'black'},
                     ],
             })));
-            graphJqplot.bindDataCapture('#CaConcPlot', CaConcDataTable, 'Ca Concentration', 'Time');
+            graphJqplot.bindDataCapture('#CaConcPlot', CaConcDataTable, 'Intracellular Ca Concentration', 'Time');
             graphJqplot.bindCursorTooltip('#CaConcPlot', 'Time', 'ms', '\u00B5M');
 
         }

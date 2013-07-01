@@ -6,8 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var paramsFullSim, paramsSimpleSim, paramsNaPSim, paramsASim,
-        layoutFullSim, layoutSimpleSim, layoutNaPSim, layoutASim,
+    var paramsFullSim, paramsSimpleSim, paramsNaPSim, paramsASim, paramsHSim,
+        layoutFullSim, layoutSimpleSim, layoutNaPSim, layoutASim, layoutHSim,
         controlsPanel, controls, dataPanel, voltageDataTable,
         stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPDataTable, conductanceNaPDataTable, gateNaPDataTable,
@@ -90,6 +90,14 @@ window.addEventListener('load', function () {
     paramsASim.g_N_uS.defaultVal = 0;
     paramsASim.g_P_uS.defaultVal = 0;
 
+    paramsHSim = JSON.parse(JSON.stringify(paramsFullSim));
+    paramsHSim.g_A_uS.defaultVal = 0;
+    paramsHSim.g_SK_uS.defaultVal = 0;
+    paramsHSim.g_NaP_uS.defaultVal = 0;
+    paramsHSim.g_T_uS.defaultVal = 0;
+    paramsHSim.g_N_uS.defaultVal = 0;
+    paramsHSim.g_P_uS.defaultVal = 0;
+
     layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
@@ -123,6 +131,16 @@ window.addEventListener('load', function () {
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
+        ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
+            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+        ['Simulation Settings', ['totalDuration_ms']]
+    ];
+
+    layoutHSim = [
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
+        ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -700,7 +718,7 @@ window.addEventListener('load', function () {
         // SAG
         //*****************
 
-        if (plotFlag == 'full') {
+        if (plotFlag == 'full' || plotFlag == 'H') {
 
             // Section title
             title = document.createElement('h4');
@@ -1014,6 +1032,14 @@ window.addEventListener('load', function () {
     }
 
 
+    function resetToHSim() {
+        plotFlag = 'H';
+        V_rest = -60.62015e-3;
+        Ca_init = 0.00001;
+        reset(paramsHSim, layoutHSim);
+    }
+
+
     function clearDataTables() {
         voltageDataTable.innerHTML = '';
         voltageDataTable.style.display = 'none';
@@ -1090,6 +1116,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToNaPSim, false));
     (document.getElementById('MultiConductanceASimButton')
         .addEventListener('click', resetToASim, false));
+    (document.getElementById('MultiConductanceHSimButton')
+        .addEventListener('click', resetToHSim, false));
     (document.getElementById('MultiConductanceClearDataButton')
         .addEventListener('click', clearDataTables, false));
     

@@ -23,15 +23,23 @@
         <h1 class="simtitle">Multiple conductance current clamp simulation</h1>
         <div id="MultiConductancePlots" class="plotpanel"></div>
         <div id="MultiConductanceControls" class="controlspanel"></div>
-        <input id="MultiConductanceRunButton" type="button" value="Run"/>
-        <input type="button" id="MultiConductanceFullSimButton" value="Full Simulation"/>
-        <input type="button" id="MultiConductanceSimpleSimButton" value="Simple Simulation"/>
-        <input type="button" id="MultiConductanceNaPSimButton" value="Add persistent sodium current"/>
-        <input type="button" id="MultiConductanceASimButton" value="Add fast potassium current"/>
-        <input type="button" id="MultiConductanceHSimButton" value="Add sag current"/>
-        <input type="button" id="MultiConductanceCaSimButton" value="Add calcium currents"/>
-        <input type="button" id="MultiConductanceSKSimButton" value="Add Ca and Ca-dependent K currents"/>
-        <input type="button" id="MultiConductanceClearDataButton" value="Clear Data Points"/>
+        <div>
+            <div style="float:left;">
+                <input id="MultiConductanceRunButton" type="button" value="Run"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="MultiConductanceClearDataButton" value="Clear Data Points"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="MultiConductanceFullSimButton" value="Full Simulation"/><br/>
+                <input type="button" id="MultiConductanceSimpleSimButton" value="Simple Simulation"/><br/>
+                <input type="button" id="MultiConductanceNaPSimButton" value="Add persistent sodium current"/><br/>
+                <input type="button" id="MultiConductanceASimButton" value="Add fast potassium current"/><br/>
+                <input type="button" id="MultiConductanceHSimButton" value="Add sag current"/><br/>
+                <input type="button" id="MultiConductanceCaSimButton" value="Add calcium currents"/><br/>
+                <input type="button" id="MultiConductanceSKSimButton" value="Add Ca and Ca-dependent K currents"/>
+            </div>
+        </div>
         <div id="MultiConductanceData" class="datapanel"></div>
     </body>
 </html>

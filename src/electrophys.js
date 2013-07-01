@@ -874,7 +874,11 @@ electrophys.passiveMembrane = function (model, options) {
         }
 
         result[iV] = I_inj / C;
-        result[iCa] = K1 * I_Ca - K2 * state[iCa];
+        if (state[iCa] <= 0 && I_Ca < 0) {
+            result[iCa] = 0;
+        } else {
+            result[iCa] = K1 * I_Ca - K2 * state[iCa];
+        }
     }
 
     model.registerDrift(drift);
@@ -916,7 +920,11 @@ electrophys.clampedMembrane = function (model, options) {
             I_Ca += CaCurrents[i](state, t);
         }
 
-        result[iCa] = K1 * I_Ca - K2 * state[iCa];
+        if (state[iCa] <= 0 && I_Ca < 0) {
+            result[iCa] = 0;
+        } else {
+            result[iCa] = K1 * I_Ca - K2 * state[iCa];
+        }
     }
 
     model.registerDrift(drift);

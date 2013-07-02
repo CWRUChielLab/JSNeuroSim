@@ -50,6 +50,8 @@ window.addEventListener('load', function () {
             defaultVal: 0.05, minVal: 0, maxVal: 100},
         g_P_uS: { label: 'P-current conductance', units: '\u00B5S',
             defaultVal: 0.05, minVal: 0, maxVal: 100},
+        Ca_buff_ms: { label: 'Calcium buffering time constant', units: 'ms',
+            defaultVal: 25, minVal: 0.001, maxVal: 1000},
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA: { label: 'Stimulus current first pulse', units: 'nA', 
@@ -116,7 +118,7 @@ window.addEventListener('load', function () {
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
         ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
-        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
+        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS', 'Ca_buff_ms']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -163,7 +165,7 @@ window.addEventListener('load', function () {
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
-        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
+        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS', 'Ca_buff_ms']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -173,7 +175,7 @@ window.addEventListener('load', function () {
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_SK_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
-        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
+        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS', 'Ca_buff_ms']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -295,7 +297,7 @@ window.addEventListener('load', function () {
             V_rest: V_rest,
             Ca_init: Ca_init,
             K1: 5e8, // uM C^-1
-            K2: 4e1  // ms^-1
+            K2: 1e3 / params.Ca_buff_ms  // s^-1
         });
 
         pulseTrain = electrophys.pulseTrain({

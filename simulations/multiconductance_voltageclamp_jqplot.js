@@ -169,7 +169,7 @@ window.addEventListener('load', function () {
             Ca_init = 0.0604,
             leakCurrent, KCurrent, NaCurrent,
             NaPCurrent, ACurrent, HCurrent, TCurrent, NCurrent, PCurrent, SKCurrent,
-            CaConc,
+            CaConc, CaConc_nM,
             result, v, iLeak,
             iK, iNa, iNaP, iA, iH, iT, iN, iP, iSK,
             gK, gNa, gNaP, gA, gH, gT, gN, gP, gSK,
@@ -306,41 +306,41 @@ window.addEventListener('load', function () {
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
-        v_mV     = v.map        (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
-        CaConc   = CaConc.map   (function (c) {return [c[0] / 1e-3,  c[1]       ];});
-        iLeak_nA = iLeak.map    (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iK_nA    = iK.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iNa_nA   = iNa.map      (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iNaP_nA  = iNaP.map     (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iA_nA    = iA.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iH_nA    = iH.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iT_nA    = iT.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iN_nA    = iN.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iP_nA    = iP.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        iSK_nA   = iSK.map      (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        gK_uS    = gK.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gNa_uS   = gNa.map      (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gNaP_uS  = gNaP.map     (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gA_uS    = gA.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gH_uS    = gH.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gT_uS    = gT.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gN_uS    = gN.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gP_uS    = gP.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        gSK_uS   = gSK.map      (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
-        nGate    = nGate.map    (function (n) {return [n[0] / 1e-3,  n[1]       ];});
-        mGate    = mGate.map    (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        hGate    = hGate.map    (function (h) {return [h[0] / 1e-3,  h[1]       ];});
-        mNaPGate = mNaPGate.map (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        hNaPGate = hNaPGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
-        mAGate   = mAGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        hAGate   = hAGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
-        mHGate   = mHGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        mTGate   = mTGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        hTGate   = hTGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
-        mNGate   = mNGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        hNGate   = hNGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
-        mPGate   = mPGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        zSKGate  = zSKGate.map  (function (z) {return [z[0] / 1e-3,  z[1]       ];});
+        v_mV      = v.map        (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
+        CaConc_nM = CaConc.map   (function (c) {return [c[0] / 1e-3,  c[1] / 1e-3];});
+        iLeak_nA  = iLeak.map    (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iK_nA     = iK.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iNa_nA    = iNa.map      (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iNaP_nA   = iNaP.map     (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iA_nA     = iA.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iH_nA     = iH.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iT_nA     = iT.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iN_nA     = iN.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iP_nA     = iP.map       (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        iSK_nA    = iSK.map      (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        gK_uS     = gK.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gNa_uS    = gNa.map      (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gNaP_uS   = gNaP.map     (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gA_uS     = gA.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gH_uS     = gH.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gT_uS     = gT.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gN_uS     = gN.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gP_uS     = gP.map       (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        gSK_uS    = gSK.map      (function (g) {return [g[0] / 1e-3,  g[1] / 1e-6];});
+        nGate     = nGate.map    (function (n) {return [n[0] / 1e-3,  n[1]       ];});
+        mGate     = mGate.map    (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        hGate     = hGate.map    (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        mNaPGate  = mNaPGate.map (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        hNaPGate  = hNaPGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        mAGate    = mAGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        hAGate    = hAGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        mHGate    = mHGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        mTGate    = mTGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        hTGate    = hTGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        mNGate    = mNGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        hNGate    = hNGate.map   (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        mPGate    = mPGate.map   (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        zSKGate   = zSKGate.map  (function (z) {return [z[0] / 1e-3,  z[1]       ];});
 
         // free resources from old plots
         while (plotHandles.length > 0) {
@@ -783,18 +783,18 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-            $.jqplot('CaConcPlot', [CaConc], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+            $.jqplot('CaConcPlot', [CaConc_nM], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 legend: {show: true},
                 axes: {
                     xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Calcium Concentration (\u00B5M)'},
+                    yaxis: {label:'Calcium Concentration (nM)'},
                 },
                 series: [
                     {label: '[Ca]', color: 'black'},
                 ],
         })));
         graphJqplot.bindDataCapture('#CaConcPlot', CaConcDataTable, 'Intracellular Ca Concentration', 'Time');
-        graphJqplot.bindCursorTooltip('#CaConcPlot', 'Time', 'ms', '\u00B5M');
+        graphJqplot.bindCursorTooltip('#CaConcPlot', 'Time', 'ms', 'nM');
 
         //*****************
         // CA DEPENDENT K

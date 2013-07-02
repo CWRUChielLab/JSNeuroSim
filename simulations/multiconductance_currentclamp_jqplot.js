@@ -52,7 +52,9 @@ window.addEventListener('load', function () {
             defaultVal: 0.05, minVal: 0, maxVal: 100},
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseHeight_nA: { label: 'Stimulus current', units: 'nA', 
+        pulseHeight_nA: { label: 'Stimulus current first pulse', units: 'nA', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        pulseSubsequentHeight_nA: { label: 'Stimulus current subsequent pulses', units: 'nA', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 1, minVal: 0, maxVal: tMax / 1e-3 },
@@ -116,7 +118,7 @@ window.addEventListener('load', function () {
         ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
         ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
-            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+            'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -125,7 +127,7 @@ window.addEventListener('load', function () {
         ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
-            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+            'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -134,7 +136,7 @@ window.addEventListener('load', function () {
         ['Potassium Currents', ['E_K_mV', 'g_K_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
-            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+            'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -143,7 +145,7 @@ window.addEventListener('load', function () {
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
-            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+            'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -153,7 +155,7 @@ window.addEventListener('load', function () {
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
         ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
-            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+            'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -163,7 +165,7 @@ window.addEventListener('load', function () {
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
         ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
-            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+            'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -173,7 +175,7 @@ window.addEventListener('load', function () {
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
         ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
-            'pulseWidth_ms', 'isi_ms', 'numPulses']],
+            'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -300,6 +302,7 @@ window.addEventListener('load', function () {
             start: 1e-3 * params.pulseStart_ms, 
             width: params.pulseWidth_ms * 1e-3, 
             height: params.pulseHeight_nA * 1e-9,
+            subsequentHeight: params.pulseSubsequentHeight_nA * 1e-9,
             gap: params.isi_ms * 1e-3,
             num_pulses: params.numPulses
         });

@@ -168,7 +168,7 @@ window.addEventListener('load', function () {
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, neuron, pulseTrain,
-            Ca_init = 0.0604,
+            Ca_init = 0.00014,
             leakCurrent, KCurrent, NaCurrent,
             NaPCurrent, ACurrent, HCurrent, TCurrent, NCurrent, PCurrent, SKCurrent,
             CaConc, CaConc_nM,

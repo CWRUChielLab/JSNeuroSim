@@ -114,16 +114,10 @@ window.addEventListener('load', function () {
     paramsSKSim.g_H_uS.defaultVal = 0;
 
     paramsBursterSim = JSON.parse(JSON.stringify(paramsFullSim));
-    paramsBursterSim.E_leak_mV.defaultVal = -35;
-    paramsBursterSim.g_A_uS.defaultVal = 0.7;
+    paramsBursterSim.g_A_uS.defaultVal = 0.1;
     paramsBursterSim.g_SK_uS.defaultVal = 0.1;
-    paramsBursterSim.g_Na_uS.defaultVal = 0.91;
-    paramsBursterSim.g_NaP_uS.defaultVal = 0.06;
-    paramsBursterSim.g_H_uS.defaultVal = 0.02;
-    paramsBursterSim.g_N_uS.defaultVal = 0.07;
-    paramsBursterSim.g_P_uS.defaultVal = 0.19;
     paramsBursterSim.numPulses.defaultVal = 0;
-    paramsBursterSim.totalDuration_ms.defaultVal = 750;
+    paramsBursterSim.totalDuration_ms.defaultVal = 475;
 
     layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],

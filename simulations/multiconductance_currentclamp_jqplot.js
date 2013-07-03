@@ -765,7 +765,7 @@ window.addEventListener('load', function () {
                     },
                     series: [
                         {label: 'm<sub>A</sub>',   color: 'orange'},
-                        {label: 'h<sub>A</sub>',   color: 'yellow'},
+                        {label: 'h<sub>A</sub>',   color: 'orangered'},
                     ],
             })));
             graphJqplot.bindDataCapture('#gatePlotA', gateADataTable, 'Fast K Gates', 'Time');

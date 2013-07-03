@@ -6,8 +6,8 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var paramsFullSim, paramsSimpleSim, paramsNaPSim, paramsASim, paramsHSim, paramsCaSim, paramsSKSim,
-        layoutFullSim, layoutSimpleSim, layoutNaPSim, layoutASim, layoutHSim, layoutCaSim, layoutSKSim,
+    var paramsFullSim, paramsSimpleSim, paramsNaPSim, paramsASim, paramsHSim, paramsCaSim, paramsSKSim, paramsBursterSim,
+        layoutFullSim, layoutSimpleSim, layoutNaPSim, layoutASim, layoutHSim, layoutCaSim, layoutSKSim, layoutBursterSim,
         controlsPanel, controls, dataPanel, voltageDataTable,
         stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPDataTable, conductanceNaPDataTable, gateNaPDataTable,
@@ -113,6 +113,18 @@ window.addEventListener('load', function () {
     paramsSKSim.g_NaP_uS.defaultVal = 0;
     paramsSKSim.g_H_uS.defaultVal = 0;
 
+    paramsBursterSim = JSON.parse(JSON.stringify(paramsFullSim));
+    paramsBursterSim.E_leak_mV.defaultVal = -35;
+    paramsBursterSim.g_A_uS.defaultVal = 0.7;
+    paramsBursterSim.g_SK_uS.defaultVal = 0.1;
+    paramsBursterSim.g_Na_uS.defaultVal = 0.91;
+    paramsBursterSim.g_NaP_uS.defaultVal = 0.06;
+    paramsBursterSim.g_H_uS.defaultVal = 0.02;
+    paramsBursterSim.g_N_uS.defaultVal = 0.07;
+    paramsBursterSim.g_P_uS.defaultVal = 0.19;
+    paramsBursterSim.numPulses.defaultVal = 0;
+    paramsBursterSim.totalDuration_ms.defaultVal = 750;
+
     layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
@@ -175,6 +187,17 @@ window.addEventListener('load', function () {
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_SK_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS']],
+        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS', 'Ca_buff_ms']],
+        ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
+            'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
+        ['Simulation Settings', ['totalDuration_ms']]
+    ];
+
+    layoutBursterSim = [
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
+        ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
         ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS', 'Ca_buff_ms']],
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
@@ -1092,6 +1115,14 @@ window.addEventListener('load', function () {
     }
 
 
+    function resetToBursterSim() {
+        plotFlag = 'full';
+        V_rest = -75.69571e-3;
+        Ca_init = 0.00687;
+        reset(paramsBursterSim, layoutBursterSim);
+    }
+
+
     function clearDataTables() {
         voltageDataTable.innerHTML = '';
         voltageDataTable.style.display = 'none';
@@ -1174,6 +1205,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToCaSim, false));
     (document.getElementById('MultiConductanceSKSimButton')
         .addEventListener('click', resetToSKSim, false));
+    (document.getElementById('MultiConductanceBursterSimButton')
+        .addEventListener('click', resetToBursterSim, false));
     (document.getElementById('MultiConductanceClearDataButton')
         .addEventListener('click', clearDataTables, false));
     

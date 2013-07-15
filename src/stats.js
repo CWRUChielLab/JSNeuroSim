@@ -49,8 +49,10 @@ stats.randomNormal = function (mu, sigma) {
     var u, v, x, 
         scale = 1.7155277699214135; // === sqrt(8/e)
 
-    mu = mu || 0;
-    sigma = sigma || 1;
+    if (mu === undefined)
+        mu = 0;
+    if (sigma === undefined)
+        sigma = 1;
 
     do {
         u = Math.random();

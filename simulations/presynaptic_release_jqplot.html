@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Presynaptic release simulation</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="simulations.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
+        <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../lib/jqplot/excanvas.js"></script><![endif]-->
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.jqplot.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.barRenderer.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.pointLabels.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/stats.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="presynaptic_release_jqplot.js"></script>
+    </head>
+    <body>
+        <h1 class="simtitle">Presynaptic release simulation</h1>
+		<div id="PresynapticReleasePlots" class="plotpanel"></div>
+        <div id="PresynapticReleaseControls" class="controlspanel"></div>
+		<input id="PassiveMembraneRunButton" type="button" value="Run"/>
+		<input type="button" id="PresynapticReleaseResetButton" value="Reset"/> 
+		<input type="button" id="PassiveMembraneClearDataButton" value="Clear Data Points"/> 
+		<br>
+        <input type="button" id="PresynapticReleasePoissonButton" value="Poisson Distribution"/>
+		<input type="button" id="PresynapticReleaseBinomialButton" value="Binomial Distribution"/>
+
+        <div id="PresynapticReleaseData" class="datapanel"></div>
+    </body>
+</html>
+

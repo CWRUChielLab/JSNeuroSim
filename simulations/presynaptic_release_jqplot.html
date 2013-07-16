@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>        
+    <head>
         <title>Presynaptic release simulation</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="simulations.css" />
@@ -14,6 +14,7 @@
 		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.barRenderer.min.js"></script>
 		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
 		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.pointLabels.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
         <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
         <script language="javascript" type="text/javascript" src="../src/stats.js"></script>
         <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
@@ -27,14 +28,24 @@
         <h1 class="simtitle">Presynaptic release simulation</h1>
 		<div id="PresynapticReleasePlots" class="plotpanel"></div>
         <div id="PresynapticReleaseControls" class="controlspanel"></div>
-		<input id="PassiveMembraneRunButton" type="button" value="Run"/>
-		<input type="button" id="PresynapticReleaseResetButton" value="Reset"/> 
-		<input type="button" id="PassiveMembraneClearDataButton" value="Clear Data Points"/> 
-		<br>
-        <input type="button" id="PresynapticReleasePoissonButton" value="Poisson Distribution"/>
-		<input type="button" id="PresynapticReleaseBinomialButton" value="Binomial Distribution"/>
-
-        <div id="PresynapticReleaseData" class="datapanel"></div>
+		
+		<div>
+            <div style="float:left;">
+                <input id="PassiveMembraneRunButton" type="button" value="Run"/>
+            </div>
+            <!--<div style="float:left;">
+                <input type="button" id="PassiveMembraneClearDataButton" value="Clear Data Points"/>
+            </div>-->
+			<div style="float:left;">
+				<input type="button" id="PresynapticReleaseResetButton" value="Reset"/>           
+			</div>
+            <div style="float:left;">
+                <input type="button" id="PresynapticReleaseBinomialButton" value="Binomial Distribution"/><br>
+				<input type="button" id="PresynapticReleasePoissonButton" value="Poisson Distribution"/><br>
+				<input type="button" id="DrugAButton" value="Drug A"/><br>
+				<input type="button" id="DrugBButton" value="Drug B"/>
+            </div>
+        </div>
+		<div id="PresynapticReleaseData" class="datapanel"></div>
     </body>
 </html>
-

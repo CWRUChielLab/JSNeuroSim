@@ -16,15 +16,15 @@ window.addEventListener('load', function () {
     // Set up the controls for the presynaptic release simulation
 	// Parameter values
     paramsBinomial = {
-		maxQuanta: { label: 'Maximum Potential Quanta', units: 'n',
+		maxQuanta: { label: 'Maximum Potential Quanta (n)', units: '',
 			defaultVal: 100, minVal: 1, maxVal: 10000},
-		releaseProb: { label: 'Release Probability', units: 'p',
+		releaseProb: { label: 'Release Probability (p)', units: '',
 			defaultVal: .035, minVal: 0, maxVal: 1},
 		meanQuantaSize: { label: 'Mean Quantal Size (q)', units: 'mV',
 			defaultVal: 10, minVal: -1000, maxVal: 1000},
 		quantaCV: { label: 'CV of Quanta Size', units: '',
 			defaultVal: .5, minVal: 0, maxVal: 10},
-		numStim: { label: 'Number of Stimuli', units: 'n',
+		numStim: { label: 'Number of Stimuli', units: '',
 			defaultVal: 10000, minVal: 100, maxVal: 1000000}
 	};
 	
@@ -35,7 +35,7 @@ window.addEventListener('load', function () {
 			defaultVal: 10, minVal: 1, maxVal: 100 },
 		quantaCV: { label: 'CV of Quanta Size', units: '',
 			defaultVal: .5, minVal: 0, maxVal: 10 },
-		numStim: { label: 'Number of Stimuli', units: 'n',
+		numStim: { label: 'Number of Stimuli', units: '',
 			defaultVal: 10000, minVal: 100, maxVal: 1000000}
     };
 
@@ -43,7 +43,7 @@ window.addEventListener('load', function () {
 		meanQuanta: {defaultVal: 1},
 		meanQuantaSize: {defaultVal: 10},
 		quantaCV: {defaultVal: .5},
-		numStim: { label: 'Number of Stimuli', units: 'n',
+		numStim: { label: 'Number of Stimuli', units: '',
 			defaultVal: 10000, minVal: 100, maxVal: 1000000}
     };
 	
@@ -51,7 +51,7 @@ window.addEventListener('load', function () {
 		meanQuanta: { defaultVal: 3.5},
 		meanQuantaSize: { defaultVal: 5},
 		quantaCV: { defaultVal: .5},
-		numStim: { label: 'Number of Stimuli', units: 'n',
+		numStim: { label: 'Number of Stimuli', units: '',
 			defaultVal: 10000, minVal: 100, maxVal: 1000000}
     };
 

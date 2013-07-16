@@ -201,7 +201,11 @@ window.addEventListener('load', function () {
 						min:-.5, max: singlePSPnumber * 1.1 + 0.5}},
 				grid: {drawGridlines: false},
 				axesDefaults: {showTicks: false},
-				cursor: {showTooltip: false, showVerticalLine: false}
+				cursor: {
+                    zoom: false,
+                    showTooltip: false,
+                    showVerticalLine: false
+                },
 				
 		})));
 		
@@ -236,7 +240,11 @@ window.addEventListener('load', function () {
 							showGridline: false,
 							angle: 90}},
 					yaxis: {label: "Number of PSPs"}},
-				cursor: {showTooltip: false, showVerticalLine: false},
+				cursor: {
+                    zoom: false,
+                    showTooltip: false,
+                    showVerticalLine: false
+                },
 				
 		})));
 		//graphJqplot.bindDataCapture('#pspPlot', pspDataTable, 'PSPs', 'PSP Size (mV)');
@@ -269,7 +277,11 @@ window.addEventListener('load', function () {
 						label: "mPSP Size (mV)",
 						tickOptions: {showGridline: false}},
 					yaxis: {label: "Number of mPSPs"}},
-				cursor: {showTooltip: false, showVerticalLine: false},
+				cursor: {
+                    zoom: false,
+                    showTooltip: false,
+                    showVerticalLine: false
+                },
 						
 		})));	
         //graphJqplot.bindDataCapture('#mpspPlot', mpspDataTable, 'MPSPs', 'MPSP Size (mV)');

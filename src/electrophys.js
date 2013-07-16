@@ -1032,6 +1032,49 @@ electrophys.synapse = function (model, presynaptic, postsynaptic, options) {
 };
 
 
+// Based on Ermentrout, GB, and Terman, DH, Mathematical Foundations of 
+// Neuroscience, Springer, 2010, pp 159-160, but substituting a_r/T_max
+// for a_r to bring a_r and a_d to similar scales, and plasticity added
+// by making g a function of presynaptic calcium.  
+electrophys.plasticSynapse = function (model, presynaptic, postsynaptic, options) {
+
+    "use strict";
+    var is = model.addStateVar(0),
+        E_rev = options.E_rev,
+        g_normalized = options.g_normalized,
+        Ca_facilitation = options.Ca_facilitation,
+        a_r = options.a_r,
+        a_d = options.a_d,
+        V_T = options.V_T,
+        K_p = options.K_p;
+
+    function drift(result, state, t) {
+        var s = state[is],
+            V = presynaptic.V(state, t),
+            T = 1 / (1 + Math.exp(-(V - V_T) / K_p));
+
+        result[is] = a_r * T * (1 - state[is]) - a_d * state[is];
+    }
+    model.registerDrift(drift);
+
+    function current (state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            var Ca = presynaptic.Ca(state,t);
+
+            return (g_normalized * (1 + Ca / Ca_facilitation)) * state[is] * (E_rev - postsynaptic.V(state, t));
+        }
+    }
+    postsynaptic.addCurrent(current);
+
+    return {
+        s: function (state, t) { return state[is]; },
+        current: current
+    };
+};
+
+
 electrophys.gettingIFNeuron = function (model, options) {
     "use strict";
     var C = options.C,

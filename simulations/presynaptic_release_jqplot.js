@@ -145,23 +145,25 @@ window.addEventListener('load', function () {
 		
 		// Alpha functions
 		var alphaData = [],
-			singlePSPnumber = 8, t, y, meanHeight;
-		if (method == 'binomial') {
-			meanHeight = params.maxQuanta * params.releaseProb * params.meanQuantaSize;
-		}
-		else {
-			meanHeight = params.meanQuanta * params.meanQuantaSize;
-		}
+			singlePSPnumber = 8,
+            largestPSP = 0,
+            t, y;
 			
+        for (i = 0; i < singlePSPnumber; i++) {
+            if (psps[i] > largestPSP) {
+                largestPSP = psps[i]
+            }
+        }
+
 		for (i = 0; i < singlePSPnumber; i++) {
 			var curveData = [];
 			for (j = 0; j < 300; j++) {
 				t = -10 +.1 * j;
 				if (t < 0) {
-					y = i;
+					y = i * 1.1;
 				}
 				else {
-					y = psps[i] / meanHeight * t * Math.exp(-t) + i;
+					y = psps[i] / (largestPSP * 0.367879) * t * Math.exp(-t) + i * 1.1;
 				}
 				curveData.push([t,y]);
 			}
@@ -193,10 +195,10 @@ window.addEventListener('load', function () {
 		plotHandles.push(
 			$.jqplot('individualPSPPlot', alphaData, jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
 				axes: {
-					xaxis: {label: "Time (s)",
+					xaxis: {label: "Time",
 						min: -10, max: 20},
 					yaxis: {label: "PSP (mV)",
-						min:-.5, max: singlePSPnumber + .5}},
+						min:-.5, max: singlePSPnumber * 1.1 + 0.5}},
 				grid: {drawGridlines: false},
 				axesDefaults: {showTicks: false},
 				cursor: {showTooltip: false, showVerticalLine: false}

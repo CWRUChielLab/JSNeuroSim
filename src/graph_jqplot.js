@@ -172,18 +172,30 @@ graphJqplot.bindCursorTooltip = function (plotID, xTitle, xUnits, yUnits) {
 };
 
 
+Array.prototype.min = function () {
+    return this.reduce(function (p, v) {
+        return ( p < v ? p : v );
+    });
+}
+
+Array.prototype.max = function () {
+    return this.reduce(function (p, v) {
+        return ( p > v ? p : v );
+    });
+}
+
+
 // Format data for the histogram plotter
 graphJqplot.histFormat = function (binNumber, data) {
     var maxVal, minVal, binRange, binStepSize, binStepMin, binStepMax;
     var histData = new Array;
     
-    maxVal = Math.max.apply(null, data);
-    minVal = Math.min.apply(null, data);
+    maxVal = data.max();
+    minVal = data.min();
     binRange = maxVal - minVal;
     binStepSize = binRange / binNumber;
     binStepMin = minVal;
     binStepMax = minVal + binStepSize;	
-    //document.write("maxVal: " + maxVal + "   minVal: " + minVal + "   binRange: " + binRange + '   binStepSize: ' + binStepSize);
     for (var i = 0; i <= binNumber; i++ ) {
         histData[i] = [binStepMin, 0];
         for (var j = 0; j < data.length; j++) {
@@ -194,7 +206,6 @@ graphJqplot.histFormat = function (binNumber, data) {
                 histData[i][1]++;
             }		
         }			
-        //document.write('<br>binStepMin: ' + binStepMin + '   binStepMax: ' + binStepMax + '   histData: ' + histData[i] + '<br>');
         binStepMin += binStepSize;
         binStepMax += binStepSize;
     }

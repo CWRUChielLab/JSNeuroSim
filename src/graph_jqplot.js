@@ -140,6 +140,60 @@ graphJqplot.bindDataCapture = function (plotID, dataTable, dataTableTitle, xTitl
 };
 
 
+// when the user right-clicks, append to the data table the values
+// from each series for the data points nearest (in the x-coordinate)
+// the cursor with the value of the x-coordinate
+graphJqplot.bindBarChartDataCapture = function (plotID, chartData, dataTable, dataTableTitle, xTitle, yTitle) {
+    console.log(chartData);
+    $(plotID).bind('jqplotRightClick',
+        function (ev, seriesIndex, pointIndex, data) {
+            var caption, row, cell, i;
+
+            // if the table has no contents, unhide the table,
+            // create a caption, and create a heading
+            if (!dataTable.firstChild) {
+                // unhide the table
+                dataTable.style.display = 'table';
+
+                // create a table title
+                caption = document.createElement('caption');
+                caption.className = 'datatablecaption';
+                caption.innerHTML = dataTableTitle;
+                dataTable.appendChild(caption);
+
+                // create a heading row
+                row = document.createElement('tr');
+                dataTable.appendChild(row);
+
+                cell = document.createElement('td');
+                cell.className = 'datatableheading';
+                cell.innerHTML = xTitle;
+                row.appendChild(cell);
+
+                cell = document.createElement('td');
+                cell.className = 'datatableheading';
+                cell.innerHTML = yTitle;
+                row.appendChild(cell);
+            }
+
+            // create a new table row for the captured data point
+            row = document.createElement('tr');
+            dataTable.appendChild(row);
+
+            // add the x-coordinate value to the table
+            cell = document.createElement('td');
+            cell.innerHTML = Math.round(chartData[data.pointIndex][0]);
+            row.appendChild(cell);
+
+            // add each series value to the table
+            cell = document.createElement('td');
+            cell.innerHTML = chartData[data.pointIndex][1];
+            row.appendChild(cell);
+        }
+    );
+};
+
+
 // create a cursor tooltip that displays the values from each series
 // for the data points nearest (in the x-coordinate) the cursor with
 // the value of the x-coordinate

@@ -44,7 +44,7 @@ window.addEventListener('load', function () {
 		meanQuantaSize: {defaultVal: 10},
 		quantaCV: {defaultVal: .5},
 		numStim: { label: 'Number of Stimuli', units: '',
-			defaultVal: 10000, minVal: 100, maxVal: 1000000}
+			defaultVal: 100000, minVal: 100, maxVal: 1000000}
     };
 	
 	paramsDrugB = {
@@ -52,7 +52,7 @@ window.addEventListener('load', function () {
 		meanQuantaSize: { defaultVal: 5},
 		quantaCV: { defaultVal: .5},
 		numStim: { label: 'Number of Stimuli', units: '',
-			defaultVal: 10000, minVal: 100, maxVal: 1000000}
+			defaultVal: 100000, minVal: 100, maxVal: 1000000}
     };
 
 	// Screen layouts
@@ -127,7 +127,6 @@ window.addEventListener('load', function () {
 				mpsps[i] = 0;
 			}	
 		}
-		//document.write(params.meanQuantaSize + '<br>' + params.quantaCV + '<br>' + mpsps);
 
 		// Generate PSPs
 		var psps = new Array;
@@ -247,8 +246,7 @@ window.addEventListener('load', function () {
                 },
 				
 		})));
-		//graphJqplot.bindDataCapture('#pspPlot', pspDataTable, 'PSPs', 'PSP Size (mV)');
-		//graphJqplot.bindCursorTooltip('#pspPlot', 'PSP Size', 'mV', '');
+		graphJqplot.bindBarChartDataCapture('#pspPlot', pspPlotData, pspDataTable, 'Postsynaptic potentials (PSPs)', 'PSP Size (mV)', 'Number of PSPs');
 
 		// Plot the MPSPs
         title = document.createElement('h4');
@@ -284,8 +282,7 @@ window.addEventListener('load', function () {
                 },
 						
 		})));	
-        //graphJqplot.bindDataCapture('#mpspPlot', mpspDataTable, 'MPSPs', 'MPSP Size (mV)');
-        //graphJqplot.bindCursorTooltip('#mpspPlot', 'mPSP Size', 'mV', '');
+		graphJqplot.bindBarChartDataCapture('#mpspPlot', mpspPlotData, mpspDataTable, 'Miniature postsynaptic potentials (mPSPs)', 'mPSP Size (mV)', 'Number of mPSPs');
 	
 
 		return;
@@ -348,8 +345,8 @@ window.addEventListener('load', function () {
 
     (document.getElementById('PassiveMembraneRunButton')
         .addEventListener('click', runSimulation, false));
-    //(document.getElementById('PassiveMembraneClearDataButton')
-    //    .addEventListener('click', clearDataTables, false));
+    (document.getElementById('PassiveMembraneClearDataButton')
+        .addEventListener('click', clearDataTables, false));
 	(document.getElementById('PresynapticReleaseResetButton')
 		.addEventListener('click', reset, false));
     (document.getElementById('PresynapticReleasePoissonButton')

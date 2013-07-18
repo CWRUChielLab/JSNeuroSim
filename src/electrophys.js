@@ -1075,6 +1075,125 @@ electrophys.plasticSynapse = function (model, presynaptic, postsynaptic, options
 };
 
 
+// Based on Destexhe A, Mainen ZF and Sejnowski TJ, An efficient method
+// for computing synaptic conductances based on a kinetic model of receptor
+// binding, Neural Computation 6: 14-18, 1994.
+electrophys.simpleDiscreteEventSynapse = function (model, presynaptic, postsynaptic, options) {
+    "use strict";
+
+    var ir              = model.addStateVar(0),
+        iTransmitter    = model.addStateVar(0),
+        iLastPreV       = model.addStateVar(-1e10),
+        iLastSpike      = model.addStateVar(-1e10),
+        E_rev           = options.E_rev,
+        g_bar           = options.g_bar,
+        alpha           = options.alpha,
+        beta            = options.beta,
+        transmitter_max = options.transmitter_max,
+        threshold       = options.threshold,
+        duration        = options.duration;
+
+    function drift(result, state, t) {
+        result[ir] = alpha * state[iTransmitter] * (1 - state[ir]) - beta * state[ir];
+        result[iTransmitter] = 0;
+        result[iLastPreV] = 0;
+        result[iLastSpike] = 0;
+    }
+    model.registerDrift(drift);
+
+    function jump(state, t) {
+        if (state[iLastPreV] < threshold && presynaptic.V(state, t) >= threshold) {
+            state[iLastSpike] = t;
+            state[iTransmitter] = transmitter_max;
+        }
+        if (t > state[iLastSpike] + duration) {
+            state[iTransmitter] = 0;
+        }
+        state[iLastPreV] = presynaptic.V(state, t);
+        return true;
+    }
+    model.registerJump(jump);
+
+    function current (state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            return g_bar * state[ir] * (E_rev - postsynaptic.V(state, t));
+        }
+    }
+    postsynaptic.addCurrent(current);
+
+    return {
+        r: function (state, t) { return state[ir]; },
+        transmitter: function (state, t) { return state[iTransmitter]; },
+        current: current
+    };
+};
+
+
+// Based on Destexhe A, Mainen ZF and Sejnowski TJ, An efficient method
+// for computing synaptic conductances based on a kinetic model of receptor
+// binding, Neural Computation 6: 14-18, 1994, with magnesium block modeled
+// based on Jahr CE and Stevens CF, Voltage dependence of NMDA-activated
+// macroscopic conductances predicted by single-channel kinetics,
+// J Neurosci 10: 3178-3182, 1990.
+electrophys.NMDASynapse = function (model, presynaptic, postsynaptic, options) {
+    "use strict";
+
+    var ir              = model.addStateVar(0),
+        iTransmitter    = model.addStateVar(0),
+        iLastPreV       = model.addStateVar(-1e10),
+        iLastSpike      = model.addStateVar(-1e10),
+        E_rev           = options.E_rev,
+        g_bar           = options.g_bar,
+        alpha           = options.alpha,
+        beta            = options.beta,
+        transmitter_max = options.transmitter_max,
+        threshold       = options.threshold,
+        duration        = options.duration,
+        Mg              = options.Mg;
+
+    function drift(result, state, t) {
+        result[ir] = alpha * state[iTransmitter] * (1 - state[ir]) - beta * state[ir];
+        result[iTransmitter] = 0;
+        result[iLastPreV] = 0;
+        result[iLastSpike] = 0;
+    }
+    model.registerDrift(drift);
+
+    function jump(state, t) {
+        if (state[iLastPreV] < threshold && presynaptic.V(state, t) >= threshold) {
+            state[iLastSpike] = t;
+            state[iTransmitter] = transmitter_max;
+        }
+        if (t > state[iLastSpike] + duration) {
+            state[iTransmitter] = 0;
+        }
+        state[iLastPreV] = presynaptic.V(state, t);
+        return true;
+    }
+    model.registerJump(jump);
+
+    function current (state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            // block: V in volts, Mg in millimolar
+            var block = 1 / (1 + Math.exp(-62 * postsynaptic.V(state, t)) * (Mg / 3.57));
+
+            return g_bar * state[ir] * block * (E_rev - postsynaptic.V(state, t));
+        }
+    }
+    postsynaptic.addCurrent(current);
+
+    return {
+        r: function (state, t) { return state[ir]; },
+        transmitter: function (state, t) { return state[iTransmitter]; },
+        current: current
+    };
+};
+
+
 electrophys.gettingIFNeuron = function (model, options) {
     "use strict";
     var C = options.C,

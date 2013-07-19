@@ -1184,7 +1184,7 @@ electrophys.NMDASynapse = function (model, presynaptic, postsynaptic, options) {
             return g_bar * state[ir] * block * (E_rev - postsynaptic.V(state, t));
         }
     }
-    postsynaptic.addCurrent(current);
+    postsynaptic.addCurrent(current, true);
 
     return {
         r: function (state, t) { return state[ir]; },

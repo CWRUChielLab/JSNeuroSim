@@ -100,7 +100,7 @@ window.addEventListener('load', function () {
         ['Postsynaptic Cell Properties', ['C_post_nF', 'g_leak_post_uS', 
             'E_leak_post_mV', 'g_Na_post_uS', 'E_Na_post_mV', 'g_K_post_uS', 
             'E_K_post_mV', 'g_P_post_uS', 'E_Ca_post_mV', 'Ca_buff_post_ms']],
-        ['Synapse properties', ['g_AMPA_uS', 'E_rev_AMPA_mV', 'alpha_AMPA_ms',
+        ['Synapse Properties', ['g_AMPA_uS', 'E_rev_AMPA_mV', 'alpha_AMPA_ms',
             'beta_AMPA_ms', 'g_NMDA_uS', 'E_rev_NMDA_mV', 'alpha_NMDA_ms',
             'beta_NMDA_ms', 'Mg_mM', 'threshold_syn_mV']],
         ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 
@@ -180,10 +180,10 @@ window.addEventListener('load', function () {
             E_Na: params.E_Na_pre_mV * 1e-3
         });
         
-//        PCurrent_pre = electrophys.multiConductance.PConductance(model, neuron_pre, {
-//            g_P: params.g_P_pre_uS * 1e-6,
-//            E_Ca: params.E_Ca_pre_mV * 1e-3
-//        });
+        PCurrent_pre = electrophys.multiConductance.PConductance(model, neuron_pre, {
+            g_P: params.g_P_pre_uS * 1e-6,
+            E_Ca: params.E_Ca_pre_mV * 1e-3
+        });
         
         // create the postsynaptic passive membrane
         neuron_post = electrophys.passiveMembrane(model, {
@@ -205,10 +205,10 @@ window.addEventListener('load', function () {
             E_Na: params.E_Na_post_mV * 1e-3
         });
 
-//        PCurrent_post = electrophys.multiConductance.PConductance(model, neuron_post, {
-//            g_P: params.g_P_post_uS * 1e-6,
-//            E_Ca: params.E_Ca_post_mV * 1e-3
-//        });
+        PCurrent_post = electrophys.multiConductance.PConductance(model, neuron_post, {
+            g_P: params.g_P_post_uS * 1e-6,
+            E_Ca: params.E_Ca_post_mV * 1e-3
+        });
         
 
         // create the AMPA receptor-mediated current
@@ -237,10 +237,10 @@ window.addEventListener('load', function () {
         
         // run it for a bit to let it reach steady state
         prerun = model.integrate({
-//            tMin: -150e-3, 
-            tMin: -30e-3, 
+            tMin: -150e-3, 
             tMax: 0, 
             tMaxStep: 1e-4,
+            atol: 1e-7,
         });
 
         // simulate it
@@ -248,40 +248,41 @@ window.addEventListener('load', function () {
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
             tMaxStep: 1e-4,
+            atol: 1e-7,
             y0: prerun.y_f
         });
         
-        v_pre       = result.mapOrderedPairs(neuron_pre.V);
-        CaConc_pre  = result.mapOrderedPairs(neuron_pre.Ca);
-        AMPAr       = result.mapOrderedPairs(AMPASynapse.r);
+        v_pre           = result.mapOrderedPairs(neuron_pre.V);
+        CaConc_pre      = result.mapOrderedPairs(neuron_pre.Ca);
+        AMPAr           = result.mapOrderedPairs(AMPASynapse.r);
         AMPAtransmitter = result.mapOrderedPairs(AMPASynapse.transmitter);
-        AMPAcurrent = result.mapOrderedPairs(AMPASynapse.current);
-        NMDAr       = result.mapOrderedPairs(NMDASynapse.r);
+        AMPAcurrent     = result.mapOrderedPairs(AMPASynapse.current);
+        NMDAr           = result.mapOrderedPairs(NMDASynapse.r);
         NMDAtransmitter = result.mapOrderedPairs(NMDASynapse.transmitter);
-        NMDAcurrent = result.mapOrderedPairs(NMDASynapse.current);
-        mGate = result.mapOrderedPairs(hhNaCurrent_post.m);
-        hGate = result.mapOrderedPairs(hhNaCurrent_post.h);
-        nGate = result.mapOrderedPairs(hhKCurrent_post.n);
-        v_post      = result.mapOrderedPairs(neuron_post.V);
-        CaConc_post = result.mapOrderedPairs(neuron_post.Ca);
-        iStim_pre   = result.mapOrderedPairs(pulseTrain_pre);
+        NMDAcurrent     = result.mapOrderedPairs(NMDASynapse.current);
+        mGate           = result.mapOrderedPairs(hhNaCurrent_post.m);
+        hGate           = result.mapOrderedPairs(hhNaCurrent_post.h);
+        nGate           = result.mapOrderedPairs(hhKCurrent_post.n);
+        v_post          = result.mapOrderedPairs(neuron_post.V);
+        CaConc_post     = result.mapOrderedPairs(neuron_post.Ca);
+        iStim_pre       = result.mapOrderedPairs(pulseTrain_pre);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
-        v_pre_mV       = v_pre.map       (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];});
-        CaConc_pre_nM  = CaConc_pre.map  (function (c) {return [c[0] / 1e-3, c[1] / 1e-3];});
-        AMPAr          = AMPAr.map       (function (r) {return [r[0] / 1e-3, r[1]       ];});
-        AMPAtransmitter    = AMPAtransmitter.map (function (t) {return [t[0] / 1e-3, t[1]       ];});
-        AMPAcurrent    = AMPAcurrent.map (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        NMDAr          = NMDAr.map       (function (r) {return [r[0] / 1e-3, r[1]       ];});
-        NMDAtransmitter    = NMDAtransmitter.map (function (t) {return [t[0] / 1e-3, t[1]       ];});
-        NMDAcurrent    = NMDAcurrent.map (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
-        mGate    = mGate.map (function (m) {return [m[0] / 1e-3,  m[1]       ];});
-        hGate    = hGate.map (function (h) {return [h[0] / 1e-3,  h[1]       ];});
-        nGate    = nGate.map (function (n) {return [n[0] / 1e-3,  n[1]       ];});
-        v_post_mV      = v_post.map      (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];});
-        CaConc_post_nM = CaConc_post.map (function (c) {return [c[0] / 1e-3, c[1] / 1e-3];});
-        iStim_pre_nA   = iStim_pre.map   (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]});
+        v_pre_mV        = v_pre.map           (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
+        CaConc_pre_nM   = CaConc_pre.map      (function (c) {return [c[0] / 1e-3,  c[1] / 1e-3];});
+        AMPAr           = AMPAr.map           (function (r) {return [r[0] / 1e-3,  r[1]       ];});
+        AMPAtransmitter = AMPAtransmitter.map (function (t) {return [t[0] / 1e-3,  t[1]       ];});
+        AMPAcurrent     = AMPAcurrent.map     (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        NMDAr           = NMDAr.map           (function (r) {return [r[0] / 1e-3,  r[1]       ];});
+        NMDAtransmitter = NMDAtransmitter.map (function (t) {return [t[0] / 1e-3,  t[1]       ];});
+        NMDAcurrent     = NMDAcurrent.map     (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
+        mGate           = mGate.map           (function (m) {return [m[0] / 1e-3,  m[1]       ];});
+        hGate           = hGate.map           (function (h) {return [h[0] / 1e-3,  h[1]       ];});
+        nGate           = nGate.map           (function (n) {return [n[0] / 1e-3,  n[1]       ];});
+        v_post_mV       = v_post.map          (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
+        CaConc_post_nM  = CaConc_post.map     (function (c) {return [c[0] / 1e-3,  c[1] / 1e-3];});
+        iStim_pre_nA    = iStim_pre.map       (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9]});
 
         // free resources from old plots
         while (plotHandles.length > 0) {

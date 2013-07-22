@@ -144,10 +144,12 @@ ode.integrate = function (options) {
         maxStep = options.tMaxStep || (options.tMax - options.tMin) / 1024,
         tMinOutput = (options.tMinOutput !== undefined ? 
             options.tMinOutput : maxStep / 50),
+        atol = (options.atol !== undefined ?
+            options.atol : 1e-5),
         yj,
         result = { t : [], y : [], terminationReason : 'reached tMax' },
         ndim = options.y0.length,
-        d, h, h_new, step, atol = 1e-5, delta_max, i,
+        d, h, h_new, step, delta_max, i,
         startTime = (new Date()).getTime();
 
     result.map = function (func) {

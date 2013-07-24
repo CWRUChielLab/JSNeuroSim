@@ -8,7 +8,7 @@ window.addEventListener('load', function () {
 
     var params, layout, controlsPanel, controls, dataPanel, preVoltageDataTable,
         preCaConcDataTable, postVoltageDataTable, postCaConcDataTable, preCurrentDataTable,
-        tMax = 1000e-3, plotHandles = []; 
+        postCurrentDataTable, tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     params = { 
@@ -58,7 +58,9 @@ window.addEventListener('load', function () {
         // Sejnowski TJ, Synthesis of models for excitable membranes, synaptic
         // transmission and neuromodulation using a common kinetic formalism,
         // J Comp Neuro 1: 195-230, 1994, Table 1.
-        g_AMPA_uS: { label: 'AMPA maximum conductance', units: '\u00B5S', 
+        g_AMPA_max_uS: { label: 'AMPA maximum conductance', units: '\u00B5S', 
+            defaultVal: 4, minVal: 0, maxVal: 1000 },
+        g_AMPA_min_uS: { label: 'AMPA minimum conductance', units: '\u00B5S', 
             defaultVal: 0.5, minVal: 0, maxVal: 1000 },
         E_rev_AMPA_mV: { label: 'AMPA reversal potential', units: 'mV', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
@@ -81,7 +83,9 @@ window.addEventListener('load', function () {
 
         pulseStart_pre_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseHeight_pre_nA: { label: 'Stimulus current', units: 'nA', 
+        pulseHeight_pre_nA: { label: 'Stimulus current first pulse', units: 'nA', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        pulseSubsequentHeight_pre_nA: { label: 'Stimulus current subsequent pulses', units: 'nA', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
         pulseWidth_pre_ms: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
@@ -89,6 +93,19 @@ window.addEventListener('load', function () {
             defaultVal: 20, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_pre: { label: 'Number of pulses', units: '', 
             defaultVal: 6, minVal: 0, maxVal: 100 },
+
+        pulseStart_post_ms: { label: 'Stimulus delay', units: 'ms', 
+            defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseHeight_post_nA: { label: 'Stimulus current first pulse', units: 'nA', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        pulseSubsequentHeight_post_nA: { label: 'Stimulus current subsequent pulses', units: 'nA', 
+            defaultVal: 10, minVal: -1000, maxVal: 1000 },
+        pulseWidth_post_ms: { label: 'Pulse duration', units: 'ms', 
+            defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
+        isi_post_ms: { label: 'Inter-stimulus interval', units: 'ms', 
+            defaultVal: 20, minVal: 0, maxVal: tMax / 1e-3 },
+        numPulses_post: { label: 'Number of pulses', units: '', 
+            defaultVal: 0, minVal: 0, maxVal: 100 },
 
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 150, minVal: 0, maxVal: tMax / 1e-3 }
@@ -100,12 +117,15 @@ window.addEventListener('load', function () {
         ['Postsynaptic Cell Properties', ['C_post_nF', 'g_leak_post_uS', 
             'E_leak_post_mV', 'g_Na_post_uS', 'E_Na_post_mV', 'g_K_post_uS', 
             'E_K_post_mV', 'g_P_post_uS', 'E_Ca_post_mV', 'Ca_buff_post_ms']],
-        ['Synapse Properties', ['g_AMPA_uS', 'E_rev_AMPA_mV', 'alpha_AMPA_ms',
-            'beta_AMPA_ms', 'g_NMDA_uS', 'E_rev_NMDA_mV', 'alpha_NMDA_ms',
-            'beta_NMDA_ms', 'Mg_mM', 'threshold_syn_mV']],
-        ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 
-            'pulseHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
+        ['Synapse Properties', ['g_AMPA_max_uS', 'g_AMPA_min_uS', 'E_rev_AMPA_mV',
+            'alpha_AMPA_ms', 'beta_AMPA_ms', 'g_NMDA_uS', 'E_rev_NMDA_mV',
+            'alpha_NMDA_ms', 'beta_NMDA_ms', 'Mg_mM', 'threshold_syn_mV']],
+        ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 'pulseHeight_pre_nA',
+            'pulseSubsequentHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
             'numPulses_pre']],
+        ['Postsynaptic Current Clamp', ['pulseStart_post_ms', 'pulseHeight_post_nA',
+            'pulseSubsequentHeight_post_nA', 'pulseWidth_post_ms', 'isi_post_ms', 
+            'numPulses_post']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
     controlsPanel = document.getElementById('SynapseCurrentClampGlutamatergicControls');
@@ -134,18 +154,22 @@ window.addEventListener('load', function () {
     preCurrentDataTable.className = 'datatable';
     dataPanel.appendChild(preCurrentDataTable);
 
+    postCurrentDataTable = document.createElement('table');
+    postCurrentDataTable.className = 'datatable';
+    dataPanel.appendChild(postCurrentDataTable);
+
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
         var model, AMPASynapse, NMDASynapse,
             neuron_pre, pulseTrain_pre, hhKCurrent_pre, hhNaCurrent_pre, PCurrent_pre,
-            neuron_post, hhKCurrent_post, hhNaCurrent_post, PCurrent_post,
+            neuron_post, pulseTrain_post, hhKCurrent_post, hhNaCurrent_post, PCurrent_post,
             prerun, result,
             v_pre, v_pre_mV, CaConc_pre, CaConc_pre_nM,
             AMPAr, AMPAtransmitter, AMPAcurrent,
             NMDAr, NMDAtransmitter, NMDAcurrent,
             mGate, hGate, nGate,
             v_post, v_post_mV, CaConc_post, CaConc_post_nM,
-            iStim_pre, iStim_pre_nA, 
+            iStim_pre, iStim_pre_nA, iStim_post, iStim_post_nA,
             params, plot, plotPanel, title, j; 
         
         params = controls.values;
@@ -165,6 +189,7 @@ window.addEventListener('load', function () {
             start: 1e-3 * params.pulseStart_pre_ms, 
             width: params.pulseWidth_pre_ms * 1e-3, 
             height: params.pulseHeight_pre_nA * 1e-9,
+            subsequentHeight: params.pulseSubsequentHeight_pre_nA * 1e-9,
             gap: params.isi_pre_ms * 1e-3,
             num_pulses: params.numPulses_pre
         });
@@ -195,6 +220,16 @@ window.addEventListener('load', function () {
             K2: 1e3 / params.Ca_buff_post_ms  // s^-1
         });
 
+        pulseTrain_post = electrophys.pulseTrain({
+            start: 1e-3 * params.pulseStart_post_ms, 
+            width: params.pulseWidth_post_ms * 1e-3, 
+            height: params.pulseHeight_post_nA * 1e-9,
+            subsequentHeight: params.pulseSubsequentHeight_post_nA * 1e-9,
+            gap: params.isi_post_ms * 1e-3,
+            num_pulses: params.numPulses_post
+        });
+        neuron_post.addCurrent(pulseTrain_post);
+        
         hhKCurrent_post = electrophys.hhKConductance(model, neuron_post, {
             g_K: params.g_K_post_uS * 1e-6,
             E_K: params.E_K_post_mV * 1e-3
@@ -212,8 +247,9 @@ window.addEventListener('load', function () {
         
 
         // create the AMPA receptor-mediated current
-        AMPASynapse = electrophys.simpleDiscreteEventSynapse(model, neuron_pre, neuron_post, {
-            g_bar: params.g_AMPA_uS * 1e-6, 
+        AMPASynapse = electrophys.AMPASynapse(model, neuron_pre, neuron_post, {
+            g_max: params.g_AMPA_max_uS * 1e-6, 
+            g_min: params.g_AMPA_min_uS * 1e-6, 
             E_rev: params.E_rev_AMPA_mV * 1e-3,
             alpha: 1 / params.alpha_AMPA_ms * 1e3, 
             beta: 1 / params.beta_AMPA_ms * 1e3, 
@@ -266,6 +302,7 @@ window.addEventListener('load', function () {
         v_post          = result.mapOrderedPairs(neuron_post.V);
         CaConc_post     = result.mapOrderedPairs(neuron_post.Ca);
         iStim_pre       = result.mapOrderedPairs(pulseTrain_pre);
+        iStim_post      = result.mapOrderedPairs(pulseTrain_post);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
@@ -283,6 +320,7 @@ window.addEventListener('load', function () {
         v_post_mV       = v_post.map          (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
         CaConc_post_nM  = CaConc_post.map     (function (c) {return [c[0] / 1e-3,  c[1] / 1e-3];});
         iStim_pre_nA    = iStim_pre.map       (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9]});
+        iStim_post_nA   = iStim_post.map      (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9]});
 
         // free resources from old plots
         while (plotHandles.length > 0) {
@@ -570,6 +608,29 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#preCurrentPlot', preCurrentDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#preCurrentPlot', 'Time', 'ms', 'nA');
+
+        // Post Current
+        title = document.createElement('h4');
+        title.innerHTML = 'Postsynaptic Stimulation Current';
+        title.className = 'simplotheading';
+        plotPanel.appendChild(title);
+        plot = document.createElement('div');
+        plot.id = 'postCurrentPlot';
+        plot.style.width = '425px';
+        plot.style.height = '200px';
+        plotPanel.appendChild(plot);
+        plotHandles.push(
+           $.jqplot('postCurrentPlot', [iStim_post_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Current (nA)'},
+                },
+                series: [
+                    {label: 'I<sub>stim</sub>', color: 'black'},
+                ],
+        })));
+        graphJqplot.bindDataCapture('#postCurrentPlot', postCurrentDataTable, title.innerHTML, 'Time');
+        graphJqplot.bindCursorTooltip('#postCurrentPlot', 'Time', 'ms', 'nA');
     }
 
 
@@ -595,6 +656,9 @@ window.addEventListener('load', function () {
 
         preCurrentDataTable.innerHTML = '';
         preCurrentDataTable.style.display = 'none';
+
+        postCurrentDataTable.innerHTML = '';
+        postCurrentDataTable.style.display = 'none';
     }
 
 

@@ -1133,6 +1133,68 @@ electrophys.simpleDiscreteEventSynapse = function (model, presynaptic, postsynap
 
 // Based on Destexhe A, Mainen ZF and Sejnowski TJ, An efficient method
 // for computing synaptic conductances based on a kinetic model of receptor
+// binding, Neural Computation 6: 14-18, 1994, with conductance varying
+// with intracellular calcium in the postsynaptic cell.
+electrophys.AMPASynapse = function (model, presynaptic, postsynaptic, options) {
+    "use strict";
+
+    var ir              = model.addStateVar(0),
+        iTransmitter    = model.addStateVar(0),
+        iLastPreV       = model.addStateVar(-1e10),
+        iLastSpike      = model.addStateVar(-1e10),
+        E_rev           = options.E_rev,
+        g_max           = options.g_max,
+        g_min           = options.g_min,
+        alpha           = options.alpha,
+        beta            = options.beta,
+        transmitter_max = options.transmitter_max,
+        threshold       = options.threshold,
+        duration        = options.duration;
+
+    function drift(result, state, t) {
+        result[ir] = alpha * state[iTransmitter] * (1 - state[ir]) - beta * state[ir];
+        result[iTransmitter] = 0;
+        result[iLastPreV] = 0;
+        result[iLastSpike] = 0;
+    }
+    model.registerDrift(drift);
+
+    function jump(state, t) {
+        if (state[iLastPreV] < threshold && presynaptic.V(state, t) >= threshold) {
+            state[iLastSpike] = t;
+            state[iTransmitter] = transmitter_max;
+        }
+        if (t > state[iLastSpike] + duration) {
+            state[iTransmitter] = 0;
+        }
+        state[iLastPreV] = presynaptic.V(state, t);
+        return true;
+    }
+    model.registerJump(jump);
+
+    function current (state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
+        } else {
+            var sigmoid_center = 200e-3, // uM
+                sigmoid_shape  = 5e-3,   // uM
+                g = g_min + (g_max - g_min) / (1 + Math.exp(-(postsynaptic.Ca(state, t) - sigmoid_center) / sigmoid_shape));
+
+            return g * state[ir] * (E_rev - postsynaptic.V(state, t));
+        }
+    }
+    postsynaptic.addCurrent(current);
+
+    return {
+        r: function (state, t) { return state[ir]; },
+        transmitter: function (state, t) { return state[iTransmitter]; },
+        current: current
+    };
+};
+
+
+// Based on Destexhe A, Mainen ZF and Sejnowski TJ, An efficient method
+// for computing synaptic conductances based on a kinetic model of receptor
 // binding, Neural Computation 6: 14-18, 1994, with magnesium block modeled
 // based on Jahr CE and Stevens CF, Voltage dependence of NMDA-activated
 // macroscopic conductances predicted by single-channel kinetics,

@@ -165,7 +165,7 @@ window.addEventListener('load', function () {
             neuron_post, pulseTrain_post, hhKCurrent_post, hhNaCurrent_post, PCurrent_post,
             prerun, result,
             v_pre, v_pre_mV, CaConc_pre, CaConc_pre_nM,
-            AMPAr, AMPAtransmitter, AMPAcurrent,
+            AMPAr, AMPAs, AMPAtransmitter, AMPAcurrent,
             NMDAr, NMDAtransmitter, NMDAcurrent,
             mGate, hGate, nGate,
             v_post, v_post_mV, CaConc_post, CaConc_post_nM,
@@ -291,6 +291,7 @@ window.addEventListener('load', function () {
         v_pre           = result.mapOrderedPairs(neuron_pre.V);
         CaConc_pre      = result.mapOrderedPairs(neuron_pre.Ca);
         AMPAr           = result.mapOrderedPairs(AMPASynapse.r);
+        AMPAs           = result.mapOrderedPairs(AMPASynapse.s);
         AMPAtransmitter = result.mapOrderedPairs(AMPASynapse.transmitter);
         AMPAcurrent     = result.mapOrderedPairs(AMPASynapse.current);
         NMDAr           = result.mapOrderedPairs(NMDASynapse.r);
@@ -309,6 +310,7 @@ window.addEventListener('load', function () {
         v_pre_mV        = v_pre.map           (function (v) {return [v[0] / 1e-3,  v[1] / 1e-3];});
         CaConc_pre_nM   = CaConc_pre.map      (function (c) {return [c[0] / 1e-3,  c[1] / 1e-3];});
         AMPAr           = AMPAr.map           (function (r) {return [r[0] / 1e-3,  r[1]       ];});
+        AMPAs           = AMPAs.map           (function (s) {return [s[0] / 1e-3,  s[1]       ];});
         AMPAtransmitter = AMPAtransmitter.map (function (t) {return [t[0] / 1e-3,  t[1]       ];});
         AMPAcurrent     = AMPAcurrent.map     (function (i) {return [i[0] / 1e-3, -i[1] / 1e-9];});
         NMDAr           = NMDAr.map           (function (r) {return [r[0] / 1e-3,  r[1]       ];});
@@ -354,74 +356,99 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#preVoltagePlot', preVoltageDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#preVoltagePlot', 'Time', 'ms', 'mV');
 
-        // Pre Calcium
-        title = document.createElement('h4');
-        title.innerHTML = 'Presynaptic Intracellular Calcium Concentration';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'preCaConcPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('preCaConcPlot', [CaConc_pre_nM], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Calcium Concentration (nM)'},
-                },
-                series: [
-                    {label: '[Ca]', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#preCaConcPlot', preCaConcDataTable, 'Presynaptic Intracellular Ca Concentration', 'Time');
-        graphJqplot.bindCursorTooltip('#preCaConcPlot', 'Time', 'ms', 'nM');
+//        // Pre Calcium
+//        title = document.createElement('h4');
+//        title.innerHTML = 'Presynaptic Intracellular Calcium Concentration';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'preCaConcPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('preCaConcPlot', [CaConc_pre_nM], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Calcium Concentration (nM)'},
+//                },
+//                series: [
+//                    {label: '[Ca]', color: 'black'},
+//                ],
+//        })));
+//        graphJqplot.bindDataCapture('#preCaConcPlot', preCaConcDataTable, 'Presynaptic Intracellular Ca Concentration', 'Time');
+//        graphJqplot.bindCursorTooltip('#preCaConcPlot', 'Time', 'ms', 'nM');
         
-        // AMPA r
+//        // AMPA r
+//        title = document.createElement('h4');
+//        title.innerHTML = 'AMPA r';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'AMPArPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//           $.jqplot('AMPArPlot', [AMPAr], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {
+//                        label:'r',
+//                        min: 0, max: 1,
+//                        numberTicks: 6,
+//                    },
+//                },
+//                series: [
+//                    {label: 'r<sub>AMPA</sub>', color: 'black'},
+//                ],
+//        })));
+
+        // AMPA s
         title = document.createElement('h4');
-        title.innerHTML = 'AMPA r';
+        title.innerHTML = 'AMPA s';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         plot = document.createElement('div');
-        plot.id = 'AMPArPlot';
+        plot.id = 'AMPAsPlot';
         plot.style.width = '425px';
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-           $.jqplot('AMPArPlot', [AMPAr], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+           $.jqplot('AMPAsPlot', [AMPAs], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {
-                        label:'r',
+                        label:'s',
                         min: 0, max: 1,
                         numberTicks: 6,
                     },
                 },
                 series: [
-                    {label: 'r<sub>AMPA</sub>', color: 'black'},
+                    {label: 's<sub>AMPA</sub>', color: 'black'},
                 ],
         })));
 
-        // AMPA transmitter
-        title = document.createElement('h4');
-        title.innerHTML = 'AMPA transmitter';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'AMPAtransmitterPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('AMPAtransmitterPlot', [AMPAtransmitter], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Transmitter (mM)'},
-                },
-                series: [
-                    {label: 'AMPA Transmitter', color: 'black'},
-                ],
-        })));
+//        // AMPA transmitter
+//        title = document.createElement('h4');
+//        title.innerHTML = 'AMPA transmitter';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'AMPAtransmitterPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//           $.jqplot('AMPAtransmitterPlot', [AMPAtransmitter], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Transmitter (mM)'},
+//                },
+//                series: [
+//                    {label: 'AMPA Transmitter', color: 'black'},
+//                ],
+//        })));
 
         // AMPA current
         title = document.createElement('h4');
@@ -444,51 +471,51 @@ window.addEventListener('load', function () {
                 ],
         })));
 
-        // NMDA r
-        title = document.createElement('h4');
-        title.innerHTML = 'NMDA r';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'NMDArPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('NMDArPlot', [NMDAr], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {
-                        label:'r',
-                        min: 0, max: 1,
-                        numberTicks: 6,
-                    },
-                },
-                series: [
-                    {label: 'r<sub>NMDA</sub>', color: 'black'},
-                ],
-        })));
+//        // NMDA r
+//        title = document.createElement('h4');
+//        title.innerHTML = 'NMDA r';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'NMDArPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//           $.jqplot('NMDArPlot', [NMDAr], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {
+//                        label:'r',
+//                        min: 0, max: 1,
+//                        numberTicks: 6,
+//                    },
+//                },
+//                series: [
+//                    {label: 'r<sub>NMDA</sub>', color: 'black'},
+//                ],
+//        })));
 
-        // NMDA transmitter
-        title = document.createElement('h4');
-        title.innerHTML = 'NMDA transmitter';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'NMDAtransmitterPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('NMDAtransmitterPlot', [NMDAtransmitter], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Transmitter (mM)'},
-                },
-                series: [
-                    {label: 'NMDA Transmitter', color: 'black'},
-                ],
-        })));
+//        // NMDA transmitter
+//        title = document.createElement('h4');
+//        title.innerHTML = 'NMDA transmitter';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'NMDAtransmitterPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//           $.jqplot('NMDAtransmitterPlot', [NMDAtransmitter], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Transmitter (mM)'},
+//                },
+//                series: [
+//                    {label: 'NMDA Transmitter', color: 'black'},
+//                ],
+//        })));
 
         // NMDA current
         title = document.createElement('h4');
@@ -534,34 +561,34 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#postVoltagePlot', postVoltageDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#postVoltagePlot', 'Time', 'ms', 'mV');
 
-        // Post Gates
-        title = document.createElement('h4');
-        title.innerHTML = 'Postsynaptic Gates';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'gatePlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                legend: {show: true},
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {
-                        label:'Gate',
-                        min: 0, max: 1,
-                        numberTicks: 6,
-                    }
-                },
-                series: [
-                    {label: 'm', color: 'blue'},
-                    {label: 'h', color: 'purple'},
-                    {label: 'n', color: 'red'},
-                ],
-        })));
-        graphJqplot.bindCursorTooltip('#gatePlot', 'Time', 'ms', '');
+//        // Post Gates
+//        title = document.createElement('h4');
+//        title.innerHTML = 'Postsynaptic Gates';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'gatePlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('gatePlot', [mGate, hGate, nGate], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                legend: {show: true},
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {
+//                        label:'Gate',
+//                        min: 0, max: 1,
+//                        numberTicks: 6,
+//                    }
+//                },
+//                series: [
+//                    {label: 'm', color: 'blue'},
+//                    {label: 'h', color: 'purple'},
+//                    {label: 'n', color: 'red'},
+//                ],
+//        })));
+//        graphJqplot.bindCursorTooltip('#gatePlot', 'Time', 'ms', '');
 
         // Post Calcium
         title = document.createElement('h4');

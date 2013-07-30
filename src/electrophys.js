@@ -1139,6 +1139,7 @@ electrophys.AMPASynapse = function (model, presynaptic, postsynaptic, options) {
     "use strict";
 
     var ir              = model.addStateVar(0),
+        is              = model.addStateVar(0),
         iTransmitter    = model.addStateVar(0),
         iLastPreV       = model.addStateVar(-1e10),
         iLastSpike      = model.addStateVar(-1e10),
@@ -1153,6 +1154,8 @@ electrophys.AMPASynapse = function (model, presynaptic, postsynaptic, options) {
 
     function drift(result, state, t) {
         result[ir] = alpha * state[iTransmitter] * (1 - state[ir]) - beta * state[ir];
+        result[is] = (electrophys.AMPASynapse.s_infinity(postsynaptic.Ca(state, t)) - state[is]) /
+            electrophys.AMPASynapse.tau_s(postsynaptic.Ca(state, t));
         result[iTransmitter] = 0;
         result[iLastPreV] = 0;
         result[iLastSpike] = 0;
@@ -1176,20 +1179,41 @@ electrophys.AMPASynapse = function (model, presynaptic, postsynaptic, options) {
         if (t instanceof Array) {
             return ode.transpose(state).map(function (state, i) {return current(state, t[i]);});
         } else {
-            var sigmoid_center = 200e-3, // uM
-                sigmoid_shape  = 5e-3,   // uM
-                g = g_min + (g_max - g_min) / (1 + Math.exp(-(postsynaptic.Ca(state, t) - sigmoid_center) / sigmoid_shape));
-
-            return g * state[ir] * (E_rev - postsynaptic.V(state, t));
+            return (g_min + (g_max - g_min) * state[is]) * state[ir] * (E_rev - postsynaptic.V(state, t));
         }
     }
     postsynaptic.addCurrent(current);
 
     return {
         r: function (state, t) { return state[ir]; },
+        s: function (state, t) { return state[is]; },
         transmitter: function (state, t) { return state[iTransmitter]; },
         current: current
     };
+};
+
+
+electrophys.AMPASynapse.s_infinity = function (Ca) {
+    "use strict";
+    
+    var min    = 0,
+        max    = 1,
+        center = 0.125, // uM
+        shape  = 0.005; // uM
+
+    return min + (max - min) / (1 + Math.exp((center - Ca)/shape));
+};
+
+
+electrophys.AMPASynapse.tau_s = function (Ca) {
+    "use strict";
+    
+    var min    = 0.001,  // s
+        max    = 1,      // s
+        center = 0.125,  // uM
+        shape  = -0.005; // uM
+
+    return min + (max - min) / (1 + Math.exp((center - Ca)/shape));
 };
 
 

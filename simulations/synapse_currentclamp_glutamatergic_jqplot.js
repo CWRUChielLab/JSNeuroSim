@@ -6,12 +6,12 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, dataPanel, preVoltageDataTable,
-        preCaConcDataTable, postVoltageDataTable, postCaConcDataTable, preCurrentDataTable,
-        postCurrentDataTable, tMax = 1000e-3, plotHandles = []; 
+    var paramsDefaultSim, paramsLTPSim, layout, controlsPanel, controls, dataPanel,
+        preVoltageDataTable, postVoltageDataTable, preCurrentDataTable, postCurrentDataTable,
+        preCaConcDataTable, postCaConcDataTable, tMax = 1000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
-    params = { 
+    paramsDefaultSim = { 
         C_pre_nF: { label: 'Membrane capacitance', units: 'nF',
             defaultVal: 1, minVal: 0.01, maxVal: 100 }, 
         g_leak_pre_uS: { label: 'Leak conductance', units: '\u00B5S', 
@@ -110,6 +110,27 @@ window.addEventListener('load', function () {
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 150, minVal: 0, maxVal: tMax / 1e-3 }
     };
+
+    paramsLTPSim = JSON.parse(JSON.stringify(paramsDefaultSim));
+    paramsLTPSim.Ca_buff_post_ms.defaultVal = 200;
+    paramsLTPSim.g_AMPA_max_uS.defaultVal = 6;
+    paramsLTPSim.g_AMPA_min_uS.defaultVal = 0.15;
+    paramsLTPSim.g_NMDA_uS.defaultVal = 2;
+    paramsLTPSim.E_rev_NMDA_mV.defaultVal = 25;
+    paramsLTPSim.pulseStart_pre_ms.defaultVal = 0;
+    paramsLTPSim.pulseHeight_pre_nA.defaultVal = 6;
+    paramsLTPSim.pulseSubsequentHeight_pre_nA.defaultVal = 6;
+    paramsLTPSim.pulseWidth_pre_ms.defaultVal = 100;
+    paramsLTPSim.isi_pre_ms.defaultVal = 300;
+    paramsLTPSim.numPulses_pre.defaultVal = 2;
+    paramsLTPSim.pulseStart_post_ms.defaultVal = 0;
+    paramsLTPSim.pulseHeight_post_nA.defaultVal = 20;
+    paramsLTPSim.pulseSubsequentHeight_post_nA.defaultVal = 20;
+    paramsLTPSim.pulseWidth_post_ms.defaultVal = 100;
+    paramsLTPSim.isi_post_ms.defaultVal = 300;
+    paramsLTPSim.numPulses_post.defaultVal = 1;
+    paramsLTPSim.totalDuration_ms.defaultVal = 750;
+
     layout = [
         ['Presynaptic Cell Properties', ['C_pre_nF', 'g_leak_pre_uS', 
             'E_leak_pre_mV', 'g_Na_pre_uS', 'E_Na_pre_mV', 'g_K_pre_uS', 
@@ -138,17 +159,9 @@ window.addEventListener('load', function () {
     preVoltageDataTable.className = 'datatable';
     dataPanel.appendChild(preVoltageDataTable);
 
-    preCaConcDataTable = document.createElement('table');
-    preCaConcDataTable.className = 'datatable';
-    dataPanel.appendChild(preCaConcDataTable);
-
     postVoltageDataTable = document.createElement('table');
     postVoltageDataTable.className = 'datatable';
     dataPanel.appendChild(postVoltageDataTable);
-
-    postCaConcDataTable = document.createElement('table');
-    postCaConcDataTable.className = 'datatable';
-    dataPanel.appendChild(postCaConcDataTable);
 
     preCurrentDataTable = document.createElement('table');
     preCurrentDataTable.className = 'datatable';
@@ -157,6 +170,14 @@ window.addEventListener('load', function () {
     postCurrentDataTable = document.createElement('table');
     postCurrentDataTable.className = 'datatable';
     dataPanel.appendChild(postCurrentDataTable);
+
+//    preCaConcDataTable = document.createElement('table');
+//    preCaConcDataTable.className = 'datatable';
+//    dataPanel.appendChild(preCaConcDataTable);
+
+    postCaConcDataTable = document.createElement('table');
+    postCaConcDataTable.className = 'datatable';
+    dataPanel.appendChild(postCaConcDataTable);
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -367,29 +388,6 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#preVoltagePlot', preVoltageDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#preVoltagePlot', 'Time', 'ms', 'mV');
 
-//        // Pre Calcium
-//        title = document.createElement('h4');
-//        title.innerHTML = 'Presynaptic Intracellular Calcium Concentration';
-//        title.className = 'simplotheading';
-//        plotPanel.appendChild(title);
-//        plot = document.createElement('div');
-//        plot.id = 'preCaConcPlot';
-//        plot.style.width = '425px';
-//        plot.style.height = '200px';
-//        plotPanel.appendChild(plot);
-//        plotHandles.push(
-//            $.jqplot('preCaConcPlot', [CaConc_pre_nM], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-//                axes: {
-//                    xaxis: {label:'Time (ms)'},
-//                    yaxis: {label:'Calcium Concentration (nM)'},
-//                },
-//                series: [
-//                    {label: '[Ca]', color: 'black'},
-//                ],
-//        })));
-//        graphJqplot.bindDataCapture('#preCaConcPlot', preCaConcDataTable, 'Presynaptic Intracellular Ca Concentration', 'Time');
-//        graphJqplot.bindCursorTooltip('#preCaConcPlot', 'Time', 'ms', 'nM');
-        
 //        // AMPA r
 //        title = document.createElement('h4');
 //        title.innerHTML = 'AMPA r';
@@ -647,6 +645,29 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#postCurrentPlot', postCurrentDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#postCurrentPlot', 'Time', 'ms', 'nA');
 
+//        // Pre Calcium
+//        title = document.createElement('h4');
+//        title.innerHTML = 'Presynaptic Intracellular Calcium Concentration';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'preCaConcPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('preCaConcPlot', [CaConc_pre_nM], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Calcium Concentration (nM)'},
+//                },
+//                series: [
+//                    {label: '[Ca]', color: 'black'},
+//                ],
+//        })));
+//        graphJqplot.bindDataCapture('#preCaConcPlot', preCaConcDataTable, 'Presynaptic Intracellular Ca Concentration', 'Time');
+//        graphJqplot.bindCursorTooltip('#preCaConcPlot', 'Time', 'ms', 'nM');
+        
         // Post Calcium
         title = document.createElement('h4');
         title.innerHTML = 'Postsynaptic Intracellular Calcium Concentration';
@@ -672,10 +693,20 @@ window.addEventListener('load', function () {
     }
 
 
-    function reset() {
+    function reset(params, layout) {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
+    }
+
+
+    function resetToDefaultSim() {
+        reset(paramsDefaultSim, layout);
+    }
+
+
+    function resetToLTPSim() {
+        reset(paramsLTPSim, layout);
     }
 
 
@@ -683,29 +714,31 @@ window.addEventListener('load', function () {
         preVoltageDataTable.innerHTML = '';
         preVoltageDataTable.style.display = 'none';
 
-        preCaConcDataTable.innerHTML = '';
-        preCaConcDataTable.style.display = 'none';
-
         postVoltageDataTable.innerHTML = '';
         postVoltageDataTable.style.display = 'none';
-
-        postCaConcDataTable.innerHTML = '';
-        postCaConcDataTable.style.display = 'none';
 
         preCurrentDataTable.innerHTML = '';
         preCurrentDataTable.style.display = 'none';
 
         postCurrentDataTable.innerHTML = '';
         postCurrentDataTable.style.display = 'none';
+
+//        preCaConcDataTable.innerHTML = '';
+//        preCaConcDataTable.style.display = 'none';
+
+        postCaConcDataTable.innerHTML = '';
+        postCaConcDataTable.style.display = 'none';
     }
 
 
     (document.getElementById('SynapseCurrentClampGlutamatergicRunButton')
         .addEventListener('click', runSimulation, false));
-    (document.getElementById('SynapseCurrentClampGlutamatergicResetButton')
-        .addEventListener('click', reset, false));
     (document.getElementById('SynapseCurrentClampGlutamatergicClearDataButton')
         .addEventListener('click', clearDataTables, false));
+    (document.getElementById('SynapseCurrentClampGlutamatergicDefaultSimButton')
+        .addEventListener('click', resetToDefaultSim, false));
+    (document.getElementById('SynapseCurrentClampGlutamatergicLTPSimButton')
+        .addEventListener('click', resetToLTPSim, false));
     
 
     // make the enter key run the simulation  
@@ -718,7 +751,7 @@ window.addEventListener('load', function () {
             }
         }, true);
 
-    reset();
+    resetToDefaultSim();
     clearDataTables();
 
 }, false);

@@ -23,10 +23,18 @@
         <h1 class="simtitle">Glutamatergic synapse current clamp simulation</h1>
         <div id="SynapseCurrentClampGlutamatergicPlots" class="plotpanel"></div>
         <div id="SynapseCurrentClampGlutamatergicControls" class="controlspanel"></div>
-        <input id="SynapseCurrentClampGlutamatergicRunButton" type="button" value="Run"/>
-        <input type="button" id="SynapseCurrentClampGlutamatergicResetButton" value="Reset"/>
-        <input type="button" id="SynapseCurrentClampGlutamatergicClearDataButton" value="Clear Data Points"/>
+        <div>
+            <div style="float:left;">
+                <input id="SynapseCurrentClampGlutamatergicRunButton" type="button" value="Run"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="SynapseCurrentClampGlutamatergicClearDataButton" value="Clear Data Points"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="SynapseCurrentClampGlutamatergicDefaultSimButton" value="Default simulation"/><br/>
+                <input type="button" id="SynapseCurrentClampGlutamatergicLTPSimButton" value="LTP simulation"/>
+            </div>
+        </div><br/>
         <div id="SynapseCurrentClampGlutamatergicData" class="datapanel"></div>
-        <div id="debugPanel"></div>
     </body>
 </html>

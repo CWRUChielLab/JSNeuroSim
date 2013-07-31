@@ -839,6 +839,7 @@ electrophys.passiveMembrane = function (model, options) {
         E_leak = options.E_leak,
         V_rest = (options.V_rest === undefined ? E_leak : options.V_rest),
         Ca_init = options.Ca_init || 0,
+        Ca_steady = options.Ca_steady || 0,
         K1 = options.K1 || 0,
         K2 = options.K2 || 0,
         currents = [],
@@ -877,7 +878,7 @@ electrophys.passiveMembrane = function (model, options) {
         if (state[iCa] <= 0 && I_Ca < 0) {
             result[iCa] = 0;
         } else {
-            result[iCa] = K1 * I_Ca - K2 * state[iCa];
+            result[iCa] = K1 * I_Ca - K2 * (state[iCa] - Ca_steady);
         }
     }
 
@@ -897,6 +898,7 @@ electrophys.clampedMembrane = function (model, options) {
     "use strict";
     var V_clamp = options.V_clamp,
         Ca_init = options.Ca_init || 0,
+        Ca_steady = options.Ca_steady || 0,
         CaCurrents = [],
         K1 = options.K1 || 0,
         K2 = options.K2 || 0,
@@ -923,7 +925,7 @@ electrophys.clampedMembrane = function (model, options) {
         if (state[iCa] <= 0 && I_Ca < 0) {
             result[iCa] = 0;
         } else {
-            result[iCa] = K1 * I_Ca - K2 * state[iCa];
+            result[iCa] = K1 * I_Ca - K2 * (state[iCa] - Ca_steady);
         }
     }
 

@@ -8,7 +8,8 @@ window.addEventListener('load', function () {
 
     var paramsDefaultSim, paramsLTPSim, layout, controlsPanel, controls, dataPanel,
         preVoltageDataTable, postVoltageDataTable, preCurrentDataTable, postCurrentDataTable,
-        preCaConcDataTable, postCaConcDataTable, tMax = 1000e-3, plotHandles = []; 
+        preCaConcDataTable, postCaConcDataTable, AMPACurrentDataTable,
+        tMax = 1000e-3, plotHandles = [], plotFlag = ''; 
 
     // set up the controls for the current clamp simulation
     paramsDefaultSim = { 
@@ -134,13 +135,12 @@ window.addEventListener('load', function () {
     layout = [
         ['Presynaptic Cell Properties', ['C_pre_nF', 'g_leak_pre_uS', 
             'E_leak_pre_mV', 'g_Na_pre_uS', 'E_Na_pre_mV', 'g_K_pre_uS', 
-            'E_K_pre_mV', 'g_P_pre_uS', 'E_Ca_pre_mV', 'Ca_buff_pre_ms']],
+            'E_K_pre_mV']],
         ['Postsynaptic Cell Properties', ['C_post_nF', 'g_leak_post_uS', 
             'E_leak_post_mV', 'g_Na_post_uS', 'E_Na_post_mV', 'g_K_post_uS', 
-            'E_K_post_mV', 'g_P_post_uS', 'E_Ca_post_mV', 'Ca_buff_post_ms']],
+            'E_K_post_mV', 'Ca_buff_post_ms']],
         ['Synapse Properties', ['g_AMPA_max_uS', 'g_AMPA_min_uS', 'E_rev_AMPA_mV',
-            'alpha_AMPA_ms', 'beta_AMPA_ms', 'g_NMDA_uS', 'E_rev_NMDA_mV',
-            'alpha_NMDA_ms', 'beta_NMDA_ms', 'Mg_mM', 'threshold_syn_mV']],
+            'g_NMDA_uS', 'E_rev_NMDA_mV', 'Mg_mM', 'threshold_syn_mV']],
         ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 'pulseHeight_pre_nA',
             'pulseSubsequentHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
             'numPulses_pre']],
@@ -178,6 +178,10 @@ window.addEventListener('load', function () {
     postCaConcDataTable = document.createElement('table');
     postCaConcDataTable.className = 'datatable';
     dataPanel.appendChild(postCaConcDataTable);
+
+    AMPACurrentDataTable = document.createElement('table');
+    AMPACurrentDataTable.className = 'datatable';
+    dataPanel.appendChild(AMPACurrentDataTable);
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -365,28 +369,159 @@ window.addEventListener('load', function () {
         plotPanel = document.getElementById('SynapseCurrentClampGlutamatergicPlots');
         plotPanel.innerHTML = '';
 
-        // Pre Voltage
-        title = document.createElement('h4');
-        title.innerHTML = 'Presynaptic Membrane Potential';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'preVoltagePlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('preVoltagePlot', [v_pre_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Membrane Potential (mV)'},
-                },
-                series: [
-                    {label: 'V<sub>m</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#preVoltagePlot', preVoltageDataTable, title.innerHTML, 'Time');
-        graphJqplot.bindCursorTooltip('#preVoltagePlot', 'Time', 'ms', 'mV');
+        //*****************
+        // VOLTAGE, STIMULATION CURRENT, AND CALCIUM
+        //*****************
+
+        if (true) {
+
+            // Pre Voltage
+            title = document.createElement('h4');
+            title.innerHTML = 'Presynaptic Membrane Potential';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'preVoltagePlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('preVoltagePlot', [v_pre_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
+                    },
+                    series: [
+                        {label: 'V<sub>m</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#preVoltagePlot', preVoltageDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#preVoltagePlot', 'Time', 'ms', 'mV');
+
+            // Post Voltage
+            title = document.createElement('h4');
+            title.innerHTML = 'Postsynaptic Membrane Potential';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'postVoltagePlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('postVoltagePlot', [v_post_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
+                    },
+                    series: [
+                        {label: 'V<sub>m</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#postVoltagePlot', postVoltageDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#postVoltagePlot', 'Time', 'ms', 'mV');
+
+            // Pre Current
+            title = document.createElement('h4');
+            title.innerHTML = 'Presynaptic Stimulation Current';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'preCurrentPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('preCurrentPlot', [iStim_pre_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>stim</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#preCurrentPlot', preCurrentDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#preCurrentPlot', 'Time', 'ms', 'nA');
+
+            // Post Current
+            title = document.createElement('h4');
+            title.innerHTML = 'Postsynaptic Stimulation Current';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'postCurrentPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('postCurrentPlot', [iStim_post_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>stim</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#postCurrentPlot', postCurrentDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#postCurrentPlot', 'Time', 'ms', 'nA');
+
+            // Post Calcium
+            title = document.createElement('h4');
+            title.innerHTML = 'Postsynaptic Intracellular Calcium Concentration';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'postCaConcPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('postCaConcPlot', [CaConc_post_nM], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Calcium Concentration (nM)'},
+                    },
+                    series: [
+                        {label: '[Ca]', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#postCaConcPlot', postCaConcDataTable, 'Postsynaptic Intracellular Ca Concentration', 'Time');
+            graphJqplot.bindCursorTooltip('#postCaConcPlot', 'Time', 'ms', 'nM');
+
+        }
+
+        //*****************
+        // AMPA CURRENT
+        //*****************
+
+        if (plotFlag == 'LTP') {
+
+            // AMPA current
+            title = document.createElement('h4');
+            title.innerHTML = 'AMPA Current';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'AMPACurrentPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('AMPACurrentPlot', [AMPAcurrent], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>AMPA</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#AMPACurrentPlot', AMPACurrentDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#AMPACurrentPlot', 'Time', 'ms', 'nA');
+
+        }
 
 //        // AMPA r
 //        title = document.createElement('h4');
@@ -459,27 +594,6 @@ window.addEventListener('load', function () {
 //                ],
 //        })));
 
-//        // AMPA current
-//        title = document.createElement('h4');
-//        title.innerHTML = 'AMPA current';
-//        title.className = 'simplotheading';
-//        plotPanel.appendChild(title);
-//        plot = document.createElement('div');
-//        plot.id = 'AMPAcurrentPlot';
-//        plot.style.width = '425px';
-//        plot.style.height = '200px';
-//        plotPanel.appendChild(plot);
-//        plotHandles.push(
-//           $.jqplot('AMPAcurrentPlot', [AMPAcurrent], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-//                axes: {
-//                    xaxis: {label:'Time (ms)'},
-//                    yaxis: {label:'Current (nA)'},
-//                },
-//                series: [
-//                    {label: 'I<sub>AMPA</sub>', color: 'black'},
-//                ],
-//        })));
-
 //        // NMDA r
 //        title = document.createElement('h4');
 //        title.innerHTML = 'NMDA r';
@@ -547,29 +661,6 @@ window.addEventListener('load', function () {
 //                ],
 //        })));
 
-        // Post Voltage
-        title = document.createElement('h4');
-        title.innerHTML = 'Postsynaptic Membrane Potential';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'postVoltagePlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('postVoltagePlot', [v_post_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Membrane Potential (mV)'},
-                },
-                series: [
-                    {label: 'V<sub>m</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#postVoltagePlot', postVoltageDataTable, title.innerHTML, 'Time');
-        graphJqplot.bindCursorTooltip('#postVoltagePlot', 'Time', 'ms', 'mV');
-
 //        // Post Gates
 //        title = document.createElement('h4');
 //        title.innerHTML = 'Postsynaptic Gates';
@@ -599,52 +690,6 @@ window.addEventListener('load', function () {
 //        })));
 //        graphJqplot.bindCursorTooltip('#gatePlot', 'Time', 'ms', '');
 
-        // Pre Current
-        title = document.createElement('h4');
-        title.innerHTML = 'Presynaptic Stimulation Current';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'preCurrentPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('preCurrentPlot', [iStim_pre_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Current (nA)'},
-                },
-                series: [
-                    {label: 'I<sub>stim</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#preCurrentPlot', preCurrentDataTable, title.innerHTML, 'Time');
-        graphJqplot.bindCursorTooltip('#preCurrentPlot', 'Time', 'ms', 'nA');
-
-        // Post Current
-        title = document.createElement('h4');
-        title.innerHTML = 'Postsynaptic Stimulation Current';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'postCurrentPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('postCurrentPlot', [iStim_post_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Current (nA)'},
-                },
-                series: [
-                    {label: 'I<sub>stim</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#postCurrentPlot', postCurrentDataTable, title.innerHTML, 'Time');
-        graphJqplot.bindCursorTooltip('#postCurrentPlot', 'Time', 'ms', 'nA');
-
 //        // Pre Calcium
 //        title = document.createElement('h4');
 //        title.innerHTML = 'Presynaptic Intracellular Calcium Concentration';
@@ -668,28 +713,6 @@ window.addEventListener('load', function () {
 //        graphJqplot.bindDataCapture('#preCaConcPlot', preCaConcDataTable, 'Presynaptic Intracellular Ca Concentration', 'Time');
 //        graphJqplot.bindCursorTooltip('#preCaConcPlot', 'Time', 'ms', 'nM');
         
-        // Post Calcium
-        title = document.createElement('h4');
-        title.innerHTML = 'Postsynaptic Intracellular Calcium Concentration';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'postCaConcPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('postCaConcPlot', [CaConc_post_nM], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Calcium Concentration (nM)'},
-                },
-                series: [
-                    {label: '[Ca]', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#postCaConcPlot', postCaConcDataTable, 'Postsynaptic Intracellular Ca Concentration', 'Time');
-        graphJqplot.bindCursorTooltip('#postCaConcPlot', 'Time', 'ms', 'nM');
     }
 
 
@@ -701,11 +724,13 @@ window.addEventListener('load', function () {
 
 
     function resetToDefaultSim() {
+        plotFlag = 'default';
         reset(paramsDefaultSim, layout);
     }
 
 
     function resetToLTPSim() {
+        plotFlag = 'LTP';
         reset(paramsLTPSim, layout);
     }
 
@@ -728,6 +753,9 @@ window.addEventListener('load', function () {
 
         postCaConcDataTable.innerHTML = '';
         postCaConcDataTable.style.display = 'none';
+
+        AMPACurrentDataTable.innerHTML = '';
+        AMPACurrentDataTable.style.display = 'none';
     }
 
 

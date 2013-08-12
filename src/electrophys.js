@@ -1425,3 +1425,89 @@ electrophys.gettingShuntConductance = function (model, neuron, options) {
         h: function (state, t) { return state[ih]; }
     };
 };
+
+
+// Current for mechanoreceptor responding to changes in touch intensity
+
+// Based on Gerling GJ, Lesniak DR and Kim EK. "Touch mechanoreceptors: 
+// modeling and simulating the skin and receptors to predict the timing of action potentials", 
+// Frontiers in Sensing. Ed. Barth FG, Humphrey JAC and Srinivasan MV. New York: 
+// Springer Science and Business Media, 2012. 225-238.
+
+electrophys.touchStimuli = function (options) {
+	"use strict";
+	var beta = options.beta,
+		Ks = options.Ks,
+		Kd = options.Kd,
+		
+		sigHeight1 = options.sigHeight1,
+		sigHeight2 = options.sigHeight2,
+		sigHeight3 = options.sigHeight3,
+		
+		midpointUp1 = options.midpointUp1,
+		midpointDown1 = options.midpointDown1,
+		midpointUp2 = options.midpointUp2,
+		midpointDown2 = options.midpointDown2,
+		midpointUp3 = options.midpointUp3,
+		midpointDown3 = options.midpointDown3,
+		
+		growthRateUp1 = options.growthRateUp1,
+		growthRateDown1 = options.growthRateDown1,
+		growthRateUp2 = options.growthRateUp2,
+		growthRateDown2 = options.growthRateDown2,
+		growthRateUp3 = options.growthRateUp3,
+		growthRateDown3 = options.growthRateDown3,
+		
+        baseline = options.baseline || 0,
+		exponentUp1, exponentDown1,
+		exponentUp2, exponentDown2,
+		exponentUp3, exponentDown3,		
+		touchForce, touchForceDerivative;
+				
+	function force (state, t) {
+		if (t instanceof Array) {
+            return t.map(function (t) {return force([], t);});
+        } else {
+			return ((sigHeight1 / (1 + Math.exp((-(t - midpointUp1) / growthRateUp1)))) + (sigHeight1 / (1 + Math.exp((t - midpointDown1) / growthRateDown1))) - sigHeight1) +
+			((sigHeight2 / (1 + Math.exp((-(t - midpointUp2) / growthRateUp2)))) + (sigHeight2 / (1 + Math.exp((t - midpointDown2) / growthRateDown2))) - sigHeight2) +
+			((sigHeight3 / (1 + Math.exp((-(t - midpointUp3) / growthRateUp3)))) + (sigHeight3 / (1 + Math.exp((t - midpointDown3) / growthRateDown3))) - sigHeight3);
+		}
+	}
+	
+	function pulse (state, t) {
+		if (t instanceof Array) {
+			return t.map(function (t) {return pulse([], t);});
+		} else {
+			touchForce = force (state, t);
+			
+			exponentUp1 = Math.exp((midpointUp1 - t) / growthRateUp1);
+			exponentDown1 = Math.exp(-(midpointDown1 - t) / growthRateDown1);
+			
+			exponentUp2 = Math.exp((midpointUp2 - t) / growthRateUp2);
+			exponentDown2 = Math.exp(-(midpointDown2 - t) / growthRateDown2);
+			
+			exponentUp3 = Math.exp((midpointUp3 - t) / growthRateUp3);
+			exponentDown3 = Math.exp(-(midpointDown3 - t) / growthRateDown3);
+			
+			touchForceDerivative = 
+				(((exponentUp1 * sigHeight1)/(Math.pow((1 + exponentUp1), 2) * growthRateUp1)) - 
+				((exponentDown1 * sigHeight1)/(Math.pow((1 + exponentDown1), 2) * growthRateDown1))) + 
+				(((exponentUp2 * sigHeight2)/(Math.pow((1 + exponentUp2), 2) * growthRateUp2)) - 
+				((exponentDown2 * sigHeight2)/(Math.pow((1 + exponentDown2), 2) * growthRateDown2))) + 
+				(((exponentUp3 * sigHeight3)/(Math.pow((1 + exponentUp3), 2) * growthRateUp3)) - 
+				((exponentDown3 * sigHeight3)/(Math.pow((1 + exponentDown3), 2) * growthRateDown3)));
+				
+			if (touchForceDerivative < 0) {
+				return beta + (Ks * touchForce);
+			} else {
+				return beta + (Ks * touchForce) + (Kd * touchForceDerivative);
+			}
+		}
+	};		
+	
+	return {
+		pulse: pulse,
+		force: force
+	};
+};
+

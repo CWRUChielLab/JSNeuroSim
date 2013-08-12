@@ -1436,9 +1436,9 @@ electrophys.gettingShuntConductance = function (model, neuron, options) {
 
 electrophys.touchStimuli = function (options) {
 	"use strict";
-	var beta = options.beta,
-		Ks = options.Ks,
-		Kd = options.Kd,
+	var Ks = options.Ks,
+		Kd_positive = options.Kd_positive,
+		Kd_negative = options.Kd_negative || 0,
 		
 		sigHeight1 = options.sigHeight1,
 		sigHeight2 = options.sigHeight2,
@@ -1498,9 +1498,9 @@ electrophys.touchStimuli = function (options) {
 				((exponentDown3 * sigHeight3)/(Math.pow((1 + exponentDown3), 2) * growthRateDown3)));
 				
 			if (touchForceDerivative < 0) {
-				return beta + (Ks * touchForce);
+				return (Ks * touchForce) + (Kd_negative * touchForceDerivative);
 			} else {
-				return beta + (Ks * touchForce) + (Kd * touchForceDerivative);
+				return (Ks * touchForce) + (Kd_positive * touchForceDerivative);
 			}
 		}
 	};		

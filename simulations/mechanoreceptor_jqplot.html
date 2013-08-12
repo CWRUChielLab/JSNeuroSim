@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>        
-        <title>Mechanoreceptor</title>
+        <title>Mechanoreceptors</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="simulations.css" />
         <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
@@ -20,14 +20,23 @@
         <script language="javascript" type="text/javascript" src="mechanoreceptor_jqplot.js"></script>
     </head>
     <body>
-        <h1 class="simtitle">Mechanoreceptor</h1>
+        <h1 class="simtitle">Mechanoreceptors</h1>
         <div id="MechanoreceptorPlots" class="plotpanel"></div>
         <div id="MechanoreceptorControls" class="controlspanel"></div>
-        <input id="MechanoreceptorRunButton" type="button" value="Run"/>
-        <input type="button" id="MechanoreceptorResetButton" 
-            value="Reset"/>
-        <input type="button" id="MechanoreceptorClearDataButton"
-            value="Clear Data Points"/>
+		<div>
+			<div style="float:left;">
+				<input id="MechanoreceptorRunButton" type="button" value="Run"/>
+			</div>
+			<div style="float:left;">
+				<input type="button" id="MechanoreceptorClearDataButton" value="Clear Data Points"/>
+			</div>
+			<div style="float:left;">
+				<input type="button" id="MerkelCellButton" value="Merkel Cell Simulation"/><br/>
+				<input type="button" id="MeissnerCorpusculeButton" value="Meissner Corpuscule Simulation"/><br/>
+                <input type="button" id="BothMechanoreceptorsButton" value="Both Mechanoreceptors"/><br/>
+            </div>
+        </div><br/><br/><br/>
+			
         <div id="MechanoreceptorData" class="datapanel"></div>
         <div id="debugPanel"></div>
     </body>

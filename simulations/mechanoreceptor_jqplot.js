@@ -371,7 +371,7 @@ window.addEventListener('load', function () {
 					yaxis: {label:'Touch force (N)'},
 				},
 				series: [
-					{label: 'Touch force (N)', color: 'black'},
+					{label: 'Touch force', color: 'black'},
 				],
 		})));
 		graphJqplot.bindDataCapture('#touchStimPlot', touchDataTable, title.innerHTML, 'Time');
@@ -395,7 +395,7 @@ window.addEventListener('load', function () {
 						yaxis: {label:'Current (nA)'},
 					},
 					series: [
-						{label: 'I<sub>stim</sub>', color: 'black'},
+						{label: 'I', color: 'black'},
 					],
 			})));
 			graphJqplot.bindDataCapture('#merkelCurrentPlot', merkelCurrentDataTable, title.innerHTML, 'Time');
@@ -420,7 +420,7 @@ window.addEventListener('load', function () {
 						yaxis: {label:'Current (nA)'},
 					},
 					series: [
-						{label: 'I<sub>stim</sub>', color: 'black'},
+						{label: 'I', color: 'black'},
 					],
 			})));
 			graphJqplot.bindDataCapture('#meissnerCurrentPlot', meissnerCurrentDataTable, title.innerHTML, 'Time');

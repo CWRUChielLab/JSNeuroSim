@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Longitudinal muscle simulation</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="simulations.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
+        <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../lib/jqplot/excanvas.js"></script><![endif]-->
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.jqplot.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="longitudinal_muscle_jqplot.js"></script>
+    </head>
+    <body>
+        <h1 class="simtitle">Longitudinal muscle simulation</h1>
+        <div id="LongitudinalMusclePlots" class="plotpanel"></div>
+        <div id="LongitudinalMuscleControls" class="controlspanel"></div>
+
+        <div>
+            <div style="float:left;">
+                <input id="LongitudinalMuscleRunButton" type="button" value="Run"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="LongitudinalMuscleClearDataButton" value="Clear Data Points"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="LongitudinalMuscleRecruitmentAndSummationSimButton" value="Recruitment and temporal summation"/><br/>
+                <input type="button" id="LongitudinalMuscleRecruitmentOnlySimButton" value="Recruitment only"/>
+            </div>
+        </div>
+        <div id="LongitudinalMuscleData" class="datapanel"></div>
+    </body>
+</html>

@@ -1511,3 +1511,63 @@ electrophys.touchStimuli = function (options) {
 	};
 };
 
+
+// Based on Chiel HJ, Crago P, Mansour JM, and Hathi K,
+// Biomechanics of a muscular hydrostat: a model of lapping
+// by a reptilian tongue, Biol. Cybern. 67: 403-415, 1992.
+// Here the circumferential muscle is left out, leaving only
+// a longitudinal muscle attached to a spring.
+electrophys.longitudinalMuscle = function (model, options) {
+    "use strict";
+    var Linit = (options.Linit === undefined ? 5.0 : options.Linit),
+        Ainit = options.Ainit || 0.001,
+        neuralInput = options.neuralInput,
+        iL = model.addStateVar(Linit),
+        iA = model.addStateVar(Ainit),
+        that = {},
+        // Firing period parameters
+        T0          = (options.T0          === undefined ? 120e-3 /* s */         : options.T0),
+        Tslope      = (options.Tslope      === undefined ? 50e-3 /* s */          : options.Tslope),
+        // Isometric force parameters
+        F0          = (options.F0          === undefined ? 3.2 /* N */            : options.F0),
+        a           = (options.a           === undefined ? 1e-1 /* s^-1 */        : options.a),
+        b           = (options.b           === undefined ? 1.5e0 /* cm^-1 s^-1 */ : options.b),
+        Lmax        = (options.Lmax        === undefined ? 8.0 /* cm */           : options.Lmax),
+        // Passive force parameters
+        c1          = (options.c1          === undefined ? 7.392e-6 /* N */       : options.c1),
+        c2          = (options.c2          === undefined ? 2.30259 /* cm^-1 */    : options.c2),
+        c3          = (options.c3          === undefined ? 2.30259 /* cm^-1 */    : options.c3),
+        Lrestpas    = (options.Lrestpas    === undefined ? 4.0 /* cm */           : options.Lrestpas),
+        // Spring force parameters
+        k           = (options.k           === undefined ? 0.01 /* N cm^-1 */     : options.k),
+        Lrestspring = (options.Lrestspring === undefined ? 6.0 /* cm */           : options.Lrestspring),
+        // Force/velocity constant
+        B           = (options.B           === undefined ? 20e-3 /* s cm^-1 */    : options.B),
+        // Activation damping constant
+        p           = (options.p           === undefined ? 30.3030303 /* s^-1 */  : options.p);
+    
+    function drift(result, state, t) {
+        var Tf,
+            Fiso,
+            Fpassive,
+            Fspring;
+
+        Tf       = T0 - Tslope * state[iA];
+        Fiso     = -state[iA] * F0 * (1 + (a + b * (state[iL] - Lmax)) * Tf);
+        Fpassive = -c1 * (Math.exp(c2 * (state[iL] - Lrestpas)) - Math.exp(-c3 * (state[iL] - Lrestpas)));
+        Fspring  = -k * (state[iL] - Lrestspring);
+
+        result[iL] = -(Fpassive + Fspring + Fiso) / (B * Fiso);
+
+        result[iA] = p * (neuralInput(state, t) - state[iA]);
+    }
+
+    model.registerDrift(drift);
+    
+    that.L = function (state, t) { return state[iL]; };
+    that.A = function (state, t) { return state[iA]; };
+
+    return that;
+};
+
+

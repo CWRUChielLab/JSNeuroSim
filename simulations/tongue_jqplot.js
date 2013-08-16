@@ -160,7 +160,11 @@ window.addEventListener('load', function () {
             ALinit: 0.00063,
             ACinit: 0.00027,
             inputL: inputL,
-            inputC: inputC
+            inputC: inputC,
+            T0L: params.T0L_ms * 1e-3,
+            TslopeL: params.TslopeL_ms * 1e-3,
+            T0C: params.T0C_ms * 1e-3,
+            TslopeC: params.TslopeC_ms * 1e-3,
         });
         
         // run it for a bit to let it reach steady state

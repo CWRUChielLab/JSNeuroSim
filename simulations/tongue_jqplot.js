@@ -73,10 +73,10 @@ window.addEventListener('load', function () {
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
-    controlsPanel = document.getElementById('TongueMuscleControls');
+    controlsPanel = document.getElementById('TongueControls');
 
     // prepare tables for displaying captured data points
-    dataPanel = document.getElementById('TongueMuscleData');
+    dataPanel = document.getElementById('TongueData');
     dataPanel.className = 'datapanel';
 
     LLDataTable = document.createElement('table');
@@ -203,7 +203,7 @@ window.addEventListener('load', function () {
         }
 
         // plot the results
-        plotPanel = document.getElementById('TongueMusclePlots');
+        plotPanel = document.getElementById('TonguePlots');
         plotPanel.innerHTML = '';
 
         // Longitudinal length
@@ -384,13 +384,13 @@ window.addEventListener('load', function () {
     }
 
 
-    (document.getElementById('TongueMuscleRunButton')
+    (document.getElementById('TongueRunButton')
         .addEventListener('click', runSimulation, false));
-    (document.getElementById('TongueMuscleRecruitmentAndSummationSimButton')
+    (document.getElementById('TongueRecruitmentAndSummationSimButton')
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
-    (document.getElementById('TongueMuscleRecruitmentOnlySimButton')
+    (document.getElementById('TongueRecruitmentOnlySimButton')
         .addEventListener('click', resetToRecruitmentOnlySim, false));
-    (document.getElementById('TongueMuscleClearDataButton')
+    (document.getElementById('TongueClearDataButton')
         .addEventListener('click', clearDataTables, false));
     
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>        
-        <title>Tongue muscle simulation</title>
+        <title>Tongue simulation</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="simulations.css" />
         <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
@@ -17,25 +17,25 @@
         <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
         <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
         <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
-        <script language="javascript" type="text/javascript" src="tongue_muscle_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="tongue_jqplot.js"></script>
     </head>
     <body>
-        <h1 class="simtitle">Tongue muscle simulation</h1>
-        <div id="TongueMusclePlots" class="plotpanel"></div>
-        <div id="TongueMuscleControls" class="controlspanel"></div>
+        <h1 class="simtitle">Tongue simulation</h1>
+        <div id="TonguePlots" class="plotpanel"></div>
+        <div id="TongueControls" class="controlspanel"></div>
 
         <div>
             <div style="float:left;">
-                <input id="TongueMuscleRunButton" type="button" value="Run"/>
+                <input id="TongueRunButton" type="button" value="Run"/>
             </div>
             <div style="float:left;">
-                <input type="button" id="TongueMuscleClearDataButton" value="Clear Data Points"/>
+                <input type="button" id="TongueClearDataButton" value="Clear Data Points"/>
             </div>
             <div style="float:left;">
-                <input type="button" id="TongueMuscleRecruitmentAndSummationSimButton" value="Recruitment and temporal summation"/><br/>
-                <input type="button" id="TongueMuscleRecruitmentOnlySimButton" value="Recruitment only"/>
+                <input type="button" id="TongueRecruitmentAndSummationSimButton" value="Recruitment and temporal summation"/><br/>
+                <input type="button" id="TongueRecruitmentOnlySimButton" value="Recruitment only"/>
             </div>
         </div>
-        <div id="TongueMuscleData" class="datapanel"></div>
+        <div id="TongueData" class="datapanel"></div>
     </body>
 </html>

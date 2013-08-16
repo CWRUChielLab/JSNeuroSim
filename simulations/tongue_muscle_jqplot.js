@@ -22,31 +22,39 @@ window.addEventListener('load', function () {
         TslopeC_ms: { label: 'C Firing period slope', units: 'ms',
             defaultVal: 50, minVal: -100, maxVal: 100 },
         pulseLStart_ms: { label: 'Stimulus delay', units: 'ms', 
-            defaultVal: 100, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 180, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseLRise_ms: { label: 'Stimulus rise time', units: 'ms', 
+            defaultVal: 360, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseLFall_ms: { label: 'Stimulus fall time', units: 'ms', 
+            defaultVal: 140, minVal: 0, maxVal: tMax / 1e-3 },
         pulseLHeight: { label: 'Stimulus first pulse', units: '', 
-            defaultVal: 0.05, minVal: -1000, maxVal: 1000 },
+            defaultVal: 0.05, minVal: -100, maxVal: 100 },
         pulseLSubsequentHeight: { label: 'Stimulus subsequent pulses', units: '', 
-            defaultVal: 0.05, minVal: -1000, maxVal: 1000 },
-        pulseLWidth_ms: { label: 'Pulse duration', units: 'ms', 
-            defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 0.05, minVal: -100, maxVal: 100 },
+        //pulseLWidth_ms: { label: 'Pulse duration', units: 'ms', 
+        //    defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
         isiL_ms: { label: 'Inter-stimulus interval', units: 'ms', 
-            defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 280, minVal: 0, maxVal: tMax / 1e-3 },
         numPulsesL: { label: 'Number of pulses', units: '', 
             defaultVal: 3, minVal: 0, maxVal: 100 },
         pulseCStart_ms: { label: 'Stimulus delay', units: 'ms', 
-            defaultVal: 400, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 0, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseCRise_ms: { label: 'Stimulus rise time', units: 'ms', 
+            defaultVal: 260, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseCFall_ms: { label: 'Stimulus fall time', units: 'ms', 
+            defaultVal: 260, minVal: 0, maxVal: tMax / 1e-3 },
         pulseCHeight: { label: 'Stimulus first pulse', units: '', 
-            defaultVal: 0.05, minVal: -1000, maxVal: 1000 },
+            defaultVal: 0.5, minVal: -100, maxVal: 100 },
         pulseCSubsequentHeight: { label: 'Stimulus subsequent pulses', units: '', 
-            defaultVal: 0.05, minVal: -1000, maxVal: 1000 },
-        pulseCWidth_ms: { label: 'Pulse duration', units: 'ms', 
-            defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 0.5, minVal: -100, maxVal: 100 },
+        //pulseCWidth_ms: { label: 'Pulse duration', units: 'ms', 
+        //    defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
         isiC_ms: { label: 'Inter-stimulus interval', units: 'ms', 
-            defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
+            defaultVal: 260, minVal: 0, maxVal: tMax / 1e-3 },
         numPulsesC: { label: 'Number of pulses', units: '', 
             defaultVal: 3, minVal: 0, maxVal: 100 },
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
-            defaultVal: 2000, minVal: 0, maxVal: tMax / 1e-3 }
+            defaultVal: 2500, minVal: 0, maxVal: tMax / 1e-3 }
     };
 
     paramsRecruitmentOnly = JSON.parse(JSON.stringify(paramsRecruitmentAndSummation));
@@ -56,12 +64,12 @@ window.addEventListener('load', function () {
     paramsRecruitmentOnly.TslopeC_ms.defaultVal = 0;
 
     layout = [
-        ['Longitudinal Neural Input', ['pulseLStart_ms', 'pulseLHeight', 
-            'pulseLSubsequentHeight', 'pulseLWidth_ms', 'isiL_ms',
-            'numPulsesL']],
-        ['Circumferential Neural Input', ['pulseCStart_ms', 'pulseCHeight', 
-            'pulseCSubsequentHeight', 'pulseCWidth_ms', 'isiC_ms',
-            'numPulsesC']],
+        ['Longitudinal Neural Input', ['pulseLStart_ms', 'pulseLRise_ms',
+            'pulseLFall_ms', 'pulseLHeight', 'pulseLSubsequentHeight',
+            'isiL_ms', 'numPulsesL']],
+        ['Circumferential Neural Input', ['pulseCStart_ms', 'pulseCRise_ms',
+            'pulseCFall_ms', 'pulseCHeight', 'pulseCSubsequentHeight',
+            'isiC_ms', 'numPulsesC']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -105,24 +113,46 @@ window.addEventListener('load', function () {
         params = controls.values;
         model = componentModel.componentModel();
 
-        inputL = electrophys.pulseTrain({
+        //inputL = electrophys.pulseTrain({
+        //    start: params.pulseLStart_ms * 1e-3, 
+        //    width: params.pulseLWidth_ms * 1e-3, 
+        //    baseline: 0.001,
+        //    height: params.pulseLHeight,
+        //    subsequentHeight: params.pulseLSubsequentHeight,
+        //    gap: params.isiL_ms * 1e-3,
+        //    num_pulses: params.numPulsesL
+        //});
+
+        inputL = electrophys.trianglePulseTrain({
             start: params.pulseLStart_ms * 1e-3, 
-            width: params.pulseLWidth_ms * 1e-3, 
-            baseline: 0.001,
+            risetime: params.pulseLRise_ms * 1e-3, 
+            falltime: params.pulseLFall_ms * 1e-3,
+            baseline: 0.0001, // prevent division by zero
             height: params.pulseLHeight,
             subsequentHeight: params.pulseLSubsequentHeight,
+            num_pulses: params.numPulsesL,
             gap: params.isiL_ms * 1e-3,
-            num_pulses: params.numPulsesL
         });
 
-        inputC = electrophys.pulseTrain({
+        //inputC = electrophys.pulseTrain({
+        //    start: params.pulseCStart_ms * 1e-3, 
+        //    width: params.pulseCWidth_ms * 1e-3, 
+        //    baseline: 0.001,
+        //    height: params.pulseCHeight,
+        //    subsequentHeight: params.pulseCSubsequentHeight,
+        //    gap: params.isiC_ms * 1e-3,
+        //    num_pulses: params.numPulsesC
+        //});
+
+        inputC = electrophys.trianglePulseTrain({
             start: params.pulseCStart_ms * 1e-3, 
-            width: params.pulseCWidth_ms * 1e-3, 
-            baseline: 0.001,
+            risetime: params.pulseCRise_ms * 1e-3, 
+            falltime: params.pulseCFall_ms * 1e-3,
+            baseline: 0.0001, // prevent division by zero
             height: params.pulseCHeight,
             subsequentHeight: params.pulseCSubsequentHeight,
+            num_pulses: params.numPulsesC,
             gap: params.isiC_ms * 1e-3,
-            num_pulses: params.numPulsesC
         });
 
         muscle = electrophys.tongueMuscle(model, {

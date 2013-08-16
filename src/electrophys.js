@@ -1517,7 +1517,7 @@ electrophys.touchStimuli = function (options) {
 // by a reptilian tongue, Biol. Cybern. 67: 403-415, 1992.
 // Here the circumferential muscle is left out, leaving only
 // a longitudinal muscle attached to a spring.
-electrophys.longitudinalMuscle = function (model, options) {
+electrophys.muscle = function (model, options) {
     "use strict";
     var Linit = (options.Linit === undefined ? 5.0 /* cm */ : options.Linit),
         Ainit = (options.Ainit === undefined ? 0.001        : options.Ainit),

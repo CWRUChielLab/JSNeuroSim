@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>        
-        <title>Longitudinal muscle simulation</title>
+        <title>Muscle simulation</title>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="simulations.css" />
         <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
@@ -17,25 +17,25 @@
         <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
         <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
         <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
-        <script language="javascript" type="text/javascript" src="longitudinal_muscle_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="muscle_jqplot.js"></script>
     </head>
     <body>
-        <h1 class="simtitle">Longitudinal muscle simulation</h1>
-        <div id="LongitudinalMusclePlots" class="plotpanel"></div>
-        <div id="LongitudinalMuscleControls" class="controlspanel"></div>
+        <h1 class="simtitle">Muscle simulation</h1>
+        <div id="MusclePlots" class="plotpanel"></div>
+        <div id="MuscleControls" class="controlspanel"></div>
 
         <div>
             <div style="float:left;">
-                <input id="LongitudinalMuscleRunButton" type="button" value="Run"/>
+                <input id="MuscleRunButton" type="button" value="Run"/>
             </div>
             <div style="float:left;">
-                <input type="button" id="LongitudinalMuscleClearDataButton" value="Clear Data Points"/>
+                <input type="button" id="MuscleClearDataButton" value="Clear Data Points"/>
             </div>
             <div style="float:left;">
-                <input type="button" id="LongitudinalMuscleRecruitmentAndSummationSimButton" value="Recruitment and temporal summation"/><br/>
-                <input type="button" id="LongitudinalMuscleRecruitmentOnlySimButton" value="Recruitment only"/>
+                <input type="button" id="MuscleRecruitmentAndSummationSimButton" value="Recruitment and temporal summation"/><br/>
+                <input type="button" id="MuscleRecruitmentOnlySimButton" value="Recruitment only"/>
             </div>
         </div>
-        <div id="LongitudinalMuscleData" class="datapanel"></div>
+        <div id="MuscleData" class="datapanel"></div>
     </body>
 </html>

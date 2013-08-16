@@ -48,10 +48,10 @@ window.addEventListener('load', function () {
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
-    controlsPanel = document.getElementById('LongitudinalMuscleControls');
+    controlsPanel = document.getElementById('MuscleControls');
 
     // prepare tables for displaying captured data points
-    dataPanel = document.getElementById('LongitudinalMuscleData');
+    dataPanel = document.getElementById('MuscleData');
     dataPanel.className = 'datapanel';
 
     lengthDataTable = document.createElement('table');
@@ -86,7 +86,7 @@ window.addEventListener('load', function () {
             num_pulses: params.numPulses
         });
 
-        muscle = electrophys.longitudinalMuscle(model, {
+        muscle = electrophys.muscle(model, {
             neuralInput: neuralInput,
             T0: params.T0_ms * 1e-3,
             Tslope: params.Tslope_ms * 1e-3,
@@ -125,7 +125,7 @@ window.addEventListener('load', function () {
         }
 
         // plot the results
-        plotPanel = document.getElementById('LongitudinalMusclePlots');
+        plotPanel = document.getElementById('MusclePlots');
         plotPanel.innerHTML = '';
 
         // Muscle length
@@ -216,13 +216,13 @@ window.addEventListener('load', function () {
     }
 
 
-    (document.getElementById('LongitudinalMuscleRunButton')
+    (document.getElementById('MuscleRunButton')
         .addEventListener('click', runSimulation, false));
-    (document.getElementById('LongitudinalMuscleRecruitmentAndSummationSimButton')
+    (document.getElementById('MuscleRecruitmentAndSummationSimButton')
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
-    (document.getElementById('LongitudinalMuscleRecruitmentOnlySimButton')
+    (document.getElementById('MuscleRecruitmentOnlySimButton')
         .addEventListener('click', resetToRecruitmentOnlySim, false));
-    (document.getElementById('LongitudinalMuscleClearDataButton')
+    (document.getElementById('MuscleClearDataButton')
         .addEventListener('click', clearDataTables, false));
     
 

@@ -8,8 +8,7 @@ window.addEventListener('load', function () {
 
     var paramsRecruitmentAndSummation, paramsRecruitmentOnly,
         layout, controlsPanel, controls, dataPanel, lengthDataTable,
-        activationDataTable, neuralDataTable, gateDataTable, stimDataTable,
-        tMax = 3000e-3, plotHandles = []; 
+        activationDataTable, neuralDataTable, tMax = 3000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     paramsRecruitmentAndSummation = {
@@ -66,14 +65,6 @@ window.addEventListener('load', function () {
     neuralDataTable = document.createElement('table');
     neuralDataTable.className = 'datatable';
     dataPanel.appendChild(neuralDataTable);
-
-    gateDataTable = document.createElement('table');
-    gateDataTable.className = 'datatable';
-    dataPanel.appendChild(gateDataTable);
-
-    stimDataTable = document.createElement('table');
-    stimDataTable.className = 'datatable';
-    dataPanel.appendChild(stimDataTable);
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -222,12 +213,6 @@ window.addEventListener('load', function () {
 
         neuralDataTable.innerHTML = '';
         neuralDataTable.style.display = 'none';
-
-        gateDataTable.innerHTML = '';
-        gateDataTable.style.display = 'none';
-
-        stimDataTable.innerHTML = '';
-        stimDataTable.style.display = 'none';
     }
 
 

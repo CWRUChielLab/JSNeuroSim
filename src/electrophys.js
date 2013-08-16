@@ -995,6 +995,87 @@ electrophys.pulseTrain = function (options) {
 };
 
 
+electrophys.trianglePulse = function (options) {
+    "use strict";
+    var start = options.start,
+        risetime = options.risetime,
+        falltime = options.falltime,
+        baseline = options.baseline || 0,
+        height = options.height,
+        tmid = start + risetime,
+        tend = start + risetime + falltime;
+
+    function pulse (state, t) {
+        if (t instanceof Array) {
+            return t.map(function (t) {return pulse([], t);});
+        } else if (t >= start && t < tmid) {
+            return baseline + height / risetime * (t - start);
+        } else if (t >= tmid && t < tend) {
+            return baseline - height / falltime * (t - tend);
+        } else if (t != null) {
+            return baseline;
+        } else {
+            console.log('t for trianglePulse is null');
+            return null;
+        }
+    };
+
+    return pulse;
+};
+
+
+electrophys.trianglePulseTrain = function (options) {
+    "use strict";
+    var start = options.start,
+        risetime = options.risetime,
+        falltime = options.falltime,
+        width = risetime + falltime,
+        baseline = options.baseline || 0,
+        height = options.height,
+        subsequentHeight = options.subsequentHeight || height,
+        num_pulses = options.num_pulses,
+        gap = options.gap,
+        period = width + gap,
+        end = start + period * num_pulses - gap;
+
+    function pulse (state, t) {
+        if (t instanceof Array) {
+            return t.map(function (t) {return pulse([], t);});
+        } else if (t >= start && t < end) {
+            var i, p = baseline;
+
+            for (i=0; i<num_pulses; i++) {
+                if (i==0) {
+                    p += electrophys.trianglePulse({
+                        start: start,
+                        risetime: risetime,
+                        falltime: falltime,
+                        baseline: 0,
+                        height: height
+                    })(state, t);
+                } else {
+                    p += electrophys.trianglePulse({
+                        start: start + period * i,
+                        risetime: risetime,
+                        falltime: falltime,
+                        baseline: 0,
+                        height: subsequentHeight
+                    })(state, t);
+                }
+            }
+            return p;
+        } else if (t != null) {
+            return baseline;
+        } else {
+            console.log('t for trianglePulseTrain is null');
+            return null;
+        }
+    };
+
+    return pulse;
+};
+
+
 // Based on Ermentrout, GB, and Terman, DH, Mathematical Foundations of 
 // Neuroscience, Springer, 2010, pp 159-160, but substituting a_r/T_max
 // for a_r to bring a_r and a_d to similar scales.  

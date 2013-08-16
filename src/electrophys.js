@@ -1568,3 +1568,84 @@ electrophys.longitudinalMuscle = function (model, options) {
 };
 
 
+// Based on Chiel HJ, Crago P, Mansour JM, and Hathi K,
+// Biomechanics of a muscular hydrostat: a model of lapping
+// by a reptilian tongue, Biol. Cybern. 67: 403-415, 1992.
+// This is the full tongue model, including both the
+// longitudinal muscle and the circumferential muscle.
+electrophys.tongueMuscle = function (model, options) {
+    "use strict";
+    var LLinit = (options.LLinit === undefined ? 5.0 /* cm */ : options.LLinit),
+        ALinit = (options.ALinit === undefined ? 0.001        : options.ALinit),
+        ACinit = (options.ACinit === undefined ? 0.001        : options.ACinit),
+        inputL = options.inputL,
+        inputC = options.inputC,
+        iLL = model.addStateVar(LLinit),
+        iAL = model.addStateVar(ALinit),
+        iAC = model.addStateVar(ACinit),
+        that = {},
+        // Geometric parameters
+        V       = (options.V       === undefined ? 0.64 /* cm^3 */         : options.V),
+        LLmax   = (options.LLmax   === undefined ? 8.0 /* cm */            : options.LLmax),
+        LCmax   = (options.LCmax   === undefined ? 1.637 /* cm */          : options.LCmax),
+        LLrest  = (options.LLrest  === undefined ? 4.0 /* cm */            : options.LLrest),
+        LCrest  = (options.LCrest  === undefined ? 1.418 /* cm */          : options.LCrest),
+        // Length/tension parameters
+        F0L     = (options.F0L     === undefined ? 3.2 /* N */             : options.F0L),
+        F0C     = (options.F0C     === undefined ? 6.0 /* N */             : options.F0C),
+        aL      = (options.aL      === undefined ? 1.0e-1 /* s^-1 */       : options.aL),
+        bL      = (options.bL      === undefined ? 1.5e0 /* cm^-1 s^-1 */  : options.bL),
+        aC      = (options.aC      === undefined ? 1.0e-1 /* s^-1 */       : options.aC),
+        bC      = (options.bC      === undefined ? 1.18e1 /* cm^-1 s^-1 */ : options.bC),
+        // Firing period parameters
+        T0L     = (options.T0L     === undefined ? 120e-3 /* s */          : options.T0L),
+        TslopeL = (options.TslopeL === undefined ? 50e-3 /* s */           : options.TslopeL),
+        T0C     = (options.T0C     === undefined ? 120e-3 /* s */          : options.T0C),
+        TslopeC = (options.TslopeC === undefined ? 50e-3 /* s */           : options.TslopeC),
+        // Force/velocity parameters
+        BL      = (options.BL      === undefined ? 20e-3 /* s cm^-1 */     : options.BL),
+        BC      = (options.BC      === undefined ? 158e-3 /* s cm^-1 */    : options.BC),
+        // Activation parameters
+        p       = (options.p       === undefined ? 30.3030303 /* s^-1 */   : options.p),
+        // Passive force parameters
+        c1      = (options.c1      === undefined ? 7.392e-6 /* N */        : options.c1),
+        c2      = (options.c2      === undefined ? 2.30259 /* cm^-1 */     : options.c2),
+        c3      = (options.c3      === undefined ? 2.30259 /* cm^-1 */     : options.c3);
+    
+    function LC(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return LC(state, t[i]);});
+        } else {
+            return Math.sqrt(4 * Math.PI * V / state[iLL]);
+        }
+    }
+
+    function drift(result, state, t) {
+        var TfL, TfC, FLiso, FCiso, Fp;
+
+        TfL = T0L - TslopeL * state[iAL];
+        TfC = T0C - TslopeC * state[iAC];
+
+        FLiso = state[iAL] * F0L * (1 + (aL + bL * (state[iLL]   - LLmax)) * TfL);
+        FCiso = state[iAC] * F0C * (1 + (aC + bC * (LC(state, t) - LCmax)) * TfC);
+
+        Fp = c1 * (Math.exp(c2 * (state[iLL] - LLrest)) - Math.exp(-c3 * (state[iLL] - LLrest)));
+
+        result[iLL] = (Math.sqrt(Math.PI * V / (state[iLL] * state[iLL] * state[iLL])) * FCiso - FLiso - Fp)
+                / (FLiso * BL + (Math.PI * V / (state[iLL] * state[iLL] * state[iLL])) * FCiso * BC);
+
+        result[iAL] = p * (inputL(state, t) - state[iAL]);
+        result[iAC] = p * (inputC(state, t) - state[iAC]);
+    }
+
+    model.registerDrift(drift);
+
+    that.LL = function (state, t) { return state[iLL]; };
+    that.LC = LC;
+    that.AL = function (state, t) { return state[iAL]; };
+    that.AC = function (state, t) { return state[iAC]; };
+
+    return that;
+};
+
+

@@ -132,7 +132,7 @@ window.addEventListener('load', function () {
         ['Second Touch Stimulus Properties', ['sigHeight2', 'midpointUp2', 'midpointDown2', 'growthRateUp2', 'growthRateDown2']],
         ['Third Touch Stimulus Properties', ['sigHeight3', 'midpointUp3', 'midpointDown3', 'growthRateUp3', 'growthRateDown3']],
         ['Merkel Cell Current Properties', ['merkel_Ks', 'merkel_Kd_positive', 'merkel_Kd_negative']],
-        ['Meissner Cell Current Properties', ['meissner_Ks', 'meissner_Kd_positive', 'meissner_Kd_negative']],
+        ['Meissner Corpuscle Current Properties', ['meissner_Ks', 'meissner_Kd_positive', 'meissner_Kd_negative']],
         ['Simulation Settings', ['totalDuration_ms']],
     ];
 

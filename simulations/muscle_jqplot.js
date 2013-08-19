@@ -8,7 +8,8 @@ window.addEventListener('load', function () {
 
     var paramsRecruitmentAndSummation, paramsRecruitmentOnly,
         layout, controlsPanel, controls, dataPanel, lengthDataTable,
-        activationDataTable, neuralDataTable, tMax = 3000e-3, plotHandles = []; 
+        forceDataTable, activationDataTable, neuralDataTable,
+        tMax = 3000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     paramsRecruitmentAndSummation = {
@@ -16,10 +17,10 @@ window.addEventListener('load', function () {
             defaultVal: 120, minVal: 0, maxVal: 500 },
         Tslope_ms: { label: 'Firing period slope', units: 'ms',
             defaultVal: 50, minVal: -100, maxVal: 100 },
-        Lrestspring: { label: 'Spring position', units: 'cm',
-            defaultVal: 6.0, minVal: 2.5, maxVal: 20.0 },
+        Lrestspring: { label: 'Spring resting position', units: 'cm',
+            defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
         k: { label: 'Spring stiffness', units: 'N/cm',
-            defaultVal: 0.01, minVal: 0, maxVal: 0.5 },
+            defaultVal: 0.01, minVal: 0, maxVal: 1.0 },
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 100, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight: { label: 'Stimulus first pulse', units: '', 
@@ -58,6 +59,10 @@ window.addEventListener('load', function () {
     lengthDataTable.className = 'datatable';
     dataPanel.appendChild(lengthDataTable);
 
+    forceDataTable = document.createElement('table');
+    forceDataTable.className = 'datatable';
+    dataPanel.appendChild(forceDataTable);
+
     activationDataTable = document.createElement('table');
     activationDataTable.className = 'datatable';
     dataPanel.appendChild(activationDataTable);
@@ -69,7 +74,7 @@ window.addEventListener('load', function () {
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
         var params, model, neuralInput, muscle,
-            prerun, result, L, A, neural,
+            prerun, result, L, A, force, neural,
             plotPanel, plot; 
         
         // create the passive membrane
@@ -111,13 +116,15 @@ window.addEventListener('load', function () {
         
         L      = result.mapOrderedPairs(muscle.L);
         A      = result.mapOrderedPairs(muscle.A);
+        force  = result.mapOrderedPairs(muscle.force);
         neural = result.mapOrderedPairs(neuralInput);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
-        L      = L.map      (function (l) {return [l[0] / 1e-3, l[1]];});
-        A      = A.map      (function (a) {return [a[0] / 1e-3, a[1]];});
-        neural = neural.map (function (n) {return [n[0] / 1e-3, n[1]];});
+        L      = L.map      (function (l) {return [l[0] / 1e-3, l[1]       ];});
+        A      = A.map      (function (a) {return [a[0] / 1e-3, a[1]       ];});
+        force  = force.map  (function (f) {return [f[0] / 1e-3, f[1] / 1e-3];});
+        neural = neural.map (function (n) {return [n[0] / 1e-3, n[1]       ];});
 
         // free resources from old plots
         while (plotHandles.length > 0) {
@@ -146,6 +153,25 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
         graphJqplot.bindCursorTooltip('#lengthPlot', 'Time', 'ms', 'cm');
+
+        // Muscle force
+        plot = document.createElement('div');
+        plot.id = 'forcePlot';
+        plot.style.width = '425px';
+        plot.style.height = '200px';
+        plotPanel.appendChild(plot);
+        plotHandles.push(
+            $.jqplot('forcePlot', [force], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Force (mN)'},
+                },
+                series: [
+                    {label: 'Force', color: 'black'},
+                ],
+        })));
+        graphJqplot.bindDataCapture('#forcePlot', forceDataTable, 'Muscle Force', 'Time');
+        graphJqplot.bindCursorTooltip('#forcePlot', 'Time', 'ms', 'mN');
 
         // Muscle activation
         plot = document.createElement('div');
@@ -207,6 +233,9 @@ window.addEventListener('load', function () {
     function clearDataTables() {
         lengthDataTable.innerHTML = '';
         lengthDataTable.style.display = 'none';
+
+        forceDataTable.innerHTML = '';
+        forceDataTable.style.display = 'none';
 
         activationDataTable.innerHTML = '';
         activationDataTable.style.display = 'none';

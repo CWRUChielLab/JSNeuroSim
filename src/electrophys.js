@@ -1627,23 +1627,52 @@ electrophys.muscle = function (model, options) {
         k           = (options.k           === undefined ? 0.01 /* N cm^-1 */     : options.k),
         Lrestspring = (options.Lrestspring === undefined ? 6.0 /* cm */           : options.Lrestspring);
     
+    function Fiso(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Fiso(state, t[i]);});
+        } else {
+            var Tf = T0 - Tslope * state[iA];
+            return -state[iA] * F0 * (1 + (a + b * (state[iL] - Lmax)) * Tf);
+        }
+    }
+
+    function Fpassive(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Fpassive(state, t[i]);});
+        } else {
+            return -c1 * (Math.exp(c2 * (state[iL] - Lrestpas)) - Math.exp(-c3 * (state[iL] - Lrestpas)));
+        }
+    }
+
+    function Fspring(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Fspring(state, t[i]);});
+        } else {
+            return -k * (state[iL] - Lrestspring);
+        }
+    }
+    
+    // The active muscle force is equal to (1 + B L') * Fiso, but because the sum
+    // of forces is assumed to be zero, it is also equal to -(Fpassive + Fspring)
+    function Factive(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Factive(state, t[i]);});
+        } else {
+            return -(Fpassive(state, t) + Fspring(state, t));
+        }
+    }
+    
     function drift(result, state, t) {
-        var Tf, Fiso, Fpassive, Fspring;
 
-        Tf       = T0 - Tslope * state[iA];
-        Fiso     = -state[iA] * F0 * (1 + (a + b * (state[iL] - Lmax)) * Tf);
-        Fpassive = -c1 * (Math.exp(c2 * (state[iL] - Lrestpas)) - Math.exp(-c3 * (state[iL] - Lrestpas)));
-        Fspring  = -k * (state[iL] - Lrestspring);
-
-        result[iL] = -(Fpassive + Fspring + Fiso) / (B * Fiso);
-
+        result[iL] = -(Fpassive(state, t) + Fspring(state, t) + Fiso(state, t)) / (B * Fiso(state, t));
         result[iA] = p * (neuralInput(state, t) - state[iA]);
     }
 
     model.registerDrift(drift);
-    
+
     that.L = function (state, t) { return state[iL]; };
     that.A = function (state, t) { return state[iA]; };
+    that.force = Factive;
 
     return that;
 };

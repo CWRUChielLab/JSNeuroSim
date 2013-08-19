@@ -171,14 +171,14 @@ window.addEventListener('load', function () {
         prerun = model.integrate({
             tMin: -60e-3, 
             tMax: 0, 
-            tMaxStep: 1e-4,
+            tMaxStep: 1e-2,
         });
 
         // simulate it
         result = model.integrate({
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
-            tMaxStep: 1e-4,
+            tMaxStep: 1e-2,
             y0: prerun.y_f
         });
         
@@ -188,9 +188,6 @@ window.addEventListener('load', function () {
         AC         = result.mapOrderedPairs(muscle.AC);
         inputLData = result.mapOrderedPairs(inputL);
         inputCData = result.mapOrderedPairs(inputC);
-
-        console.log(LL);
-        console.log(LC);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable

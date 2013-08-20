@@ -16,52 +16,52 @@ window.addEventListener('load', function () {
 
     // set up the controls for the passive membrane simulation
     paramsBoth = { 
-        sigHeight1: { label: 'Maximum pressure', units: 'N',
+        sigHeight1_mN: { label: 'Maximum pressure', units: 'mN',
             defaultVal: 8, minVal: 0, maxVal: 20},
-        midpointUp1: { label: 'Stimulus start', units: 'ms',
+        midpointUp1_ms: { label: 'Stimulus start', units: 'ms',
             defaultVal: 50, minVal: 0, maxVal: tMax / 1e-3},
-        midpointDown1: { label: 'Stimulus end', units: 'ms',
+        midpointDown1_ms: { label: 'Stimulus end', units: 'ms',
             defaultVal: 200, minVal: 0, maxVal: tMax / 1e-3},
-        growthRateUp1: { label: 'Applied pressure time constant', units: 'ms',
+        growthRateUp1_ms: { label: 'Applied pressure time constant', units: 'ms',
             defaultVal: 4, minVal: 0, maxVal: 300},
-        growthRateDown1: { label: 'Removed pressure time constant', units: 'ms',
+        growthRateDown1_ms: { label: 'Removed pressure time constant', units: 'ms',
             defaultVal: 4, minVal: 0, maxVal: 300},
             
-        sigHeight2: { label: 'Maximum pressure', units: 'N',
+        sigHeight2_mN: { label: 'Maximum pressure', units: 'mN',
             defaultVal: 8, minVal: 0, maxVal: 20},
-        midpointUp2: { label: 'Stimulus start', units: 'ms',
+        midpointUp2_ms: { label: 'Stimulus start', units: 'ms',
             defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3},
-        midpointDown2: { label: 'Stimulus end', units: 'ms',
+        midpointDown2_ms: { label: 'Stimulus end', units: 'ms',
             defaultVal: 400, minVal: 0, maxVal: tMax / 1e-3},
-        growthRateUp2: { label: 'Applied pressure time constant', units: 'ms',
+        growthRateUp2_ms: { label: 'Applied pressure time constant', units: 'ms',
             defaultVal: 4, minVal: 0, maxVal: 300},
-        growthRateDown2: { label: 'Removed pressure time constant', units: 'ms',
+        growthRateDown2_ms: { label: 'Removed pressure time constant', units: 'ms',
             defaultVal: 4, minVal: 0, maxVal: 300},
             
-        sigHeight3: { label: 'Maximum pressure', units: 'N',
+        sigHeight3_mN: { label: 'Maximum pressure', units: 'mN',
             defaultVal: 8, minVal: 0, maxVal: 20},
-        midpointUp3: { label: 'Stimulus start', units: 'ms',
+        midpointUp3_ms: { label: 'Stimulus start', units: 'ms',
             defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3},
-        midpointDown3: { label: 'Stimulus end', units: 'ms',
+        midpointDown3_ms: { label: 'Stimulus end', units: 'ms',
             defaultVal: 600, minVal: 0, maxVal: tMax / 1e-3},
-        growthRateUp3: { label: 'Applied pressure time constant', units: 'ms',
+        growthRateUp3_ms: { label: 'Applied pressure time constant', units: 'ms',
             defaultVal: 4, minVal: 0, maxVal: 300},
-        growthRateDown3: { label: 'Removed pressure time constant', units: 'ms',
+        growthRateDown3_ms: { label: 'Removed pressure time constant', units: 'ms',
             defaultVal: 4, minVal: 0, maxVal: 300},
             
-        merkel_Ks: { label: 'Static gain', units: '',
-            defaultVal: .02, minVal: 0, maxVal: 1},
-        merkel_Kd_positive: { label: 'Positive dynamic gain', units: '',
-            defaultVal: .0014, minVal: 0, maxVal: 1},
-        merkel_Kd_negative: { label: 'Negative dynamic gain', units: '',
-            defaultVal: 0, minVal: -1, maxVal: 1},
+        merkel_Ks: { label: 'Static gain', units: 'nA/mN',
+            defaultVal: 0.2, minVal: 0, maxVal: 100},
+        merkel_Kd_positive: { label: 'Positive dynamic gain', units: 'pC/mN',
+            defaultVal: 14, minVal: 0, maxVal: 10000},
+        merkel_Kd_negative: { label: 'Negative dynamic gain', units: 'pC/mN',
+            defaultVal: 0, minVal: -10000, maxVal: 10000},
             
-        meissner_Ks: { label: 'Static gain', units: '',
-            defaultVal: 0, minVal: 0, maxVal: 20},
-        meissner_Kd_positive: { label: 'Positive dynamic gain', units: '',
-            defaultVal: .0016, minVal: 0, maxVal: 1},
-        meissner_Kd_negative: { label: 'Negative dynamic gain', units: '',
-            defaultVal: -.0016, minVal: -1, maxVal: 1},
+        meissner_Ks: { label: 'Static gain', units: 'nA/mN',
+            defaultVal: 0, minVal: 0, maxVal: 100},
+        meissner_Kd_positive: { label: 'Positive dynamic gain', units: 'pC/mN',
+            defaultVal: 16, minVal: 0, maxVal: 10000},
+        meissner_Kd_negative: { label: 'Negative dynamic gain', units: 'pC/mN',
+            defaultVal: -16, minVal: -10000, maxVal: 10000},
             
         merkel_V_init_mV: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -48, minVal: -1000, maxVal: 1000 },
@@ -100,26 +100,26 @@ window.addEventListener('load', function () {
     };
 
     paramsMerkel = JSON.parse(JSON.stringify(paramsBoth));
-    paramsMerkel.sigHeight2.defaultVal = 0;
-    paramsMerkel.sigHeight3.defaultVal = 0;
-    paramsMerkel.midpointDown1.defaultVal = 400;
+    paramsMerkel.sigHeight2_mN.defaultVal = 0;
+    paramsMerkel.sigHeight3_mN.defaultVal = 0;
+    paramsMerkel.midpointDown1_ms.defaultVal = 400;
 
     paramsMeissner = JSON.parse(JSON.stringify(paramsBoth));
-    paramsMeissner.sigHeight2.defaultVal = 0;
-    paramsMeissner.sigHeight3.defaultVal = 0;
-    paramsMeissner.midpointDown1.defaultVal = 400;
+    paramsMeissner.sigHeight2_mN.defaultVal = 0;
+    paramsMeissner.sigHeight3_mN.defaultVal = 0;
+    paramsMeissner.midpointDown1_ms.defaultVal = 400;
 
     layoutMerkel = [
         ['Merkel Cell Properties', ['merkel_V_init_mV', 'merkel_C_nF', 'merkel_g_leak_uS', 'merkel_E_leak_mV',
             'merkel_theta_ss_mV', 'merkel_theta_r_mV', 'merkel_theta_tau_ms']],
-        ['Touch Stimulus Properties', ['sigHeight1', 'midpointUp1', 'midpointDown1', 'growthRateUp1', 'growthRateDown1']],
+        ['Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
         ['Simulation Settings', ['totalDuration_ms']],
     ];
     
     layoutMeissner = [
         ['Meissner Corpuscle Properties', ['meissner_V_init_mV', 'meissner_C_nF', 'meissner_g_leak_uS', 'meissner_E_leak_mV',
             'meissner_theta_ss_mV', 'meissner_theta_r_mV', 'meissner_theta_tau_ms']],
-        ['Touch Stimulus Properties', ['sigHeight1', 'midpointUp1', 'midpointDown1', 'growthRateUp1', 'growthRateDown1']],
+        ['Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
         ['Simulation Settings', ['totalDuration_ms']],
     ];
     
@@ -128,9 +128,9 @@ window.addEventListener('load', function () {
             'merkel_theta_ss_mV', 'merkel_theta_r_mV', 'merkel_theta_tau_ms']],
         ['Meissner Corpuscle Properties', ['meissner_V_init_mV', 'meissner_C_nF', 'meissner_g_leak_uS', 'meissner_E_leak_mV',
             'meissner_theta_ss_mV', 'meissner_theta_r_mV', 'meissner_theta_tau_ms']],
-        ['First Touch Stimulus Properties', ['sigHeight1', 'midpointUp1', 'midpointDown1', 'growthRateUp1', 'growthRateDown1']],
-        ['Second Touch Stimulus Properties', ['sigHeight2', 'midpointUp2', 'midpointDown2', 'growthRateUp2', 'growthRateDown2']],
-        ['Third Touch Stimulus Properties', ['sigHeight3', 'midpointUp3', 'midpointDown3', 'growthRateUp3', 'growthRateDown3']],
+        ['First Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
+        ['Second Touch Stimulus Properties', ['sigHeight2_mN', 'midpointUp2_ms', 'midpointDown2_ms', 'growthRateUp2_ms', 'growthRateDown2_ms']],
+        ['Third Touch Stimulus Properties', ['sigHeight3_mN', 'midpointUp3_ms', 'midpointDown3_ms', 'growthRateUp3_ms', 'growthRateDown3_ms']],
         ['Merkel Cell Current Properties', ['merkel_Ks', 'merkel_Kd_positive', 'merkel_Kd_negative']],
         ['Meissner Corpuscle Current Properties', ['meissner_Ks', 'meissner_Kd_positive', 'meissner_Kd_negative']],
         ['Simulation Settings', ['totalDuration_ms']],
@@ -168,13 +168,12 @@ window.addEventListener('load', function () {
         var params, plot, plotPanel, title, model,
             merkelCell, merkelTouchCurrent,
             meissnerCorpuscle, meissnerTouchCurrent,
-            merkel_v_mech, merkel_v_mV, 
-            meissner_v_mech, meissner_v_mV,
+            merkel_v, merkel_v_mV, 
+            meissner_v, meissner_v_mV,
             merkel_iStim, merkel_iStim_nA, 
             meissner_iStim, meissner_iStim_nA,
-            touchStim, touchStim_N,
-            result,
-            t0, y0;
+            touchStim, touchStim_mN,
+            result;
        
         params = controls.values;
         model = componentModel.componentModel();
@@ -191,27 +190,27 @@ window.addEventListener('load', function () {
         });
         
         merkelTouchCurrent = electrophys.touchStimuli({
-            Ks: params.merkel_Ks * 1e-2,
-            Kd_positive: params.merkel_Kd_positive * 1e-2,
-            Kd_negative: params.merkel_Kd_negative * 1e-2,
+            Ks: params.merkel_Ks * 1e-6, // A/N
+            Kd_positive: params.merkel_Kd_positive * 1e-9, // C/N
+            Kd_negative: params.merkel_Kd_negative * 1e-9, // C/N
             
-            sigHeight1: params.sigHeight1 * 1e-6,
-            midpointUp1: params.midpointUp1 * 1e-3,
-            midpointDown1: params.midpointDown1 * 1e-3,
-            growthRateUp1: params.growthRateUp1 * 1e-3,
-            growthRateDown1: params.growthRateDown1 * 1e-3,
+            sigHeight1: params.sigHeight1_mN * 1e-3,
+            midpointUp1: params.midpointUp1_ms * 1e-3,
+            midpointDown1: params.midpointDown1_ms * 1e-3,
+            growthRateUp1: params.growthRateUp1_ms * 1e-3,
+            growthRateDown1: params.growthRateDown1_ms * 1e-3,
             
-            sigHeight2: params.sigHeight2 * 1e-6,
-            midpointUp2: params.midpointUp2 * 1e-3,
-            midpointDown2: params.midpointDown2 * 1e-3,
-            growthRateUp2: params.growthRateUp2 * 1e-3,
-            growthRateDown2: params.growthRateDown2 * 1e-3,
+            sigHeight2: params.sigHeight2_mN * 1e-3,
+            midpointUp2: params.midpointUp2_ms * 1e-3,
+            midpointDown2: params.midpointDown2_ms * 1e-3,
+            growthRateUp2: params.growthRateUp2_ms * 1e-3,
+            growthRateDown2: params.growthRateDown2_ms * 1e-3,
             
-            sigHeight3: params.sigHeight3 * 1e-6,
-            midpointUp3: params.midpointUp3 * 1e-3,
-            midpointDown3: params.midpointDown3 * 1e-3,
-            growthRateUp3: params.growthRateUp3 * 1e-3,
-            growthRateDown3: params.growthRateDown3 * 1e-3
+            sigHeight3: params.sigHeight3_mN * 1e-3,
+            midpointUp3: params.midpointUp3_ms * 1e-3,
+            midpointDown3: params.midpointDown3_ms * 1e-3,
+            growthRateUp3: params.growthRateUp3_ms * 1e-3,
+            growthRateDown3: params.growthRateDown3_ms * 1e-3
         });
         
         merkelCell.addCurrent(merkelTouchCurrent.pulse);
@@ -229,38 +228,30 @@ window.addEventListener('load', function () {
         });
         
         meissnerTouchCurrent = electrophys.touchStimuli({
-            Ks: params.meissner_Ks * 1e-2,
-            Kd_positive: params.meissner_Kd_positive * 1e-2,
-            Kd_negative: params.meissner_Kd_negative * 1e-2,
+            Ks: params.meissner_Ks * 1e-6, // A/N
+            Kd_positive: params.meissner_Kd_positive * 1e-9, // C/N
+            Kd_negative: params.meissner_Kd_negative * 1e-9, // C/N
             
-            sigHeight1: params.sigHeight1 * 1e-6,
-            midpointUp1: params.midpointUp1 * 1e-3,
-            midpointDown1: params.midpointDown1 * 1e-3,
-            growthRateUp1: params.growthRateUp1 * 1e-3,
-            growthRateDown1: params.growthRateDown1 * 1e-3,
+            sigHeight1: params.sigHeight1_mN * 1e-3,
+            midpointUp1: params.midpointUp1_ms * 1e-3,
+            midpointDown1: params.midpointDown1_ms * 1e-3,
+            growthRateUp1: params.growthRateUp1_ms * 1e-3,
+            growthRateDown1: params.growthRateDown1_ms * 1e-3,
             
-            sigHeight2: params.sigHeight2 * 1e-6,
-            midpointUp2: params.midpointUp2 * 1e-3,
-            midpointDown2: params.midpointDown2 * 1e-3,
-            growthRateUp2: params.growthRateUp2 * 1e-3,
-            growthRateDown2: params.growthRateDown2 * 1e-3,
+            sigHeight2: params.sigHeight2_mN * 1e-3,
+            midpointUp2: params.midpointUp2_ms * 1e-3,
+            midpointDown2: params.midpointDown2_ms * 1e-3,
+            growthRateUp2: params.growthRateUp2_ms * 1e-3,
+            growthRateDown2: params.growthRateDown2_ms * 1e-3,
             
-            sigHeight3: params.sigHeight3 * 1e-6,
-            midpointUp3: params.midpointUp3 * 1e-3,
-            midpointDown3: params.midpointDown3 * 1e-3,
-            growthRateUp3: params.growthRateUp3 * 1e-3,
-            growthRateDown3: params.growthRateDown3 * 1e-3
+            sigHeight3: params.sigHeight3_mN * 1e-3,
+            midpointUp3: params.midpointUp3_ms * 1e-3,
+            midpointDown3: params.midpointDown3_ms * 1e-3,
+            growthRateUp3: params.growthRateUp3_ms * 1e-3,
+            growthRateDown3: params.growthRateDown3_ms * 1e-3
         });
         
         meissnerCorpuscle.addCurrent(meissnerTouchCurrent.pulse);
-        
-        
-        // Simulate
-        merkel_v_mV = [];
-        meissner_v_mV = [];
-        touchStim_N = [];
-        merkel_iStim_nA = [];
-        meissner_iStim_nA = [];
         
         
         // run for a bit to allow the simulation to stabilize
@@ -269,31 +260,29 @@ window.addEventListener('load', function () {
             tMax: 0, 
             tMaxStep: 16e-3,
         });
-        t0 = 0;
-        y0 = result.y_f;
-        
         
         result = model.integrate({
-            tMin: t0, 
+            tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
             tMaxStep: Math.min(16e-3, 
                 params.totalDuration_ms * 1e-3 / 500),
-            y0: y0
+            y0: result.y_f
         });
         
-        merkel_v_mech = result.mapOrderedPairs(merkelCell.VWithSpikes);
-        meissner_v_mech = result.mapOrderedPairs(meissnerCorpuscle.VWithSpikes);
-        touchStim = result.mapOrderedPairs(merkelTouchCurrent.force);
-        merkel_iStim = result.mapOrderedPairs(merkelTouchCurrent.pulse);
+
+        merkel_v       = result.mapOrderedPairs(merkelCell.VWithSpikes);
+        meissner_v     = result.mapOrderedPairs(meissnerCorpuscle.VWithSpikes);
+        touchStim      = result.mapOrderedPairs(merkelTouchCurrent.force);
+        merkel_iStim   = result.mapOrderedPairs(merkelTouchCurrent.pulse);
         meissner_iStim = result.mapOrderedPairs(meissnerTouchCurrent.pulse);
         
         // convert to the right units
         // each ordered pair consists of a time and another variable
-        merkel_v_mV = merkel_v_mV.concat(merkel_v_mech.map (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]}));
-        meissner_v_mV = meissner_v_mV.concat(meissner_v_mech.map (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]}));
-        touchStim_N = touchStim_N.concat(touchStim.map (function (f) {return [f[0] / 1e-3, f[1] * 1e6]}));
-        merkel_iStim_nA = merkel_iStim_nA.concat(merkel_iStim.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
-        meissner_iStim_nA = meissner_iStim_nA.concat(meissner_iStim.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
+        merkel_v_mV       = merkel_v.map       (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]});
+        meissner_v_mV     = meissner_v.map     (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]});
+        touchStim_mN      = touchStim.map      (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]});
+        merkel_iStim_nA   = merkel_iStim.map   (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]});
+        meissner_iStim_nA = meissner_iStim.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]});
         
         // free resources from old plots
         while (plotHandles.length > 0) {
@@ -365,17 +354,17 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-           $.jqplot('touchStimPlot', [touchStim_N], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+           $.jqplot('touchStimPlot', [touchStim_mN], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Touch force (N)'},
+                    yaxis: {label:'Touch force (mN)'},
                 },
                 series: [
                     {label: 'Touch force', color: 'black'},
                 ],
         })));
         graphJqplot.bindDataCapture('#touchStimPlot', touchDataTable, title.innerHTML, 'Time');
-        graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'N');
+        graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'mN');
         
         // Merkel cell current
         if (simType == 'both') {

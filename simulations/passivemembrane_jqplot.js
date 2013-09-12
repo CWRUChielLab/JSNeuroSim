@@ -84,7 +84,7 @@ window.addEventListener('load', function () {
         result = model.integrate({
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
-            tMaxStep: Math.min(1e-4, params.C_nF / params.g_leak_uS * 1e-3) 
+            tMaxStep: Math.min(1e-5, params.C_nF / params.g_leak_uS * 1e-3) 
         });
         
         v     = result.mapOrderedPairs(passiveMembrane.V);

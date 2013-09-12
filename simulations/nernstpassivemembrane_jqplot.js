@@ -110,7 +110,7 @@ window.addEventListener('load', function () {
         result = model.integrate({
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
-            tMaxStep: Math.min(1e-4, params.C_nF / 
+            tMaxStep: Math.min(1e-5, params.C_nF / 
                 (params.g_Na_uS + params.g_K_uS + params.g_Cl_uS) * 1e-3) 
         });
         

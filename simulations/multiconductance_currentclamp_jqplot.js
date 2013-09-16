@@ -16,6 +16,7 @@ window.addEventListener('load', function () {
         currentCaDataTable, conductanceCaDataTable, gateCaDataTable, CaConcDataTable,
         currentSKDataTable, conductanceSKDataTable, gateSKDataTable,
         tMax = 1000e-3, V_rest, Ca_init, plotHandles = [], plotFlag = ''; 
+
     // set up the controls for the passive membrane simulation
     paramsFullSim = { 
         C_nF: { label: 'Membrane capacitance', units: 'nF',
@@ -114,10 +115,14 @@ window.addEventListener('load', function () {
     paramsSKSim.g_H_uS.defaultVal = 0;
 
     paramsBursterSim = JSON.parse(JSON.stringify(paramsFullSim));
-    paramsBursterSim.g_A_uS.defaultVal = 0.1;
-    paramsBursterSim.g_SK_uS.defaultVal = 0.1;
+    paramsBursterSim.g_A_uS.defaultVal = 0;
+    paramsBursterSim.g_SK_uS.defaultVal = 0.042;
+    paramsBursterSim.g_H_uS.defaultVal = 0;
+    paramsBursterSim.g_T_uS.defaultVal = 0;
+    paramsBursterSim.g_N_uS.defaultVal = 0;
+    paramsBursterSim.g_P_uS.defaultVal = 0.03;
     paramsBursterSim.numPulses.defaultVal = 0;
-    paramsBursterSim.totalDuration_ms.defaultVal = 475;
+    paramsBursterSim.totalDuration_ms.defaultVal = 450;
 
     layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],

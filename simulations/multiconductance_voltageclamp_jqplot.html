@@ -23,9 +23,18 @@
         <h1 class="simtitle">Multiple conductance voltage clamp simulation</h1>
         <div id="MultiConductancePlots" class="plotpanel"></div>
         <div id="MultiConductanceControls" class="controlspanel"></div>
-        <input id="MultiConductanceRunButton" type="button" value="Run"/>
-        <input type="button" id="MultiConductanceResetButton" value="Reset"/>
-        <input type="button" id="MultiConductanceClearDataButton" value="Clear Data Points"/>
+        <div>
+            <div style="float:left;">
+                <input id="MultiConductanceRunButton" type="button" value="Run"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="MultiConductanceClearDataButton" value="Clear Data Points"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="MultiConductanceFullSimButton" value="Full simulation"/><br/>
+                <input type="button" id="MultiConductanceBursterSimButton" value="Spontaneous burster simulation"/>
+            </div>
+        </div>
         <div id="MultiConductanceData" class="datapanel"></div>
     </body>
 </html>

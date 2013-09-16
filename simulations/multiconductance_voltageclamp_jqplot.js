@@ -6,17 +6,19 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var params, layout, controlsPanel, controls, dataPanel, voltageDataTable,
+    var paramsFullSim, paramsBursterSim,
+        layoutFullSim, layoutBursterSim,
+        controlsPanel, controls, dataPanel, voltageDataTable,
         currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPDataTable, conductanceNaPDataTable, gateNaPDataTable,
         currentADataTable, conductanceADataTable, gateADataTable,
         currentSagDataTable, conductanceSagDataTable, gateSagDataTable,
         currentCaDataTable, conductanceCaDataTable, gateCaDataTable, CaConcDataTable,
         currentSKDataTable, conductanceSKDataTable, gateSKDataTable,
-        tMax = 1000e-3, plotHandles = []; 
+        tMax = 1000e-3, Ca_init, plotHandles = []; 
 
     // set up the controls for the passive membrane simulation
-    params = { 
+    paramsFullSim = { 
         C_nF: { label: 'Membrane capacitance', units: 'nF',
             defaultVal: 0.04, minVal: 0.01, maxVal: 100 }, 
         g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
@@ -68,7 +70,16 @@ window.addEventListener('load', function () {
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 }
     };
-    layout = [
+
+    paramsBursterSim = JSON.parse(JSON.stringify(paramsFullSim));
+    paramsBursterSim.g_A_uS.defaultVal = 0;
+    paramsBursterSim.g_SK_uS.defaultVal = 0.042;
+    paramsBursterSim.g_H_uS.defaultVal = 0;
+    paramsBursterSim.g_T_uS.defaultVal = 0;
+    paramsBursterSim.g_N_uS.defaultVal = 0;
+    paramsBursterSim.g_P_uS.defaultVal = 0.03;
+
+    layoutFullSim = [
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
@@ -79,6 +90,19 @@ window.addEventListener('load', function () {
             'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
+
+    layoutBursterSim = [
+        ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
+        ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
+        ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
+        ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
+        ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS', 'Ca_buff_ms']],
+        ['Voltage Clamp', ['holdingPotential_mV', 'stepPotential_mV',
+            'subsequentStepPotential_mV', 'stepStart_ms', 'stepWidth_ms',
+            'isi_ms', 'numPulses']],
+        ['Simulation Settings', ['totalDuration_ms']]
+    ];
+
     controlsPanel = document.getElementById('MultiConductanceControls');
 
     // prepare tables for displaying captured data points
@@ -168,7 +192,6 @@ window.addEventListener('load', function () {
     // simulate and plot a passive membrane with a pulse
     function runSimulation() {
         var model, neuron, pulseTrain,
-            Ca_init = 0.00014,
             leakCurrent, KCurrent, NaCurrent,
             NaPCurrent, ACurrent, HCurrent, TCurrent, NCurrent, PCurrent, SKCurrent,
             CaConc, CaConc_nM,
@@ -874,10 +897,23 @@ window.addEventListener('load', function () {
     }
 
     
-    function reset() {
+    function reset(params, layout) {
         controlsPanel.innerHTML = '';
         controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
+    }
+
+
+    function resetToFullSim() {
+        Ca_init = 0.00014;
+        reset(paramsFullSim, layoutFullSim);
+    }
+
+
+    function resetToBursterSim() {
+        //Ca_init = 0.00687;
+        Ca_init = 0.00014;
+        reset(paramsBursterSim, layoutBursterSim);
     }
 
 
@@ -946,8 +982,10 @@ window.addEventListener('load', function () {
 
     (document.getElementById('MultiConductanceRunButton')
         .addEventListener('click', runSimulation, false));
-    (document.getElementById('MultiConductanceResetButton')
-        .addEventListener('click', reset, false));
+    (document.getElementById('MultiConductanceFullSimButton')
+        .addEventListener('click', resetToFullSim, false));
+    (document.getElementById('MultiConductanceBursterSimButton')
+        .addEventListener('click', resetToBursterSim, false));
     (document.getElementById('MultiConductanceClearDataButton')
         .addEventListener('click', clearDataTables, false));
     
@@ -962,7 +1000,7 @@ window.addEventListener('load', function () {
             }
         }, true);
 
-    reset();
+    resetToFullSim();
     clearDataTables();
 
 }, false);

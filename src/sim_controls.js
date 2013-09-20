@@ -31,13 +31,21 @@ var simcontrols = (function () {
     function controls(element, params, layout) {
         var i, section, heading, paramTable, j, paramName, paramRow, 
             paramLabel, paramInputCell, paramUnits,
-            values, errorLabels = {}, textBoxes = {};
+            values, errorLabels = {}, textBoxes = {}, checkBoxes = {};
 
         // store the current value of each of the parameters
         values = {};
         for (i in params) {
             if (params.hasOwnProperty(i)) {                
-                values[i] = params[i].defaultVal;
+                if (params[i].hasOwnProperty('checked')) {
+                    if (params[i].checked) {
+                        values[i] = params[i].checkedVal;
+                    } else {
+                        values[i] = params[i].uncheckedVal;
+                    }
+                } else {
+                    values[i] = params[i].defaultVal;
+                }
             }
         }
 
@@ -47,6 +55,16 @@ var simcontrols = (function () {
                         textBoxes[paramName].value);
                 values[paramName] = result.value;
                 errorLabels[paramName].innerHTML = result.error;
+            };
+        }
+        
+        function checkBoxChangeHandler(paramName) {
+            return function () {
+                if (checkBoxes[paramName].checked) {
+                    values[paramName] = params[paramName].checkedVal;
+                } else {
+                    values[paramName] = params[paramName].uncheckedVal;
+                }
             };
         }
         
@@ -78,12 +96,26 @@ var simcontrols = (function () {
                 paramInputCell = document.createElement('td');
                 paramRow.appendChild(paramInputCell);
 
-                textBoxes[paramName] = document.createElement('input');
-                textBoxes[paramName].value = params[paramName].defaultVal;
-                textBoxes[paramName].addEventListener('change', 
-                    textBoxChangeHandler(paramName), false);
-                textBoxes[paramName].className = 'simparaminput';
-                paramInputCell.appendChild(textBoxes[paramName]);
+                if (params[paramName].hasOwnProperty('checked')) {
+
+                    checkBoxes[paramName] = document.createElement('input');
+                    checkBoxes[paramName].type = 'checkbox';
+                    checkBoxes[paramName].checked = params[paramName].checked;
+                    checkBoxes[paramName].addEventListener('change',
+                        checkBoxChangeHandler(paramName), false);
+                    checkBoxes[paramName].className = 'simparamcheck';
+                    paramInputCell.appendChild(checkBoxes[paramName]);
+
+                } else {
+
+                    textBoxes[paramName] = document.createElement('input');
+                    textBoxes[paramName].value = params[paramName].defaultVal;
+                    textBoxes[paramName].addEventListener('change', 
+                        textBoxChangeHandler(paramName), false);
+                    textBoxes[paramName].className = 'simparaminput';
+                    paramInputCell.appendChild(textBoxes[paramName]);
+
+                }
 
                 paramUnits = document.createElement('td');
                 if (params[paramName].units) {
@@ -104,6 +136,12 @@ var simcontrols = (function () {
             for (i in textBoxes) {
                 if (textBoxes.hasOwnProperty(i)) {                
                     textBoxChangeHandler(i)();
+                }
+            }
+
+            for (i in checkBoxes) {
+                if (checkBoxes.hasOwnProperty(i)) {                
+                    checkBoxChangeHandler(i)();
                 }
             }
         }

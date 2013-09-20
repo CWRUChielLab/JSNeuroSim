@@ -66,7 +66,25 @@ window.addEventListener('load', function () {
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses: { label: 'Number of pulses', units: '', 
             defaultVal: 1, minVal: 0, maxVal: 100 },
-        totalDuration_ms: { label: 'Total duration', units: 'ms', 
+        K_blocker: { label: 'Tetraethylammonium (TEA, K blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        A_blocker: { label: '4-Aminopyridine (4AP, A blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        SK_blocker: { label: 'Apamin (SK blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        Na_blocker: { label: 'Tetrodotoxin (TTX, Na blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        NaP_blocker: { label: 'Riluzole (NaP blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        H_blocker: { label: 'ZD7288 (H blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        T_blocker: { label: 'Ethosuximide (T blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        N_blocker: { label: '\u03C9-Conotoxin (N blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        P_blocker: { label: '\u03C9-Agatoxin (P blocker)', checked: false,
+            checkedVal: 0, uncheckedVal: 1 },
+        totalDuration_ms: { label: 'Total duration', units: 'ms',
             defaultVal: 40, minVal: 0, maxVal: tMax / 1e-3 }
     };
 
@@ -87,6 +105,8 @@ window.addEventListener('load', function () {
         ['Voltage Clamp', ['holdingPotential_mV', 'stepPotential_mV',
             'subsequentStepPotential_mV', 'stepStart_ms', 'stepWidth_ms',
             'isi_ms', 'numPulses']],
+        ['Drugs', ['K_blocker', 'A_blocker', 'SK_blocker', 'Na_blocker',
+            'NaP_blocker', 'H_blocker', 'T_blocker', 'N_blocker', 'P_blocker']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -101,6 +121,8 @@ window.addEventListener('load', function () {
         ['Voltage Clamp', ['holdingPotential_mV', 'stepPotential_mV',
             'subsequentStepPotential_mV', 'stepStart_ms', 'stepWidth_ms',
             'isi_ms', 'numPulses']],
+        ['Drugs', ['K_blocker', 'A_blocker', 'SK_blocker', 'Na_blocker',
+            'NaP_blocker', 'H_blocker', 'T_blocker', 'N_blocker', 'P_blocker']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -237,55 +259,55 @@ window.addEventListener('load', function () {
         });
 
         KCurrent = electrophys.multiConductance.KConductance(model, neuron, {
-            g_K: params.g_K_uS * 1e-6,
+            g_K: params.g_K_uS * 1e-6 * params.K_blocker,
             E_K: params.E_K_mV * 1e-3,
             V_rest: params.holdingPotential_mV * 1e-3
         });
         
         NaCurrent = electrophys.multiConductance.NaConductance(model, neuron, {
-            g_Na: params.g_Na_uS * 1e-6,
+            g_Na: params.g_Na_uS * 1e-6 * params.Na_blocker,
             E_Na: params.E_Na_mV * 1e-3,
             V_rest: params.holdingPotential_mV * 1e-3
         });
         
         NaPCurrent = electrophys.multiConductance.NaPConductance(model, neuron, {
-            g_NaP: params.g_NaP_uS * 1e-6,
+            g_NaP: params.g_NaP_uS * 1e-6 * params.NaP_blocker,
             E_Na: params.E_Na_mV * 1e-3,
             V_rest: params.holdingPotential_mV * 1e-3
         });
         
         ACurrent = electrophys.multiConductance.AConductance(model, neuron, {
-            g_A: params.g_A_uS * 1e-6,
+            g_A: params.g_A_uS * 1e-6 * params.A_blocker,
             E_K: params.E_K_mV * 1e-3,
             V_rest: params.holdingPotential_mV * 1e-3
         });
         
         HCurrent = electrophys.multiConductance.HConductance(model, neuron, {
-            g_H: params.g_H_uS * 1e-6,
+            g_H: params.g_H_uS * 1e-6 * params.H_blocker,
             E_H: params.E_H_mV * 1e-3,
             V_rest: params.holdingPotential_mV * 1e-3
         });
         
         TCurrent = electrophys.multiConductance.TConductance(model, neuron, {
-            g_T: params.g_T_uS * 1e-6,
+            g_T: params.g_T_uS * 1e-6 * params.T_blocker,
             E_Ca: params.E_Ca_mV * 1e-3,
             V_rest: params.holdingPotential_mV * 1e-3
         });
         
         NCurrent = electrophys.multiConductance.NConductance(model, neuron, {
-            g_N: params.g_N_uS * 1e-6,
+            g_N: params.g_N_uS * 1e-6 * params.N_blocker,
             E_Ca: params.E_Ca_mV * 1e-3,
             V_rest: params.holdingPotential_mV * 1e-3
         });
         
         PCurrent = electrophys.multiConductance.PConductance(model, neuron, {
-            g_P: params.g_P_uS * 1e-6,
+            g_P: params.g_P_uS * 1e-6 * params.P_blocker,
             E_Ca: params.E_Ca_mV * 1e-3,
             V_rest: params.holdingPotential_mV * 1e-3
         });
         
         SKCurrent = electrophys.multiConductance.SKConductance(model, neuron, {
-            g_SK: params.g_SK_uS * 1e-6,
+            g_SK: params.g_SK_uS * 1e-6 * params.SK_blocker,
             E_K: params.E_K_mV * 1e-3,
             Ca_init: Ca_init
         });
@@ -992,7 +1014,8 @@ window.addEventListener('load', function () {
 
     function resetToAdultSim() {
         plotFlag = 'adult';
-        Ca_init = 0.064774e-3; // uM
+        //Ca_init = 0.064774e-3; // uM
+        Ca_init = 0.1354e-3; // uM
         reset(paramsAdultSim, layoutAdultSim);
     }
 

@@ -1061,7 +1061,7 @@ window.addEventListener('load', function () {
     function resetToFullSim() {
         plotFlag = 'full';
         V_rest = -71.63003e-3;
-        Ca_init = 0.00014;
+        Ca_init = 0.0001354;
         reset(paramsFullSim, layoutFullSim);
     }
 

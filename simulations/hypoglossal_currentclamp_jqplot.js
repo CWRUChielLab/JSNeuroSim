@@ -7,8 +7,8 @@ window.addEventListener('load', function () {
     'use strict';
 
     var paramsNeonatalSim, paramsAdultSim, layoutNeonatalSim, layoutAdultSim,
-        controlsPanel, controls, dataPanel, voltageDataTable,
-        stimDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
+        controlsPanel, controls, dataPanel, voltageDataTable, stimDataTable,
+        currentTotDataTable, currentHHDataTable, conductanceHHDataTable, gateHHDataTable,
         currentNaPDataTable, conductanceNaPDataTable, gateNaPDataTable,
         currentADataTable, conductanceADataTable, gateADataTable,
         currentSagDataTable, conductanceSagDataTable, gateSagDataTable,
@@ -55,9 +55,9 @@ window.addEventListener('load', function () {
         pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA: { label: 'Stimulus current first pulse', units: 'nA', 
-            defaultVal: 1, minVal: -1000, maxVal: 1000 },
+            defaultVal: 2, minVal: -1000, maxVal: 1000 },
         pulseSubsequentHeight_nA: { label: 'Stimulus current subsequent pulses', units: 'nA', 
-            defaultVal: 1, minVal: -1000, maxVal: 1000 },
+            defaultVal: 2, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 1, minVal: 0, maxVal: tMax / 1e-3 },
         isi_ms: { label: 'Inter-stimulus interval', units: 'ms', 
@@ -75,22 +75,26 @@ window.addEventListener('load', function () {
     paramsAdultSim.g_T_uS.defaultVal = 0.02;
 
     layoutNeonatalSim = [
+        /*
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
         ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
         ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS', 'Ca_buff_ms']],
+        */
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
     layoutAdultSim = [
+        /*
         ['Cell Properties', ['C_nF', 'g_leak_uS', 'E_leak_mV']],
         ['Potassium Currents', ['E_K_mV', 'g_K_uS', 'g_A_uS', 'g_SK_uS']],
         ['Sodium Currents', ['E_Na_mV', 'g_Na_uS', 'g_NaP_uS']],
         ['Nonspecific Currents', ['E_H_mV', 'g_H_uS']],
         ['Calcium Currents', ['E_Ca_mV', 'g_T_uS', 'g_N_uS', 'g_P_uS', 'Ca_buff_ms']],
+        */
         ['Current Clamp', ['pulseStart_ms', 'pulseHeight_nA', 
             'pulseSubsequentHeight_nA', 'pulseWidth_ms', 'isi_ms', 'numPulses']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -109,6 +113,10 @@ window.addEventListener('load', function () {
     stimDataTable = document.createElement('table');
     stimDataTable.className = 'datatable';
     dataPanel.appendChild(stimDataTable);
+
+    currentTotDataTable = document.createElement('table');
+    currentTotDataTable.className = 'datatable';
+    dataPanel.appendChild(currentTotDataTable);
 
     currentHHDataTable = document.createElement('table');
     currentHHDataTable.className = 'datatable';
@@ -196,7 +204,7 @@ window.addEventListener('load', function () {
             iK, iNa, iNaP, iA, iH, iT, iN, iP, iSK,
             gK, gNa, gNaP, gA, gH, gT, gN, gP, gSK,
             v_mV, iLeak_nA, params, iStim_nA,
-            iK_nA, iNa_nA, iNaP_nA, iA_nA, iH_nA, iT_nA, iN_nA, iP_nA, iSK_nA,
+            iK_nA, iNa_nA, iNaP_nA, iA_nA, iH_nA, iT_nA, iN_nA, iP_nA, iSK_nA, iTot_nA,
             gK_uS, gNa_uS, gNaP_uS, gA_uS, gH_uS, gT_uS, gN_uS, gP_uS, gSK_uS,
             nGate, mGate, hGate, mNaPGate, hNaPGate,
             mAGate, hAGate, mHGate, mTGate, hTGate, mNGate, hNGate, mPGate, zSKGate,
@@ -363,6 +371,23 @@ window.addEventListener('load', function () {
         zSKGate   = zSKGate.map  (function (z) {return [z[0] / 1e-3,  z[1]       ];});
         iStim_nA  = iStim.map    (function (i) {return [i[0] / 1e-3,  i[1] / 1e-9];});
 
+        // compute total endogenous current
+        iTot_nA = [];
+        for (var i=0, len=v_mV.length; i<len; i++) {
+            iTot_nA.push([v_mV[i][0],
+                    iLeak_nA[i][1] +
+                    iK_nA[i][1] +
+                    iNa_nA[i][1] +
+                    iNaP_nA[i][1] +
+                    iA_nA[i][1] +
+                    iH_nA[i][1] +
+                    iT_nA[i][1] +
+                    iN_nA[i][1] +
+                    iP_nA[i][1] +
+                    iSK_nA[i][1]
+                    ]);
+        }
+
         // free resources from old plots
         while (plotHandles.length > 0) {
             plotHandles.pop().destroy();
@@ -380,7 +405,13 @@ window.addEventListener('load', function () {
 
             // Section title
             title = document.createElement('h4');
-            title.innerHTML = 'Membrane Potential and Stimulation Current';
+            if ( plotFlag == 'neonatal' ) {
+                title.innerHTML = 'Neonatal Simulation';
+            } else if ( plotFlag == 'adult' ) {
+                title.innerHTML = 'Adult Simulation';
+            } else {
+                title.innerHTML = ''
+            }
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
 
@@ -424,11 +455,34 @@ window.addEventListener('load', function () {
 
         }
 
+        if (false) {
+
+            // Total membrane current
+            plot = document.createElement('div');
+            plot.id = 'currentTotPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+                $.jqplot('currentTotPlot', [iTot_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Membrane Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I<sub>m</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#currentTotPlot', currentTotDataTable, 'Membrane Current', 'Time');
+            graphJqplot.bindCursorTooltip('#currentTotPlot', 'Time', 'ms', 'nA');
+
+        }
+
         //*****************
         // HODGKIN-HUXLEY
         //*****************
 
-        if (true) {
+        if (false) {
 
             // Section title
             title = document.createElement('h4');
@@ -511,7 +565,7 @@ window.addEventListener('load', function () {
         // PERSISTENT SODIUM
         //*****************
 
-        if (true) {
+        if (false) {
 
             // Section title
             title = document.createElement('h4');
@@ -590,7 +644,7 @@ window.addEventListener('load', function () {
         // FAST POTASSIUM
         //*****************
 
-        if (true) {
+        if (false) {
 
             // Section title
             title = document.createElement('h4');
@@ -669,7 +723,7 @@ window.addEventListener('load', function () {
         // SAG
         //*****************
 
-        if (true) {
+        if (false) {
 
             // Section title
             title = document.createElement('h4');
@@ -747,7 +801,7 @@ window.addEventListener('load', function () {
         // CALCIUM CURRENTS
         //*****************
 
-        if (true) {
+        if (false) {
 
             // Section title
             title = document.createElement('h4');
@@ -833,7 +887,7 @@ window.addEventListener('load', function () {
         // CA CONCENTRATION
         //*****************
 
-        if (true) {
+        if (false) {
 
             // Section title
             title = document.createElement('h4');
@@ -868,7 +922,7 @@ window.addEventListener('load', function () {
         // CA DEPENDENT K
         //*****************
 
-        if (true) {
+        if (false) {
 
             // Section title
             title = document.createElement('h4');
@@ -954,7 +1008,6 @@ window.addEventListener('load', function () {
     function resetToNeonatalSim() {
         plotFlag = 'neonatal';
         V_rest = -71.63003e-3;
-        //Ca_init = 0.00014;
         Ca_init = 0.1354e-3; // uM
         reset(paramsNeonatalSim, layoutNeonatalSim);
     }
@@ -962,8 +1015,8 @@ window.addEventListener('load', function () {
 
     function resetToAdultSim() {
         plotFlag = 'adult';
-        V_rest = -70.6044e-3;
-        Ca_init = 0.064775e-3; // uM
+        V_rest = -70.60445e-3;
+        Ca_init = 0.064774e-3; // uM
         reset(paramsAdultSim, layoutAdultSim);
     }
 
@@ -974,6 +1027,9 @@ window.addEventListener('load', function () {
 
         stimDataTable.innerHTML = '';
         stimDataTable.style.display = 'none';
+
+        currentTotDataTable.innerHTML = '';
+        currentTotDataTable.style.display = 'none';
 
         currentHHDataTable.innerHTML = '';
         currentHHDataTable.style.display = 'none';

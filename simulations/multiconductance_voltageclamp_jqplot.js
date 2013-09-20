@@ -382,7 +382,7 @@ window.addEventListener('load', function () {
 
         // Section title
         title = document.createElement('h4');
-        title.innerHTML = 'Membrane Potential and Stimulation Current';
+        title.innerHTML = 'Membrane Potential';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
 

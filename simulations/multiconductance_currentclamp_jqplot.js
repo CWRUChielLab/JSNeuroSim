@@ -971,9 +971,9 @@ window.addEventListener('load', function () {
                         },
                         series: [
                             {label: 'm<sub>T</sub>',   color: 'magenta'},
-                            {label: 'h<sub>T</sub>',   color: 'chartreuse'},
+                            {label: 'h<sub>T</sub>',   color: 'black'},
                             {label: 'm<sub>N</sub>',   color: 'cyan'},
-                            {label: 'h<sub>N</sub>',   color: 'brown'},
+                            {label: 'h<sub>N</sub>',   color: 'orangered'},
                             {label: 'm<sub>P</sub>',   color: 'darkblue'},
                         ],
                 })));

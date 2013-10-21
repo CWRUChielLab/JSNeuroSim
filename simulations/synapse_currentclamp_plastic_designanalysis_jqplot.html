@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Plastic synapse current clamp simulation</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="simulations.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
+        <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../lib/jqplot/excanvas.js"></script><![endif]-->
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.jqplot.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="synapse_currentclamp_plastic_designanalysis_jqplot.js"></script>
+    </head>
+    <body>
+        <h1 class="simtitle">Plastic synapse current clamp simulation</h1>
+        <div id="SynapseCurrentClampPlasticPlots" class="plotpanel"></div>
+        <div id="SynapseCurrentClampPlasticControls" class="controlspanel"></div>
+        <div>
+            <div style="float:left;">
+                <input id="SynapseCurrentClampPlasticRunButton" type="button" value="Run"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="SynapseCurrentClampPlasticClearDataButton" value="Clear Data Points"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="SynapseCurrentClampPlasticAnalysisButton" value="Analysis"/><br/>
+                <input type="button" id="SynapseCurrentClampPlasticDesignButton" value="Design"/><br/>
+            </div><br/>
+        </div><br/>
+        <div id="SynapseCurrentClampPlasticData" class="datapanel"></div>
+        <div id="debugPanel"></div>
+    </body>
+</html>

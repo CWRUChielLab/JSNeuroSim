@@ -71,32 +71,36 @@ window.addEventListener('load', function () {
 
         pulseStart_pre_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseHeight_pre_nA: { label: 'Stimulus current', units: 'nA', 
+        pulseBias_pre_nA: { label: 'Stimulus bias current', units: 'nA', 
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
+        pulseHeight_pre_nA: { label: 'Additional stimulus current during pulse', units: 'nA', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
         pulseWidth_pre_ms: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
         isi_pre_ms: { label: 'Inter-stimulus interval', units: 'ms', 
             defaultVal: 20, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_pre: { label: 'Number of pulses', units: '', 
-            defaultVal: 6, minVal: 0, maxVal: 100 },
+            defaultVal: 6, minVal: 0, maxVal: 10000 },
 
         pulseStart_post_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 10, minVal: 0, maxVal: tMax / 1e-3 },
-        pulseHeight_post_nA: { label: 'Stimulus current', units: 'nA', 
+        pulseBias_post_nA: { label: 'Stimulus bias current', units: 'nA', 
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
+        pulseHeight_post_nA: { label: 'Additional stimulus current during pulse', units: 'nA', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
         pulseWidth_post_ms: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 2, minVal: 0, maxVal: tMax / 1e-3 },
         isi_post_ms: { label: 'Inter-stimulus interval', units: 'ms', 
             defaultVal: 20, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_post: { label: 'Number of pulses', units: '', 
-            defaultVal: 6, minVal: 0, maxVal: 100 },
+            defaultVal: 0, minVal: 0, maxVal: 10000 },
 
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 150, minVal: 0, maxVal: tMax / 1e-3 }
     };
 
     paramsAnalysis.E_rev_syn_mV.defaultVal = -77;
-    paramsAnalysis.numPulses_post.defaultVal = 0;
+    paramsAnalysis.tau_d_ms.defaultVal = 100;
 
     paramsDesign = JSON.parse(JSON.stringify(paramsAnalysis));
     paramsDesign.E_leak_post_mV.defaultVal = -25;
@@ -104,21 +108,20 @@ window.addEventListener('load', function () {
     paramsDesign.Ca_facilitation_nM.defaultVal = 0.1;
     paramsDesign.pulseStart_pre_ms.defaultVal = 150;
     paramsDesign.numPulses_pre.defaultVal = 1;
-    paramsDesign.numPulses_post.defaultVal = 0;
     paramsDesign.totalDuration_ms.defaultVal = 750;
 
     layoutAnalysis = [
         ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 
-            'pulseHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
+            'pulseBias_pre_nA', 'pulseHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
             'numPulses_pre']],
         ['Postsynaptic Current Clamp', ['pulseStart_post_ms', 
-            'pulseHeight_post_nA', 'pulseWidth_post_ms', 'isi_post_ms', 
+            'pulseBias_post_nA', 'pulseHeight_post_nA', 'pulseWidth_post_ms', 'isi_post_ms', 
             'numPulses_post']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
     layoutDesign = [
         ['Presynaptic Current Clamp', ['pulseStart_pre_ms', 
-            'pulseHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
+            'pulseBias_pre_nA', 'pulseHeight_pre_nA', 'pulseWidth_pre_ms', 'isi_pre_ms', 
             'numPulses_pre']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
@@ -180,6 +183,7 @@ window.addEventListener('load', function () {
         pulseTrain_pre = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_pre_ms, 
             width: params.pulseWidth_pre_ms * 1e-3, 
+            baseline: params.pulseBias_pre_nA * 1e-9,
             height: params.pulseHeight_pre_nA * 1e-9,
             gap: params.isi_pre_ms * 1e-3,
             num_pulses: params.numPulses_pre
@@ -214,6 +218,7 @@ window.addEventListener('load', function () {
         pulseTrain_post = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_post_ms, 
             width: params.pulseWidth_post_ms * 1e-3, 
+            baseline: params.pulseBias_post_nA * 1e-9,
             height: params.pulseHeight_post_nA * 1e-9,
             gap: params.isi_post_ms * 1e-3,
             num_pulses: params.numPulses_post

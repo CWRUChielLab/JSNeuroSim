@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>        
+        <title>Tritonia swim CPG simulation</title>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="simulations.css" />
+        <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
+        <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../lib/jqplot/excanvas.js"></script><![endif]-->
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.jqplot.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="tritonia_behavioral_jqplot.js"></script>
+    </head>
+    <body>
+        <h1 class="simtitle">Tritonia swim CPG simulation</h1>
+        <div id="TritoniaPlots" class="plotpanel"></div>
+        <div id="TritoniaControls" class="controlspanel"></div>
+        <input id="TritoniaRunButton" type="button" value="Run"/>
+        <input type="button" id="TritoniaModulatedSwimResetButton" 
+            value="Modulated Swim Defaults"/>
+        <input type="button" id="TritoniaUnmodulatedSwimResetButton" 
+            value="Unmodulated Swim Defaults"/>
+        <input type="button" id="TritoniaIsolatedCellsResetButton" 
+            value="Isolated Cells Defaults"/>
+        <input type="button" id="TritoniaClearDataButton"
+            value="Clear Data Points"/>
+        <div id="TritoniaData" class="datapanel"></div>
+        <div id="debugPanel"></div>
+    </body>
+</html>

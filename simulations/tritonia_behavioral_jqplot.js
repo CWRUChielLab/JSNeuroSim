@@ -11,6 +11,8 @@ window.addEventListener('load', function () {
 		voltageDSIDataTable, currentDSIDataTable,
         voltageVSIDataTable, currentVSIDataTable, 
 		voltageDRIDataTable, currentDRIDataTable,
+		voltageDFNDataTable, currentDFNDataTable,
+		voltageVFNDataTable, currentVFNDataTable,
 		bodyAngleDataTable,
         tMax = 600000e-3,
         paramsUnmodulatedSwim, 
@@ -260,53 +262,53 @@ window.addEventListener('load', function () {
             label: 'Fast undershoot closing time constant', 
             defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
 			
-		V_init_mV_DMN: { label: 'Initial membrane potential', units: 'mV', 
+		V_init_mV_DFN: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -50, minVal: -1000, maxVal: 1000 },
-        C_nF_DMN: { label: 'Membrane capacitance', units: 'nF', 
+        C_nF_DFN: { label: 'Membrane capacitance', units: 'nF', 
             defaultVal: 2, minVal: 0.01, maxVal: 100 },
-        g_leak_uS_DMN: { label: 'Leak conductance', units: '\u00B5S', 
+        g_leak_uS_DFN: { label: 'Leak conductance', units: '\u00B5S', 
             defaultVal: 0.05, minVal: 0.01, maxVal: 100 },
-        E_leak_mV_DMN: { label: 'Leak potential', units: 'mV', 
+        E_leak_mV_DFN: { label: 'Leak potential', units: 'mV', 
             defaultVal: -50, minVal: -1000, maxVal: 1000 },
-        theta_ss_mV_DMN: { label: 'Resting threshold', units: 'mV', 
+        theta_ss_mV_DFN: { label: 'Resting threshold', units: 'mV', 
             defaultVal: -34, minVal: -1000, maxVal: 1000 },
-        theta_r_mV_DMN: { label: 'Refractory threshold', units: 'mV', 
+        theta_r_mV_DFN: { label: 'Refractory threshold', units: 'mV', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
-        theta_tau_ms_DMN: { label: 'Refractory time constant', units: 'ms', 
+        theta_tau_ms_DFN: { label: 'Refractory time constant', units: 'ms', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        W_Fast_uS_DMN: { label: 'Fast undershoot conductance', 
+        W_Fast_uS_DFN: { label: 'Fast undershoot conductance', 
             units: '\u00B5S', defaultVal: 0.3, minVal: 0, maxVal: 100 },
-        E_Fast_mV_DMN: { label: 'Fast undershoot potential', units: 'mV', 
+        E_Fast_mV_DFN: { label: 'Fast undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Fast_ms_DMN: { units: 'ms', 
+        tau_open_Fast_ms_DFN: { units: 'ms', 
             label: 'Fast undershoot opening time constant', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Fast_ms_DMN: { units: 'ms', 
+        tau_close_Fast_ms_DFN: { units: 'ms', 
             label: 'Fast undershoot closing time constant', 
             defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
 			
-		V_init_mV_VMN: { label: 'Initial membrane potential', units: 'mV', 
+		V_init_mV_VFN: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -50, minVal: -1000, maxVal: 1000 },
-        C_nF_VMN: { label: 'Membrane capacitance', units: 'nF', 
+        C_nF_VFN: { label: 'Membrane capacitance', units: 'nF', 
             defaultVal: 2, minVal: 0.01, maxVal: 100 },
-        g_leak_uS_VMN: { label: 'Leak conductance', units: '\u00B5S', 
+        g_leak_uS_VFN: { label: 'Leak conductance', units: '\u00B5S', 
             defaultVal: 0.05, minVal: 0.01, maxVal: 100 },
-        E_leak_mV_VMN: { label: 'Leak potential', units: 'mV', 
+        E_leak_mV_VFN: { label: 'Leak potential', units: 'mV', 
             defaultVal: -50, minVal: -1000, maxVal: 1000 },
-        theta_ss_mV_VMN: { label: 'Resting threshold', units: 'mV', 
+        theta_ss_mV_VFN: { label: 'Resting threshold', units: 'mV', 
             defaultVal: -34, minVal: -1000, maxVal: 1000 },
-        theta_r_mV_VMN: { label: 'Refractory threshold', units: 'mV', 
+        theta_r_mV_VFN: { label: 'Refractory threshold', units: 'mV', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
-        theta_tau_ms_VMN: { label: 'Refractory time constant', units: 'ms', 
+        theta_tau_ms_VFN: { label: 'Refractory time constant', units: 'ms', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        W_Fast_uS_VMN: { label: 'Fast undershoot conductance', 
+        W_Fast_uS_VFN: { label: 'Fast undershoot conductance', 
             units: '\u00B5S', defaultVal: 0.3, minVal: 0, maxVal: 100 },
-        E_Fast_mV_VMN: { label: 'Fast undershoot potential', units: 'mV', 
+        E_Fast_mV_VFN: { label: 'Fast undershoot potential', units: 'mV', 
             defaultVal: -80, minVal: -1000, maxVal: 1000 },
-        tau_open_Fast_ms_VMN: { units: 'ms', 
+        tau_open_Fast_ms_VFN: { units: 'ms', 
             label: 'Fast undershoot opening time constant', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        tau_close_Fast_ms_VMN: { units: 'ms', 
+        tau_close_Fast_ms_VFN: { units: 'ms', 
             label: 'Fast undershoot closing time constant', 
             defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
 			
@@ -467,55 +469,45 @@ window.addEventListener('load', function () {
             label: 'E1 closing time constant', 
             defaultVal: 15000, minVal: 0.1, maxVal: 1000000 },
 			
-		W_E1_uS_DSItoDMN: { label: 'E1 conductance', 
+		W_E1_uS_DSItoDFN: { label: 'E1 conductance', 
             units: '\u00B5S', defaultVal: 0.054, minVal: 0, maxVal: 100 },
-        E_E1_mV_DSItoDMN: { label: 'E1 reversal potential', units: 'mV', 
+        E_E1_mV_DSItoDFN: { label: 'E1 reversal potential', units: 'mV', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
-        tau_open_E1_ms_DSItoDMN: { units: 'ms', 
+        tau_open_E1_ms_DSItoDFN: { units: 'ms', 
             label: 'E1 opening time constant', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        tau_close_E1_ms_DSItoDMN: { units: 'ms', 
+        tau_close_E1_ms_DSItoDFN: { units: 'ms', 
             label: 'E1 closing time constant', 
             defaultVal: 370, minVal: 0.1, maxVal: 1000000 },
-        // W_E2_uS_DSItoDMN: { label: 'E2 conductance', 
-            // units: '\u00B5S', defaultVal: 0.00108, minVal: 0, maxVal: 100 },
-        // E_E2_mV_DSItoDMN: { label: 'E2 reversal potential', units: 'mV', 
-            // defaultVal: 10, minVal: -1000, maxVal: 1000 },
-        // tau_open_E2_ms_DSItoDMN: { units: 'ms', 
-            // label: 'E2 opening time constant', 
-            // defaultVal: 2200, minVal: 0.1, maxVal: 1000000 },
-        // tau_close_E2_ms_DSItoDMN: { units: 'ms', 
-            // label: 'E2 closing time constant', 
-            // defaultVal: 2200, minVal: 0.1, maxVal: 1000000 },
 			
-		W_E1_uS_VSItoVMN: { label: 'E1 conductance', 
+		W_E1_uS_VSItoVFN: { label: 'E1 conductance', 
             units: '\u00B5S', defaultVal: 0.054, minVal: 0, maxVal: 100 },
-        E_E1_mV_VSItoVMN: { label: 'E1 reversal potential', units: 'mV', 
+        E_E1_mV_VSItoVFN: { label: 'E1 reversal potential', units: 'mV', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
-        tau_open_E1_ms_VSItoVMN: { units: 'ms', 
+        tau_open_E1_ms_VSItoVFN: { units: 'ms', 
             label: 'E1 opening time constant', 
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
-        tau_close_E1_ms_VSItoVMN: { units: 'ms', 
+        tau_close_E1_ms_VSItoVFN: { units: 'ms', 
             label: 'E1 closing time constant', 
             defaultVal: 370, minVal: 0.1, maxVal: 1000000 },
-        W_E2_uS_VSItoVMN: { label: 'E2 conductance', 
+        W_E2_uS_VSItoVFN: { label: 'E2 conductance', 
             units: '\u00B5S', defaultVal: 0.0007, minVal: 0, maxVal: 100 },
-        E_E2_mV_VSItoVMN: { label: 'E2 reversal potential', units: 'mV', 
+        E_E2_mV_VSItoVFN: { label: 'E2 reversal potential', units: 'mV', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
-        tau_open_E2_ms_VSItoVMN: { units: 'ms', 
+        tau_open_E2_ms_VSItoVFN: { units: 'ms', 
             label: 'E2 opening time constant', 
             defaultVal: 2200, minVal: 0.1, maxVal: 1000000 },
-        tau_close_E2_ms_VSItoVMN: { units: 'ms', 
+        tau_close_E2_ms_VSItoVFN: { units: 'ms', 
             label: 'E2 closing time constant', 
             defaultVal: 2200, minVal: 0.1, maxVal: 1000000 },
 			
-		beta_ventral: { label: 'Ventral neuron beta value', units: '',
+		beta_ventral: { label: 'Ventral neuron beta value', units: 'mV',
+			defaultVal: -44, minVal: 0, maxVal: 1000 },
+		gamma_ventral: { label: 'Ventral neuron gamma value', units: 'mV',
 			defaultVal: 1, minVal: 0, maxVal: 1000 },
-		gamma_ventral: { label: 'Ventral neuron gamma value', units: '',
-			defaultVal: 1, minVal: 0, maxVal: 1000 },
-		beta_dorsal: { label: 'Dorsal neuron beta value', units: '',
-			defaultVal: 1, minVal: 0, maxVal: 1000 },
-		gamma_dorsal: { label: 'Dorsal neuron gamma value', units: '',
+		beta_dorsal: { label: 'Dorsal neuron beta value', units: 'mV',
+			defaultVal: -43, minVal: 0, maxVal: 1000 },
+		gamma_dorsal: { label: 'Dorsal neuron gamma value', units: 'mV',
 			defaultVal: 1, minVal: 0, maxVal: 1000 },
     };
 
@@ -618,14 +610,14 @@ window.addEventListener('load', function () {
             // 'E_leak_mV_DRI', 'theta_ss_mV_DRI', 'theta_r_mV_DRI',
             // 'theta_tau_ms_DRI', 'W_Fast_uS_DRI', 'E_Fast_mV_DRI',
             // 'tau_open_Fast_ms_DRI', 'tau_close_Fast_ms_DRI']],
-		['DMN Parameters', ['V_init_mV_DMN', 'C_nF_DMN', 'g_leak_uS_DMN', 
-            'E_leak_mV_DMN', 'theta_ss_mV_DMN', 'theta_r_mV_DMN',
-            'theta_tau_ms_DMN', 'W_Fast_uS_DMN', 'E_Fast_mV_DMN',
-            'tau_open_Fast_ms_DMN', 'tau_close_Fast_ms_DMN']],
-	    ['VMN Parameters', ['V_init_mV_VMN', 'C_nF_VMN', 'g_leak_uS_VMN', 
-            'E_leak_mV_VMN', 'theta_ss_mV_VMN', 'theta_r_mV_VMN',
-            'theta_tau_ms_VMN', 'W_Fast_uS_VMN', 'E_Fast_mV_VMN',
-            'tau_open_Fast_ms_VMN', 'tau_close_Fast_ms_VMN']],
+		['DFN Parameters', ['V_init_mV_DFN', 'C_nF_DFN', 'g_leak_uS_DFN', 
+            'E_leak_mV_DFN', 'theta_ss_mV_DFN', 'theta_r_mV_DFN',
+            'theta_tau_ms_DFN', 'W_Fast_uS_DFN', 'E_Fast_mV_DFN',
+            'tau_open_Fast_ms_DFN', 'tau_close_Fast_ms_DFN']],
+	    ['VFN Parameters', ['V_init_mV_VFN', 'C_nF_VFN', 'g_leak_uS_VFN', 
+            'E_leak_mV_VFN', 'theta_ss_mV_VFN', 'theta_r_mV_VFN',
+            'theta_tau_ms_VFN', 'W_Fast_uS_VFN', 'E_Fast_mV_VFN',
+            'tau_open_Fast_ms_VFN', 'tau_close_Fast_ms_VFN']],
         // ['C2 to DSI synapse', ['W_E1_uS_C2toDSI', 'E_E1_mV_C2toDSI',
             // 'tau_open_E1_ms_C2toDSI', 'tau_close_E1_ms_C2toDSI',
             // 'W_I1_uS_C2toDSI', 'E_I1_mV_C2toDSI', 'tau_open_I1_ms_C2toDSI',
@@ -653,16 +645,14 @@ window.addEventListener('load', function () {
             // 'tau_close_I2_ms_VSItoDSI']],
         // ['DRI to DSI synapse', ['W_E1_uS_DRItoDSI', 'E_E1_mV_DRItoDSI', 
             // 'tau_open_E1_ms_DRItoDSI', 'tau_close_E1_ms_DRItoDSI' ]],
-		['DSI to DMN synapse', ['W_E1_uS_DSItoDMN', 'E_E1_mV_DSItoDMN',
-            'tau_open_E1_ms_DSItoDMN', 'tau_close_E1_ms_DSItoDMN']],
-            // 'W_E2_uS_DSItoDMN', 'E_E2_mV_DSItoDMN',
-            // 'tau_open_E2_ms_DSItoDMN', 'tau_close_E2_ms_DSItoDMN']],
-		['VSI to VMN synapse', ['W_E1_uS_VSItoVMN', 'E_E1_mV_VSItoVMN',
-            'tau_open_E1_ms_VSItoVMN', 'tau_close_E1_ms_VSItoVMN',
-            'W_E2_uS_VSItoVMN', 'E_E2_mV_VSItoVMN',
-            'tau_open_E2_ms_VSItoVMN', 'tau_close_E2_ms_VSItoVMN']],
-		['Sigmoid parameters', ['beta_ventral', 'gamma_ventral', 
-			'beta_dorsal', 'gamma_dorsal']]
+		['DSI to DFN synapse', ['W_E1_uS_DSItoDFN', 'E_E1_mV_DSItoDFN',
+            'tau_open_E1_ms_DSItoDFN', 'tau_close_E1_ms_DSItoDFN']],
+		['VSI to VFN synapse', ['W_E1_uS_VSItoVFN', 'E_E1_mV_VSItoVFN',
+            'tau_open_E1_ms_VSItoVFN', 'tau_close_E1_ms_VSItoVFN',
+            'W_E2_uS_VSItoVFN', 'E_E2_mV_VSItoVFN',
+            'tau_open_E2_ms_VSItoVFN', 'tau_close_E2_ms_VSItoVFN']],
+		//['Sigmoid parameters', ['beta_ventral', 'gamma_ventral', 
+		//	'beta_dorsal', 'gamma_dorsal']]
     ];
     controlsPanel = document.getElementById('TritoniaControls');
 
@@ -702,6 +692,22 @@ window.addEventListener('load', function () {
     currentDRIDataTable.className = 'datatable';
     dataPanel.appendChild(currentDRIDataTable);
 	
+    voltageDFNDataTable = document.createElement('table');
+    voltageDFNDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageDFNDataTable);
+
+    currentDFNDataTable = document.createElement('table');
+    currentDFNDataTable.className = 'datatable';
+    dataPanel.appendChild(currentDFNDataTable);
+	
+    voltageVFNDataTable = document.createElement('table');
+    voltageVFNDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageVFNDataTable);
+
+    currentVFNDataTable = document.createElement('table');
+    currentVFNDataTable.className = 'datatable';
+    dataPanel.appendChild(currentVFNDataTable);
+	
 	bodyAngleDataTable = document.createElement('table');
     bodyAngleDataTable.className = 'datatable';
     dataPanel.appendChild(bodyAngleDataTable);
@@ -719,10 +725,10 @@ window.addEventListener('load', function () {
             v_VSI, v_VSI_mV, iStim_VSI, iStim_VSI_nA,
             DRI, DRIFast, pulseTrainDRI,
             v_DRI, v_DRI_mV, iStim_DRI, iStim_DRI_nA,
-			DMN, DMNFast,
-			v_DMN, v_DMN_mV,
-			VMN, VMNFast,
-			v_VMN, v_VMN_mV,
+			DFN, DFNFast,
+			v_DFN, v_DFN_mV,
+			VFN, VFNFast,
+			v_VFN, v_VFN_mV,
             C2toDSI_E1, C2toDSI_I1, C2toDSI_I2, 
             C2toVSI_E1, C2toVSI_I1, C2toVSI_I2, 
             DSItoC2_E1, DSItoC2_E2, 
@@ -730,8 +736,8 @@ window.addEventListener('load', function () {
             VSItoC2_I1, 
             VSItoDSI_I1, VSItoDSI_I2, 
             DRItoDSI_E1, 
-			DSItoDMN_E1, DSItoDMN_E2,
-			VSItoVMN_E1, VSItoVMN_E2,
+			DSItoDFN_E1, DSItoDFN_E2,
+			VSItoVFN_E1, VSItoVFN_E2,
 			slugBody, bodyAngle, bodyAngle_degree,
 			angleInf, angleInf_degree,
             startTime = new Date().getTime(),
@@ -902,36 +908,36 @@ window.addEventListener('load', function () {
         DRI.addCurrent(pulseTrainDRI);
        
 
-	   DMN = electrophys.gettingIFNeuron(model, { 
-            V_rest: params.V_init_mV_DMN * 1e-3, 
-            C: params.C_nF_DMN * 1e-9, 
-            g_leak: params.g_leak_uS_DMN * 1e-6, 
-            E_leak: params.E_leak_mV_DMN * 1e-3, 
-            theta_ss: params.theta_ss_mV_DMN * 1e-3, 
-            theta_r: params.theta_r_mV_DMN * 1e-3, 
-            theta_tau: params.theta_tau_ms_DMN * 1e-3 
+	   DFN = electrophys.gettingIFNeuron(model, { 
+            V_rest: params.V_init_mV_DFN * 1e-3, 
+            C: params.C_nF_DFN * 1e-9, 
+            g_leak: params.g_leak_uS_DFN * 1e-6, 
+            E_leak: params.E_leak_mV_DFN * 1e-3, 
+            theta_ss: params.theta_ss_mV_DFN * 1e-3, 
+            theta_r: params.theta_r_mV_DFN * 1e-3, 
+            theta_tau: params.theta_tau_ms_DFN * 1e-3 
         });
-        DMNFast = electrophys.gettingSynapse(model, DMN, DMN, { 
-            W: params.W_Fast_uS_DMN * 1e-6, 
-            E_rev: params.E_Fast_mV_DMN * 1e-3, 
-            tau_open: params.tau_open_Fast_ms_DMN * 1e-3, 
-            tau_close: params.tau_close_Fast_ms_DMN * 1e-3, 
+        DFNFast = electrophys.gettingSynapse(model, DFN, DFN, { 
+            W: params.W_Fast_uS_DFN * 1e-6, 
+            E_rev: params.E_Fast_mV_DFN * 1e-3, 
+            tau_open: params.tau_open_Fast_ms_DFN * 1e-3, 
+            tau_close: params.tau_close_Fast_ms_DFN * 1e-3, 
         });
 		
-		VMN = electrophys.gettingIFNeuron(model, { 
-            V_rest: params.V_init_mV_VMN * 1e-3, 
-            C: params.C_nF_VMN * 1e-9, 
-            g_leak: params.g_leak_uS_VMN * 1e-6, 
-            E_leak: params.E_leak_mV_VMN * 1e-3, 
-            theta_ss: params.theta_ss_mV_VMN * 1e-3, 
-            theta_r: params.theta_r_mV_VMN * 1e-3, 
-            theta_tau: params.theta_tau_ms_VMN * 1e-3 
+		VFN = electrophys.gettingIFNeuron(model, { 
+            V_rest: params.V_init_mV_VFN * 1e-3, 
+            C: params.C_nF_VFN * 1e-9, 
+            g_leak: params.g_leak_uS_VFN * 1e-6, 
+            E_leak: params.E_leak_mV_VFN * 1e-3, 
+            theta_ss: params.theta_ss_mV_VFN * 1e-3, 
+            theta_r: params.theta_r_mV_VFN * 1e-3, 
+            theta_tau: params.theta_tau_ms_VFN * 1e-3 
         });
-        VMNFast = electrophys.gettingSynapse(model, VMN, VMN, { 
-            W: params.W_Fast_uS_VMN * 1e-6, 
-            E_rev: params.E_Fast_mV_VMN * 1e-3, 
-            tau_open: params.tau_open_Fast_ms_VMN * 1e-3, 
-            tau_close: params.tau_close_Fast_ms_VMN * 1e-3, 
+        VFNFast = electrophys.gettingSynapse(model, VFN, VFN, { 
+            W: params.W_Fast_uS_VFN * 1e-6, 
+            E_rev: params.E_Fast_mV_VFN * 1e-3, 
+            tau_open: params.tau_open_Fast_ms_VFN * 1e-3, 
+            tau_close: params.tau_close_Fast_ms_VFN * 1e-3, 
         });
 		
         // create the C2 to DSI synapse
@@ -1044,40 +1050,40 @@ window.addEventListener('load', function () {
             tau_close: params.tau_close_E1_ms_DRItoDSI * 1e-3, 
         });
 		
-		// create the DSI to DMN synapse
-        DSItoDMN_E1 = electrophys.gettingSynapse(model, DSI, DMN, { 
-            W: params.W_E1_uS_DSItoDMN * 1e-6, 
-            E_rev: params.E_E1_mV_DSItoDMN * 1e-3, 
-            tau_open: params.tau_open_E1_ms_DSItoDMN * 1e-3, 
-            tau_close: params.tau_close_E1_ms_DSItoDMN * 1e-3, 
+		// create the DSI to DFN synapse
+        DSItoDFN_E1 = electrophys.gettingSynapse(model, DSI, DFN, { 
+            W: params.W_E1_uS_DSItoDFN * 1e-6, 
+            E_rev: params.E_E1_mV_DSItoDFN * 1e-3, 
+            tau_open: params.tau_open_E1_ms_DSItoDFN * 1e-3, 
+            tau_close: params.tau_close_E1_ms_DSItoDFN * 1e-3, 
         });
-        // DSItoDMN_E2 = electrophys.gettingSynapse(model, DSI, DMN, { 
-            // W: params.W_E2_uS_DSItoDMN * 1e-6, 
-            // E_rev: params.E_E2_mV_DSItoDMN * 1e-3, 
-            // tau_open: params.tau_open_E2_ms_DSItoDMN * 1e-3, 
-            // tau_close: params.tau_close_E2_ms_DSItoDMN * 1e-3, 
+        // DSItoDFN_E2 = electrophys.gettingSynapse(model, DSI, DFN, { 
+            // W: params.W_E2_uS_DSItoDFN * 1e-6, 
+            // E_rev: params.E_E2_mV_DSItoDFN * 1e-3, 
+            // tau_open: params.tau_open_E2_ms_DSItoDFN * 1e-3, 
+            // tau_close: params.tau_close_E2_ms_DSItoDFN * 1e-3, 
         // });
 		
-		// create the VSI to VMN synapse
-        VSItoVMN_E1 = electrophys.gettingSynapse(model, VSI, VMN, { 
-            W: params.W_E1_uS_VSItoVMN * 1e-6, 
-            E_rev: params.E_E1_mV_VSItoVMN * 1e-3, 
-            tau_open: params.tau_open_E1_ms_VSItoVMN * 1e-3, 
-            tau_close: params.tau_close_E1_ms_VSItoVMN * 1e-3, 
+		// create the VSI to VFN synapse
+        VSItoVFN_E1 = electrophys.gettingSynapse(model, VSI, VFN, { 
+            W: params.W_E1_uS_VSItoVFN * 1e-6, 
+            E_rev: params.E_E1_mV_VSItoVFN * 1e-3, 
+            tau_open: params.tau_open_E1_ms_VSItoVFN * 1e-3, 
+            tau_close: params.tau_close_E1_ms_VSItoVFN * 1e-3, 
         });
-        VSItoVMN_E2 = electrophys.gettingSynapse(model, VSI, VMN, { 
-            W: params.W_E2_uS_VSItoVMN * 1e-6, 
-            E_rev: params.E_E2_mV_VSItoVMN * 1e-3, 
-            tau_open: params.tau_open_E2_ms_VSItoVMN * 1e-3, 
-            tau_close: params.tau_close_E2_ms_VSItoVMN * 1e-3, 
+        VSItoVFN_E2 = electrophys.gettingSynapse(model, VSI, VFN, { 
+            W: params.W_E2_uS_VSItoVFN * 1e-6, 
+            E_rev: params.E_E2_mV_VSItoVFN * 1e-3, 
+            tau_open: params.tau_open_E2_ms_VSItoVFN * 1e-3, 
+            tau_close: params.tau_close_E2_ms_VSItoVFN * 1e-3, 
         });
 		
 		
 		// Get the body angle
-		slugBody = electrophys.slugBody(model, VMN, DMN, {
-			beta_ventral: params.beta_ventral * -44e-3,
+		slugBody = electrophys.slugBody(model, VFN, DFN, {
+			beta_ventral: params.beta_ventral * 1e-3,
 			gamma_ventral: params.gamma_ventral * 1e-3,
-			beta_dorsal: params.beta_dorsal * -43e-3,
+			beta_dorsal: params.beta_dorsal * 1e-3,
 			gamma_dorsal: params.gamma_dorsal * 1e-3
 		});
 		
@@ -1090,8 +1096,8 @@ window.addEventListener('load', function () {
         iStim_VSI_nA = [];
         v_DRI_mV = [];
         iStim_DRI_nA = [];
-		v_DMN_mV = [];
-		v_VMN_mV = [];
+		v_DFN_mV = [];
+		v_VFN_mV = [];
 		bodyAngle_degree = [];
 		angleInf_degree = [];
 
@@ -1123,10 +1129,10 @@ window.addEventListener('load', function () {
             v_DSI     = result.mapOrderedPairs(DSI.VWithSpikes);
             v_VSI     = result.mapOrderedPairs(VSI.VWithSpikes);
             v_DRI     = result.mapOrderedPairs(DRI.VWithSpikes);
-			v_DMN	  = result.mapOrderedPairs(DMN.VWithSpikes);
-			v_VMN	  = result.mapOrderedPairs(VMN.VWithSpikes);
-			//v_DMN	  = result.mapOrderedPairs(DMN.V);
-			//v_VMN	  = result.mapOrderedPairs(VMN.V);
+			v_DFN	  = result.mapOrderedPairs(DFN.VWithSpikes);
+			v_VFN	  = result.mapOrderedPairs(VFN.VWithSpikes);
+			//v_DFN	  = result.mapOrderedPairs(DFN.V);
+			//v_VFN	  = result.mapOrderedPairs(VFN.V);
             iStim_C2  = result.mapOrderedPairs(pulseTrainC2);
             iStim_DSI = result.mapOrderedPairs(pulseTrainDSI);
             iStim_VSI = result.mapOrderedPairs(pulseTrainVSI);
@@ -1141,8 +1147,8 @@ window.addEventListener('load', function () {
             v_DSI_mV     = v_DSI_mV.concat(v_DSI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             v_VSI_mV     = v_VSI_mV.concat(v_VSI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             v_DRI_mV     = v_DRI_mV.concat(v_DRI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
-			v_DMN_mV     = v_DMN_mV.concat(v_DMN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
-			v_VMN_mV     = v_VMN_mV.concat(v_VMN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
+			v_DFN_mV     = v_DFN_mV.concat(v_DFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
+			v_VFN_mV     = v_VFN_mV.concat(v_VFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             iStim_C2_nA  = iStim_C2_nA.concat(iStim_C2.map   (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_DSI_nA = iStim_DSI_nA.concat(iStim_DSI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_VSI_nA = iStim_VSI_nA.concat(iStim_VSI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
@@ -1343,18 +1349,18 @@ window.addEventListener('load', function () {
             // graphJqplot.bindDataCapture('#currentDRIPlot', currentDRIDataTable, title.innerHTML, 'Time');
             // graphJqplot.bindCursorTooltip('#currentDRIPlot', 'Time', 'ms', 'nA');
 			
-			// DMN Voltage
+			// DFN Voltage
             title = document.createElement('h4');
-            title.innerHTML = 'DMN Membrane Potential';
+            title.innerHTML = 'DFN Membrane Potential';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             plot = document.createElement('div');
-            plot.id = 'voltageDMNPlot';
+            plot.id = 'voltageDFNPlot';
             plot.style.width = '425px';
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageDMNPlot', [v_DMN_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+               $.jqplot('voltageDFNPlot', [v_DFN_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -1363,21 +1369,21 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            //graphJqplot.bindDataCapture('#voltageDMNPlot', voltageVSIDataTable, title.innerHTML, 'Time');
-            graphJqplot.bindCursorTooltip('#voltageDMNPlot', 'Time', 'ms', 'mV');
+            graphJqplot.bindDataCapture('#voltageDFNPlot', voltageDFNDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#voltageDFNPlot', 'Time', 'ms', 'mV');
 			
-			// VMN Voltage
+			// VFN Voltage
             title = document.createElement('h4');
-            title.innerHTML = 'VMN Membrane Potential';
+            title.innerHTML = 'VFN Membrane Potential';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             plot = document.createElement('div');
-            plot.id = 'voltageVMNPlot';
+            plot.id = 'voltageVFNPlot';
             plot.style.width = '425px';
             plot.style.height = '200px';
             plotPanel.appendChild(plot);
             plotHandles.push(
-               $.jqplot('voltageVMNPlot', [v_VMN_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+               $.jqplot('voltageVFNPlot', [v_VFN_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
                         yaxis: {label:'Membrane Potential (mV)'},
@@ -1386,14 +1392,14 @@ window.addEventListener('load', function () {
                         {label: 'V<sub>m</sub>', color: 'black'},
                     ],
             })));
-            //graphJqplot.bindDataCapture('#voltageVMNPlot', voltageVSIDataTable, title.innerHTML, 'Time');
-            graphJqplot.bindCursorTooltip('#voltageVMNPlot', 'Time', 'ms', 'mV');
+            graphJqplot.bindDataCapture('#voltageVFNPlot', voltageVFNDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#voltageVFNPlot', 'Time', 'ms', 'mV');
 			
 			
 			
-			// Difference angle plot
+			// Body flexion angle plot
             title = document.createElement('h4');
-            title.innerHTML = 'Difference Angle';
+            title.innerHTML = 'Body Flexion Angle';
             title.className = 'simplotheading';
             plotPanel.appendChild(title);
             plot = document.createElement('div');
@@ -1405,36 +1411,39 @@ window.addEventListener('load', function () {
                $.jqplot('angleDiffPlot', [bodyAngle_degree], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                     axes: {
                         xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Current (nA)'},
+                        yaxis: {
+                            label:'Body angle (degrees)',
+                            min: -90, max: 90,
+                            numberTicks: 7,
+                        },
                     },
                     series: [
                         {label: 'I<sub>stim</sub>', color: 'black'},
                     ],
             })));
             graphJqplot.bindDataCapture('#angleDiffPlot', bodyAngleDataTable, title.innerHTML, 'Time');
-            graphJqplot.bindCursorTooltip('#angleDiffPlot', 'Time', 'ms', 'nA');
+            graphJqplot.bindCursorTooltip('#angleDiffPlot', 'Time', 'ms', 'Degrees');
 			
-			title = document.createElement('h4');
-            title.innerHTML = 'Angle Infinity';
-            title.className = 'simplotheading';
-            plotPanel.appendChild(title);
-            plot = document.createElement('div');
-            plot.id = 'angleInfPlot';
-            plot.style.width = '425px';
-            plot.style.height = '200px';
-            plotPanel.appendChild(plot);
-            plotHandles.push(
-               $.jqplot('angleInfPlot', [angleInf_degree], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                    axes: {
-                        xaxis: {label:'Time (ms)'},
-                        yaxis: {label:'Current (nA)'},
-                    },
-                    series: [
-                        {label: 'I<sub>stim</sub>', color: 'black'},
-                    ],
-            })));
-            //graphJqplot.bindDataCapture('#angleDiffPlot', bodyAngleDataTable, title.innerHTML, 'Time');
-            graphJqplot.bindCursorTooltip('#angleInfPlot', 'Time', 'ms', 'nA');
+//			title = document.createElement('h4');
+//            title.innerHTML = 'Angle Infinity';
+//            title.className = 'simplotheading';
+//            plotPanel.appendChild(title);
+//            plot = document.createElement('div');
+//            plot.id = 'angleInfPlot';
+//            plot.style.width = '425px';
+//            plot.style.height = '200px';
+//            plotPanel.appendChild(plot);
+//            plotHandles.push(
+//               $.jqplot('angleInfPlot', [angleInf_degree], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                    axes: {
+//                        xaxis: {label:'Time (ms)'},
+//                        yaxis: {label:'Body angle (degrees)'},
+//                    },
+//                    series: [
+//                        {label: 'I<sub>stim</sub>', color: 'black'},
+//                    ],
+//            })));
+//            graphJqplot.bindCursorTooltip('#angleInfPlot', 'Time', 'ms', 'Degrees');
 
             if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
@@ -1495,6 +1504,18 @@ window.addEventListener('load', function () {
 
         currentDRIDataTable.innerHTML = '';
         currentDRIDataTable.style.display = 'none';
+		
+        voltageDFNDataTable.innerHTML = '';
+        voltageDFNDataTable.style.display = 'none';
+
+        currentDFNDataTable.innerHTML = '';
+        currentDFNDataTable.style.display = 'none';
+		
+        voltageVFNDataTable.innerHTML = '';
+        voltageVFNDataTable.style.display = 'none';
+
+        currentVFNDataTable.innerHTML = '';
+        currentVFNDataTable.style.display = 'none';
 		
 		bodyAngleDataTable.innerHTML = '';
 		bodyAngleDataTable.style.display = 'none';

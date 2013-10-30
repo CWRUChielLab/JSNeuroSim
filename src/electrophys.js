@@ -1446,19 +1446,17 @@ electrophys.slugBody = function (model, ventral, dorsal, options) {
 		gamma_ventral = options.gamma_ventral,
 		beta_dorsal = options.beta_dorsal,
 		gamma_dorsal = options.gamma_dorsal,
-		tauAlpha_ventral = 3,
-		tauAlpha_dorsal = 3,
-		tauV_ventral = 1,
-		tauV_dorsal = 1,
-		//iAlpha_ventral = model.addStateVar(electrophys.alpha_inf(-.06, beta_ventral, gamma_ventral)),
-		//iAlpha_dorsal = model.addStateVar(electrophys.alpha_inf(-.051, beta_dorsal, gamma_dorsal));
+        tauAlpha_ventral = (options.tauAlpha_ventral === undefined ? 3 : options.tauAlpha_ventral),
+        tauAlpha_dorsal = (options.tauAlpha_dorsal === undefined ? 3 : options.tauAlpha_dorsal),
+        tauV_ventral = (options.tauV_ventral === undefined ? 1 : options.tauV_ventral),
+        tauV_dorsal = (options.tauV_dorsal === undefined ? 1 : options.tauV_dorsal),
 		iAlpha_ventral = model.addStateVar(0),
 		iAlpha_dorsal = model.addStateVar(0),
 		iV_ventral = model.addStateVar(0),
 		iV_dorsal = model.addStateVar(0);
 
 	function drift(result, state, t) {
-		result[iAlpha_ventral] = (electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral) - state[iAlpha_ventral]) / tauAlpha_ventral; //alpha_inf should make a sigmoid
+		result[iAlpha_ventral] = (electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral) - state[iAlpha_ventral]) / tauAlpha_ventral;
 		result[iAlpha_dorsal] = (electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal) - state[iAlpha_dorsal]) / tauAlpha_dorsal;
 		result[iV_ventral] = (ventral.V(state, t) - state[iV_ventral]) / tauV_ventral;
 		result[iV_dorsal] = (dorsal.V(state, t) - state[iV_dorsal]) / tauV_dorsal;

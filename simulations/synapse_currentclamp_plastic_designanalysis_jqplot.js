@@ -99,10 +99,11 @@ window.addEventListener('load', function () {
             defaultVal: 150, minVal: 0, maxVal: tMax / 1e-3 }
     };
 
+    paramsDesign = JSON.parse(JSON.stringify(paramsAnalysis));
+
     paramsAnalysis.E_rev_syn_mV.defaultVal = -77;
     paramsAnalysis.tau_d_ms.defaultVal = 100;
 
-    paramsDesign = JSON.parse(JSON.stringify(paramsAnalysis));
     paramsDesign.E_leak_post_mV.defaultVal = -25;
     paramsDesign.E_rev_syn_mV.defaultVal = -77;
     paramsDesign.Ca_facilitation_nM.defaultVal = 0.1;

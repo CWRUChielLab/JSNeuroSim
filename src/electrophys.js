@@ -1437,6 +1437,63 @@ electrophys.gettingIFNeuron = function (model, options) {
     };
 };
 
+// Calculates position of tritonia body based on inputs from 2 neurons
+
+electrophys.slugBody = function (model, ventral, dorsal, options) {
+"use strict";
+
+    var beta_ventral = options.beta_ventral,
+		gamma_ventral = options.gamma_ventral,
+		beta_dorsal = options.beta_dorsal,
+		gamma_dorsal = options.gamma_dorsal,
+		tauAlpha_ventral = 3,
+		tauAlpha_dorsal = 3,
+		tauV_ventral = 1,
+		tauV_dorsal = 1,
+		//iAlpha_ventral = model.addStateVar(electrophys.alpha_inf(-.06, beta_ventral, gamma_ventral)),
+		//iAlpha_dorsal = model.addStateVar(electrophys.alpha_inf(-.051, beta_dorsal, gamma_dorsal));
+		iAlpha_ventral = model.addStateVar(0),
+		iAlpha_dorsal = model.addStateVar(0),
+		iV_ventral = model.addStateVar(0),
+		iV_dorsal = model.addStateVar(0);
+
+	function drift(result, state, t) {
+		result[iAlpha_ventral] = (electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral) - state[iAlpha_ventral]) / tauAlpha_ventral; //alpha_inf should make a sigmoid
+		result[iAlpha_dorsal] = (electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal) - state[iAlpha_dorsal]) / tauAlpha_dorsal;
+		result[iV_ventral] = (ventral.V(state, t) - state[iV_ventral]) / tauV_ventral;
+		result[iV_dorsal] = (dorsal.V(state, t) - state[iV_dorsal]) / tauV_dorsal;
+    }
+    model.registerDrift(drift);
+	
+	function bodyAngle(state, t) {
+		if (t instanceof Array) {
+			return ode.transpose(state).map(function (state, i) {return bodyAngle(state, t[i]);});
+		} else {
+			return state[iAlpha_dorsal] - state[iAlpha_ventral];
+		}
+	}
+	
+	function angleInf(state, t) {
+		if (t instanceof Array) {
+			return ode.transpose(state).map(function (state, i) {return angleInf(state, t[i]);});
+		} else {
+			return electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal) - 
+			electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral);
+		}
+	}
+
+    return {
+        bodyAngle: bodyAngle,
+		angleInf: angleInf
+    };
+}
+
+electrophys.alpha_inf = function (V, beta, gamma) {
+    "use strict";
+    return 200 / (1 + Math.exp(-(V - beta) / gamma));
+};
+
+
 
 electrophys.gettingSynapse = function (model, presynaptic, 
     postsynaptic, options) {
@@ -1757,5 +1814,4 @@ electrophys.tongueMuscle = function (model, options) {
 
     return that;
 };
-
 

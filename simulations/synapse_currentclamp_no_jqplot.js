@@ -264,14 +264,14 @@ window.addEventListener('load', function () {
         prerun = model.integrate({
             tMin: -120e-3, 
             tMax: 0, 
-            tMaxStep: 1e-4,
+            tMaxStep: 1e-5,
         });
 
         // simulate it
         result = model.integrate({
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
-            tMaxStep: 1e-4,
+            tMaxStep: 1e-5,
             y0: prerun.y_f
         });
 

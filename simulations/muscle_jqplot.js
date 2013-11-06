@@ -9,6 +9,7 @@ window.addEventListener('load', function () {
     var paramsRecruitmentAndSummation, paramsRecruitmentOnly,
         layout, controlsPanel, controls, dataPanel, lengthDataTable,
         forceDataTable, activationDataTable, neuralDataTable,
+        voltageDataTable, touchStimDataTable,
         tMax = 3000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
@@ -133,6 +134,14 @@ window.addEventListener('load', function () {
     neuralDataTable = document.createElement('table');
     neuralDataTable.className = 'datatable';
     dataPanel.appendChild(neuralDataTable);
+
+    voltageDataTable = document.createElement('table');
+    voltageDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageDataTable);
+
+    touchStimDataTable = document.createElement('table');
+    touchStimDataTable.className = 'datatable';
+    dataPanel.appendChild(touchStimDataTable);
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -312,12 +321,11 @@ window.addEventListener('load', function () {
         // MECHANORECEPTOR
         // ******************
 
+        // Neuron membrane potential
         title = document.createElement('h4');
         title.innerHTML = 'Mechanoreceptor';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
-
-        // Neuron membrane potential
         plot = document.createElement('div');
         plot.id = 'voltagePlot';
         plot.style.width = '425px';
@@ -330,11 +338,11 @@ window.addEventListener('load', function () {
                     yaxis: {label:'Membrane Potential (mV)'},
                 },
                 series: [
-                    {label: 'V', color: 'black'},
+                    {label: 'V<sub>m</sub>', color: 'black'},
                 ],
         })));
-        //graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, 'Membrane Potential', 'Time');
-        //graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'mV', '');
+        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, title.innerHTML, 'Time');
+        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
 
         // Touch stimuli
         title = document.createElement('h4');
@@ -356,8 +364,8 @@ window.addEventListener('load', function () {
                     {label: 'Touch force', color: 'black'},
                 ],
         })));
-        //graphJqplot.bindDataCapture('#touchStimPlot', touchDataTable, title.innerHTML, 'Time');
-        //graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'mN');
+        graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
+        graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'mN');
 
 //        // Neural input
 //        plot = document.createElement('div');
@@ -409,6 +417,12 @@ window.addEventListener('load', function () {
 
         neuralDataTable.innerHTML = '';
         neuralDataTable.style.display = 'none';
+
+        voltageDataTable.innerHTML = '';
+        voltageDataTable.style.display = 'none';
+
+        touchStimDataTable.innerHTML = '';
+        touchStimDataTable.style.display = 'none';
     }
 
 

@@ -347,8 +347,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('MuscleRecruitmentAndSummationSimButton')
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
-    (document.getElementById('MuscleRecruitmentOnlySimButton')
-        .addEventListener('click', resetToRecruitmentOnlySim, false));
+//    (document.getElementById('MuscleRecruitmentOnlySimButton')
+//        .addEventListener('click', resetToRecruitmentOnlySim, false));
     (document.getElementById('MuscleClearDataButton')
         .addEventListener('click', clearDataTables, false));
     

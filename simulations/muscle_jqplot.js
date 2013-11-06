@@ -227,7 +227,7 @@ window.addEventListener('load', function () {
         });
         
         L      = result.mapOrderedPairs(muscle.L);
-        A      = result.mapOrderedPairs(muscle.A);
+//        A      = result.mapOrderedPairs(muscle.A);
         force  = result.mapOrderedPairs(muscle.force);
         V      = result.mapOrderedPairs(merkelCell.VWithSpikes);
         touchStim = result.mapOrderedPairs(merkelTouchCurrent.force);
@@ -236,7 +236,7 @@ window.addEventListener('load', function () {
         // convert to the right units
         // each ordered pair consists of a time and another variable
         L      = L.map      (function (l) {return [l[0] / 1e-3, l[1]       ];});
-        A      = A.map      (function (a) {return [a[0] / 1e-3, a[1]       ];});
+//        A      = A.map      (function (a) {return [a[0] / 1e-3, a[1]       ];});
         force  = force.map  (function (f) {return [f[0] / 1e-3, f[1] / 1e-3];});
         V      = V.map      (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];});
         touchStim_mN = touchStim.map (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]});
@@ -298,24 +298,24 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#forcePlot', forceDataTable, 'Muscle Force', 'Time');
         graphJqplot.bindCursorTooltip('#forcePlot', 'Time', 'ms', 'mN');
 
-        // Muscle activation
-        plot = document.createElement('div');
-        plot.id = 'activationPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('activationPlot', [A], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Activation'},
-                },
-                series: [
-                    {label: 'Activation', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#activationPlot', activationDataTable, 'Muscle Activation', 'Time');
-        graphJqplot.bindCursorTooltip('#activationPlot', 'Time', 'ms', '');
+//        // Muscle activation
+//        plot = document.createElement('div');
+//        plot.id = 'activationPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('activationPlot', [A], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Activation'},
+//                },
+//                series: [
+//                    {label: 'Activation', color: 'black'},
+//                ],
+//        })));
+//        graphJqplot.bindDataCapture('#activationPlot', activationDataTable, 'Muscle Activation', 'Time');
+//        graphJqplot.bindCursorTooltip('#activationPlot', 'Time', 'ms', '');
 
         // ******************
         // MECHANORECEPTOR

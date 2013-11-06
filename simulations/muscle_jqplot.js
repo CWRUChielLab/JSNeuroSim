@@ -8,14 +8,12 @@ window.addEventListener('load', function () {
 
     var paramsRecruitmentAndSummation, paramsRecruitmentOnly,
         layout, controlsPanel, controls, dataPanel, lengthDataTable,
-        forceDataTable, activationDataTable, neuralDataTable,
-        voltageDataTable, touchStimDataTable,
+        forceDataTable, voltageDataTable, touchStimDataTable,
         tMax = 3000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     paramsRecruitmentAndSummation = {
         activation_tau: { label: 'Activation time constant', units: 'ms',
-            //defaultVal: 33, minVal: 0.1, maxVal: 1000.0},
             defaultVal: 150, minVal: 0.1, maxVal: 1000.0},
         T0_ms: { label: 'Base firing period', units: 'ms',
             defaultVal: 120, minVal: 0, maxVal: 500 },
@@ -25,18 +23,6 @@ window.addEventListener('load', function () {
             defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
         k: { label: 'Spring stiffness', units: 'N/cm',
             defaultVal: 0.01, minVal: 0, maxVal: 10.0 },
-//        pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
-//            defaultVal: 100, minVal: 0, maxVal: tMax / 1e-3 },
-//        pulseHeight: { label: 'Stimulus first pulse', units: '', 
-//            defaultVal: 0.05, minVal: -1000, maxVal: 1000 },
-//        pulseSubsequentHeight: { label: 'Stimulus subsequent pulses', units: '', 
-//            defaultVal: 0.05, minVal: -1000, maxVal: 1000 },
-//        pulseWidth_ms: { label: 'Pulse duration', units: 'ms', 
-//            defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
-//        isi_ms: { label: 'Inter-stimulus interval', units: 'ms', 
-//            defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
-//        numPulses: { label: 'Number of pulses', units: '', 
-//            defaultVal: 3, minVal: 0, maxVal: 100 },
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 2000, minVal: 0, maxVal: tMax / 1e-3 },
 
@@ -104,9 +90,6 @@ window.addEventListener('load', function () {
     layout = [
         ['Muscle Properties', ['activation_tau']],
         ['Spring Properties', ['Lrestspring', 'k']],
-//        ['Neural Input', ['pulseStart_ms', 'pulseHeight', 
-//            'pulseSubsequentHeight', 'pulseWidth_ms', 'isi_ms',
-//            'numPulses']],
         ['First Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
         ['Second Touch Stimulus Properties', ['sigHeight2_mN', 'midpointUp2_ms', 'midpointDown2_ms', 'growthRateUp2_ms', 'growthRateDown2_ms']],
         ['Third Touch Stimulus Properties', ['sigHeight3_mN', 'midpointUp3_ms', 'midpointDown3_ms', 'growthRateUp3_ms', 'growthRateDown3_ms']],
@@ -127,14 +110,6 @@ window.addEventListener('load', function () {
     forceDataTable.className = 'datatable';
     dataPanel.appendChild(forceDataTable);
 
-    activationDataTable = document.createElement('table');
-    activationDataTable.className = 'datatable';
-    dataPanel.appendChild(activationDataTable);
-
-    neuralDataTable = document.createElement('table');
-    neuralDataTable.className = 'datatable';
-    dataPanel.appendChild(neuralDataTable);
-
     voltageDataTable = document.createElement('table');
     voltageDataTable.className = 'datatable';
     dataPanel.appendChild(voltageDataTable);
@@ -145,8 +120,8 @@ window.addEventListener('load', function () {
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
-        var params, model, merkelCell, merkelTouchCurrent, neuralInput, muscle,
-            prerun, result, L, A, force, V, touchStim, touchStim_mN, neural,
+        var params, model, merkelCell, merkelTouchCurrent, muscle,
+            prerun, result, L, force, V, touchStim,
             plotPanel, title, plot; 
         
         // create the passive membrane
@@ -189,18 +164,7 @@ window.addEventListener('load', function () {
 
         merkelCell.addCurrent(merkelTouchCurrent.pulse);
         
-//        neuralInput = electrophys.pulseTrain({
-//            start: params.pulseStart_ms * 1e-3, 
-//            width: params.pulseWidth_ms * 1e-3, 
-//            baseline: 0.001,
-//            height: params.pulseHeight,
-//            subsequentHeight: params.pulseSubsequentHeight,
-//            gap: params.isi_ms * 1e-3,
-//            num_pulses: params.numPulses
-//        });
-
         muscle = electrophys.muscle(model, {
-            //neuralInput: neuralInput,
             neuralInput: function (state, t) { return 2 * (0.050 + merkelCell.VWithSpikes(state, t)); },
             T0: params.T0_ms * 1e-3,
             Tslope: params.Tslope_ms * 1e-3,
@@ -225,20 +189,16 @@ window.addEventListener('load', function () {
         });
         
         L      = result.mapOrderedPairs(muscle.L);
-//        A      = result.mapOrderedPairs(muscle.A);
         force  = result.mapOrderedPairs(muscle.force);
         V      = result.mapOrderedPairs(merkelCell.VWithSpikes);
         touchStim = result.mapOrderedPairs(merkelTouchCurrent.force);
-        //neural = result.mapOrderedPairs(neuralInput);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
         L      = L.map      (function (l) {return [l[0] / 1e-3, l[1]       ];});
-//        A      = A.map      (function (a) {return [a[0] / 1e-3, a[1]       ];});
         force  = force.map  (function (f) {return [f[0] / 1e-3, f[1] / 1e-3];});
         V      = V.map      (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];});
-        touchStim_mN = touchStim.map (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]});
-        //neural = neural.map (function (n) {return [n[0] / 1e-3, n[1]       ];});
+        touchStim = touchStim.map (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]});
 
         // free resources from old plots
         while (plotHandles.length > 0) {
@@ -299,25 +259,6 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#forcePlot', forceDataTable, 'Muscle Force', 'Time');
         graphJqplot.bindCursorTooltip('#forcePlot', 'Time', 'ms', 'mN');
 
-//        // Muscle activation
-//        plot = document.createElement('div');
-//        plot.id = 'activationPlot';
-//        plot.style.width = '425px';
-//        plot.style.height = '200px';
-//        plotPanel.appendChild(plot);
-//        plotHandles.push(
-//            $.jqplot('activationPlot', [A], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-//                axes: {
-//                    xaxis: {label:'Time (ms)'},
-//                    yaxis: {label:'Activation'},
-//                },
-//                series: [
-//                    {label: 'Activation', color: 'black'},
-//                ],
-//        })));
-//        graphJqplot.bindDataCapture('#activationPlot', activationDataTable, 'Muscle Activation', 'Time');
-//        graphJqplot.bindCursorTooltip('#activationPlot', 'Time', 'ms', '');
-
         // ******************
         // MECHANORECEPTOR
         // ******************
@@ -356,7 +297,7 @@ window.addEventListener('load', function () {
         plot.style.height = '200px';
         plotPanel.appendChild(plot);
         plotHandles.push(
-           $.jqplot('touchStimPlot', [touchStim_mN], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+           $.jqplot('touchStimPlot', [touchStim], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {label:'Touch force (mN)'},
@@ -367,25 +308,6 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'mN');
-
-//        // Neural input
-//        plot = document.createElement('div');
-//        plot.id = 'neuralPlot';
-//        plot.style.width = '425px';
-//        plot.style.height = '200px';
-//        plotPanel.appendChild(plot);
-//        plotHandles.push(
-//            $.jqplot('neuralPlot', [neural], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-//                axes: {
-//                    xaxis: {label:'Time (ms)'},
-//                    yaxis: {label:'Neural Input'},
-//                },
-//                series: [
-//                    {label: 'Neural Input', color: 'black'},
-//                ],
-//        })));
-//        graphJqplot.bindDataCapture('#neuralPlot', neuralDataTable, 'Neural Input', 'Time');
-//        graphJqplot.bindCursorTooltip('#neuralPlot', 'Time', 'ms', '');
     }
 
     
@@ -412,12 +334,6 @@ window.addEventListener('load', function () {
 
         forceDataTable.innerHTML = '';
         forceDataTable.style.display = 'none';
-
-        activationDataTable.innerHTML = '';
-        activationDataTable.style.display = 'none';
-
-        neuralDataTable.innerHTML = '';
-        neuralDataTable.style.display = 'none';
 
         voltageDataTable.innerHTML = '';
         voltageDataTable.style.display = 'none';

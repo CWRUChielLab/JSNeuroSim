@@ -24,7 +24,7 @@ window.addEventListener('load', function () {
         Lrestspring: { label: 'Spring resting position', units: 'cm',
             defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
         k: { label: 'Spring stiffness', units: 'N/cm',
-            defaultVal: 0.01, minVal: 0, maxVal: 2.0 },
+            defaultVal: 0.01, minVal: 0, maxVal: 10.0 },
 //        pulseStart_ms: { label: 'Stimulus delay', units: 'ms', 
 //            defaultVal: 100, minVal: 0, maxVal: tMax / 1e-3 },
 //        pulseHeight: { label: 'Stimulus first pulse', units: '', 
@@ -75,7 +75,7 @@ window.addEventListener('load', function () {
             defaultVal: 4, minVal: 0, maxVal: 300},
             
         sigHeight2_mN: { label: 'Maximum pressure', units: 'mN',
-            defaultVal: 8, minVal: 0, maxVal: 20},
+            defaultVal: 0, minVal: 0, maxVal: 20},
         midpointUp2_ms: { label: 'Stimulus start', units: 'ms',
             defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3},
         midpointDown2_ms: { label: 'Stimulus end', units: 'ms',
@@ -86,7 +86,7 @@ window.addEventListener('load', function () {
             defaultVal: 4, minVal: 0, maxVal: 300},
             
         sigHeight3_mN: { label: 'Maximum pressure', units: 'mN',
-            defaultVal: 8, minVal: 0, maxVal: 20},
+            defaultVal: 0, minVal: 0, maxVal: 20},
         midpointUp3_ms: { label: 'Stimulus start', units: 'ms',
             defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3},
         midpointDown3_ms: { label: 'Stimulus end', units: 'ms',
@@ -211,9 +211,8 @@ window.addEventListener('load', function () {
         
         // run it for a bit to let it reach steady state
         prerun = model.integrate({
-            tMin: -60e-3, 
+            tMin: -500e-3, 
             tMax: 0, 
-            //tMaxStep: 1e-2,
             tMaxStep: 1e-3,
         });
 
@@ -221,7 +220,6 @@ window.addEventListener('load', function () {
         result = model.integrate({
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
-            //tMaxStep: 1e-2,
             tMaxStep: 1e-3,
             y0: prerun.y_f
         });
@@ -270,7 +268,10 @@ window.addEventListener('load', function () {
             $.jqplot('lengthPlot', [L], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
                 axes: {
                     xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Length (cm)'},
+                    yaxis: {
+                        label:'Length (cm)',
+                        min: 0,
+                    },
                 },
                 series: [
                     {label: 'Length', color: 'black'},

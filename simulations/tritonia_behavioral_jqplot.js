@@ -7,13 +7,14 @@ window.addEventListener('load', function () {
     'use strict';
 
     var layout, controlsPanel, controls, dataPanel, 
+        voltageSDataTable, currentSDataTable,
 		voltageC2DataTable, currentC2DataTable, 
 		voltageDSIDataTable, currentDSIDataTable,
         voltageVSIDataTable, currentVSIDataTable, 
 		voltageDRIDataTable, currentDRIDataTable,
 		voltageDFNDataTable, currentDFNDataTable,
 		voltageVFNDataTable, currentVFNDataTable,
-		bodyAngleDataTable,
+		bodyAngleDataTable, touchStimDataTable,
         tMax = 600000e-3,
         paramsUnmodulatedSwim, 
         paramsModulatedSwim, modulation,
@@ -23,6 +24,39 @@ window.addEventListener('load', function () {
 
     // set up the controls for the passive membrane simulation
     paramsUnmodulatedSwim = { 
+        sigHeight1_mN: { label: 'Maximum pressure', units: 'mN',
+            defaultVal: 8, minVal: 0, maxVal: 20},
+        midpointUp1_ms: { label: 'Stimulus start', units: 'ms',
+            defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3},
+        midpointDown1_ms: { label: 'Stimulus end', units: 'ms',
+            defaultVal: 2000, minVal: 0, maxVal: tMax / 1e-3},
+        growthRateUp1_ms: { label: 'Applied pressure time constant', units: 'ms',
+            defaultVal: 40, minVal: 0, maxVal: 300},
+        growthRateDown1_ms: { label: 'Removed pressure time constant', units: 'ms',
+            defaultVal: 40, minVal: 0, maxVal: 300},
+            
+        sigHeight2_mN: { label: 'Maximum pressure', units: 'mN',
+            defaultVal: 0, minVal: 0, maxVal: 20},
+        midpointUp2_ms: { label: 'Stimulus start', units: 'ms',
+            defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3},
+        midpointDown2_ms: { label: 'Stimulus end', units: 'ms',
+            defaultVal: 400, minVal: 0, maxVal: tMax / 1e-3},
+        growthRateUp2_ms: { label: 'Applied pressure time constant', units: 'ms',
+            defaultVal: 4, minVal: 0, maxVal: 300},
+        growthRateDown2_ms: { label: 'Removed pressure time constant', units: 'ms',
+            defaultVal: 4, minVal: 0, maxVal: 300},
+            
+        sigHeight3_mN: { label: 'Maximum pressure', units: 'mN',
+            defaultVal: 0, minVal: 0, maxVal: 20},
+        midpointUp3_ms: { label: 'Stimulus start', units: 'ms',
+            defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3},
+        midpointDown3_ms: { label: 'Stimulus end', units: 'ms',
+            defaultVal: 600, minVal: 0, maxVal: tMax / 1e-3},
+        growthRateUp3_ms: { label: 'Applied pressure time constant', units: 'ms',
+            defaultVal: 4, minVal: 0, maxVal: 300},
+        growthRateDown3_ms: { label: 'Removed pressure time constant', units: 'ms',
+            defaultVal: 4, minVal: 0, maxVal: 300},
+            
         pulseStart_ms_C2: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_C2: { label: 'Stimulus current', units: 'nA', 
@@ -70,6 +104,27 @@ window.addEventListener('load', function () {
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 65000, minVal: 0, maxVal: tMax / 1e-3 },
         
+        V_init_mV_S: { label: 'Initial membrane potential', units: 'mV', 
+            defaultVal: -48, minVal: -1000, maxVal: 1000 },
+        C_nF_S: { label: 'Membrane capacitance', units: 'nF', 
+            defaultVal: 2.27, minVal: 0.01, maxVal: 100 },
+        g_leak_uS_S: { label: 'Leak conductance', units: '\u00B5S', 
+            defaultVal: .055, minVal: 0.01, maxVal: 100 },
+        E_leak_mV_S: { label: 'Leak potential', units: 'mV', 
+            defaultVal: -48, minVal: -1000, maxVal: 1000 },
+        theta_ss_mV_S: { label: 'Resting threshold', units: 'mV', 
+            defaultVal: -34, minVal: -1000, maxVal: 1000 },
+        theta_r_mV_S: { label: 'Refractory threshold', units: 'mV', 
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
+        theta_tau_ms_S: { label: 'Refractory time constant', units: 'ms', 
+            defaultVal: 20, minVal: 0.1, maxVal: 1000000 },
+        Ks_S: { label: 'Static gain', units: 'nA/mN',
+            defaultVal: 0.2, minVal: 0, maxVal: 100},
+        Kd_positive_S: { label: 'Positive dynamic gain', units: 'pC/mN',
+            defaultVal: 14, minVal: 0, maxVal: 10000},
+        Kd_negative_S: { label: 'Negative dynamic gain', units: 'pC/mN',
+            defaultVal: 0, minVal: -10000, maxVal: 10000},
+            
         V_init_mV_C2: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -48, minVal: -1000, maxVal: 1000 },
         C_nF_C2: { label: 'Membrane capacitance', units: 'nF', 
@@ -572,6 +627,15 @@ window.addEventListener('load', function () {
 
 
     layout = [
+        ['First Touch Stimulus Properties', ['sigHeight1_mN',
+            'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms',
+            'growthRateDown1_ms']],
+        ['Second Touch Stimulus Properties', ['sigHeight2_mN',
+            'midpointUp2_ms', 'midpointDown2_ms', 'growthRateUp2_ms',
+            'growthRateDown2_ms']],
+        ['Third Touch Stimulus Properties', ['sigHeight3_mN',
+            'midpointUp3_ms', 'midpointDown3_ms', 'growthRateUp3_ms',
+            'growthRateDown3_ms']],
         ['C2 Current Clamp', ['pulseStart_ms_C2', 'pulseHeight_nA_C2', 
             'pulseWidth_ms_C2', 'isi_ms_C2', 'numPulses_C2']],
         ['DSI Current Clamp', ['pulseStart_ms_DSI', 'pulseHeight_nA_DSI', 
@@ -581,6 +645,9 @@ window.addEventListener('load', function () {
         ['DRI Current Clamp', ['pulseStart_ms_DRI', 'pulseHeight_nA_DRI', 
             'pulseWidth_ms_DRI', 'isi_ms_DRI', 'numPulses_DRI']],
         ['Simulation Settings', ['totalDuration_ms']],
+        ['Mechanoreceptor Properties', ['V_init_mV_S', 'C_nF_S',
+            'g_leak_uS_S', 'E_leak_mV_S', 'theta_ss_mV_S',
+            'theta_r_mV_S', 'theta_tau_ms_S']],
         // ['C2 Parameters', ['V_init_mV_C2', 'C_nF_C2', 'g_leak_uS_C2', 
             // 'E_leak_mV_C2', 'theta_ss_mV_C2', 'theta_r_mV_C2',
             // 'theta_tau_ms_C2', 'W_Fast_uS_C2', 'E_Fast_mV_C2',
@@ -660,6 +727,14 @@ window.addEventListener('load', function () {
     dataPanel = document.getElementById('TritoniaData');
     dataPanel.className = 'datapanel';
 
+    voltageSDataTable = document.createElement('table');
+    voltageSDataTable.className = 'datatable';
+    dataPanel.appendChild(voltageSDataTable);
+
+    currentSDataTable = document.createElement('table');
+    currentSDataTable.className = 'datatable';
+    dataPanel.appendChild(currentSDataTable);
+
     voltageC2DataTable = document.createElement('table');
     voltageC2DataTable.className = 'datatable';
     dataPanel.appendChild(voltageC2DataTable);
@@ -712,11 +787,17 @@ window.addEventListener('load', function () {
     bodyAngleDataTable.className = 'datatable';
     dataPanel.appendChild(bodyAngleDataTable);
 
+	touchStimDataTable = document.createElement('table');
+    touchStimDataTable.className = 'datatable';
+    dataPanel.appendChild(touchStimDataTable);
+
 
     // simulate and plot the tritonia swim CPG from Calin-Jageman et al 2007
     function runSimulation() {
         var params, plot, plotPanel, title,
             model, result,
+            S, touchCurrent,
+            v_S, v_S_mV, touchStim_S, touchStim_S_mN,
             C2, C2Fast, C2Med, C2Slow, pulseTrainC2,
             v_C2, v_C2_mV, iStim_C2, iStim_C2_nA,
             DSI, DSIShunt, DSIFast, DSISlow, DSIToDSI_E1, pulseTrainDSI,
@@ -746,6 +827,41 @@ window.addEventListener('load', function () {
         params = controls.values;
         model = componentModel.componentModel();
 
+        // create the S neuron
+        S = electrophys.gettingIFNeuron(model, { 
+            V_rest: params.V_init_mV_S * 1e-3, 
+            C: params.C_nF_S * 1e-9, 
+            g_leak: params.g_leak_uS_S * 1e-6, 
+            E_leak: params.E_leak_mV_S * 1e-3, 
+            theta_ss: params.theta_ss_mV_S * 1e-3, 
+            theta_r: params.theta_r_mV_S * 1e-3, 
+            theta_tau: params.theta_tau_ms_S * 1e-3
+        });
+        touchCurrent = electrophys.touchStimuli({
+            Ks: params.Ks_S * 1e-6, // A/N
+            Kd_positive: params.Kd_positive_S * 1e-9, // C/N
+            Kd_negative: params.Kd_negative_S * 1e-9, // C/N
+            
+            sigHeight1: params.sigHeight1_mN * 1e-3,
+            midpointUp1: params.midpointUp1_ms * 1e-3,
+            midpointDown1: params.midpointDown1_ms * 1e-3,
+            growthRateUp1: params.growthRateUp1_ms * 1e-3,
+            growthRateDown1: params.growthRateDown1_ms * 1e-3,
+            
+            sigHeight2: params.sigHeight2_mN * 1e-3,
+            midpointUp2: params.midpointUp2_ms * 1e-3,
+            midpointDown2: params.midpointDown2_ms * 1e-3,
+            growthRateUp2: params.growthRateUp2_ms * 1e-3,
+            growthRateDown2: params.growthRateDown2_ms * 1e-3,
+            
+            sigHeight3: params.sigHeight3_mN * 1e-3,
+            midpointUp3: params.midpointUp3_ms * 1e-3,
+            midpointDown3: params.midpointDown3_ms * 1e-3,
+            growthRateUp3: params.growthRateUp3_ms * 1e-3,
+            growthRateDown3: params.growthRateDown3_ms * 1e-3
+        });
+        S.addCurrent(touchCurrent.pulse);
+        
         // create the C2 neuron
         C2 = electrophys.gettingIFNeuron(model, { 
             V_rest: params.V_init_mV_C2 * 1e-3, 
@@ -1088,6 +1204,8 @@ window.addEventListener('load', function () {
 		});
 		
         // simulate them
+        v_S_mV = [];
+        touchStim_S_mN = [];
         v_C2_mV = [];
         iStim_C2_nA = [];
         v_DSI_mV = [];
@@ -1125,6 +1243,7 @@ window.addEventListener('load', function () {
                 timeout: 500
 			});
             
+            v_S       = result.mapOrderedPairs(S.VWithSpikes);
             v_C2      = result.mapOrderedPairs(C2.VWithSpikes);
             v_DSI     = result.mapOrderedPairs(DSI.VWithSpikes);
             v_VSI     = result.mapOrderedPairs(VSI.VWithSpikes);
@@ -1133,22 +1252,24 @@ window.addEventListener('load', function () {
 			v_VFN	  = result.mapOrderedPairs(VFN.VWithSpikes);
 			//v_DFN	  = result.mapOrderedPairs(DFN.V);
 			//v_VFN	  = result.mapOrderedPairs(VFN.V);
+            touchStim_S = result.mapOrderedPairs(touchCurrent.force);
             iStim_C2  = result.mapOrderedPairs(pulseTrainC2);
             iStim_DSI = result.mapOrderedPairs(pulseTrainDSI);
             iStim_VSI = result.mapOrderedPairs(pulseTrainVSI);
             iStim_DRI = result.mapOrderedPairs(pulseTrainDRI);
 			bodyAngle = result.mapOrderedPairs(slugBody.bodyAngle);
 			angleInf = result.mapOrderedPairs(slugBody.angleInf);
-			console.log(bodyAngle);
 
             // convert to the right units
             // each ordered pair consists of a time and another variable
+            v_S_mV       = v_S_mV.concat(v_S.map             (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             v_C2_mV      = v_C2_mV.concat(v_C2.map           (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             v_DSI_mV     = v_DSI_mV.concat(v_DSI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             v_VSI_mV     = v_VSI_mV.concat(v_VSI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             v_DRI_mV     = v_DRI_mV.concat(v_DRI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
 			v_DFN_mV     = v_DFN_mV.concat(v_DFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
 			v_VFN_mV     = v_VFN_mV.concat(v_VFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
+            touchStim_S_mN = touchStim_S_mN.concat(touchStim_S.map   (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]}));
             iStim_C2_nA  = iStim_C2_nA.concat(iStim_C2.map   (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_DSI_nA = iStim_DSI_nA.concat(iStim_DSI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_VSI_nA = iStim_VSI_nA.concat(iStim_VSI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
@@ -1164,6 +1285,52 @@ window.addEventListener('load', function () {
             // plot the results
             plotPanel = document.getElementById('TritoniaPlots');
             plotPanel.innerHTML = '';
+
+            // S Voltage
+            title = document.createElement('h4');
+            title.innerHTML = 'Mechanoreceptor Membrane Potential';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'voltageSPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('voltageSPlot', [v_S_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
+                    },
+                    series: [
+                        {label: 'V<sub>m</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#voltageSPlot', voltageSDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#voltageSPlot', 'Time', 'ms', 'mV');
+
+            // Touch stimuli
+            title = document.createElement('h4');
+            title.innerHTML = 'Touch Stimulus';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'touchStimPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('touchStimPlot', [touchStim_S_mN], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Touch force (mN)'},
+                    },
+                    series: [
+                        {label: 'Touch force', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'mN');
 
             // C2 Voltage
             // title = document.createElement('h4');
@@ -1481,6 +1648,12 @@ window.addEventListener('load', function () {
 
 
     function clearDataTables() {
+        voltageSDataTable.innerHTML = '';
+        voltageSDataTable.style.display = 'none';
+
+        currentSDataTable.innerHTML = '';
+        currentSDataTable.style.display = 'none';
+
         voltageC2DataTable.innerHTML = '';
         voltageC2DataTable.style.display = 'none';
 
@@ -1519,6 +1692,9 @@ window.addEventListener('load', function () {
 		
 		bodyAngleDataTable.innerHTML = '';
 		bodyAngleDataTable.style.display = 'none';
+		
+		touchStimDataTable.innerHTML = '';
+		touchStimDataTable.style.display = 'none';
     }
 
 

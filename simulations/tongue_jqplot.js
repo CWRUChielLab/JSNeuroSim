@@ -253,51 +253,51 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#LCPlot', LCDataTable, 'Circumferential Length', 'Time');
         graphJqplot.bindCursorTooltip('#LCPlot', 'Time', 'ms', 'cm');
 
-        // Longitudinal activation
-        title = document.createElement('h4');
-        title.innerHTML = 'Longitudinal Activation';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'ALPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('ALPlot', [AL], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Activation'},
-                },
-                series: [
-                    {label: 'Activation', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#ALPlot', ALDataTable, 'Longitudinal Activation', 'Time');
-        graphJqplot.bindCursorTooltip('#ALPlot', 'Time', 'ms', '');
+//        // Longitudinal activation
+//        title = document.createElement('h4');
+//        title.innerHTML = 'Longitudinal Activation';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'ALPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('ALPlot', [AL], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Activation'},
+//                },
+//                series: [
+//                    {label: 'Activation', color: 'black'},
+//                ],
+//        })));
+//        graphJqplot.bindDataCapture('#ALPlot', ALDataTable, 'Longitudinal Activation', 'Time');
+//        graphJqplot.bindCursorTooltip('#ALPlot', 'Time', 'ms', '');
 
-        // Circumferential activation
-        title = document.createElement('h4');
-        title.innerHTML = 'Circumferential Activation';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'ACPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('ACPlot', [AC], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Activation'},
-                },
-                series: [
-                    {label: 'Activation', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#ACPlot', ACDataTable, 'Circumferential Activation', 'Time');
-        graphJqplot.bindCursorTooltip('#ACPlot', 'Time', 'ms', '');
+//        // Circumferential activation
+//        title = document.createElement('h4');
+//        title.innerHTML = 'Circumferential Activation';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'ACPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('ACPlot', [AC], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Activation'},
+//                },
+//                series: [
+//                    {label: 'Activation', color: 'black'},
+//                ],
+//        })));
+//        graphJqplot.bindDataCapture('#ACPlot', ACDataTable, 'Circumferential Activation', 'Time');
+//        graphJqplot.bindCursorTooltip('#ACPlot', 'Time', 'ms', '');
 
         // Longitudinal neural input
         title = document.createElement('h4');

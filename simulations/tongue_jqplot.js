@@ -9,7 +9,7 @@ window.addEventListener('load', function () {
     var paramsRecruitmentAndSummation, paramsRecruitmentOnly,
         layout, controlsPanel, controls, dataPanel, LLDataTable,
         LCDataTable, ALDataTable, ACDataTable, inputLDataTable,
-        inputCDataTable, tMax = 3000e-3, plotHandles = []; 
+        inputCDataTable, tMax = 50000e-3, plotHandles = []; 
 
     // set up the controls for the current clamp simulation
     paramsRecruitmentAndSummation = {
@@ -27,32 +27,36 @@ window.addEventListener('load', function () {
             defaultVal: 360, minVal: 0, maxVal: tMax / 1e-3 },
         pulseLFall_ms: { label: 'Stimulus fall time', units: 'ms', 
             defaultVal: 140, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseLBaseline: { label: 'Stimulus baseline', units: '',
+            defaultVal: 0, minVal: 0, maxVal: 1 },
         pulseLHeight: { label: 'Stimulus first pulse', units: '', 
-            defaultVal: 0.05, minVal: -100, maxVal: 100 },
+            defaultVal: 0.05, minVal: 0, maxVal: 1 },
         pulseLSubsequentHeight: { label: 'Stimulus subsequent pulses', units: '', 
-            defaultVal: 0.05, minVal: -100, maxVal: 100 },
+            defaultVal: 0.05, minVal: 0, maxVal: 1 },
         //pulseLWidth_ms: { label: 'Pulse duration', units: 'ms', 
         //    defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
         isiL_ms: { label: 'Inter-stimulus interval', units: 'ms', 
             defaultVal: 280, minVal: 0, maxVal: tMax / 1e-3 },
         numPulsesL: { label: 'Number of pulses', units: '', 
-            defaultVal: 3, minVal: 0, maxVal: 100 },
+            defaultVal: 3, minVal: 0, maxVal: 1000 },
         pulseCStart_ms: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 0, minVal: 0, maxVal: tMax / 1e-3 },
         pulseCRise_ms: { label: 'Stimulus rise time', units: 'ms', 
             defaultVal: 260, minVal: 0, maxVal: tMax / 1e-3 },
         pulseCFall_ms: { label: 'Stimulus fall time', units: 'ms', 
             defaultVal: 260, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseCBaseline: { label: 'Stimulus baseline', units: '',
+            defaultVal: 0, minVal: 0, maxVal: 1 },
         pulseCHeight: { label: 'Stimulus first pulse', units: '', 
-            defaultVal: 0.5, minVal: -100, maxVal: 100 },
+            defaultVal: 0.5, minVal: 0, maxVal: 1 },
         pulseCSubsequentHeight: { label: 'Stimulus subsequent pulses', units: '', 
-            defaultVal: 0.5, minVal: -100, maxVal: 100 },
+            defaultVal: 0.5, minVal: 0, maxVal: 1 },
         //pulseCWidth_ms: { label: 'Pulse duration', units: 'ms', 
         //    defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
         isiC_ms: { label: 'Inter-stimulus interval', units: 'ms', 
             defaultVal: 260, minVal: 0, maxVal: tMax / 1e-3 },
         numPulsesC: { label: 'Number of pulses', units: '', 
-            defaultVal: 3, minVal: 0, maxVal: 100 },
+            defaultVal: 3, minVal: 0, maxVal: 1000 },
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 2500, minVal: 0, maxVal: tMax / 1e-3 }
     };
@@ -65,10 +69,10 @@ window.addEventListener('load', function () {
 
     layout = [
         ['Longitudinal Neural Input', ['pulseLStart_ms', 'pulseLRise_ms',
-            'pulseLFall_ms', 'pulseLHeight', 'pulseLSubsequentHeight',
+            'pulseLFall_ms', 'pulseLBaseline', 'pulseLHeight', 'pulseLSubsequentHeight',
             'isiL_ms', 'numPulsesL']],
         ['Circumferential Neural Input', ['pulseCStart_ms', 'pulseCRise_ms',
-            'pulseCFall_ms', 'pulseCHeight', 'pulseCSubsequentHeight',
+            'pulseCFall_ms', 'pulseCBaseline', 'pulseCHeight', 'pulseCSubsequentHeight',
             'isiC_ms', 'numPulsesC']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
@@ -127,7 +131,7 @@ window.addEventListener('load', function () {
             start: params.pulseLStart_ms * 1e-3, 
             risetime: params.pulseLRise_ms * 1e-3, 
             falltime: params.pulseLFall_ms * 1e-3,
-            baseline: 0.0001, // prevent division by zero
+            baseline: params.pulseLBaseline + 0.0001, // prevent division by zero
             height: params.pulseLHeight,
             subsequentHeight: params.pulseLSubsequentHeight,
             num_pulses: params.numPulsesL,
@@ -148,7 +152,7 @@ window.addEventListener('load', function () {
             start: params.pulseCStart_ms * 1e-3, 
             risetime: params.pulseCRise_ms * 1e-3, 
             falltime: params.pulseCFall_ms * 1e-3,
-            baseline: 0.0001, // prevent division by zero
+            baseline: params.pulseCBaseline + 0.0001, // prevent division by zero
             height: params.pulseCHeight,
             subsequentHeight: params.pulseCSubsequentHeight,
             num_pulses: params.numPulsesC,

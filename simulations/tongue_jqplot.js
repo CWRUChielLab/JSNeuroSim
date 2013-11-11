@@ -383,8 +383,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', runSimulation, false));
     (document.getElementById('TongueRecruitmentAndSummationSimButton')
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
-    (document.getElementById('TongueRecruitmentOnlySimButton')
-        .addEventListener('click', resetToRecruitmentOnlySim, false));
+//    (document.getElementById('TongueRecruitmentOnlySimButton')
+//        .addEventListener('click', resetToRecruitmentOnlySim, false));
     (document.getElementById('TongueNoInputSimButton')
         .addEventListener('click', resetToNoInputSim, false));
     (document.getElementById('TongueClearDataButton')

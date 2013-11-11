@@ -33,8 +33,6 @@ window.addEventListener('load', function () {
             defaultVal: 0.05, minVal: 0, maxVal: 1 },
         pulseLSubsequentHeight: { label: 'Stimulus subsequent pulses', units: '', 
             defaultVal: 0.05, minVal: 0, maxVal: 1 },
-        //pulseLWidth_ms: { label: 'Pulse duration', units: 'ms', 
-        //    defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
         isiL_ms: { label: 'Inter-stimulus interval', units: 'ms', 
             defaultVal: 280, minVal: 0, maxVal: tMax / 1e-3 },
         numPulsesL: { label: 'Number of pulses', units: '', 
@@ -51,8 +49,6 @@ window.addEventListener('load', function () {
             defaultVal: 0.5, minVal: 0, maxVal: 1 },
         pulseCSubsequentHeight: { label: 'Stimulus subsequent pulses', units: '', 
             defaultVal: 0.5, minVal: 0, maxVal: 1 },
-        //pulseCWidth_ms: { label: 'Pulse duration', units: 'ms', 
-        //    defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3 },
         isiC_ms: { label: 'Inter-stimulus interval', units: 'ms', 
             defaultVal: 260, minVal: 0, maxVal: tMax / 1e-3 },
         numPulsesC: { label: 'Number of pulses', units: '', 
@@ -117,16 +113,6 @@ window.addEventListener('load', function () {
         params = controls.values;
         model = componentModel.componentModel();
 
-        //inputL = electrophys.pulseTrain({
-        //    start: params.pulseLStart_ms * 1e-3, 
-        //    width: params.pulseLWidth_ms * 1e-3, 
-        //    baseline: 0.001,
-        //    height: params.pulseLHeight,
-        //    subsequentHeight: params.pulseLSubsequentHeight,
-        //    gap: params.isiL_ms * 1e-3,
-        //    num_pulses: params.numPulsesL
-        //});
-
         inputL = electrophys.trianglePulseTrain({
             start: params.pulseLStart_ms * 1e-3, 
             risetime: params.pulseLRise_ms * 1e-3, 
@@ -137,16 +123,6 @@ window.addEventListener('load', function () {
             num_pulses: params.numPulsesL,
             gap: params.isiL_ms * 1e-3,
         });
-
-        //inputC = electrophys.pulseTrain({
-        //    start: params.pulseCStart_ms * 1e-3, 
-        //    width: params.pulseCWidth_ms * 1e-3, 
-        //    baseline: 0.001,
-        //    height: params.pulseCHeight,
-        //    subsequentHeight: params.pulseCSubsequentHeight,
-        //    gap: params.isiC_ms * 1e-3,
-        //    num_pulses: params.numPulsesC
-        //});
 
         inputC = electrophys.trianglePulseTrain({
             start: params.pulseCStart_ms * 1e-3, 

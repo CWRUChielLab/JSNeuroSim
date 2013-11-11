@@ -6,7 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var paramsRecruitmentAndSummation, paramsRecruitmentOnly,
+    var paramsRecruitmentAndSummation, paramsRecruitmentOnly, paramsNoInput,
         layout, controlsPanel, controls, dataPanel, LLDataTable,
         LCDataTable, ALDataTable, ACDataTable, inputLDataTable,
         inputCDataTable, tMax = 50000e-3, plotHandles = []; 
@@ -58,10 +58,19 @@ window.addEventListener('load', function () {
     };
 
     paramsRecruitmentOnly = JSON.parse(JSON.stringify(paramsRecruitmentAndSummation));
+    paramsNoInput = JSON.parse(JSON.stringify(paramsRecruitmentAndSummation));
+
     paramsRecruitmentOnly.T0L_ms.defaultVal = 80;
     paramsRecruitmentOnly.TslopeL_ms.defaultVal = 0;
     paramsRecruitmentOnly.T0C_ms.defaultVal = 80;
     paramsRecruitmentOnly.TslopeC_ms.defaultVal = 0;
+
+    paramsNoInput.pulseLBaseline.defaultVal = 0;
+    paramsNoInput.pulseLHeight.defaultVal = 0;
+    paramsNoInput.pulseLSubsequentHeight.defaultVal = 0;
+    paramsNoInput.pulseCBaseline.defaultVal = 0;
+    paramsNoInput.pulseCHeight.defaultVal = 0;
+    paramsNoInput.pulseCSubsequentHeight.defaultVal = 0;
 
     layout = [
         ['Longitudinal Neural Input', ['pulseLStart_ms', 'pulseLRise_ms',
@@ -344,6 +353,11 @@ window.addEventListener('load', function () {
     }
 
 
+    function resetToNoInputSim() {
+        reset(paramsNoInput, layout);
+    }
+
+
     function clearDataTables() {
         LLDataTable.innerHTML = '';
         LLDataTable.style.display = 'none';
@@ -371,6 +385,8 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
     (document.getElementById('TongueRecruitmentOnlySimButton')
         .addEventListener('click', resetToRecruitmentOnlySim, false));
+    (document.getElementById('TongueNoInputSimButton')
+        .addEventListener('click', resetToNoInputSim, false));
     (document.getElementById('TongueClearDataButton')
         .addEventListener('click', clearDataTables, false));
     

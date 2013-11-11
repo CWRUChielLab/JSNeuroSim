@@ -73,10 +73,10 @@ window.addEventListener('load', function () {
     paramsNoInput.pulseCSubsequentHeight.defaultVal = 0;
 
     layout = [
-        ['Longitudinal Neural Input', ['pulseLStart_ms', 'pulseLRise_ms',
+        ['Neural Input for Longitudinal Muscle', ['pulseLStart_ms', 'pulseLRise_ms',
             'pulseLFall_ms', 'pulseLBaseline', 'pulseLHeight', 'pulseLSubsequentHeight',
             'isiL_ms', 'numPulsesL']],
-        ['Circumferential Neural Input', ['pulseCStart_ms', 'pulseCRise_ms',
+        ['Neural Input for Circumferential Muscle', ['pulseCStart_ms', 'pulseCRise_ms',
             'pulseCFall_ms', 'pulseCBaseline', 'pulseCHeight', 'pulseCSubsequentHeight',
             'isiC_ms', 'numPulsesC']],
         ['Simulation Settings', ['totalDuration_ms']]
@@ -198,7 +198,7 @@ window.addEventListener('load', function () {
 
         // Longitudinal length
         title = document.createElement('h4');
-        title.innerHTML = 'Longitudinal Length';
+        title.innerHTML = 'Length of Longitudinal Muscle (Tongue Length)';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         plot = document.createElement('div');
@@ -216,12 +216,12 @@ window.addEventListener('load', function () {
                     {label: 'Length', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#LLPlot', LLDataTable, 'Longitudinal Length', 'Time');
+        graphJqplot.bindDataCapture('#LLPlot', LLDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#LLPlot', 'Time', 'ms', 'cm');
 
         // Circumferential length
         title = document.createElement('h4');
-        title.innerHTML = 'Circumferential Length';
+        title.innerHTML = 'Length of Circumferential Muscle (Tongue Circumference)';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         plot = document.createElement('div');
@@ -239,12 +239,12 @@ window.addEventListener('load', function () {
                     {label: 'Length', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#LCPlot', LCDataTable, 'Circumferential Length', 'Time');
+        graphJqplot.bindDataCapture('#LCPlot', LCDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#LCPlot', 'Time', 'ms', 'cm');
 
 //        // Longitudinal activation
 //        title = document.createElement('h4');
-//        title.innerHTML = 'Longitudinal Activation';
+//        title.innerHTML = 'Longitudinal Muscle Activation';
 //        title.className = 'simplotheading';
 //        plotPanel.appendChild(title);
 //        plot = document.createElement('div');
@@ -262,12 +262,12 @@ window.addEventListener('load', function () {
 //                    {label: 'Activation', color: 'black'},
 //                ],
 //        })));
-//        graphJqplot.bindDataCapture('#ALPlot', ALDataTable, 'Longitudinal Activation', 'Time');
+//        graphJqplot.bindDataCapture('#ALPlot', ALDataTable, title.innerHTML, 'Time');
 //        graphJqplot.bindCursorTooltip('#ALPlot', 'Time', 'ms', '');
 
 //        // Circumferential activation
 //        title = document.createElement('h4');
-//        title.innerHTML = 'Circumferential Activation';
+//        title.innerHTML = 'Circumferential Muscle Activation';
 //        title.className = 'simplotheading';
 //        plotPanel.appendChild(title);
 //        plot = document.createElement('div');
@@ -285,12 +285,12 @@ window.addEventListener('load', function () {
 //                    {label: 'Activation', color: 'black'},
 //                ],
 //        })));
-//        graphJqplot.bindDataCapture('#ACPlot', ACDataTable, 'Circumferential Activation', 'Time');
+//        graphJqplot.bindDataCapture('#ACPlot', ACDataTable, title.innerHTML, 'Time');
 //        graphJqplot.bindCursorTooltip('#ACPlot', 'Time', 'ms', '');
 
         // Longitudinal neural input
         title = document.createElement('h4');
-        title.innerHTML = 'Longitudinal Neural Input';
+        title.innerHTML = 'Neural Input for Longitudinal Muscle';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         plot = document.createElement('div');
@@ -308,12 +308,12 @@ window.addEventListener('load', function () {
                     {label: 'Neural Input', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#inputLPlot', inputLDataTable, 'Longitudinal Neural Input', 'Time');
+        graphJqplot.bindDataCapture('#inputLPlot', inputLDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#inputLPlot', 'Time', 'ms', '');
 
         // Circumferential neural input
         title = document.createElement('h4');
-        title.innerHTML = 'Circumferential Neural Input';
+        title.innerHTML = 'Neural Input for Circumferential Muscle';
         title.className = 'simplotheading';
         plotPanel.appendChild(title);
         plot = document.createElement('div');
@@ -331,7 +331,7 @@ window.addEventListener('load', function () {
                     {label: 'Neural Input', color: 'black'},
                 ],
         })));
-        graphJqplot.bindDataCapture('#inputCPlot', inputCDataTable, 'Circumferential Neural Input', 'Time');
+        graphJqplot.bindDataCapture('#inputCPlot', inputCDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#inputCPlot', 'Time', 'ms', '');
     }
 

@@ -6,13 +6,12 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var paramsRecruitmentAndSummation, paramsRecruitmentOnly,
-        layout, controlsPanel, controls, dataPanel, lengthDataTable,
+    var params, layout, controlsPanel, controls, dataPanel, lengthDataTable,
         forceDataTable, voltageDataTable, touchStimDataTable,
         tMax = 3000e-3, plotHandles = []; 
 
-    // set up the controls for the current clamp simulation
-    paramsRecruitmentAndSummation = {
+    // set up the controls
+    params = {
         activation_tau: { label: 'Activation time constant', units: 'ms',
             defaultVal: 150, minVal: 0.1, maxVal: 1000.0},
         T0_ms: { label: 'Base firing period', units: 'ms',
@@ -82,10 +81,6 @@ window.addEventListener('load', function () {
         growthRateDown3_ms: { label: 'Removed pressure time constant', units: 'ms',
             defaultVal: 4, minVal: 0, maxVal: 300}
     };
-
-    paramsRecruitmentOnly = JSON.parse(JSON.stringify(paramsRecruitmentAndSummation));
-    paramsRecruitmentOnly.T0_ms.defaultVal = 80;
-    paramsRecruitmentOnly.Tslope_ms.defaultVal = 0;
 
     layout = [
         ['Muscle Properties', ['activation_tau']],
@@ -318,13 +313,8 @@ window.addEventListener('load', function () {
     }
 
 
-    function resetToRecruitmentAndSummationSim() {
-        reset(paramsRecruitmentAndSummation, layout);
-    }
-
-
-    function resetToRecruitmentOnlySim() {
-        reset(paramsRecruitmentOnly, layout);
+    function resetToDefaultSim() {
+        reset(params, layout);
     }
 
 
@@ -346,9 +336,7 @@ window.addEventListener('load', function () {
     (document.getElementById('ReflexRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('ReflexResetButton')
-        .addEventListener('click', resetToRecruitmentAndSummationSim, false));
-//    (document.getElementById('MuscleRecruitmentOnlySimButton')
-//        .addEventListener('click', resetToRecruitmentOnlySim, false));
+        .addEventListener('click', resetToDefaultSim, false));
     (document.getElementById('ReflexClearDataButton')
         .addEventListener('click', clearDataTables, false));
     
@@ -363,7 +351,7 @@ window.addEventListener('load', function () {
             }
         }, true);
 
-    resetToRecruitmentAndSummationSim();
+    resetToDefaultSim();
     clearDataTables();
 
 }, false);

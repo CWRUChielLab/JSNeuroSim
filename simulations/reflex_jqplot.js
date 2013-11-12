@@ -12,6 +12,8 @@ window.addEventListener('load', function () {
 
     // set up the controls
     params = {
+        Linit_cm: { label: 'Initial length', units: 'cm',
+            defaultVal: 5.0, minVal: 2.5, maxVal: 12.0 },
         activation_tau: { label: 'Activation time constant', units: 'ms',
             defaultVal: 150, minVal: 0.1, maxVal: 1000.0},
         T0_ms: { label: 'Base firing period', units: 'ms',
@@ -83,7 +85,7 @@ window.addEventListener('load', function () {
     };
 
     layout = [
-        ['Muscle Properties', ['activation_tau']],
+        ['Muscle Properties', ['Linit_cm', 'activation_tau']],
         ['Spring Properties', ['Lrestspring', 'k']],
         ['First Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
         ['Second Touch Stimulus Properties', ['sigHeight2_mN', 'midpointUp2_ms', 'midpointDown2_ms', 'growthRateUp2_ms', 'growthRateDown2_ms']],
@@ -116,7 +118,7 @@ window.addEventListener('load', function () {
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
         var params, model, merkelCell, merkelTouchCurrent, muscle,
-            prerun, result, L, force, V, touchStim,
+            result, L, force, V, touchStim,
             plotPanel, title, plot; 
         
         // create the passive membrane
@@ -160,6 +162,7 @@ window.addEventListener('load', function () {
         merkelCell.addCurrent(merkelTouchCurrent.pulse);
         
         muscle = electrophys.muscle(model, {
+            Linit: params.Linit_cm,
             neuralInput: function (state, t) { return 2 * (0.050 + merkelCell.VWithSpikes(state, t)); },
             T0: params.T0_ms * 1e-3,
             Tslope: params.Tslope_ms * 1e-3,
@@ -168,19 +171,11 @@ window.addEventListener('load', function () {
             p: 1 / params.activation_tau * 1e3
         });
         
-        // run it for a bit to let it reach steady state
-        prerun = model.integrate({
-            tMin: -500e-3, 
-            tMax: 0, 
-            tMaxStep: 1e-3,
-        });
-
         // simulate it
         result = model.integrate({
             tMin: 0, 
             tMax: params.totalDuration_ms * 1e-3, 
-            tMaxStep: 1e-3,
-            y0: prerun.y_f
+            tMaxStep: 1e-3
         });
         
         L      = result.mapOrderedPairs(muscle.L);

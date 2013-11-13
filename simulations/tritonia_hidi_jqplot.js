@@ -1315,7 +1315,7 @@ window.addEventListener('load', function () {
 			// Unlabelled touch stimuli (Cell D)
 			if (plotTag == 'swim') {
 				title = document.createElement('h4');
-				title.innerHTML = 'Touch Stimuli';
+				title.innerHTML = 'Touch Stimulus';
 				title.className = 'simplotheading';
 				plotPanel.appendChild(title);
 				plot = document.createElement('div');

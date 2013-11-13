@@ -570,7 +570,7 @@ window.addEventListener('load', function () {
             label: 'E2 closing time constant', 
             defaultVal: 2200, minVal: 0.1, maxVal: 1000000 },
 		
-		sigHeight_mV: { label: 'Body angle sigmoid height', units: 'mV',
+		sigHeight: { label: 'Body angle sigmoid height', units: 'mV',
 			defaultVal: 200, minVal: 0, maxVal: 300},
 		beta_ventral: { label: 'Ventral neuron beta value', units: 'mV',
 			defaultVal: -44, minVal: 0, maxVal: 1000 },
@@ -584,7 +584,7 @@ window.addEventListener('load', function () {
 
 	// Hi Di Treatment Parameters
 	paramsHiDi = JSON.parse(JSON.stringify(paramsUnmodulatedSwim));
-	paramsHiDi.sigHeight_mV.defaultVal = 90;
+	paramsHiDi.sigHeight.defaultVal = 90;
 	paramsHiDi.totalDuration_ms.defaultVal = 10000;
 	
 	// Make all neurons less sensitive to firing
@@ -1221,7 +1221,7 @@ window.addEventListener('load', function () {
 		
 		// Get the body angle
 		slugBody = electrophys.slugBody(model, VFN, DFN, {
-			sigHeight_mV: params.sigHeight_mV,
+			sigHeight: params.sigHeight,
 			beta_ventral: params.beta_ventral * 1e-3,
 			gamma_ventral: params.gamma_ventral * 1e-3,
 			beta_dorsal: params.beta_dorsal * 1e-3,

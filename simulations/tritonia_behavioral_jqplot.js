@@ -1197,6 +1197,7 @@ window.addEventListener('load', function () {
 		
 		// Get the body angle
 		slugBody = electrophys.slugBody(model, VFN, DFN, {
+			sigHeight: 200,
 			beta_ventral: params.beta_ventral * 1e-3,
 			gamma_ventral: params.gamma_ventral * 1e-3,
 			beta_dorsal: params.beta_dorsal * 1e-3,

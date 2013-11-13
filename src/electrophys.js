@@ -1442,7 +1442,7 @@ electrophys.gettingIFNeuron = function (model, options) {
 electrophys.slugBody = function (model, ventral, dorsal, options) {
 "use strict";
 
-    var sigHeight_mV = options.sigHeight_mV,
+    var sigHeight = options.sigHeight,
         beta_ventral = options.beta_ventral,
         gamma_ventral = options.gamma_ventral,
         beta_dorsal = options.beta_dorsal,
@@ -1457,9 +1457,9 @@ electrophys.slugBody = function (model, ventral, dorsal, options) {
         iV_dorsal = model.addStateVar(0);
 
     function drift(result, state, t) {
-        result[iAlpha_ventral] = (electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral, sigHeight_mV)
+        result[iAlpha_ventral] = (electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral, sigHeight)
                 - state[iAlpha_ventral]) / tauAlpha_ventral;
-        result[iAlpha_dorsal] = (electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal, sigHeight_mV)
+        result[iAlpha_dorsal] = (electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal, sigHeight)
                 - state[iAlpha_dorsal]) / tauAlpha_dorsal;
         result[iV_ventral] = (ventral.V(state, t) - state[iV_ventral]) / tauV_ventral;
         result[iV_dorsal] = (dorsal.V(state, t) - state[iV_dorsal]) / tauV_dorsal;
@@ -1478,8 +1478,8 @@ electrophys.slugBody = function (model, ventral, dorsal, options) {
         if (t instanceof Array) {
             return ode.transpose(state).map(function (state, i) {return angleInf(state, t[i]);});
         } else {
-            return electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal, sigHeight_mV) -
-                electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral, sigHeight_mV);
+            return electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal, sigHeight) -
+                electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral, sigHeight);
         }
     }
 
@@ -1489,9 +1489,9 @@ electrophys.slugBody = function (model, ventral, dorsal, options) {
     };
 }
 
-electrophys.alpha_inf = function (V, beta, gamma, sigHeight_mV) {
+electrophys.alpha_inf = function (V, beta, gamma, sigHeight) {
     "use strict";
-    return sigHeight_mV / (1 + Math.exp(-(V - beta) / gamma)); //sig_height = 200
+    return sigHeight / (1 + Math.exp(-(V - beta) / gamma));
 };
 
 

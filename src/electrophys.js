@@ -1660,7 +1660,7 @@ electrophys.muscle = function (model, options) {
     "use strict";
     var Linit = (options.Linit === undefined ? 5.0 /* cm */ : options.Linit),
         Ainit = (options.Ainit === undefined ? 0.001        : options.Ainit),
-        neuralInput = options.neuralInput,
+        neuralInput = (options.neuralInput === undefined ? (function(state, t) { return 0.001; }) : options.neuralInput),
         iL = model.addStateVar(Linit),
         iA = model.addStateVar(Ainit),
         that = {},
@@ -1729,6 +1729,7 @@ electrophys.muscle = function (model, options) {
 
     that.L = function (state, t) { return state[iL]; };
     that.A = function (state, t) { return state[iA]; };
+    that.setNeuralInput = function (func) { neuralInput = func; };
     that.force = Factive;
 
     return that;

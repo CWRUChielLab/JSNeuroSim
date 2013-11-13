@@ -15,7 +15,9 @@ window.addEventListener('load', function () {
         Linit_cm: { label: 'Initial length', units: 'cm',
             defaultVal: 5.0, minVal: 2.5, maxVal: 12.0 },
         activation_tau: { label: 'Activation time constant', units: 'ms',
-            defaultVal: 150, minVal: 0.1, maxVal: 1000.0},
+            defaultVal: 150, minVal: 0.1, maxVal: 1000.0 },
+        B_ms_cm: { label: 'Force-velocity constant', units: 'ms/cm',
+            defaultVal: 20, minVal: 0, maxVal: 1000.0 },
         T0_ms: { label: 'Base firing period', units: 'ms',
             defaultVal: 120, minVal: 0, maxVal: 500 },
         Tslope_ms: { label: 'Firing period slope', units: 'ms',
@@ -24,6 +26,10 @@ window.addEventListener('load', function () {
             defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
         k: { label: 'Spring stiffness', units: 'N/cm',
             defaultVal: 0.01, minVal: 0, maxVal: 10.0 },
+        reflexTrigger_cm: { label: 'Reflex trigger length', units: 'cm',
+            defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
+        reflexConstant_cm: { label: 'Reflex activation constant', units: 'cm',
+            defaultVal: 120, minVal: 1, maxVal: 1000.0 },
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 2000, minVal: 0, maxVal: tMax / 1e-3 },
 
@@ -85,11 +91,11 @@ window.addEventListener('load', function () {
     };
 
     layout = [
-        ['Muscle Properties', ['Linit_cm', 'activation_tau']],
+        ['Muscle Properties', ['Linit_cm', 'B_ms_cm', 'reflexTrigger_cm', 'reflexConstant_cm', 'activation_tau']],
         ['Spring Properties', ['Lrestspring', 'k']],
-        ['First Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
-        ['Second Touch Stimulus Properties', ['sigHeight2_mN', 'midpointUp2_ms', 'midpointDown2_ms', 'growthRateUp2_ms', 'growthRateDown2_ms']],
-        ['Third Touch Stimulus Properties', ['sigHeight3_mN', 'midpointUp3_ms', 'midpointDown3_ms', 'growthRateUp3_ms', 'growthRateDown3_ms']],
+//        ['First Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
+//        ['Second Touch Stimulus Properties', ['sigHeight2_mN', 'midpointUp2_ms', 'midpointDown2_ms', 'growthRateUp2_ms', 'growthRateDown2_ms']],
+//        ['Third Touch Stimulus Properties', ['sigHeight3_mN', 'midpointUp3_ms', 'midpointDown3_ms', 'growthRateUp3_ms', 'growthRateDown3_ms']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -161,17 +167,21 @@ window.addEventListener('load', function () {
 
         merkelCell.addCurrent(merkelTouchCurrent.pulse);
         
+        //muscle = electrophys.muscle(model, {
         muscle = electrophys.muscleFullDynamics(model, {
             Linit: params.Linit_cm,
-            //neuralInput: function (state, t) { return 2 * (0.050 + merkelCell.VWithSpikes(state, t)); },
             T0: params.T0_ms * 1e-3,
             Tslope: params.Tslope_ms * 1e-3,
             Lrestspring: params.Lrestspring,
+            B: params.B_ms_cm * 1e-3,
             k: params.k,
             p: 1 / params.activation_tau * 1e3
         });
-        muscle.setNeuralInput(function (state, t) { return 100 * (0.050 + merkelCell.VWithSpikes(state, t)); });
-        //muscle.setNeuralInput(function (state, t) { return 1 * (muscle.L(state, t) - 4); });
+
+        // create a proprioceptive feedback loop
+        //muscle.setNeuralInput(function (state, t) { return 2 * (0.050 + merkelCell.VWithSpikes(state, t)); });
+        //muscle.setNeuralInput(function (state, t) { return Math.max(0.001, 1/params.reflexConstant_cm * (muscle.L(state, t) - params.reflexTrigger_cm)); });
+        muscle.setNeuralInput(function (state, t) { return Math.max(0, 1/params.reflexConstant_cm * (muscle.L(state, t) - params.reflexTrigger_cm)); });
         
         // simulate it
         result = model.integrate({
@@ -234,24 +244,24 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
         graphJqplot.bindCursorTooltip('#lengthPlot', 'Time', 'ms', 'cm');
 
-//        // Muscle velocity
-//        plot = document.createElement('div');
-//        plot.id = 'velocityPlot';
-//        plot.style.width = '425px';
-//        plot.style.height = '200px';
-//        plotPanel.appendChild(plot);
-//        plotHandles.push(
-//            $.jqplot('velocityPlot', [Lprime], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-//                axes: {
-//                    xaxis: {label:'Time (ms)'},
-//                    yaxis: {label:'Velocity (cm/ms)'},
-//                },
-//                series: [
-//                    {label: 'Length', color: 'black'},
-//                ],
-//        })));
-//        //graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
-//        graphJqplot.bindCursorTooltip('#velocityPlot', 'Time', 'ms', 'cm/ms');
+        // Muscle velocity
+        plot = document.createElement('div');
+        plot.id = 'velocityPlot';
+        plot.style.width = '425px';
+        plot.style.height = '200px';
+        plotPanel.appendChild(plot);
+        plotHandles.push(
+            $.jqplot('velocityPlot', [Lprime], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                axes: {
+                    xaxis: {label:'Time (ms)'},
+                    yaxis: {label:'Velocity (cm/ms)'},
+                },
+                series: [
+                    {label: 'Length', color: 'black'},
+                ],
+        })));
+        //graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
+        graphJqplot.bindCursorTooltip('#velocityPlot', 'Time', 'ms', 'cm/ms');
 
         // Muscle force
         plot = document.createElement('div');
@@ -272,55 +282,55 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#forcePlot', forceDataTable, 'Muscle Force', 'Time');
         graphJqplot.bindCursorTooltip('#forcePlot', 'Time', 'ms', 'mN');
 
-        // ******************
-        // MECHANORECEPTOR
-        // ******************
-
-        // Neuron membrane potential
-        title = document.createElement('h4');
-        title.innerHTML = 'Mechanoreceptor';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'voltagePlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('voltagePlot', [V], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Membrane Potential (mV)'},
-                },
-                series: [
-                    {label: 'V<sub>m</sub>', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, title.innerHTML, 'Time');
-        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
-
-        // Touch stimuli
-        title = document.createElement('h4');
-        title.innerHTML = 'Touch Stimulus';
-        title.className = 'simplotheading';
-        plotPanel.appendChild(title);
-        plot = document.createElement('div');
-        plot.id = 'touchStimPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-           $.jqplot('touchStimPlot', [touchStim], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Touch force (mN)'},
-                },
-                series: [
-                    {label: 'Touch force', color: 'black'},
-                ],
-        })));
-        graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
-        graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'mN');
+//        // ******************
+//        // MECHANORECEPTOR
+//        // ******************
+//
+//        // Neuron membrane potential
+//        title = document.createElement('h4');
+//        title.innerHTML = 'Mechanoreceptor';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'voltagePlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('voltagePlot', [V], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Membrane Potential (mV)'},
+//                },
+//                series: [
+//                    {label: 'V<sub>m</sub>', color: 'black'},
+//                ],
+//        })));
+//        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, title.innerHTML, 'Time');
+//        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
+//
+//        // Touch stimuli
+//        title = document.createElement('h4');
+//        title.innerHTML = 'Touch Stimulus';
+//        title.className = 'simplotheading';
+//        plotPanel.appendChild(title);
+//        plot = document.createElement('div');
+//        plot.id = 'touchStimPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//           $.jqplot('touchStimPlot', [touchStim], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Touch force (mN)'},
+//                },
+//                series: [
+//                    {label: 'Touch force', color: 'black'},
+//                ],
+//        })));
+//        graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
+//        graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'mN');
     }
 
     

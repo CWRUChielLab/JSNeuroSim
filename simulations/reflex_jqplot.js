@@ -26,7 +26,7 @@ window.addEventListener('load', function () {
         reflexTrigger_cm: { label: 'Trigger length', units: 'cm',
             defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
         reflexConstant_cm: { label: 'Activation length constant', units: 'cm',
-            defaultVal: 120, minVal: 1, maxVal: 10000.0 },
+            defaultVal: 10, minVal: 0.1, maxVal: 10000.0 },
 
         Lrestspring: { label: 'Spring resting position', units: 'cm',
             defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
@@ -81,6 +81,10 @@ window.addEventListener('load', function () {
         // create a proprioceptive feedback loop
         muscle.setNeuralInput(function (state, t) {
             return Math.max(0, 1/params.reflexConstant_cm * (muscle.L(state, t) - params.reflexTrigger_cm));
+            //if (muscle.L(state, t) > params.reflexTrigger_cm)
+            //    return 1;
+            //else
+            //    return 0;
         });
         
         // simulate it

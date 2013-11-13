@@ -118,7 +118,7 @@ window.addEventListener('load', function () {
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
         var params, model, merkelCell, merkelTouchCurrent, muscle,
-            result, L, force, V, touchStim,
+            result, L, Lprime, force, V, touchStim,
             plotPanel, title, plot; 
         
         // create the passive membrane
@@ -161,15 +161,17 @@ window.addEventListener('load', function () {
 
         merkelCell.addCurrent(merkelTouchCurrent.pulse);
         
-        muscle = electrophys.muscle(model, {
+        muscle = electrophys.muscleFullDynamics(model, {
             Linit: params.Linit_cm,
-            neuralInput: function (state, t) { return 2 * (0.050 + merkelCell.VWithSpikes(state, t)); },
+            //neuralInput: function (state, t) { return 2 * (0.050 + merkelCell.VWithSpikes(state, t)); },
             T0: params.T0_ms * 1e-3,
             Tslope: params.Tslope_ms * 1e-3,
             Lrestspring: params.Lrestspring,
             k: params.k,
             p: 1 / params.activation_tau * 1e3
         });
+        muscle.setNeuralInput(function (state, t) { return 100 * (0.050 + merkelCell.VWithSpikes(state, t)); });
+        //muscle.setNeuralInput(function (state, t) { return 1 * (muscle.L(state, t) - 4); });
         
         // simulate it
         result = model.integrate({
@@ -179,6 +181,7 @@ window.addEventListener('load', function () {
         });
         
         L      = result.mapOrderedPairs(muscle.L);
+        Lprime = result.mapOrderedPairs(muscle.Lprime);
         force  = result.mapOrderedPairs(muscle.force);
         V      = result.mapOrderedPairs(merkelCell.VWithSpikes);
         touchStim = result.mapOrderedPairs(merkelTouchCurrent.force);
@@ -186,6 +189,7 @@ window.addEventListener('load', function () {
         // convert to the right units
         // each ordered pair consists of a time and another variable
         L      = L.map      (function (l) {return [l[0] / 1e-3, l[1]       ];});
+        Lprime = Lprime.map (function (v) {return [v[0] / 1e-3, v[1] / 1e3 ];});
         force  = force.map  (function (f) {return [f[0] / 1e-3, f[1] / 1e-3];});
         V      = V.map      (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];});
         touchStim = touchStim.map (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]});
@@ -229,6 +233,25 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
         graphJqplot.bindCursorTooltip('#lengthPlot', 'Time', 'ms', 'cm');
+
+//        // Muscle velocity
+//        plot = document.createElement('div');
+//        plot.id = 'velocityPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('velocityPlot', [Lprime], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Velocity (cm/ms)'},
+//                },
+//                series: [
+//                    {label: 'Length', color: 'black'},
+//                ],
+//        })));
+//        //graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
+//        graphJqplot.bindCursorTooltip('#velocityPlot', 'Time', 'ms', 'cm/ms');
 
         // Muscle force
         plot = document.createElement('div');

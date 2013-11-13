@@ -1718,7 +1718,6 @@ electrophys.muscle = function (model, options) {
     }
     
     function drift(result, state, t) {
-
         result[iL] = -(Fpassive(state, t) + Fspring(state, t) + Fiso(state, t)) / (B * Fiso(state, t));
         result[iA] = p * (neuralInput(state, t) - state[iA]);
     }
@@ -1728,6 +1727,106 @@ electrophys.muscle = function (model, options) {
     that.L = function (state, t) { return state[iL]; };
     that.A = function (state, t) { return state[iA]; };
     that.force = Factive;
+
+    return that;
+};
+
+
+// Based on Chiel HJ, Crago P, Mansour JM, and Hathi K,
+// Biomechanics of a muscular hydrostat: a model of lapping
+// by a reptilian tongue, Biol. Cybern. 67: 403-415, 1992.
+// Here the circumferential muscle is left out, leaving only
+// a longitudinal muscle attached to a spring. The muscle is
+// modelled with mass (the quasi-static approximation is not
+// used here).
+electrophys.muscleFullDynamics = function (model, options) {
+    "use strict";
+    var Linit       = (options.Linit       === undefined ? 5.0 /* cm */   : options.Linit),
+        Lprimeinit  = (options.Lprimeinit  === undefined ? 0.0 /* cm/s */ : options.Lprimeinit),
+        Ainit       = (options.Ainit       === undefined ? 0.001          : options.Ainit),
+        neuralInput = (options.neuralInput === undefined ? (function(state, t) { return 0; }) : options.neuralInput),
+        iL          = model.addStateVar(Linit),
+        iLprime     = model.addStateVar(Lprimeinit),
+        iA          = model.addStateVar(Ainit),
+        that = {},
+        // Muscle properties
+        m           = (options.m           === undefined ? 100 /* g */            : options.m),
+        beta        = (options.beta        === undefined ? 50000 /* g/s */        : options.beta),
+        // Length/tension parameters
+        F0          = (options.F0          === undefined ? 3.2 /* N */            : options.F0),
+        a           = (options.a           === undefined ? 1e-1 /* s^-1 */        : options.a),
+        b           = (options.b           === undefined ? 1.5e0 /* cm^-1 s^-1 */ : options.b),
+        Lmax        = (options.Lmax        === undefined ? 8.0 /* cm */           : options.Lmax),
+        // Firing period parameters
+        T0          = (options.T0          === undefined ? 120e-3 /* s */         : options.T0),
+        Tslope      = (options.Tslope      === undefined ? 50e-3 /* s */          : options.Tslope),
+        // Force/velocity parameters
+        B           = (options.B           === undefined ? 20e-3 /* s cm^-1 */    : options.B),
+        // Activation parameters
+        p           = (options.p           === undefined ? 30.3030303 /* s^-1 */  : options.p),
+        // Passive force parameters
+        c1          = (options.c1          === undefined ? 7.392e-6 /* N */       : options.c1),
+        c2          = (options.c2          === undefined ? 2.30259 /* cm^-1 */    : options.c2),
+        c3          = (options.c3          === undefined ? 2.30259 /* cm^-1 */    : options.c3),
+        Lrestpas    = (options.Lrestpas    === undefined ? 4.0 /* cm */           : options.Lrestpas),
+        // Spring force parameters
+        k           = (options.k           === undefined ? 0.01 /* N cm^-1 */     : options.k),
+        Lrestspring = (options.Lrestspring === undefined ? 6.0 /* cm */           : options.Lrestspring);
+    
+    function Fiso(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Fiso(state, t[i]);});
+        } else {
+            var Tf = T0 - Tslope * state[iA];
+            return -state[iA] * F0 * (1 + (a + b * (state[iL] - Lmax)) * Tf);
+        }
+    }
+
+    function Fpassive(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Fpassive(state, t[i]);});
+        } else {
+            return -c1 * (Math.exp(c2 * (state[iL] - Lrestpas)) - Math.exp(-c3 * (state[iL] - Lrestpas)));
+        }
+    }
+
+    function Fspring(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Fspring(state, t[i]);});
+        } else {
+            return -k * (state[iL] - Lrestspring);
+        }
+    }
+    
+    function Factive(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Factive(state, t[i]);});
+        } else {
+            return Fiso(state, t) * (1 + B * state[iLprime]);
+        }
+    }
+
+    function Fdamping(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return Fdamping(state, t[i]);});
+        } else {
+            return -(0.001 * beta) * (0.01 * state[iLprime]);
+        }
+    }
+    
+    function drift(result, state, t) {
+        result[iL]      = state[iLprime];
+        result[iLprime] = (100 * (Fpassive(state, t) + Factive(state, t) + Fspring(state, t) + Fdamping(state, t))) / (0.001 * m);
+        result[iA]      = p * (neuralInput(state, t) - state[iA]);
+    }
+
+    model.registerDrift(drift);
+
+    that.L      = function (state, t) { return state[iL]; };
+    that.Lprime = function (state, t) { return state[iLprime]; };
+    that.A      = function (state, t) { return state[iA]; };
+    that.setNeuralInput = function (func) { neuralInput = func; };
+    that.force  = Factive;
 
     return that;
 };

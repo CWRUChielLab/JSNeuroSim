@@ -1443,49 +1443,49 @@ electrophys.slugBody = function (model, ventral, dorsal, options) {
 "use strict";
 
     var sigHeight_mV = options.sigHeight_mV,
-		beta_ventral = options.beta_ventral,
-		gamma_ventral = options.gamma_ventral,
-		beta_dorsal = options.beta_dorsal,
-		gamma_dorsal = options.gamma_dorsal,
+        beta_ventral = options.beta_ventral,
+        gamma_ventral = options.gamma_ventral,
+        beta_dorsal = options.beta_dorsal,
+        gamma_dorsal = options.gamma_dorsal,
         tauAlpha_ventral = (options.tauAlpha_ventral === undefined ? 3 : options.tauAlpha_ventral),
         tauAlpha_dorsal = (options.tauAlpha_dorsal === undefined ? 3 : options.tauAlpha_dorsal),
         tauV_ventral = (options.tauV_ventral === undefined ? 1 : options.tauV_ventral),
         tauV_dorsal = (options.tauV_dorsal === undefined ? 1 : options.tauV_dorsal),
-		iAlpha_ventral = model.addStateVar(0),
-		iAlpha_dorsal = model.addStateVar(0),
-		iV_ventral = model.addStateVar(0),
-		iV_dorsal = model.addStateVar(0);
+        iAlpha_ventral = model.addStateVar(0),
+        iAlpha_dorsal = model.addStateVar(0),
+        iV_ventral = model.addStateVar(0),
+        iV_dorsal = model.addStateVar(0);
 
-	function drift(result, state, t) {
-		result[iAlpha_ventral] = (electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral, sigHeight_mV)
+    function drift(result, state, t) {
+        result[iAlpha_ventral] = (electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral, sigHeight_mV)
                 - state[iAlpha_ventral]) / tauAlpha_ventral;
-		result[iAlpha_dorsal] = (electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal, sigHeight_mV)
+        result[iAlpha_dorsal] = (electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal, sigHeight_mV)
                 - state[iAlpha_dorsal]) / tauAlpha_dorsal;
-		result[iV_ventral] = (ventral.V(state, t) - state[iV_ventral]) / tauV_ventral;
-		result[iV_dorsal] = (dorsal.V(state, t) - state[iV_dorsal]) / tauV_dorsal;
+        result[iV_ventral] = (ventral.V(state, t) - state[iV_ventral]) / tauV_ventral;
+        result[iV_dorsal] = (dorsal.V(state, t) - state[iV_dorsal]) / tauV_dorsal;
     }
     model.registerDrift(drift);
-	
-	function bodyAngle(state, t) {
-		if (t instanceof Array) {
-			return ode.transpose(state).map(function (state, i) {return bodyAngle(state, t[i]);});
-		} else {
-			return state[iAlpha_dorsal] - state[iAlpha_ventral];
-		}
-	}
-	
-	function angleInf(state, t) {
-		if (t instanceof Array) {
-			return ode.transpose(state).map(function (state, i) {return angleInf(state, t[i]);});
-		} else {
-			return electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal, sigHeight_mV) -
+    
+    function bodyAngle(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return bodyAngle(state, t[i]);});
+        } else {
+            return state[iAlpha_dorsal] - state[iAlpha_ventral];
+        }
+    }
+    
+    function angleInf(state, t) {
+        if (t instanceof Array) {
+            return ode.transpose(state).map(function (state, i) {return angleInf(state, t[i]);});
+        } else {
+            return electrophys.alpha_inf(state[iV_dorsal], beta_dorsal, gamma_dorsal, sigHeight_mV) -
                 electrophys.alpha_inf(state[iV_ventral], beta_ventral, gamma_ventral, sigHeight_mV);
-		}
-	}
+        }
+    }
 
     return {
         bodyAngle: bodyAngle,
-		angleInf: angleInf
+        angleInf: angleInf
     };
 }
 
@@ -1574,80 +1574,80 @@ electrophys.gettingShuntConductance = function (model, neuron, options) {
 // Springer Science and Business Media, 2012. 225-238.
 
 electrophys.touchStimuli = function (options) {
-	"use strict";
-	var Ks = options.Ks,
-		Kd_positive = options.Kd_positive,
-		Kd_negative = options.Kd_negative || 0,
-		
-		sigHeight1 = options.sigHeight1,
-		sigHeight2 = options.sigHeight2,
-		sigHeight3 = options.sigHeight3,
-		
-		midpointUp1 = options.midpointUp1,
-		midpointDown1 = options.midpointDown1,
-		midpointUp2 = options.midpointUp2,
-		midpointDown2 = options.midpointDown2,
-		midpointUp3 = options.midpointUp3,
-		midpointDown3 = options.midpointDown3,
-		
-		growthRateUp1 = options.growthRateUp1,
-		growthRateDown1 = options.growthRateDown1,
-		growthRateUp2 = options.growthRateUp2,
-		growthRateDown2 = options.growthRateDown2,
-		growthRateUp3 = options.growthRateUp3,
-		growthRateDown3 = options.growthRateDown3,
-		
+    "use strict";
+    var Ks = options.Ks,
+        Kd_positive = options.Kd_positive,
+        Kd_negative = options.Kd_negative || 0,
+        
+        sigHeight1 = options.sigHeight1,
+        sigHeight2 = options.sigHeight2,
+        sigHeight3 = options.sigHeight3,
+        
+        midpointUp1 = options.midpointUp1,
+        midpointDown1 = options.midpointDown1,
+        midpointUp2 = options.midpointUp2,
+        midpointDown2 = options.midpointDown2,
+        midpointUp3 = options.midpointUp3,
+        midpointDown3 = options.midpointDown3,
+        
+        growthRateUp1 = options.growthRateUp1,
+        growthRateDown1 = options.growthRateDown1,
+        growthRateUp2 = options.growthRateUp2,
+        growthRateDown2 = options.growthRateDown2,
+        growthRateUp3 = options.growthRateUp3,
+        growthRateDown3 = options.growthRateDown3,
+        
         baseline = options.baseline || 0,
-		exponentUp1, exponentDown1,
-		exponentUp2, exponentDown2,
-		exponentUp3, exponentDown3,		
-		touchForce, touchForceDerivative;
-				
-	function force (state, t) {
-		if (t instanceof Array) {
+        exponentUp1, exponentDown1,
+        exponentUp2, exponentDown2,
+        exponentUp3, exponentDown3,        
+        touchForce, touchForceDerivative;
+                
+    function force (state, t) {
+        if (t instanceof Array) {
             return t.map(function (t) {return force([], t);});
         } else {
-			return ((sigHeight1 / (1 + Math.exp((-(t - midpointUp1) / growthRateUp1)))) + (sigHeight1 / (1 + Math.exp((t - midpointDown1) / growthRateDown1))) - sigHeight1) +
-			((sigHeight2 / (1 + Math.exp((-(t - midpointUp2) / growthRateUp2)))) + (sigHeight2 / (1 + Math.exp((t - midpointDown2) / growthRateDown2))) - sigHeight2) +
-			((sigHeight3 / (1 + Math.exp((-(t - midpointUp3) / growthRateUp3)))) + (sigHeight3 / (1 + Math.exp((t - midpointDown3) / growthRateDown3))) - sigHeight3);
-		}
-	}
-	
-	function pulse (state, t) {
-		if (t instanceof Array) {
-			return t.map(function (t) {return pulse([], t);});
-		} else {
-			touchForce = force (state, t);
-			
-			exponentUp1 = Math.exp((midpointUp1 - t) / growthRateUp1);
-			exponentDown1 = Math.exp(-(midpointDown1 - t) / growthRateDown1);
-			
-			exponentUp2 = Math.exp((midpointUp2 - t) / growthRateUp2);
-			exponentDown2 = Math.exp(-(midpointDown2 - t) / growthRateDown2);
-			
-			exponentUp3 = Math.exp((midpointUp3 - t) / growthRateUp3);
-			exponentDown3 = Math.exp(-(midpointDown3 - t) / growthRateDown3);
-			
-			touchForceDerivative = 
-				(((exponentUp1 * sigHeight1)/(Math.pow((1 + exponentUp1), 2) * growthRateUp1)) - 
-				((exponentDown1 * sigHeight1)/(Math.pow((1 + exponentDown1), 2) * growthRateDown1))) + 
-				(((exponentUp2 * sigHeight2)/(Math.pow((1 + exponentUp2), 2) * growthRateUp2)) - 
-				((exponentDown2 * sigHeight2)/(Math.pow((1 + exponentDown2), 2) * growthRateDown2))) + 
-				(((exponentUp3 * sigHeight3)/(Math.pow((1 + exponentUp3), 2) * growthRateUp3)) - 
-				((exponentDown3 * sigHeight3)/(Math.pow((1 + exponentDown3), 2) * growthRateDown3)));
-				
-			if (touchForceDerivative < 0) {
-				return (Ks * touchForce) + (Kd_negative * touchForceDerivative);
-			} else {
-				return (Ks * touchForce) + (Kd_positive * touchForceDerivative);
-			}
-		}
-	};		
-	
-	return {
-		pulse: pulse,
-		force: force
-	};
+            return ((sigHeight1 / (1 + Math.exp((-(t - midpointUp1) / growthRateUp1)))) + (sigHeight1 / (1 + Math.exp((t - midpointDown1) / growthRateDown1))) - sigHeight1) +
+            ((sigHeight2 / (1 + Math.exp((-(t - midpointUp2) / growthRateUp2)))) + (sigHeight2 / (1 + Math.exp((t - midpointDown2) / growthRateDown2))) - sigHeight2) +
+            ((sigHeight3 / (1 + Math.exp((-(t - midpointUp3) / growthRateUp3)))) + (sigHeight3 / (1 + Math.exp((t - midpointDown3) / growthRateDown3))) - sigHeight3);
+        }
+    }
+    
+    function pulse (state, t) {
+        if (t instanceof Array) {
+            return t.map(function (t) {return pulse([], t);});
+        } else {
+            touchForce = force (state, t);
+            
+            exponentUp1 = Math.exp((midpointUp1 - t) / growthRateUp1);
+            exponentDown1 = Math.exp(-(midpointDown1 - t) / growthRateDown1);
+            
+            exponentUp2 = Math.exp((midpointUp2 - t) / growthRateUp2);
+            exponentDown2 = Math.exp(-(midpointDown2 - t) / growthRateDown2);
+            
+            exponentUp3 = Math.exp((midpointUp3 - t) / growthRateUp3);
+            exponentDown3 = Math.exp(-(midpointDown3 - t) / growthRateDown3);
+            
+            touchForceDerivative = 
+                (((exponentUp1 * sigHeight1)/(Math.pow((1 + exponentUp1), 2) * growthRateUp1)) - 
+                ((exponentDown1 * sigHeight1)/(Math.pow((1 + exponentDown1), 2) * growthRateDown1))) + 
+                (((exponentUp2 * sigHeight2)/(Math.pow((1 + exponentUp2), 2) * growthRateUp2)) - 
+                ((exponentDown2 * sigHeight2)/(Math.pow((1 + exponentDown2), 2) * growthRateDown2))) + 
+                (((exponentUp3 * sigHeight3)/(Math.pow((1 + exponentUp3), 2) * growthRateUp3)) - 
+                ((exponentDown3 * sigHeight3)/(Math.pow((1 + exponentDown3), 2) * growthRateDown3)));
+                
+            if (touchForceDerivative < 0) {
+                return (Ks * touchForce) + (Kd_negative * touchForceDerivative);
+            } else {
+                return (Ks * touchForce) + (Kd_positive * touchForceDerivative);
+            }
+        }
+    };        
+    
+    return {
+        pulse: pulse,
+        force: force
+    };
 };
 
 

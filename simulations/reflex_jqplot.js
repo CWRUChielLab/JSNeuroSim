@@ -8,94 +8,39 @@ window.addEventListener('load', function () {
 
     var params, layout, controlsPanel, controls, dataPanel, lengthDataTable,
         forceDataTable, voltageDataTable, touchStimDataTable,
-        tMax = 3000e-3, plotHandles = []; 
+        tMax = 10000e-3, plotHandles = []; 
 
     // set up the controls
     params = {
         Linit_cm: { label: 'Initial length', units: 'cm',
             defaultVal: 5.0, minVal: 2.5, maxVal: 12.0 },
-        activation_tau: { label: 'Activation time constant', units: 'ms',
-            defaultVal: 150, minVal: 0.1, maxVal: 1000.0 },
+        m_g: { label: 'Mass', units: 'g',
+            defaultVal: 100, minVal: 1, maxVal: 10000.0 },
         B_ms_cm: { label: 'Force-velocity constant', units: 'ms/cm',
-            defaultVal: 20, minVal: 0, maxVal: 1000.0 },
-        T0_ms: { label: 'Base firing period', units: 'ms',
-            defaultVal: 120, minVal: 0, maxVal: 500 },
-        Tslope_ms: { label: 'Firing period slope', units: 'ms',
-            defaultVal: 50, minVal: -100, maxVal: 100 },
+            defaultVal: 20, minVal: 0, maxVal: 10000.0 },
+        beta_g_ms: { label: 'Damping constant', units: 'g/ms',
+            defaultVal: 50, minVal: 0, maxVal: 10000.0 },
+        activation_tau: { label: 'Activation time constant', units: 'ms',
+            defaultVal: 150, minVal: 0.1, maxVal: 10000.0 },
+
+        reflexTrigger_cm: { label: 'Trigger length', units: 'cm',
+            defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
+        reflexConstant_cm: { label: 'Activation length constant', units: 'cm',
+            defaultVal: 120, minVal: 1, maxVal: 10000.0 },
+
         Lrestspring: { label: 'Spring resting position', units: 'cm',
             defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
         k: { label: 'Spring stiffness', units: 'N/cm',
             defaultVal: 0.01, minVal: 0, maxVal: 10.0 },
-        reflexTrigger_cm: { label: 'Reflex trigger length', units: 'cm',
-            defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
-        reflexConstant_cm: { label: 'Reflex activation constant', units: 'cm',
-            defaultVal: 120, minVal: 1, maxVal: 1000.0 },
+
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 2000, minVal: 0, maxVal: tMax / 1e-3 },
-
-        merkel_Ks: { label: 'Static gain', units: 'nA/mN',
-            defaultVal: 0.2, minVal: 0, maxVal: 100},
-        merkel_Kd_positive: { label: 'Positive dynamic gain', units: 'pC/mN',
-            defaultVal: 14, minVal: 0, maxVal: 10000},
-        merkel_Kd_negative: { label: 'Negative dynamic gain', units: 'pC/mN',
-            defaultVal: 0, minVal: -10000, maxVal: 10000},
-            
-        merkel_V_init_mV: { label: 'Initial membrane potential', units: 'mV', 
-            defaultVal: -48, minVal: -1000, maxVal: 1000 },
-        merkel_C_nF: { label: 'Membrane capacitance', units: 'nF', 
-            defaultVal: 2.27, minVal: 0.01, maxVal: 100 },
-        merkel_g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
-            defaultVal: .055, minVal: 0.01, maxVal: 100 },
-        merkel_E_leak_mV: { label: 'Leak potential', units: 'mV', 
-            defaultVal: -48, minVal: -1000, maxVal: 1000 },
-            
-        merkel_theta_ss_mV: { label: 'Resting threshold', units: 'mV', 
-            defaultVal: -34, minVal: -1000, maxVal: 1000 },
-        merkel_theta_r_mV: { label: 'Refractory threshold', units: 'mV', 
-            defaultVal: 0, minVal: -1000, maxVal: 1000 },
-        merkel_theta_tau_ms: { label: 'Refractory time constant', units: 'ms', 
-            defaultVal: 20, minVal: 0.1, maxVal: 1000000 },
-
-        sigHeight1_mN: { label: 'Maximum pressure', units: 'mN',
-            defaultVal: 8, minVal: 0, maxVal: 20},
-        midpointUp1_ms: { label: 'Stimulus start', units: 'ms',
-            defaultVal: 50, minVal: 0, maxVal: tMax / 1e-3},
-        midpointDown1_ms: { label: 'Stimulus end', units: 'ms',
-            defaultVal: 200, minVal: 0, maxVal: tMax / 1e-3},
-        growthRateUp1_ms: { label: 'Applied pressure time constant', units: 'ms',
-            defaultVal: 4, minVal: 0, maxVal: 300},
-        growthRateDown1_ms: { label: 'Removed pressure time constant', units: 'ms',
-            defaultVal: 4, minVal: 0, maxVal: 300},
-            
-        sigHeight2_mN: { label: 'Maximum pressure', units: 'mN',
-            defaultVal: 0, minVal: 0, maxVal: 20},
-        midpointUp2_ms: { label: 'Stimulus start', units: 'ms',
-            defaultVal: 300, minVal: 0, maxVal: tMax / 1e-3},
-        midpointDown2_ms: { label: 'Stimulus end', units: 'ms',
-            defaultVal: 400, minVal: 0, maxVal: tMax / 1e-3},
-        growthRateUp2_ms: { label: 'Applied pressure time constant', units: 'ms',
-            defaultVal: 4, minVal: 0, maxVal: 300},
-        growthRateDown2_ms: { label: 'Removed pressure time constant', units: 'ms',
-            defaultVal: 4, minVal: 0, maxVal: 300},
-            
-        sigHeight3_mN: { label: 'Maximum pressure', units: 'mN',
-            defaultVal: 0, minVal: 0, maxVal: 20},
-        midpointUp3_ms: { label: 'Stimulus start', units: 'ms',
-            defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3},
-        midpointDown3_ms: { label: 'Stimulus end', units: 'ms',
-            defaultVal: 600, minVal: 0, maxVal: tMax / 1e-3},
-        growthRateUp3_ms: { label: 'Applied pressure time constant', units: 'ms',
-            defaultVal: 4, minVal: 0, maxVal: 300},
-        growthRateDown3_ms: { label: 'Removed pressure time constant', units: 'ms',
-            defaultVal: 4, minVal: 0, maxVal: 300}
     };
 
     layout = [
-        ['Muscle Properties', ['Linit_cm', 'B_ms_cm', 'reflexTrigger_cm', 'reflexConstant_cm', 'activation_tau']],
+        ['Muscle Properties', ['Linit_cm', 'm_g', 'B_ms_cm', 'beta_g_ms', 'activation_tau']],
+        ['Reflex Properties', ['reflexTrigger_cm', 'reflexConstant_cm']],
         ['Spring Properties', ['Lrestspring', 'k']],
-//        ['First Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
-//        ['Second Touch Stimulus Properties', ['sigHeight2_mN', 'midpointUp2_ms', 'midpointDown2_ms', 'growthRateUp2_ms', 'growthRateDown2_ms']],
-//        ['Third Touch Stimulus Properties', ['sigHeight3_mN', 'midpointUp3_ms', 'midpointDown3_ms', 'growthRateUp3_ms', 'growthRateDown3_ms']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
@@ -113,75 +58,30 @@ window.addEventListener('load', function () {
     forceDataTable.className = 'datatable';
     dataPanel.appendChild(forceDataTable);
 
-    voltageDataTable = document.createElement('table');
-    voltageDataTable.className = 'datatable';
-    dataPanel.appendChild(voltageDataTable);
-
-    touchStimDataTable = document.createElement('table');
-    touchStimDataTable.className = 'datatable';
-    dataPanel.appendChild(touchStimDataTable);
-
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
-        var params, model, merkelCell, merkelTouchCurrent, muscle,
-            result, L, Lprime, force, V, touchStim,
+        var params, model, muscle,
+            result, L, Lprime, force,
             plotPanel, title, plot; 
         
         // create the passive membrane
         params = controls.values;
         model = componentModel.componentModel();
 
-        merkelCell = electrophys.gettingIFNeuron(model, { 
-            V_rest: params.merkel_V_init_mV * 1e-3, 
-            C: params.merkel_C_nF * 1e-9, 
-            g_leak: params.merkel_g_leak_uS * 1e-6, 
-            E_leak: params.merkel_E_leak_mV * 1e-3, 
-            theta_ss: params.merkel_theta_ss_mV * 1e-3, 
-            theta_r: params.merkel_theta_r_mV * 1e-3, 
-            theta_tau: params.merkel_theta_tau_ms * 1e-3
-        });
-
-        merkelTouchCurrent = electrophys.touchStimuli({
-            Ks: params.merkel_Ks * 1e-6, // A/N
-            Kd_positive: params.merkel_Kd_positive * 1e-9, // C/N
-            Kd_negative: params.merkel_Kd_negative * 1e-9, // C/N
-            
-            sigHeight1: params.sigHeight1_mN * 1e-3,
-            midpointUp1: params.midpointUp1_ms * 1e-3,
-            midpointDown1: params.midpointDown1_ms * 1e-3,
-            growthRateUp1: params.growthRateUp1_ms * 1e-3,
-            growthRateDown1: params.growthRateDown1_ms * 1e-3,
-            
-            sigHeight2: params.sigHeight2_mN * 1e-3,
-            midpointUp2: params.midpointUp2_ms * 1e-3,
-            midpointDown2: params.midpointDown2_ms * 1e-3,
-            growthRateUp2: params.growthRateUp2_ms * 1e-3,
-            growthRateDown2: params.growthRateDown2_ms * 1e-3,
-            
-            sigHeight3: params.sigHeight3_mN * 1e-3,
-            midpointUp3: params.midpointUp3_ms * 1e-3,
-            midpointDown3: params.midpointDown3_ms * 1e-3,
-            growthRateUp3: params.growthRateUp3_ms * 1e-3,
-            growthRateDown3: params.growthRateDown3_ms * 1e-3
-        });
-
-        merkelCell.addCurrent(merkelTouchCurrent.pulse);
-        
-        //muscle = electrophys.muscle(model, {
         muscle = electrophys.muscleFullDynamics(model, {
             Linit: params.Linit_cm,
-            T0: params.T0_ms * 1e-3,
-            Tslope: params.Tslope_ms * 1e-3,
-            Lrestspring: params.Lrestspring,
+            m: params.m_g,
             B: params.B_ms_cm * 1e-3,
-            k: params.k,
-            p: 1 / params.activation_tau * 1e3
+            beta: params.beta_g_ms * 1e3,
+            p: 1 / params.activation_tau * 1e3,
+            Lrestspring: params.Lrestspring,
+            k: params.k
         });
 
         // create a proprioceptive feedback loop
-        //muscle.setNeuralInput(function (state, t) { return 2 * (0.050 + merkelCell.VWithSpikes(state, t)); });
-        //muscle.setNeuralInput(function (state, t) { return Math.max(0.001, 1/params.reflexConstant_cm * (muscle.L(state, t) - params.reflexTrigger_cm)); });
-        muscle.setNeuralInput(function (state, t) { return Math.max(0, 1/params.reflexConstant_cm * (muscle.L(state, t) - params.reflexTrigger_cm)); });
+        muscle.setNeuralInput(function (state, t) {
+            return Math.max(0, 1/params.reflexConstant_cm * (muscle.L(state, t) - params.reflexTrigger_cm));
+        });
         
         // simulate it
         result = model.integrate({
@@ -193,16 +93,12 @@ window.addEventListener('load', function () {
         L      = result.mapOrderedPairs(muscle.L);
         Lprime = result.mapOrderedPairs(muscle.Lprime);
         force  = result.mapOrderedPairs(muscle.force);
-        V      = result.mapOrderedPairs(merkelCell.VWithSpikes);
-        touchStim = result.mapOrderedPairs(merkelTouchCurrent.force);
 
         // convert to the right units
         // each ordered pair consists of a time and another variable
         L      = L.map      (function (l) {return [l[0] / 1e-3, l[1]       ];});
         Lprime = Lprime.map (function (v) {return [v[0] / 1e-3, v[1] / 1e3 ];});
         force  = force.map  (function (f) {return [f[0] / 1e-3, f[1] / 1e-3];});
-        V      = V.map      (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];});
-        touchStim = touchStim.map (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]});
 
         // free resources from old plots
         while (plotHandles.length > 0) {
@@ -244,24 +140,24 @@ window.addEventListener('load', function () {
         graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
         graphJqplot.bindCursorTooltip('#lengthPlot', 'Time', 'ms', 'cm');
 
-        // Muscle velocity
-        plot = document.createElement('div');
-        plot.id = 'velocityPlot';
-        plot.style.width = '425px';
-        plot.style.height = '200px';
-        plotPanel.appendChild(plot);
-        plotHandles.push(
-            $.jqplot('velocityPlot', [Lprime], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                axes: {
-                    xaxis: {label:'Time (ms)'},
-                    yaxis: {label:'Velocity (cm/ms)'},
-                },
-                series: [
-                    {label: 'Length', color: 'black'},
-                ],
-        })));
-        //graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
-        graphJqplot.bindCursorTooltip('#velocityPlot', 'Time', 'ms', 'cm/ms');
+//        // Muscle velocity
+//        plot = document.createElement('div');
+//        plot.id = 'velocityPlot';
+//        plot.style.width = '425px';
+//        plot.style.height = '200px';
+//        plotPanel.appendChild(plot);
+//        plotHandles.push(
+//            $.jqplot('velocityPlot', [Lprime], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+//                axes: {
+//                    xaxis: {label:'Time (ms)'},
+//                    yaxis: {label:'Velocity (cm/ms)'},
+//                },
+//                series: [
+//                    {label: 'Length', color: 'black'},
+//                ],
+//        })));
+//        //graphJqplot.bindDataCapture('#lengthPlot', lengthDataTable, 'Muscle Length', 'Time');
+//        graphJqplot.bindCursorTooltip('#velocityPlot', 'Time', 'ms', 'cm/ms');
 
         // Muscle force
         plot = document.createElement('div');
@@ -281,56 +177,6 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#forcePlot', forceDataTable, 'Muscle Force', 'Time');
         graphJqplot.bindCursorTooltip('#forcePlot', 'Time', 'ms', 'mN');
-
-//        // ******************
-//        // MECHANORECEPTOR
-//        // ******************
-//
-//        // Neuron membrane potential
-//        title = document.createElement('h4');
-//        title.innerHTML = 'Mechanoreceptor';
-//        title.className = 'simplotheading';
-//        plotPanel.appendChild(title);
-//        plot = document.createElement('div');
-//        plot.id = 'voltagePlot';
-//        plot.style.width = '425px';
-//        plot.style.height = '200px';
-//        plotPanel.appendChild(plot);
-//        plotHandles.push(
-//            $.jqplot('voltagePlot', [V], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-//                axes: {
-//                    xaxis: {label:'Time (ms)'},
-//                    yaxis: {label:'Membrane Potential (mV)'},
-//                },
-//                series: [
-//                    {label: 'V<sub>m</sub>', color: 'black'},
-//                ],
-//        })));
-//        graphJqplot.bindDataCapture('#voltagePlot', voltageDataTable, title.innerHTML, 'Time');
-//        graphJqplot.bindCursorTooltip('#voltagePlot', 'Time', 'ms', 'mV');
-//
-//        // Touch stimuli
-//        title = document.createElement('h4');
-//        title.innerHTML = 'Touch Stimulus';
-//        title.className = 'simplotheading';
-//        plotPanel.appendChild(title);
-//        plot = document.createElement('div');
-//        plot.id = 'touchStimPlot';
-//        plot.style.width = '425px';
-//        plot.style.height = '200px';
-//        plotPanel.appendChild(plot);
-//        plotHandles.push(
-//           $.jqplot('touchStimPlot', [touchStim], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-//                axes: {
-//                    xaxis: {label:'Time (ms)'},
-//                    yaxis: {label:'Touch force (mN)'},
-//                },
-//                series: [
-//                    {label: 'Touch force', color: 'black'},
-//                ],
-//        })));
-//        graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
-//        graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'mN');
     }
 
     
@@ -352,12 +198,6 @@ window.addEventListener('load', function () {
 
         forceDataTable.innerHTML = '';
         forceDataTable.style.display = 'none';
-
-        voltageDataTable.innerHTML = '';
-        voltageDataTable.style.display = 'none';
-
-        touchStimDataTable.innerHTML = '';
-        touchStimDataTable.style.display = 'none';
     }
 
 

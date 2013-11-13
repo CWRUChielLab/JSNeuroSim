@@ -23,7 +23,7 @@ window.addEventListener('load', function () {
         activation_tau: { label: 'Activation time constant', units: 'ms',
             defaultVal: 150, minVal: 0.1, maxVal: 10000.0 },
 
-        reflexTrigger_cm: { label: 'Trigger length', units: 'cm',
+        reflexThreshold_cm: { label: 'Threshold length', units: 'cm',
             defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
         reflexConstant_cm: { label: 'Activation length constant', units: 'cm',
             defaultVal: 10, minVal: 0.1, maxVal: 10000.0 },
@@ -39,7 +39,7 @@ window.addEventListener('load', function () {
 
     layout = [
         ['Muscle Properties', ['Linit_cm', 'm_g', 'B_ms_cm', 'beta_g_ms', 'activation_tau']],
-        ['Reflex Properties', ['reflexTrigger_cm', 'reflexConstant_cm']],
+        ['Reflex Properties', ['reflexThreshold_cm', 'reflexConstant_cm']],
         ['Spring Properties', ['Lrestspring', 'k']],
         ['Simulation Settings', ['totalDuration_ms']]
     ];
@@ -80,8 +80,8 @@ window.addEventListener('load', function () {
 
         // create a proprioceptive feedback loop
         muscle.setNeuralInput(function (state, t) {
-            return Math.max(0, 1/params.reflexConstant_cm * (muscle.L(state, t) - params.reflexTrigger_cm));
-            //if (muscle.L(state, t) > params.reflexTrigger_cm)
+            return Math.max(0, 1/params.reflexConstant_cm * (muscle.L(state, t) - params.reflexThreshold_cm));
+            //if (muscle.L(state, t) > params.reflexThreshold_cm)
             //    return 1;
             //else
             //    return 0;

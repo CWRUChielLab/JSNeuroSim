@@ -1814,13 +1814,13 @@ electrophys.muscleFullDynamics = function (model, options) {
         if (t instanceof Array) {
             return ode.transpose(state).map(function (state, i) {return Fdamping(state, t[i]);});
         } else {
-            return -(0.001 * beta) * (0.01 * state[iLprime]);
+            return -(0.001 * beta) * (0.01 * state[iLprime]); // (kg/s) * (m/s) = N
         }
     }
     
     function drift(result, state, t) {
         result[iL]      = state[iLprime];
-        result[iLprime] = (100 * (Fpassive(state, t) + Factive(state, t) + Fspring(state, t) + Fdamping(state, t))) / (0.001 * m);
+        result[iLprime] = (100 * (Fpassive(state, t) + Factive(state, t) + Fspring(state, t) + Fdamping(state, t))) / (0.001 * m); // (kg*cm/s^2) / (kg) = cm/s^2
         result[iA]      = p * (neuralInput(state, t) - state[iA]);
     }
 

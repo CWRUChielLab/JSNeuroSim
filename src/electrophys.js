@@ -1747,8 +1747,8 @@ electrophys.muscleFullDynamics = function (model, options) {
     "use strict";
     var Linit       = (options.Linit       === undefined ? 5.0 /* cm */   : options.Linit),
         Lprimeinit  = (options.Lprimeinit  === undefined ? 0.0 /* cm/s */ : options.Lprimeinit),
-        Ainit       = (options.Ainit       === undefined ? 0.001          : options.Ainit),
-        neuralInput = (options.neuralInput === undefined ? (function(state, t) { return 0; }) : options.neuralInput),
+        Ainit       = (options.Ainit       === undefined ? 0.0            : options.Ainit),
+        neuralInput = (options.neuralInput === undefined ? (function(state, t) { return 0.0; }) : options.neuralInput),
         iL          = model.addStateVar(Linit),
         iLprime     = model.addStateVar(Lprimeinit),
         iA          = model.addStateVar(Ainit),

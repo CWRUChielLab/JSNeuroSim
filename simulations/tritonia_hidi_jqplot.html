@@ -23,13 +23,19 @@
         <h1 class="simtitle">Tritonia swim CPG simulation</h1>
         <div id="TritoniaPlots" class="plotpanel"></div>
         <div id="TritoniaControls" class="controlspanel"></div>
-        <input id="TritoniaRunButton" type="button" value="Run"/>
-        <input type="button" id="TritoniaModulatedSwimResetButton" 
-            value="Natural Swim Pattern"/>
-		<input type="button" id="TritoniaHiDiResetButton" 
-            value="Hi Di Treatment"/>
-        <input type="button" id="TritoniaClearDataButton"
-            value="Clear Data Points"/>
+
+        <div>
+            <div style="float:left;">
+                <input id="TritoniaRunButton" type="button" value="Run"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="TritoniaClearDataButton" value="Clear Data Points"/>
+            </div>
+            <div style="float:left;">
+                <input type="button" id="TritoniaModulatedSwimResetButton" value="Natural Swim Pattern"/><br/>
+                <input type="button" id="TritoniaHiDiResetButton" value="Hi Di Treatment"/>
+            </div>
+        </div>
         <div id="TritoniaData" class="datapanel"></div>
         <div id="debugPanel"></div>
     </body>

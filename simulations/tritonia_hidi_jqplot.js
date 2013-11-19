@@ -6,10 +6,11 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var layoutSwim, layoutHiDi,
+    var layoutSwim, layoutHiDi, layoutNormalSaline,
 		controlsPanel, controls, dataPanel, 
-        voltageSDataTable, touchStimDataTable,
-		voltageC2DataTable, currentC2DataTable, 
+        touchStimDataTable,
+        voltageSDataTable,   currentSDataTable,
+		voltageC2DataTable,  currentC2DataTable, 
 		voltageDSIDataTable, currentDSIDataTable,
         voltageVSIDataTable, currentVSIDataTable, 
 		voltageDRIDataTable, currentDRIDataTable,
@@ -27,10 +28,21 @@ window.addEventListener('load', function () {
 
     // set up the controls for the passive membrane simulation
     paramsUnmodulatedSwim = { 
+        pulseStart_ms_touch: { label: 'Stimulus delay', units: 'ms', 
+            defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
+        pulseHeight_nA_touch: { label: 'Stimulus current', units: 'nA', 
+            defaultVal: 1, minVal: -1000, maxVal: 1000 },
+        pulseWidth_ms_touch: { label: 'Pulse duration', units: 'ms', 
+            defaultVal: 1000, minVal: 0, maxVal: tMax / 1e-3 },
+        isi_ms_touch: { label: 'Inter-stimulus interval', units: 'ms', 
+            defaultVal: 80, minVal: 0, maxVal: tMax / 1e-3 },
+        numPulses_touch: { label: 'Number of pulses', units: '', 
+            defaultVal: 1, minVal: 0, maxVal: 100 },
+         
         pulseStart_ms_S: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 500, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_S: { label: 'Stimulus current', units: 'nA', 
-            defaultVal: 1, minVal: -1000, maxVal: 1000 },
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
         pulseWidth_ms_S: { label: 'Pulse duration', units: 'ms', 
             defaultVal: 1000, minVal: 0, maxVal: tMax / 1e-3 },
         isi_ms_S: { label: 'Inter-stimulus interval', units: 'ms', 
@@ -602,6 +614,8 @@ window.addEventListener('load', function () {
 	paramsHiDi.beta_dorsal.defaultVal = -40;
 	
 	// Current setup for good results
+	paramsHiDi.numPulses_touch.defaultVal = 0;      // touch
+
 	paramsHiDi.pulseStart_ms_DRI.defaultVal = 500;  // cell A
 	paramsHiDi.pulseHeight_nA_DRI.defaultVal = 3;
 	paramsHiDi.pulseWidth_ms_DRI.defaultVal = 200;
@@ -703,8 +717,10 @@ window.addEventListener('load', function () {
 
 
     layoutSwim = [
-		['Touch Stimulus', ['pulseStart_ms_S', 'pulseHeight_nA_S', 
-            'pulseWidth_ms_S', 'isi_ms_S', 'numPulses_S']],
+		['Touch Stimulus', ['pulseStart_ms_touch', 'pulseHeight_nA_touch', 
+            'pulseWidth_ms_touch', 'isi_ms_touch', 'numPulses_touch']],
+		//['Touch Stimulus', ['pulseStart_ms_S', 'pulseHeight_nA_S', 
+        //    'pulseWidth_ms_S', 'isi_ms_S', 'numPulses_S']],
         ['Simulation Settings', ['totalDuration_ms']],
 //        ['Cell A Parameters', ['V_init_mV_DRI', 'C_nF_DRI', 'g_leak_uS_DRI', 
 //            'E_leak_mV_DRI', 'theta_ss_mV_DRI', 'theta_r_mV_DRI', 
@@ -752,6 +768,10 @@ window.addEventListener('load', function () {
     dataPanel = document.getElementById('TritoniaData');
     dataPanel.className = 'datapanel';
 
+	touchStimDataTable = document.createElement('table');   // touch
+    touchStimDataTable.className = 'datatable';
+    dataPanel.appendChild(touchStimDataTable);
+	
     voltageDRIDataTable = document.createElement('table');  // cell A
     voltageDRIDataTable.className = 'datatable';
     dataPanel.appendChild(voltageDRIDataTable);
@@ -780,9 +800,9 @@ window.addEventListener('load', function () {
     voltageSDataTable.className = 'datatable';
     dataPanel.appendChild(voltageSDataTable);
 	
-	touchStimDataTable = document.createElement('table');
-    touchStimDataTable.className = 'datatable';
-    dataPanel.appendChild(touchStimDataTable);
+    currentSDataTable = document.createElement('table');
+    currentSDataTable.className = 'datatable';
+    dataPanel.appendChild(currentSDataTable);
 	
 	voltageVSIDataTable = document.createElement('table');  // cell E
     voltageVSIDataTable.className = 'datatable';
@@ -817,8 +837,10 @@ window.addEventListener('load', function () {
     function runSimulation() {
         var params, plot, plotPanel, title,
             model, result,
+            pulseTrainTouchStim,
+            touchStim, touchStim_mN,
             S, pulseTrainS,
-            v_S, v_S_mV, touchStim_S, touchStim_S_mN,
+            v_S, v_S_mV, iStim_S, iStim_S_nA,
             C2, C2Fast, C2Med, C2Slow, pulseTrainC2,
             v_C2, v_C2_mV, iStim_C2, iStim_C2_nA,
             DSI, DSIShunt, DSIFast, DSISlow, DSIToDSI_E1, pulseTrainDSI,
@@ -848,6 +870,15 @@ window.addEventListener('load', function () {
         params = controls.values;
         model = componentModel.componentModel();
 
+        // create the touch stim
+		pulseTrainTouchStim = electrophys.pulseTrain({
+            start: 1e-3 * params.pulseStart_ms_touch, 
+            width: params.pulseWidth_ms_touch * 1e-3, 
+            height: params.pulseHeight_nA_touch * 1e-9,
+            gap: params.isi_ms_touch * 1e-3,
+            num_pulses: params.numPulses_touch
+        });
+
         // create the S neuron
         S = electrophys.gettingIFNeuron(model, { 
             V_rest: params.V_init_mV_S * 1e-3, 
@@ -866,6 +897,7 @@ window.addEventListener('load', function () {
             num_pulses: params.numPulses_S
         });
         S.addCurrent(pulseTrainS);
+        S.addCurrent(pulseTrainTouchStim);
 
         
         // create the C2 neuron
@@ -1229,8 +1261,9 @@ window.addEventListener('load', function () {
 		});
 		
         // simulate them
+        touchStim_mN = [];
         v_S_mV = [];
-        touchStim_S_mN = [];
+        iStim_S_nA = [];
         v_C2_mV = [];
         iStim_C2_nA = [];
         v_DSI_mV = [];
@@ -1276,7 +1309,8 @@ window.addEventListener('load', function () {
             v_DRI     = result.mapOrderedPairs(DRI.VWithSpikes);
 			v_DFN	  = result.mapOrderedPairs(DFN.VWithSpikes);
 			v_VFN	  = result.mapOrderedPairs(VFN.VWithSpikes);
-            touchStim_S = result.mapOrderedPairs(pulseTrainS);
+            touchStim = result.mapOrderedPairs(pulseTrainTouchStim);
+            iStim_S   = result.mapOrderedPairs(pulseTrainS);
             iStim_C2  = result.mapOrderedPairs(pulseTrainC2);
             iStim_DSI = result.mapOrderedPairs(pulseTrainDSI);
             iStim_VSI = result.mapOrderedPairs(pulseTrainVSI);
@@ -1294,7 +1328,8 @@ window.addEventListener('load', function () {
             v_DRI_mV     = v_DRI_mV.concat(v_DRI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
 			v_DFN_mV     = v_DFN_mV.concat(v_DFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
 			v_VFN_mV     = v_VFN_mV.concat(v_VFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
-            touchStim_S_mN = touchStim_S_mN.concat(touchStim_S.map   (function (f) {return [f[0] / 1e-3, f[1] / 1e-9]}));
+            touchStim_mN = touchStim_mN.concat(touchStim.map (function (f) {return [f[0] / 1e-3, f[1] / 1e-9]}));
+            iStim_S_nA   = iStim_S_nA.concat(iStim_S.map     (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_C2_nA  = iStim_C2_nA.concat(iStim_C2.map   (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_DSI_nA = iStim_DSI_nA.concat(iStim_DSI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_VSI_nA = iStim_VSI_nA.concat(iStim_VSI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
@@ -1324,7 +1359,7 @@ window.addEventListener('load', function () {
 				plot.style.height = '200px';
 				plotPanel.appendChild(plot);
 				plotHandles.push(
-				   $.jqplot('touchStimPlot', [touchStim_S_mN], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+				   $.jqplot('touchStimPlot', [touchStim_mN], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
 						axes: {
 							xaxis: {label:'Time (ms)'},
 							yaxis: {label:'Force (N)'},
@@ -1504,19 +1539,19 @@ window.addEventListener('load', function () {
             graphJqplot.bindDataCapture('#voltageSPlot', voltageSDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltageSPlot', 'Time', 'ms', 'mV');
 
-            // S touch stimuli (Cell D)
+            // S Current (Cell D)
 			if (plotTag == 'HiDi') {
 				title = document.createElement('h4');
 				title.innerHTML = 'Cell D Stimulation Current';
 				title.className = 'simplotheading';
 				plotPanel.appendChild(title);
 				plot = document.createElement('div');
-				plot.id = 'touchStimPlot';
+				plot.id = 'currentSPlot';
 				plot.style.width = '425px';
 				plot.style.height = '200px';
 				plotPanel.appendChild(plot);
 				plotHandles.push(
-				   $.jqplot('touchStimPlot', [touchStim_S_mN], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+				   $.jqplot('currentSPlot', [iStim_S_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
 						axes: {
 							xaxis: {label:'Time (ms)'},
 							yaxis: {label:'Current (nA)'},
@@ -1525,8 +1560,8 @@ window.addEventListener('load', function () {
 							{label: 'I<sub>stim</sub>', color: 'black'},
 						],
 				})));
-				graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'nA');
+				graphJqplot.bindDataCapture('#currentSPlot', currentSDataTable, title.innerHTML, 'Time');
+				graphJqplot.bindCursorTooltip('#currentSPlot', 'Time', 'ms', 'nA');
 			}
 			
 			// VSI Voltage (Cell E)
@@ -1735,11 +1770,14 @@ window.addEventListener('load', function () {
     
 
     function clearDataTables() {
+        touchStimDataTable.innerHTML = '';
+        touchStimDataTable.style.display = 'none';
+
         voltageSDataTable.innerHTML = '';
         voltageSDataTable.style.display = 'none';
 
-        touchStimDataTable.innerHTML = '';
-        touchStimDataTable.style.display = 'none';
+        currentSDataTable.innerHTML = '';
+        currentSDataTable.style.display = 'none';
 
         voltageC2DataTable.innerHTML = '';
         voltageC2DataTable.style.display = 'none';

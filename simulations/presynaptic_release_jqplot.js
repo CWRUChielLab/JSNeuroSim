@@ -162,7 +162,12 @@ window.addEventListener('load', function () {
 					y = i * 1.1;
 				}
 				else {
-					y = psps[i] / (largestPSP * 0.367879) * t * Math.exp(-t) + i * 1.1;
+					if (largestPSP != 0) {
+						y = psps[i] / (largestPSP * 0.367879) * t * Math.exp(-t) + i * 1.1;
+					}
+					else {
+						y = psps[i] * t * Math.exp(-t) + i * 1.1;
+					}		
 				}
 				curveData.push([t,y]);
 			}

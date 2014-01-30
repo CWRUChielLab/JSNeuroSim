@@ -6,10 +6,11 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var paramsMerkel, paramsMeissner, paramsBoth, layoutMerkel, layoutMeissner, layoutBoth,
+    var paramsMerkel, paramsMeissner, paramsBoth, paramsNociceptor, 
+		layoutMerkel, layoutMeissner, layoutBoth, layoutNociceptor,
         controlsPanel, controls, dataPanel, 
-        merkelVoltageDataTable, meissnerVoltageDataTable,
-        touchDataTable, merkelCurrentDataTable, meissnerCurrentDataTable,
+        merkelVoltageDataTable, meissnerVoltageDataTable, nociceptorVoltageDataTable,
+        touchDataTable, merkelCurrentDataTable, meissnerCurrentDataTable, nociceptorCurrentDataTable,
         tMax = 600000e-3, 
         simType = 'merkel',
         plotHandles = [];
@@ -62,6 +63,13 @@ window.addEventListener('load', function () {
             defaultVal: 16, minVal: 0, maxVal: 10000},
         meissner_Kd_negative: { label: 'Negative dynamic gain', units: 'pC/mN',
             defaultVal: -16, minVal: -10000, maxVal: 10000},
+			
+		nociceptor_Ks: { label: 'Static gain', units: 'nA/mN',
+            defaultVal: 0, minVal: 0, maxVal: 100},
+        nociceptor_Kd_positive: { label: 'Positive dynamic gain', units: 'pC/mN',
+            defaultVal: 0, minVal: 0, maxVal: 10000},
+        nociceptor_Kd_negative: { label: 'Negative dynamic gain', units: 'pC/mN',
+            defaultVal: 0, minVal: -10000, maxVal: 10000},
             
         merkel_V_init_mV: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -48, minVal: -1000, maxVal: 1000 },
@@ -81,6 +89,15 @@ window.addEventListener('load', function () {
         meissner_E_leak_mV: { label: 'Leak potential', units: 'mV', 
             defaultVal: -48, minVal: -1000, maxVal: 1000 },
             
+		nociceptor_V_init_mV: { label: 'Initial membrane potential', units: 'mV', 
+            defaultVal: -48, minVal: -1000, maxVal: 1000 },
+        nociceptor_C_nF: { label: 'Membrane capacitance', units: 'nF', 
+            defaultVal: 2.27, minVal: 0.01, maxVal: 100 },
+        nociceptor_g_leak_uS: { label: 'Leak conductance', units: '\u00B5S', 
+            defaultVal: .055, minVal: 0.01, maxVal: 100 },
+        nociceptor_E_leak_mV: { label: 'Leak potential', units: 'mV', 
+            defaultVal: -48, minVal: -1000, maxVal: 1000 },
+			
         merkel_theta_ss_mV: { label: 'Resting threshold', units: 'mV', 
             defaultVal: -34, minVal: -1000, maxVal: 1000 },
         merkel_theta_r_mV: { label: 'Refractory threshold', units: 'mV', 
@@ -94,8 +111,15 @@ window.addEventListener('load', function () {
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         meissner_theta_tau_ms: { label: 'Refractory time constant', units: 'ms', 
             defaultVal: 20, minVal: 0.1, maxVal: 1000000 },
-            
-        totalDuration_ms: { label: 'Total duration', units: 'ms', 
+        
+		nociceptor_theta_ss_mV: { label: 'Resting threshold', units: 'mV', 
+            defaultVal: -34, minVal: -1000, maxVal: 1000 },
+        nociceptor_theta_r_mV: { label: 'Refractory threshold', units: 'mV', 
+            defaultVal: 0, minVal: -1000, maxVal: 1000 },
+        nociceptor_theta_tau_ms: { label: 'Refractory time constant', units: 'ms', 
+            defaultVal: 20, minVal: 0.1, maxVal: 1000000 },          
+        
+		totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 700, minVal: 0, maxVal: tMax / 1e-3 }
     };
 
@@ -108,6 +132,13 @@ window.addEventListener('load', function () {
     paramsMeissner.sigHeight2_mN.defaultVal = 0;
     paramsMeissner.sigHeight3_mN.defaultVal = 0;
     paramsMeissner.midpointDown1_ms.defaultVal = 400;
+	
+	paramsNociceptor = JSON.parse(JSON.stringify(paramsBoth));
+	paramsNociceptor.sigHeight1_mN.defaultVal = 1;
+	paramsNociceptor.sigHeight2_mN.defaultVal = 0;
+	paramsNociceptor.sigHeight3_mN.defaultVal = 0;
+	paramsNociceptor.midpointDown1_ms.defaultVal = 400;
+	
 
     layoutMerkel = [
         ['Merkel Cell Properties', ['merkel_V_init_mV', 'merkel_C_nF', 'merkel_g_leak_uS', 'merkel_E_leak_mV',
@@ -135,6 +166,14 @@ window.addEventListener('load', function () {
         ['Meissner Corpuscle Current Properties', ['meissner_Ks', 'meissner_Kd_positive', 'meissner_Kd_negative']],
         ['Simulation Settings', ['totalDuration_ms']],
     ];
+	
+	layoutNociceptor = [
+		['Nociceptor Cell Properties', ['nociceptor_V_init_mV', 'nociceptor_C_nF', 'nociceptor_g_leak_uS', 'nociceptor_E_leak_mV',
+            'nociceptor_theta_ss_mV', 'nociceptor_theta_r_mV', 'nociceptor_theta_tau_ms']],
+        ['Touch Stimulus Properties', ['sigHeight1_mN', 'midpointUp1_ms', 'midpointDown1_ms', 'growthRateUp1_ms', 'growthRateDown1_ms']],
+		['Nociceptor Cell Current Properties', ['nociceptor_Ks', 'nociceptor_Kd_positive', 'nociceptor_Kd_negative']],
+        ['Simulation Settings', ['totalDuration_ms']],
+	];
 
     controlsPanel = document.getElementById('MechanoreceptorControls');
 
@@ -151,6 +190,10 @@ window.addEventListener('load', function () {
     meissnerVoltageDataTable.className = 'datatable';
     dataPanel.appendChild(meissnerVoltageDataTable);
     
+	nociceptorVoltageDataTable = document.createElement('table');
+    nociceptorVoltageDataTable.className = 'datatable';
+    dataPanel.appendChild(nociceptorVoltageDataTable);
+	
     touchDataTable = document.createElement('table');
     touchDataTable.className = 'datatable';
     dataPanel.appendChild(touchDataTable);
@@ -162,16 +205,23 @@ window.addEventListener('load', function () {
     meissnerCurrentDataTable = document.createElement('table');
     meissnerCurrentDataTable.className = 'datatable';
     dataPanel.appendChild(meissnerCurrentDataTable);
+	
+	nociceptorCurrentDataTable = document.createElement('table');
+    nociceptorCurrentDataTable.className = 'datatable';
+    dataPanel.appendChild(nociceptorCurrentDataTable);
 
 
     function runSimulation() {
         var params, plot, plotPanel, title, model,
             merkelCell, merkelTouchCurrent,
             meissnerCorpuscle, meissnerTouchCurrent,
+			nociceptor, nociceptorTouchCurrent,
             merkel_v, merkel_v_mV, 
             meissner_v, meissner_v_mV,
+			nociceptor_v, nociceptor_v_mV,
             merkel_iStim, merkel_iStim_nA, 
             meissner_iStim, meissner_iStim_nA,
+			nociceptor_iStim, nociceptor_iStim_nA,
             touchStim, touchStim_mN,
             result;
        
@@ -253,7 +303,43 @@ window.addEventListener('load', function () {
         
         meissnerCorpuscle.addCurrent(meissnerTouchCurrent.pulse);
         
+        // Create the nociceptor and current
+		nociceptor = electrophys.gettingIFNeuron(model, { 
+            V_rest: params.nociceptor_V_init_mV * 1e-3, 
+            C: params.nociceptor_C_nF * 1e-9, 
+            g_leak: params.nociceptor_g_leak_uS * 1e-6, 
+            E_leak: params.nociceptor_E_leak_mV * 1e-3, 
+            theta_ss: params.nociceptor_theta_ss_mV * 1e-3, 
+            theta_r: params.nociceptor_theta_r_mV * 1e-3, 
+            theta_tau: params.nociceptor_theta_tau_ms * 1e-3
+        });
         
+        nociceptorTouchCurrent = electrophys.touchStimuli({
+            Ks: params.nociceptor_Ks * 1e-6, // A/N
+            Kd_positive: params.nociceptor_Kd_positive * 1e-9, // C/N
+            Kd_negative: params.nociceptor_Kd_negative * 1e-9, // C/N
+            
+            sigHeight1: params.sigHeight1_mN * 1e-3,
+            midpointUp1: params.midpointUp1_ms * 1e-3,
+            midpointDown1: params.midpointDown1_ms * 1e-3,
+            growthRateUp1: params.growthRateUp1_ms * 1e-3,
+            growthRateDown1: params.growthRateDown1_ms * 1e-3,
+            
+            sigHeight2: params.sigHeight2_mN * 1e-3,
+            midpointUp2: params.midpointUp2_ms * 1e-3,
+            midpointDown2: params.midpointDown2_ms * 1e-3,
+            growthRateUp2: params.growthRateUp2_ms * 1e-3,
+            growthRateDown2: params.growthRateDown2_ms * 1e-3,
+            
+            sigHeight3: params.sigHeight3_mN * 1e-3,
+            midpointUp3: params.midpointUp3_ms * 1e-3,
+            midpointDown3: params.midpointDown3_ms * 1e-3,
+            growthRateUp3: params.growthRateUp3_ms * 1e-3,
+            growthRateDown3: params.growthRateDown3_ms * 1e-3
+        });
+        
+        nociceptor.addCurrent(nociceptorTouchCurrent.pulse);
+		
         // run for a bit to allow the simulation to stabilize
         result = model.integrate({
             tMin: -1.5, 
@@ -270,19 +356,24 @@ window.addEventListener('load', function () {
         });
         
 
-        merkel_v       = result.mapOrderedPairs(merkelCell.VWithSpikes);
-        meissner_v     = result.mapOrderedPairs(meissnerCorpuscle.VWithSpikes);
-        touchStim      = result.mapOrderedPairs(merkelTouchCurrent.force);
-        merkel_iStim   = result.mapOrderedPairs(merkelTouchCurrent.pulse);
-        meissner_iStim = result.mapOrderedPairs(meissnerTouchCurrent.pulse);
+        merkel_v         = result.mapOrderedPairs(merkelCell.VWithSpikes);
+        meissner_v       = result.mapOrderedPairs(meissnerCorpuscle.VWithSpikes);
+		nociceptor_v     = result.mapOrderedPairs(nociceptor.VWithSpikes);
+        touchStim        = result.mapOrderedPairs(merkelTouchCurrent.force);
+        merkel_iStim     = result.mapOrderedPairs(merkelTouchCurrent.pulse);
+        meissner_iStim   = result.mapOrderedPairs(meissnerTouchCurrent.pulse);
+		nociceptor_iStim = result.mapOrderedPairs(nociceptorTouchCurrent.pulse);
         
         // convert to the right units
         // each ordered pair consists of a time and another variable
-        merkel_v_mV       = merkel_v.map       (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]});
-        meissner_v_mV     = meissner_v.map     (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]});
-        touchStim_mN      = touchStim.map      (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]});
-        merkel_iStim_nA   = merkel_iStim.map   (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]});
-        meissner_iStim_nA = meissner_iStim.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]});
+        merkel_v_mV         = merkel_v.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]});
+        meissner_v_mV       = meissner_v.map       (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]});
+		nociceptor_v_mV     = nociceptor_v.map     (function (v) {return [v[0] / 1e-3, v[1] / 1e-3]});
+        touchStim_mN        = touchStim.map        (function (f) {return [f[0] / 1e-3, f[1] / 1e-3]});
+        merkel_iStim_nA     = merkel_iStim.map     (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]});
+        meissner_iStim_nA   = meissner_iStim.map   (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]});
+		nociceptor_iStim_nA = nociceptor_iStim.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]});
+
         
         // free resources from old plots
         while (plotHandles.length > 0) {
@@ -294,7 +385,7 @@ window.addEventListener('load', function () {
         plotPanel.innerHTML = '';
         
         // Merkel cell voltage
-        if (simType != 'meissner') {
+        if (simType == 'merkel' || simType == 'both') {
             title = document.createElement('h4');
             title.innerHTML = 'Merkel Cell Membrane Potential';
             title.className = 'simplotheading';
@@ -319,7 +410,7 @@ window.addEventListener('load', function () {
         }
         
         // Meissner corpuscle voltage
-        if (simType != 'merkel') {
+        if (simType == 'meissner' || simType == 'both') {
             title = document.createElement('h4');
             title.innerHTML = 'Meissner Corpuscle Membrane Potential';
             title.className = 'simplotheading';
@@ -341,6 +432,31 @@ window.addEventListener('load', function () {
             })));
             graphJqplot.bindDataCapture('#meissnerVoltagePlot', meissnerVoltageDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#meissnerVoltagePlot', 'Time', 'ms', 'mV');
+        }
+		
+		// Nociceptor current
+        if (simType == 'nociceptor') {
+            title = document.createElement('h4');
+            title.innerHTML = 'Nociceptor Current';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'nociceptorCurrentPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('nociceptorCurrentPlot', [nociceptor_iStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Current (nA)'},
+                    },
+                    series: [
+                        {label: 'I', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#nociceptorCurrentPlot', nociceptorCurrentDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#nociceptorCurrentPlot', 'Time', 'ms', 'nA');
         }
         
         // Touch stimuli
@@ -415,6 +531,56 @@ window.addEventListener('load', function () {
             graphJqplot.bindDataCapture('#meissnerCurrentPlot', meissnerCurrentDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#meissnerCurrentPlot', 'Time', 'ms', 'nA');
         }
+		
+		// Merkel cell voltage
+        if (simType == 'nociceptor') {
+            title = document.createElement('h4');
+            title.innerHTML = 'Nociceptor Membrane Potential';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'nociceptorVoltagePlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('nociceptorVoltagePlot', [nociceptor_v_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
+                    },
+                    series: [
+                        {label: 'V<sub>m</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#nociceptorVoltagePlot', nociceptorVoltageDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#nociceptorVoltagePlot', 'Time', 'ms', 'mV');
+        }
+		
+		// Merkel cell voltage
+        if (simType == 'nocieptor') {
+            title = document.createElement('h4');
+            title.innerHTML = 'Nocieptor Membrane Potential';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'nocieptorVoltagePlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('nocieptorVoltagePlot', [nocieptor_v_mV], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {label:'Membrane Potential (mV)'},
+                    },
+                    series: [
+                        {label: 'V<sub>m</sub>', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#nocieptorVoltagePlot', merkelVoltageDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#nocieptorVoltagePlot', 'Time', 'ms', 'mV');
+        }
     }
 
    
@@ -438,6 +604,11 @@ window.addEventListener('load', function () {
         simType = 'both';
         reset(paramsBoth, layoutBoth);
     }
+	
+	function resetToNociceptor() {
+		simType = 'nociceptor';
+		reset(paramsNociceptor, layoutNociceptor);
+	}
     
 
     function clearDataTables() {
@@ -446,6 +617,9 @@ window.addEventListener('load', function () {
         
         meissnerVoltageDataTable.innerHTML = '';
         meissnerVoltageDataTable.style.display = 'none';
+		
+		nociceptorVoltageDataTable.innerHTML = '';
+        nociceptorVoltageDataTable.style.display = 'none';
         
         touchDataTable.innerHTML = '';
         touchDataTable.style.display = 'none';
@@ -455,6 +629,9 @@ window.addEventListener('load', function () {
         
         meissnerCurrentDataTable.innerHTML = '';
         meissnerCurrentDataTable.style.display = 'none';
+		
+		nociceptorCurrentDataTable.innerHTML = '';
+        nociceptorCurrentDataTable.style.display = 'none';
     }
 
 
@@ -465,7 +642,9 @@ window.addEventListener('load', function () {
     (document.getElementById('MeissnerCorpuscleButton')
         .addEventListener('click', resetToMeissner, false));
     (document.getElementById('BothMechanoreceptorsButton')
-        .addEventListener('click', resetToBoth, false));        
+        .addEventListener('click', resetToBoth, false));  
+	(document.getElementById('NociceptorButton')
+		.addEventListener('click', resetToNociceptor, false));
     (document.getElementById('MechanoreceptorClearDataButton')
         .addEventListener('click', clearDataTables, false));
     

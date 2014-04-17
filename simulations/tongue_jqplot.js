@@ -9,7 +9,14 @@ window.addEventListener('load', function () {
     var paramsRecruitmentAndSummation, paramsRecruitmentOnly, paramsNoInput,
         layout, controlsPanel, controls, dataPanel, LLDataTable,
         LCDataTable, ALDataTable, ACDataTable, inputLDataTable,
-        inputCDataTable, tMax = 50000e-3, plotHandles = []; 
+        inputCDataTable, tMax = 50000e-3, plotHandles = [],
+		tWidth, tHeight, tCorners, tipWidth, tipHeight, tipX, tipY,
+		paper, tongue, tongueTip,
+        tongueOut, tipOut, tongueIn, tipIn,
+		tWidthChange, tHeightChange, tCornersChange,
+		tipWidthChange, tipHeightChange, tipXChange, tipYChange,
+		tX, tY, tWidth1, tWidth2, tHeight1, tHeight2, tCorners1, tCorners2,
+		tipX1, tipX2, tipY1, tipY2, tipWidth1, tipWidth2, tipHeight1, tipHeight2; 
 
     // set up the controls for the current clamp simulation
     paramsRecruitmentAndSummation = {
@@ -333,6 +340,104 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#inputCPlot', inputCDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#inputCPlot', 'Time', 'ms', '');
+		
+		
+        // Tongue animation	
+        tX = 100;
+        tY = 50;
+        tWidth1 = 200;
+        tWidth2 = 500;
+        tHeight1 = 100;
+        tHeight2 = 60;
+        tCorners1 = 30;
+        tCorners2 = 15;
+        tipX1 = 280;
+        tipX2 = 590;
+        tipY1 = 100;
+        tipY2 = 80;
+        tipWidth1 = 28;
+        tipWidth2 = 15;
+        tipHeight1 = 48;
+        tipHeight2 = 30;
+        
+        paper = Raphael(0, 1000, 2000, 1000);
+        tongue = paper.rect(tX, tY, tWidth1, tHeight1, tCorners1);
+        tongueTip = paper.ellipse(tipX1, tipY1, tipWidth1, tipHeight1);
+        tWidth = [tWidth1, tWidth2];
+        tHeight = [tHeight1, tHeight2];
+        tCorners = [tCorners1, tCorners2];
+        tipWidth = [tipWidth1, tipWidth2];
+        tipHeight = [tipHeight1, tipHeight2];
+        tipX = [tipX1, tipX2];
+        tipY = [tipY1, tipY2];
+            
+        tongue.attr("fill", "#f00");
+        tongue.attr("stroke", "black");
+        tongueTip.attr("fill", "red");
+        tongueTip.attr("stroke", "black");
+        
+        // Animation functions
+        tWidthChange = function (size, target, seconds = 1000, style = 'linear') {
+                var firstTWidth = size.shift(),
+                    newTWidth = [firstTWidth];
+                newTWidth = tWidth.concat(newTWidth);
+                tWidth = [firstTWidth].concat(tWidth);
+                target.attr({width: tWidth[0]}).animate({width: tWidth[1]}, seconds, style, function(){tWidthChange(newTWidth, target, seconds, style)});
+        };
+
+        tHeightChange = function (size, target, seconds = 1000, style = 'linear') {
+                var firstTHeight = size.shift(),
+                    newTHeight = [firstTHeight];
+                newTHeight = tHeight.concat(newTHeight);
+                tHeight = [firstTHeight].concat(tHeight);
+                target.attr({height: tHeight[0]}).animate({height: tHeight[1]}, seconds, style, function(){tHeightChange(newTHeight, target, seconds, style)});
+        };
+        
+        tCornersChange = function (size, target, seconds = 1000, style = 'linear') {
+                var firstTCorners = size.shift(),
+                    newTCorners = [firstTCorners];
+                newTCorners = tCorners.concat(newTCorners);
+                tCorners = [firstTCorners].concat(tCorners);
+                target.attr({r: tCorners[0]}).animate({r: tCorners[1]}, seconds, style, function(){tCornersChange(newTCorners, target, seconds, style)});
+        };
+        
+        tipWidthChange = function (size, target, seconds = 1000, style = 'linear') {
+                var firstTipWidth = size.shift(),
+                    newTipWidth = [firstTipWidth];
+                newTipWidth = tipWidth.concat(newTipWidth);
+                tipWidth = [firstTipWidth].concat(tipWidth);
+                target.attr({rx: tipWidth[0]}).animate({rx: tipWidth[1]}, seconds, style, function(){tipWidthChange(newTipWidth, target, seconds, style)});
+        };
+        
+        tipHeightChange = function (size, target, seconds = 1000, style = 'linear') {
+                var firstTipHeight = size.shift(),
+                    newTipHeight = [firstTipHeight];
+                newTipHeight = tipHeight.concat(newTipHeight);
+                tipHeight = [firstTipHeight].concat(tipHeight);
+                target.attr({ry: tipHeight[0]}).animate({ry: tipHeight[1]}, seconds, style, function(){tipHeightChange(newTipHeight, target, seconds, style)});
+        };
+        
+        tipXChange = function (size, target, seconds = 1000, style = 'linear') {
+                var firstTipX = size.shift(),
+                    newTipX = [firstTipX];
+                newTipX = tipX.concat(newTipX);
+                tipX = [firstTipX].concat(tipX);
+                target.attr({cx: tipX[0]}).animate({cx: tipX[1]}, seconds, style, function(){tipXChange(newTipX, target, seconds, style)});
+        };
+        
+        tipYChange = function (size, target, seconds = 1000, style = 'linear') {
+                var firstTipY = size.shift(),
+                    newTipY = [firstTipY];
+                newTipY = tipY.concat(newTipY);
+                tipY = [firstTipY].concat(tipY);
+                target.attr({cy: tipY[0]}).animate({cy: tipY[1]}, seconds, style, function(){tipYChange(newTipY, target, seconds, style)});
+        };
+            
+        tongueOut = Raphael.animation({width: "500", height: "60", r: "15"}, 400);
+        tipOut = Raphael.animation({cx: "590", cy: "80", rx: "15", ry: "30"}, 400);
+        tongueIn = Raphael.animation({width: "200", height: "100", r: "30"}, 150);
+        tipIn = Raphael.animation({cx: "280", cy: "100", rx: "28", ry: "48"}, 150);
+		
     }
 
     
@@ -341,6 +446,30 @@ window.addEventListener('load', function () {
         controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
     }
+	
+	function animateTongueOut() {
+		tongue.animate(tongueOut);
+		tongueTip.animate(tipOut);
+	}
+	
+	function animateTongueIn() {
+		tongue.animate(tongueIn);
+		tongueTip.animate(tipIn);
+	}
+	
+	function animateTongueLapping() {
+		tWidthChange(tWidth, tongue);
+		tHeightChange(tHeight, tongue);
+		tCornersChange(tCorners, tongue);
+		tipWidthChange(tipWidth, tongueTip);
+		tipHeightChange(tipHeight, tongueTip);
+		tipXChange(tipX, tongueTip);
+		tipYChange(tipY, tongueTip);		
+	}
+	
+	function stopTongueLapping() {
+		document.location.reload(true);
+	}
 
 
     function resetToRecruitmentAndSummationSim() {
@@ -381,6 +510,14 @@ window.addEventListener('load', function () {
 
     (document.getElementById('TongueRunButton')
         .addEventListener('click', runSimulation, false));
+	(document.getElementById('TongueOutButton')
+		.addEventListener('click', animateTongueOut, false));
+	(document.getElementById('TongueInButton')
+		.addEventListener('click', animateTongueIn, false));
+	(document.getElementById('TongueLappingButton')
+		.addEventListener('click', animateTongueLapping, false));
+	(document.getElementById('StopTongueLappingButton')
+		.addEventListener('click', stopTongueLapping, false));
     (document.getElementById('TongueRecruitmentAndSummationSimButton')
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
 //    (document.getElementById('TongueRecruitmentOnlySimButton')

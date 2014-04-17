@@ -17,6 +17,7 @@
         <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
         <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
         <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/raphael.js"></script>
         <script language="javascript" type="text/javascript" src="tongue_jqplot.js"></script>
     </head>
     <body>
@@ -26,17 +27,24 @@
 
         <div>
             <div style="float:left;">
-                <input id="TongueRunButton" type="button" value="Run"/>
+                <input id="TongueRunButton" type="button" value="Run"/></br>
+                <input id="TongueOutButton" type="button" value="Out"/></br>
+                <input id="TongueInButton" type="button" value="In"/></br>
+                <input id="TongueLappingButton" type="button" value="Lap"/></br>
+                <input id="StopTongueLappingButton" type="button" value="Stop Lapping"/></br>
             </div>
             <div style="float:left;">
                 <input type="button" id="TongueClearDataButton" value="Clear Data Points"/>
+                </br></br></br>
             </div>
             <div style="float:left;">
                 <input type="button" id="TongueRecruitmentAndSummationSimButton" value="Lapping simulation"/><br/>
                 <!--<input type="button" id="TongueRecruitmentAndSummationSimButton" value="Recruitment and temporal summation"/><br/>
                 <input type="button" id="TongueRecruitmentOnlySimButton" value="Recruitment only"/><br/>-->
                 <input type="button" id="TongueNoInputSimButton" value="No neural input"/>
+                </br></br></br></br></br></br>
             </div>
+            </br>
         </div>
         <div id="TongueData" class="datapanel"></div>
     </body>

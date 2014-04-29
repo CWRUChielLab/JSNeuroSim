@@ -10,13 +10,13 @@ window.addEventListener('load', function () {
         layout, controlsPanel, controls, dataPanel, LLDataTable,
         LCDataTable, ALDataTable, ACDataTable, inputLDataTable,
         inputCDataTable, tMax = 50000e-3, plotHandles = [],
-		tWidth, tHeight, tCorners, tipWidth, tipHeight, tipX, tipY,
-		paper, tongue, tongueTip,
+        tWidth, tHeight, tCorners, tipWidth, tipHeight, tipX, tipY,
+        paper, tongue, tongueTip,
         tongueOut, tipOut, tongueIn, tipIn,
-		tWidthChange, tHeightChange, tCornersChange,
-		tipWidthChange, tipHeightChange, tipXChange, tipYChange,
-		tX, tY, tWidth1, tWidth2, tHeight1, tHeight2, tCorners1, tCorners2,
-		tipX1, tipX2, tipY1, tipY2, tipWidth1, tipWidth2, tipHeight1, tipHeight2; 
+        tWidthChange, tHeightChange, tCornersChange,
+        tipWidthChange, tipHeightChange, tipXChange, tipYChange,
+        tX, tY, tWidth1, tWidth2, tHeight1, tHeight2, tCorners1, tCorners2,
+        tipX1, tipX2, tipY1, tipY2, tipWidth1, tipWidth2, tipHeight1, tipHeight2; 
 
     // set up the controls for the current clamp simulation
     paramsRecruitmentAndSummation = {
@@ -340,9 +340,9 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#inputCPlot', inputCDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#inputCPlot', 'Time', 'ms', '');
-		
-		
-        // Tongue animation	
+        
+        
+        // Tongue animation    
         tX = 100;
         tY = 50;
         tWidth1 = 200;
@@ -449,7 +449,7 @@ window.addEventListener('load', function () {
         tipOut = Raphael.animation({cx: "590", cy: "80", rx: "15", ry: "30"}, 400);
         tongueIn = Raphael.animation({width: "200", height: "100", r: "30"}, 150);
         tipIn = Raphael.animation({cx: "280", cy: "100", rx: "28", ry: "48"}, 150);
-		
+        
     }
 
     
@@ -458,30 +458,30 @@ window.addEventListener('load', function () {
         controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
     }
-	
-	function animateTongueOut() {
-		tongue.animate(tongueOut);
-		tongueTip.animate(tipOut);
-	}
-	
-	function animateTongueIn() {
-		tongue.animate(tongueIn);
-		tongueTip.animate(tipIn);
-	}
-	
-	function animateTongueLapping() {
-		tWidthChange(tWidth, tongue);
-		tHeightChange(tHeight, tongue);
-		tCornersChange(tCorners, tongue);
-		tipWidthChange(tipWidth, tongueTip);
-		tipHeightChange(tipHeight, tongueTip);
-		tipXChange(tipX, tongueTip);
-		tipYChange(tipY, tongueTip);		
-	}
-	
-	function stopTongueLapping() {
-		document.location.reload(true);
-	}
+    
+    function animateTongueOut() {
+        tongue.animate(tongueOut);
+        tongueTip.animate(tipOut);
+    }
+    
+    function animateTongueIn() {
+        tongue.animate(tongueIn);
+        tongueTip.animate(tipIn);
+    }
+    
+    function animateTongueLapping() {
+        tWidthChange(tWidth, tongue);
+        tHeightChange(tHeight, tongue);
+        tCornersChange(tCorners, tongue);
+        tipWidthChange(tipWidth, tongueTip);
+        tipHeightChange(tipHeight, tongueTip);
+        tipXChange(tipX, tongueTip);
+        tipYChange(tipY, tongueTip);        
+    }
+    
+    function stopTongueLapping() {
+        document.location.reload(true);
+    }
 
 
     function resetToRecruitmentAndSummationSim() {
@@ -522,14 +522,14 @@ window.addEventListener('load', function () {
 
     (document.getElementById('TongueRunButton')
         .addEventListener('click', runSimulation, false));
-	(document.getElementById('TongueOutButton')
-		.addEventListener('click', animateTongueOut, false));
-	(document.getElementById('TongueInButton')
-		.addEventListener('click', animateTongueIn, false));
-	(document.getElementById('TongueLappingButton')
-		.addEventListener('click', animateTongueLapping, false));
-	(document.getElementById('StopTongueLappingButton')
-		.addEventListener('click', stopTongueLapping, false));
+    (document.getElementById('TongueOutButton')
+        .addEventListener('click', animateTongueOut, false));
+    (document.getElementById('TongueInButton')
+        .addEventListener('click', animateTongueIn, false));
+    (document.getElementById('TongueLappingButton')
+        .addEventListener('click', animateTongueLapping, false));
+    (document.getElementById('StopTongueLappingButton')
+        .addEventListener('click', stopTongueLapping, false));
     (document.getElementById('TongueRecruitmentAndSummationSimButton')
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
 //    (document.getElementById('TongueRecruitmentOnlySimButton')

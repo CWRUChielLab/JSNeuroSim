@@ -390,56 +390,61 @@ window.addEventListener('load', function () {
         
         // Animation functions
         tWidthChange = function (size, target, seconds = 1000, style = 'linear') {
-                var firstTWidth = size.shift(),
-                    newTWidth = [firstTWidth];
+            var firstTWidth = size.shift(),
+                newTWidth = [firstTWidth];
+
                 newTWidth = tWidth.concat(newTWidth);
                 tWidth = [firstTWidth].concat(tWidth);
                 target.attr({width: tWidth[0]}).animate({width: tWidth[1]}, seconds, style, function(){tWidthChange(newTWidth, target, seconds, style)});
         };
 
         tHeightChange = function (size, target, seconds = 1000, style = 'linear') {
-                var firstTHeight = size.shift(),
-                    newTHeight = [firstTHeight];
+            var firstTHeight = size.shift(),
+                newTHeight = [firstTHeight];
                 newTHeight = tHeight.concat(newTHeight);
                 tHeight = [firstTHeight].concat(tHeight);
                 target.attr({height: tHeight[0]}).animate({height: tHeight[1]}, seconds, style, function(){tHeightChange(newTHeight, target, seconds, style)});
         };
         
         tCornersChange = function (size, target, seconds = 1000, style = 'linear') {
-                var firstTCorners = size.shift(),
-                    newTCorners = [firstTCorners];
+            var firstTCorners = size.shift(),
+                newTCorners = [firstTCorners];
                 newTCorners = tCorners.concat(newTCorners);
                 tCorners = [firstTCorners].concat(tCorners);
                 target.attr({r: tCorners[0]}).animate({r: tCorners[1]}, seconds, style, function(){tCornersChange(newTCorners, target, seconds, style)});
         };
         
         tipWidthChange = function (size, target, seconds = 1000, style = 'linear') {
-                var firstTipWidth = size.shift(),
-                    newTipWidth = [firstTipWidth];
+            var firstTipWidth = size.shift(),
+                newTipWidth = [firstTipWidth];
+
                 newTipWidth = tipWidth.concat(newTipWidth);
                 tipWidth = [firstTipWidth].concat(tipWidth);
                 target.attr({rx: tipWidth[0]}).animate({rx: tipWidth[1]}, seconds, style, function(){tipWidthChange(newTipWidth, target, seconds, style)});
         };
         
         tipHeightChange = function (size, target, seconds = 1000, style = 'linear') {
-                var firstTipHeight = size.shift(),
-                    newTipHeight = [firstTipHeight];
+            var firstTipHeight = size.shift(),
+                newTipHeight = [firstTipHeight];
+
                 newTipHeight = tipHeight.concat(newTipHeight);
                 tipHeight = [firstTipHeight].concat(tipHeight);
                 target.attr({ry: tipHeight[0]}).animate({ry: tipHeight[1]}, seconds, style, function(){tipHeightChange(newTipHeight, target, seconds, style)});
         };
         
         tipXChange = function (size, target, seconds = 1000, style = 'linear') {
-                var firstTipX = size.shift(),
-                    newTipX = [firstTipX];
+            var firstTipX = size.shift(),
+                newTipX = [firstTipX];
+
                 newTipX = tipX.concat(newTipX);
                 tipX = [firstTipX].concat(tipX);
                 target.attr({cx: tipX[0]}).animate({cx: tipX[1]}, seconds, style, function(){tipXChange(newTipX, target, seconds, style)});
         };
         
         tipYChange = function (size, target, seconds = 1000, style = 'linear') {
-                var firstTipY = size.shift(),
-                    newTipY = [firstTipY];
+            var firstTipY = size.shift(),
+                newTipY = [firstTipY];
+
                 newTipY = tipY.concat(newTipY);
                 tipY = [firstTipY].concat(tipY);
                 target.attr({cy: tipY[0]}).animate({cy: tipY[1]}, seconds, style, function(){tipYChange(newTipY, target, seconds, style)});

@@ -359,10 +359,22 @@ window.addEventListener('load', function () {
         tipWidth2 = 15;
         tipHeight1 = 48;
         tipHeight2 = 30;
-        
+
+        // Remove old animation objects if they exist
+        if (paper !== undefined) {
+            paper.remove();
+        }
+        if (tongue !== undefined) {
+            tongue.remove();
+        }
+        if (tongueTip !== undefined) {
+            tongueTip.remove();
+        }
+
         paper = Raphael(0, 1000, 2000, 1000);
         tongue = paper.rect(tX, tY, tWidth1, tHeight1, tCorners1);
         tongueTip = paper.ellipse(tipX1, tipY1, tipWidth1, tipHeight1);
+
         tWidth = [tWidth1, tWidth2];
         tHeight = [tHeight1, tHeight2];
         tCorners = [tCorners1, tCorners2];

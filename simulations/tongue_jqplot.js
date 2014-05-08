@@ -7,8 +7,8 @@ window.addEventListener('load', function () {
     'use strict';
 
     var paramsRecruitmentAndSummation, paramsRecruitmentOnly, paramsNoInput,
-        layout, controlsPanel, controls, dataPanel, LLDataTable,
-        LCDataTable, ALDataTable, ACDataTable, inputLDataTable,
+        layout, controlsPanel, controls, dataPanel, animationPanel,
+        LLDataTable, LCDataTable, ALDataTable, ACDataTable, inputLDataTable,
         inputCDataTable, tMax = 50000e-3, plotHandles = [];
 
     // set up the controls for the current clamp simulation
@@ -85,7 +85,7 @@ window.addEventListener('load', function () {
     controlsPanel = document.getElementById('TongueControls');
 
     // prepare tables for displaying captured data points
-	
+
     dataPanel = document.getElementById('TongueData');
     dataPanel.className = 'datapanel';
 
@@ -112,39 +112,57 @@ window.addEventListener('load', function () {
     inputCDataTable = document.createElement('table');
     inputCDataTable.className = 'datatable';
     dataPanel.appendChild(inputCDataTable);
-	
-	// Tongue animation	
-	var tX = 100,
-		tY = 50,
-		tWidth1 = 200,
-		tHeight1 = 70,
-		tCorners1 = 20, 
-		
-		paper = Raphael(0, 0, 2000, 1000),
-	    tongue = paper.rect(tX, tY, tWidth1, tHeight1, tCorners1),	
-		tWidth = [1], 
-		tHeight = [1];
-		
-	tongue.attr("fill", "#f00");
-	tongue.attr("stroke", "black");
+    
+    // Tongue animation    
+    animationPanel = document.getElementById('TongueAnimation');
+    var tX = 10,
+        tY = 5,
+        tWidth1 = 200,
+        tHeight1 = 70,
+        tCorners1 = 20, 
+        
+        timeX1 = 585,
+        timeX2 = 990,
+        timeY = 80,
+        timeWidth = 3,
+        timeHeight = 8,
+        seconds = 100,
+        
+        paper = Raphael(animationPanel, 1000, 90),
+        tongue = paper.rect(tX, tY, tWidth1, tHeight1, tCorners1),    
+        timeTracker = paper.ellipse(timeX1, timeY, timeWidth, timeHeight),
+        tWidth = [1], 
+        tHeight = [1],
+        timeX = [timeX1, timeX2];
+        
+    tongue.attr("fill", "red");
+    tongue.attr("stroke", "black");
+    timeTracker.attr("fill", "black");
 
-	
-	// Animation functions
-	var tWidthChange = function (size, target, seconds = 10, style = 'linear') {
-			var firstTWidth = size.shift(),
-				newTWidth = [firstTWidth];
-			newTWidth = size.concat(newTWidth);
-			size = [firstTWidth].concat(tWidth);
-			tongue.animate({width: size[0]}, seconds, function(){tWidthChange(newTWidth, target, seconds, style)});
-		},
-		tHeightChange = function (size, target, seconds = 10, style = 'linear') {
-			var firstTHeight = size.shift(),
-				newTHeight = [firstTHeight];
-			newTHeight = size.concat(newTHeight);
-			size = [firstTHeight].concat(tHeight);
-			tongue.animate({height: size[0]}, seconds, function(){tHeightChange(newTHeight, target, seconds, style)});
-		};
-		
+    
+    // Animation functions
+    var tWidthChange = function (size, target, seconds = 10, style = 'linear') {
+            var firstTWidth = size.shift(),
+                newTWidth = [firstTWidth];
+            newTWidth = size.concat(newTWidth);
+            size = [firstTWidth].concat(tWidth);
+            tongue.animate({width: size[0]}, seconds, function(){tWidthChange(newTWidth, target, seconds, style)});
+        },
+        tHeightChange = function (size, target, seconds = 10, style = 'linear') {
+            var firstTHeight = size.shift(),
+                newTHeight = [firstTHeight];
+            newTHeight = size.concat(newTHeight);
+            size = [firstTHeight].concat(tHeight);
+            tongue.animate({height: size[0]}, seconds, function(){tHeightChange(newTHeight, target, seconds, style)});
+        },
+        timeTrackerChange = function (location, target, seconds, style = 'linear') {
+            var firstTimeX = location.shift(),
+                newTimeX = [firstTimeX];
+            newTimeX = location.concat(newTimeX);
+            location = [firstTimeX].concat(timeX);
+            timeTracker.animate({cx: location[0]}, seconds, function(){timeTrackerChange(newTimeX, target, seconds, style)});
+        };
+        
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -367,30 +385,17 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#inputCPlot', inputCDataTable, title.innerHTML, 'Time');
         graphJqplot.bindCursorTooltip('#inputCPlot', 'Time', 'ms', '');
-		
-
-        // Remove old animation objects if they exist
-        if (paper !== undefined) {
-            paper.remove();
-        }
-        if (tongue !== undefined) {
-            tongue.remove();
-        }
-
-        paper = Raphael(0, 1000, 2000, 1000);
-        tongue = paper.rect(tX, tY, tWidth1, tHeight1, tCorners1);
-            
-        tongue.attr("fill", "#f00");
-        tongue.attr("stroke", "black");
         
-		for (var i = 0; i < LL.length; i++) {
-		  tWidth[i] = parseInt(100 * LL[i][1]);
-		  tHeight[i] = parseInt(100 * LC[i][1] / 3.14159);	
-		}
-		for (var i = 0; i < 100; i++) {
-		  tWidth.push(tWidth[tWidth.length - 1]);
-		  tHeight.push(tHeight[tHeight.length - 1]);
-		}
+
+        for (var i = 0; i < LL.length; i++) {
+          tWidth[i] = parseInt(100 * LL[i][1]);
+          tHeight[i] = parseInt(100 * LC[i][1] / 3.14159);    
+        }
+        seconds = 10 * tWidth.length;
+        /*for (var i = 0; i < 100; i++) {
+          tWidth.push(tWidth[tWidth.length - 1]);
+          tHeight.push(tHeight[tHeight.length - 1]);
+        }*/
     }
 
     
@@ -399,15 +404,16 @@ window.addEventListener('load', function () {
         controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
     }
-	
-	function animateTongueLapping() {
-		tWidthChange(tWidth, tongue);
-		tHeightChange(tHeight, tongue);
-	}
-	
-	function stopTongueLapping() {
-		document.location.reload(true);
-	}
+    
+    function animateTongueLapping() {
+        tWidthChange(tWidth, tongue);
+        tHeightChange(tHeight, tongue);
+        timeTrackerChange(timeX, timeTracker, seconds);
+    }
+    
+    function stopTongueLapping() {
+        document.location.reload(true);
+    }
 
 
     function resetToRecruitmentAndSummationSim() {
@@ -448,10 +454,10 @@ window.addEventListener('load', function () {
 
     (document.getElementById('TongueRunButton')
         .addEventListener('click', runSimulation, false));
-	(document.getElementById('TongueLappingButton')
-		.addEventListener('click', animateTongueLapping, false));
-	(document.getElementById('StopTongueLappingButton')
-		.addEventListener('click', stopTongueLapping, false));
+    (document.getElementById('TongueLappingButton')
+        .addEventListener('click', animateTongueLapping, false));
+    (document.getElementById('StopTongueLappingButton')
+        .addEventListener('click', stopTongueLapping, false));
     (document.getElementById('TongueRecruitmentAndSummationSimButton')
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
 //    (document.getElementById('TongueRecruitmentOnlySimButton')

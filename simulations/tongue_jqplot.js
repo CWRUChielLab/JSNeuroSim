@@ -115,52 +115,52 @@ window.addEventListener('load', function () {
     
     // Tongue animation    
     animationPanel = document.getElementById('TongueAnimation');
-    var tX = 10,
-        tY = 5,
-        tWidth1 = 200,
-        tHeight1 = 70,
-        tCorners1 = 20, 
+    var tonguePositionX = 10,
+        tonguePositionY = 5,
+        tongueLengthInit = 200,
+        tongueDiameterInit = 70,
+        tongueCornerRadius = 20, 
         
-        timeX1 = 585,
-        timeX2 = 990,
-        timeY = 80,
-        timeWidth = 3,
-        timeHeight = 8,
+        timeMarkerXInit = 585,
+        timeMarkerXFinal = 990,
+        timeMarkerY = 80,
+        timeMarkerEllipseWidth = 3,
+        timeMarkerEllipseHeight = 8,
         seconds = 100,
         
         paper = Raphael(animationPanel, 1000, 90),
-        tongue = paper.rect(tX, tY, tWidth1, tHeight1, tCorners1),    
-        timeTracker = paper.ellipse(timeX1, timeY, timeWidth, timeHeight),
-        tWidth = [1], 
-        tHeight = [1],
-        timeX = [timeX1, timeX2];
+        tongue = paper.rect(tonguePositionX, tonguePositionY, tongueLengthInit, tongueDiameterInit, tongueCornerRadius),    
+        timeMarker = paper.ellipse(timeMarkerXInit, timeMarkerY, timeMarkerEllipseWidth, timeMarkerEllipseHeight),
+        tongueLength = [1], 
+        tongueDiameter = [1],
+        timeMarkerX = [timeMarkerXInit, timeMarkerXFinal];
         
     tongue.attr("fill", "red");
     tongue.attr("stroke", "black");
-    timeTracker.attr("fill", "black");
+    timeMarker.attr("fill", "black");
 
     
     // Animation functions
-    var tWidthChange = function (size, target, seconds = 10, style = 'linear') {
-            var firstTWidth = size.shift(),
-                newTWidth = [firstTWidth];
-            newTWidth = size.concat(newTWidth);
-            size = [firstTWidth].concat(tWidth);
-            tongue.animate({width: size[0]}, seconds, function(){tWidthChange(newTWidth, target, seconds, style)});
+    var tongueLengthChange = function (size, target, seconds = 10, style = 'linear') {
+            var firstTongueWidth = size.shift(),
+                newTongueWidth = [firstTongueWidth];
+            newTongueWidth = size.concat(newTongueWidth);
+            size = [firstTongueWidth].concat(tongueLength);
+            tongue.animate({width: size[0]}, seconds, function(){tongueLengthChange(newTongueWidth, target, seconds, style)});
         },
-        tHeightChange = function (size, target, seconds = 10, style = 'linear') {
-            var firstTHeight = size.shift(),
-                newTHeight = [firstTHeight];
-            newTHeight = size.concat(newTHeight);
-            size = [firstTHeight].concat(tHeight);
-            tongue.animate({height: size[0]}, seconds, function(){tHeightChange(newTHeight, target, seconds, style)});
+        tongueDiameterChange = function (size, target, seconds = 10, style = 'linear') {
+            var firstTongueDiameter = size.shift(),
+                newTongueDiameter = [firstTongueDiameter];
+            newTongueDiameter = size.concat(newTongueDiameter);
+            size = [firstTongueDiameter].concat(tongueDiameter);
+            tongue.animate({height: size[0]}, seconds, function(){tongueDiameterChange(newTongueDiameter, target, seconds, style)});
         },
-        timeTrackerChange = function (location, target, seconds, style = 'linear') {
-            var firstTimeX = location.shift(),
-                newTimeX = [firstTimeX];
-            newTimeX = location.concat(newTimeX);
-            location = [firstTimeX].concat(timeX);
-            timeTracker.animate({cx: location[0]}, seconds, function(){timeTrackerChange(newTimeX, target, seconds, style)});
+        timeMarkerChange = function (location, target, seconds, style = 'linear') {
+            var firstTimeMarkerX = location.shift(),
+                newTimeMarkerX = [firstTimeMarkerX];
+            newTimeMarkerX = location.concat(newTimeMarkerX);
+            location = [firstTimeMarkerX].concat(timeMarkerX);
+            timeMarker.animate({cx: location[0]}, seconds, function(){timeMarkerChange(newTimeMarkerX, target, seconds, style)});
         };
         
 
@@ -388,13 +388,13 @@ window.addEventListener('load', function () {
         
 
         for (var i = 0; i < LL.length; i++) {
-          tWidth[i] = parseInt(100 * LL[i][1]);
-          tHeight[i] = parseInt(100 * LC[i][1] / 3.14159);    
+          tongueLength[i] = parseInt(100 * LL[i][1]);
+          tongueDiameter[i] = parseInt(100 * LC[i][1] / 3.14159);    
         }
-        seconds = 10 * tWidth.length;
+        seconds = 10 * tongueLength.length;
         /*for (var i = 0; i < 100; i++) {
-          tWidth.push(tWidth[tWidth.length - 1]);
-          tHeight.push(tHeight[tHeight.length - 1]);
+          tongueLength.push(tongueLength[tongueLength.length - 1]);
+          tongueDiameter.push(tongueDiameter[tongueDiameter.length - 1]);
         }*/
     }
 
@@ -406,9 +406,9 @@ window.addEventListener('load', function () {
     }
     
     function animateTongueLapping() {
-        tWidthChange(tWidth, tongue);
-        tHeightChange(tHeight, tongue);
-        timeTrackerChange(timeX, timeTracker, seconds);
+        tongueLengthChange(tongueLength, tongue);
+        tongueDiameterChange(tongueDiameter, tongue);
+        timeMarkerChange(timeMarkerX, timeMarker, seconds);
     }
     
     function stopTongueLapping() {

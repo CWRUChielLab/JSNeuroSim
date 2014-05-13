@@ -176,6 +176,8 @@ window.addEventListener('load', function () {
                 animationDuration,
                 function(){animateSimulation(animationTimeRatio, nextIndex)} // the last animation calls this function again
             );
+        } else {
+            reinitializeAnimation();
         }
     };
 
@@ -431,7 +433,6 @@ window.addEventListener('load', function () {
             animateSimulation();
         } else {
             doAnimation = 0;
-            reinitializeAnimation();
         }
     }
     

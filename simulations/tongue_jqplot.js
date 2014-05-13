@@ -133,7 +133,7 @@ window.addEventListener('load', function () {
         timeMarker = paper.ellipse(timeMarkerXInit, timeMarkerY, timeMarkerEllipseWidth, timeMarkerEllipseHeight),
         tongueLength = [1], 
         tongueDiameter = [1],
-        timeMarkerX = [timeMarkerXFinal, timeMarkerXInit];
+        timeMarkerX = [timeMarkerXInit, timeMarkerXFinal];
         
     tongue.attr("fill", "red");
     tongue.attr("stroke", "black");
@@ -141,26 +141,17 @@ window.addEventListener('load', function () {
 
     
     // Animation functions
-    var tongueLengthChange = function (tongueLength, seconds = 10, style = 'linear') {
-            var firstTongueLength = tongueLength.shift(),
-                newTongueLength = [firstTongueLength];
-            newTongueLength = tongueLength.concat(newTongueLength);
-            tongueLength = [firstTongueLength].concat(tongueLength);
-            tongue.animate({width: tongueLength[0]}, seconds, function(){tongueLengthChange(newTongueLength, seconds, style)});
+    var tongueLengthChange = function (tongueLength, seconds = 10, style = 'linear', index = 0) {
+            var nextIndex = (index + 1) % tongueLength.length;
+            tongue.animate({width: tongueLength[nextIndex]}, seconds, function(){tongueLengthChange(tongueLength, seconds, style, nextIndex)});
         },
-        tongueDiameterChange = function (tongueDiameter, seconds = 10, style = 'linear') {
-            var firstTongueDiameter = tongueDiameter.shift(),
-                newTongueDiameter = [firstTongueDiameter];
-            newTongueDiameter = tongueDiameter.concat(newTongueDiameter);
-            tongueDiameter = [firstTongueDiameter].concat(tongueDiameter);
-            tongue.animate({height: tongueDiameter[0]}, seconds, function(){tongueDiameterChange(newTongueDiameter, seconds, style)});
+        tongueDiameterChange = function (tongueDiameter, seconds = 10, style = 'linear', index = 0) {
+            var nextIndex = (index + 1) % tongueDiameter.length;
+            tongue.animate({height: tongueDiameter[nextIndex]}, seconds, function(){tongueDiameterChange(tongueDiameter, seconds, style, nextIndex)});
         },
-        timeMarkerChange = function (timeMarkerX, seconds, style = 'linear') {
-            var firstTimeMarkerX = timeMarkerX.shift(),
-                newTimeMarkerX = [firstTimeMarkerX];
-            newTimeMarkerX = timeMarkerX.concat(newTimeMarkerX);
-            timeMarkerX = [firstTimeMarkerX].concat(timeMarkerX);
-            timeMarker.animate({cx: timeMarkerX[0]}, seconds, function(){timeMarkerChange(newTimeMarkerX, seconds, style)});
+        timeMarkerChange = function (timeMarkerX, seconds, style = 'linear', index = 0) {
+            var nextIndex = (index + 1) % timeMarkerX.length;
+            timeMarker.animate({cx: timeMarkerX[nextIndex]}, seconds, function(){timeMarkerChange(timeMarkerX, seconds, style, nextIndex)});
         };
         
 

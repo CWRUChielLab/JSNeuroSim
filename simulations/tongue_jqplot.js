@@ -141,26 +141,26 @@ window.addEventListener('load', function () {
 
     
     // Animation functions
-    var tongueLengthChange = function (size, target, seconds = 10, style = 'linear') {
-            var firstTongueWidth = size.shift(),
-                newTongueWidth = [firstTongueWidth];
-            newTongueWidth = size.concat(newTongueWidth);
-            size = [firstTongueWidth].concat(tongueLength);
-            tongue.animate({width: size[0]}, seconds, function(){tongueLengthChange(newTongueWidth, target, seconds, style)});
+    var tongueLengthChange = function (tongueLength, target, seconds = 10, style = 'linear') {
+            var firstTongueLength = tongueLength.shift(),
+                newTongueLength = [firstTongueLength];
+            newTongueLength = tongueLength.concat(newTongueLength);
+            tongueLength = [firstTongueLength].concat(tongueLength);
+            tongue.animate({width: tongueLength[0]}, seconds, function(){tongueLengthChange(newTongueLength, target, seconds, style)});
         },
-        tongueDiameterChange = function (size, target, seconds = 10, style = 'linear') {
-            var firstTongueDiameter = size.shift(),
+        tongueDiameterChange = function (tongueDiameter, target, seconds = 10, style = 'linear') {
+            var firstTongueDiameter = tongueDiameter.shift(),
                 newTongueDiameter = [firstTongueDiameter];
-            newTongueDiameter = size.concat(newTongueDiameter);
-            size = [firstTongueDiameter].concat(tongueDiameter);
-            tongue.animate({height: size[0]}, seconds, function(){tongueDiameterChange(newTongueDiameter, target, seconds, style)});
+            newTongueDiameter = tongueDiameter.concat(newTongueDiameter);
+            tongueDiameter = [firstTongueDiameter].concat(tongueDiameter);
+            tongue.animate({height: tongueDiameter[0]}, seconds, function(){tongueDiameterChange(newTongueDiameter, target, seconds, style)});
         },
-        timeMarkerChange = function (position, target, seconds, style = 'linear') {
-            var firstTimeMarkerX = position.shift(),
+        timeMarkerChange = function (timeMarkerX, target, seconds, style = 'linear') {
+            var firstTimeMarkerX = timeMarkerX.shift(),
                 newTimeMarkerX = [firstTimeMarkerX];
-            newTimeMarkerX = position.concat(newTimeMarkerX);
-            position = [firstTimeMarkerX].concat(timeMarkerX);
-            timeMarker.animate({cx: position[0]}, seconds, function(){timeMarkerChange(newTimeMarkerX, target, seconds, style)});
+            newTimeMarkerX = timeMarkerX.concat(newTimeMarkerX);
+            timeMarkerX = [firstTimeMarkerX].concat(timeMarkerX);
+            timeMarker.animate({cx: timeMarkerX[0]}, seconds, function(){timeMarkerChange(newTimeMarkerX, target, seconds, style)});
         };
         
 

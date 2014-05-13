@@ -141,26 +141,26 @@ window.addEventListener('load', function () {
 
     
     // Animation functions
-    var tongueLengthChange = function (tongueLength, target, seconds = 10, style = 'linear') {
+    var tongueLengthChange = function (tongueLength, seconds = 10, style = 'linear') {
             var firstTongueLength = tongueLength.shift(),
                 newTongueLength = [firstTongueLength];
             newTongueLength = tongueLength.concat(newTongueLength);
             tongueLength = [firstTongueLength].concat(tongueLength);
-            tongue.animate({width: tongueLength[0]}, seconds, function(){tongueLengthChange(newTongueLength, target, seconds, style)});
+            tongue.animate({width: tongueLength[0]}, seconds, function(){tongueLengthChange(newTongueLength, seconds, style)});
         },
-        tongueDiameterChange = function (tongueDiameter, target, seconds = 10, style = 'linear') {
+        tongueDiameterChange = function (tongueDiameter, seconds = 10, style = 'linear') {
             var firstTongueDiameter = tongueDiameter.shift(),
                 newTongueDiameter = [firstTongueDiameter];
             newTongueDiameter = tongueDiameter.concat(newTongueDiameter);
             tongueDiameter = [firstTongueDiameter].concat(tongueDiameter);
-            tongue.animate({height: tongueDiameter[0]}, seconds, function(){tongueDiameterChange(newTongueDiameter, target, seconds, style)});
+            tongue.animate({height: tongueDiameter[0]}, seconds, function(){tongueDiameterChange(newTongueDiameter, seconds, style)});
         },
-        timeMarkerChange = function (timeMarkerX, target, seconds, style = 'linear') {
+        timeMarkerChange = function (timeMarkerX, seconds, style = 'linear') {
             var firstTimeMarkerX = timeMarkerX.shift(),
                 newTimeMarkerX = [firstTimeMarkerX];
             newTimeMarkerX = timeMarkerX.concat(newTimeMarkerX);
             timeMarkerX = [firstTimeMarkerX].concat(timeMarkerX);
-            timeMarker.animate({cx: timeMarkerX[0]}, seconds, function(){timeMarkerChange(newTimeMarkerX, target, seconds, style)});
+            timeMarker.animate({cx: timeMarkerX[0]}, seconds, function(){timeMarkerChange(newTimeMarkerX, seconds, style)});
         };
         
 
@@ -408,9 +408,9 @@ window.addEventListener('load', function () {
     }
     
     function animateTongueLapping() {
-        tongueLengthChange(tongueLength, tongue);
-        tongueDiameterChange(tongueDiameter, tongue);
-        timeMarkerChange(timeMarkerX, timeMarker, seconds);
+        tongueLengthChange(tongueLength);
+        tongueDiameterChange(tongueDiameter);
+        timeMarkerChange(timeMarkerX, seconds);
     }
     
     function stopTongueLapping() {

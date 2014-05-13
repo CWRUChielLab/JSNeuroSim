@@ -126,14 +126,14 @@ window.addEventListener('load', function () {
         timeMarkerY = 80,
         timeMarkerEllipseWidth = 3,
         timeMarkerEllipseHeight = 8,
-        seconds = 100,
+        seconds,
         
         paper = Raphael(animationPanel, 1000, 90),
         tongue = paper.rect(tonguePositionX, tonguePositionY, tongueLengthInit, tongueDiameterInit, tongueCornerRadius),    
         timeMarker = paper.ellipse(timeMarkerXInit, timeMarkerY, timeMarkerEllipseWidth, timeMarkerEllipseHeight),
         tongueLength = [1], 
         tongueDiameter = [1],
-        timeMarkerX = [timeMarkerXInit, timeMarkerXFinal];
+        timeMarkerX = [timeMarkerXFinal, timeMarkerXInit];
         
     tongue.attr("fill", "red");
     tongue.attr("stroke", "black");
@@ -155,12 +155,12 @@ window.addEventListener('load', function () {
             size = [firstTongueDiameter].concat(tongueDiameter);
             tongue.animate({height: size[0]}, seconds, function(){tongueDiameterChange(newTongueDiameter, target, seconds, style)});
         },
-        timeMarkerChange = function (location, target, seconds, style = 'linear') {
-            var firstTimeMarkerX = location.shift(),
+        timeMarkerChange = function (position, target, seconds, style = 'linear') {
+            var firstTimeMarkerX = position.shift(),
                 newTimeMarkerX = [firstTimeMarkerX];
-            newTimeMarkerX = location.concat(newTimeMarkerX);
-            location = [firstTimeMarkerX].concat(timeMarkerX);
-            timeMarker.animate({cx: location[0]}, seconds, function(){timeMarkerChange(newTimeMarkerX, target, seconds, style)});
+            newTimeMarkerX = position.concat(newTimeMarkerX);
+            position = [firstTimeMarkerX].concat(timeMarkerX);
+            timeMarker.animate({cx: position[0]}, seconds, function(){timeMarkerChange(newTimeMarkerX, target, seconds, style)});
         };
         
 

@@ -127,20 +127,20 @@ window.addEventListener('load', function () {
         timeMarkerPositionLeft = 585,
         timeMarkerPositionRight = 990,
         timeMarkerY = 80,
-        timeMarkerEllipseWidth = 3,
-        timeMarkerEllipseHeight = 8,
+        timeMarkerLength = 20,
         
         paper = Raphael(animationPanel, 1000, 90),
         tongue = paper.rect(tonguePositionX, tonguePositionY, tongueLengthInit, tongueDiameterInit, tongueCornerRadius),    
-        timeMarker = paper.ellipse(timeMarkerPositionLeft, timeMarkerY, timeMarkerEllipseWidth, timeMarkerEllipseHeight),
+        timeMarker = paper.path('M' + timeMarkerPositionLeft + ' ' + (timeMarkerY - timeMarkerLength) + 'V' + timeMarkerY),
+            
         animationTime = [],
         tongueLength = [], 
         tongueDiameter = [],
         timeMarkerPosition = [];
 
-    tongue.attr("fill", "red");
-    tongue.attr("stroke", "black");
-    timeMarker.attr("fill", "black");
+    tongue.attr('fill', 'red');
+    tongue.attr('stroke', 'black');
+    timeMarker.attr({'stroke': 'black', 'stroke-width': 2, 'arrow-end': 'classic-wide-long'}); 
 
     // Function for setting Raphael objects to the appropriate initial conditions
     function reinitializeAnimation() {
@@ -149,7 +149,7 @@ window.addEventListener('load', function () {
             0
         );
         timeMarker.animate(
-            {cx: timeMarkerPosition[0]},
+            {path: Raphael.transformPath('M' + timeMarkerPosition[0] + ' ' + (timeMarkerY - timeMarkerLength) + 'V' + timeMarkerY)},
             0
         );
     };
@@ -169,7 +169,7 @@ window.addEventListener('load', function () {
                 animationDuration
             );
             timeMarker.animate(
-                {cx: timeMarkerPosition[nextIndex]},
+                {path: Raphael.transformPath('M' + timeMarkerPosition[nextIndex] + ' ' + (timeMarkerY - timeMarkerLength) + 'V' + timeMarkerY)},
                 animationDuration,
                 function(){animateSimulation(nextIndex, animationTimeRatio)} // the last animation calls this function again
             );

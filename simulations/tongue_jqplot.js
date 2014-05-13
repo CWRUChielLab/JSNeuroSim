@@ -112,9 +112,10 @@ window.addEventListener('load', function () {
     inputCDataTable = document.createElement('table');
     inputCDataTable.className = 'datatable';
     dataPanel.appendChild(inputCDataTable);
-    
+
     // Tongue animation    
     animationPanel = document.getElementById('TongueAnimation');
+
     var doAnimation = 0,
         
         tonguePositionX = 10,
@@ -135,46 +136,45 @@ window.addEventListener('load', function () {
         animationTime = [],
         tongueLength = [], 
         tongueDiameter = [],
-        timeMarkerX = [];
-        
+        timeMarkerPosition = [];
+
     tongue.attr("fill", "red");
     tongue.attr("stroke", "black");
     timeMarker.attr("fill", "black");
 
-    
+    // Function for setting Raphael objects to the appropriate initial conditions
+    function reinitializeAnimation() {
+        tongue.animate(
+            {width: tongueLength[0], height: tongueDiameter[0]},
+            0
+        );
+        timeMarker.animate(
+            {cx: timeMarkerPosition[0]},
+            0
+        );
+    };
+
     // Function for synchronous animation of Raphael objects
-    var reinitializeAnimation = function() {
+    function animateSimulation(index = 0, animationTimeRatio = 1) {
+        var animationDuration, nextIndex = (index + 1) % tongueLength.length;
+        if (nextIndex == 0) {
+            animationDuration = 0
+        } else {
+            animationDuration = animationTimeRatio * (animationTime[nextIndex] - animationTime[nextIndex - 1]);
+        }
+
+        if (doAnimation) {
             tongue.animate(
-                {width: tongueLength[0], height: tongueDiameter[0]},
-                0
+                {width: tongueLength[nextIndex], height: tongueDiameter[nextIndex]},
+                animationDuration
             );
             timeMarker.animate(
-                {cx: timeMarkerX[0]},
-                0
+                {cx: timeMarkerPosition[nextIndex]},
+                animationDuration,
+                function(){animateSimulation(nextIndex, animationTimeRatio)} // the last animation calls this function again
             );
-        },
-        
-        animateSimulation = function (index = 0, animationTimeRatio = 1) {
-            var animationDuration, nextIndex = (index + 1) % tongueLength.length;
-            if (nextIndex == 0) {
-                animationDuration = 0
-            } else {
-                animationDuration = animationTimeRatio * (animationTime[nextIndex] - animationTime[nextIndex - 1]);
-            }
-
-            if (doAnimation) {
-                tongue.animate(
-                    {width: tongueLength[nextIndex], height: tongueDiameter[nextIndex]},
-                    animationDuration
-                );
-                timeMarker.animate(
-                    {cx: timeMarkerX[nextIndex]},
-                    animationDuration,
-                    function(){animateSimulation(nextIndex, animationTimeRatio)} // the last animation calls this function again
-                );
-            }
-        };
-        
+        }
+    };
 
     // simulate and plot an hh neuron with a pulse
     function runSimulation() {
@@ -403,12 +403,12 @@ window.addEventListener('load', function () {
         animationTime = [];
         tongueLength = [];
         tongueDiameter = [];
-        timeMarkerX = [];
+        timeMarkerPosition = [];
         for (var i = 0; i < LL.length; i++) {
           animationTime[i] = Math.round(LL[i][0]);
           tongueLength[i] = Math.round(100 * LL[i][1]);
           tongueDiameter[i] = Math.round(100 * LC[i][1] / 3.14159);    
-          timeMarkerX[i] = Math.round(timeMarkerPositionLeft + (timeMarkerPositionRight - timeMarkerPositionLeft) * (LL[i][0] / LL[LL.length-1][0]));
+          timeMarkerPosition[i] = Math.round(timeMarkerPositionLeft + (timeMarkerPositionRight - timeMarkerPositionLeft) * (LL[i][0] / LL[LL.length-1][0]));
         }
 
         // Set the animation to the appropriate initial conditions

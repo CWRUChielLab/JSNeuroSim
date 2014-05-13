@@ -115,7 +115,7 @@ window.addEventListener('load', function () {
     
     // Tongue animation    
     animationPanel = document.getElementById('TongueAnimation');
-    var stopAnimation = 0,
+    var doAnimation = 0,
         
         tonguePositionX = 10,
         tonguePositionY = 5,
@@ -162,7 +162,7 @@ window.addEventListener('load', function () {
                 animationDuration = animationTimeRatio * (animationTime[nextIndex] - animationTime[nextIndex - 1]);
             }
 
-            if (!stopAnimation) {
+            if (doAnimation) {
                 tongue.animate(
                     {width: tongueLength[nextIndex], height: tongueDiameter[nextIndex]},
                     animationDuration
@@ -172,8 +172,6 @@ window.addEventListener('load', function () {
                     animationDuration,
                     function(){animateSimulation(nextIndex, animationTimeRatio)} // the last animation calls this function again
                 );
-            } else {
-                reinitializeAnimation();
             }
         };
         
@@ -413,6 +411,7 @@ window.addEventListener('load', function () {
           timeMarkerX[i] = Math.round(timeMarkerPositionLeft + (timeMarkerPositionRight - timeMarkerPositionLeft) * (LL[i][0] / LL[LL.length-1][0]));
         }
 
+        // Set the animation to the appropriate initial conditions
         reinitializeAnimation();
     }
 
@@ -423,16 +422,16 @@ window.addEventListener('load', function () {
         runSimulation();
     }
     
-    function animateTongueLapping() {
-        stopAnimation = 0;
-        animateSimulation();
+    function toggleAnimation() {
+        if (!doAnimation) {
+            doAnimation = 1;
+            animateSimulation();
+        } else {
+            doAnimation = 0;
+            reinitializeAnimation();
+        }
     }
     
-    function stopTongueLapping() {
-        stopAnimation = 1;
-    }
-
-
     function resetToRecruitmentAndSummationSim() {
         reset(paramsRecruitmentAndSummation, layout);
     }
@@ -472,9 +471,7 @@ window.addEventListener('load', function () {
     (document.getElementById('TongueRunButton')
         .addEventListener('click', runSimulation, false));
     (document.getElementById('TongueLappingButton')
-        .addEventListener('click', animateTongueLapping, false));
-    (document.getElementById('StopTongueLappingButton')
-        .addEventListener('click', stopTongueLapping, false));
+        .addEventListener('click', toggleAnimation, false));
     (document.getElementById('TongueRecruitmentAndSummationSimButton')
         .addEventListener('click', resetToRecruitmentAndSummationSim, false));
 //    (document.getElementById('TongueRecruitmentOnlySimButton')

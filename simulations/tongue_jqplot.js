@@ -430,7 +430,7 @@ window.addEventListener('load', function () {
     function toggleAnimation() {
         if (!doAnimation) {
             doAnimation = 1;
-            animateSimulation();
+            animateSimulation(3);
         } else {
             doAnimation = 0;
         }

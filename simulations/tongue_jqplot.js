@@ -126,13 +126,13 @@ window.addEventListener('load', function () {
         timeMarkerY = 80,
         timeMarkerEllipseWidth = 3,
         timeMarkerEllipseHeight = 8,
-        seconds,
         
         paper = Raphael(animationPanel, 1000, 90),
         tongue = paper.rect(tonguePositionX, tonguePositionY, tongueLengthInit, tongueDiameterInit, tongueCornerRadius),    
         timeMarker = paper.ellipse(timeMarkerXInit, timeMarkerY, timeMarkerEllipseWidth, timeMarkerEllipseHeight),
-        tongueLength = [1], 
-        tongueDiameter = [1],
+        animationTime = [],
+        tongueLength = [], 
+        tongueDiameter = [],
         timeMarkerX = [timeMarkerXInit, timeMarkerXFinal];
         
     tongue.attr("fill", "red");
@@ -170,6 +170,25 @@ window.addEventListener('load', function () {
             }
 
             timeMarker.animate({cx: timeMarkerX[nextIndex]}, animationDuration, function(){timeMarkerChange(timeMarkerX, seconds, style, nextIndex)});
+        },
+
+        animateSimulation = function (index = 0, animationTimeRatio = 1) {
+            var animationDuration, nextIndex = (index + 1) % tongueLength.length;
+            if (nextIndex == 0) {
+                animationDuration = 0
+            } else {
+                animationDuration = animationTimeRatio * (animationTime[nextIndex] - animationTime[nextIndex - 1]);
+            }
+
+            tongue.animate(
+                {width: tongueLength[nextIndex], height: tongueDiameter[nextIndex]},
+                animationDuration
+            );
+            timeMarker.animate(
+                {cx: timeMarkerX[nextIndex]},
+                animationDuration,
+                function(){animateSimulation(nextIndex, animationTimeRatio)} // the last animation calls this function again
+            );
         };
         
 
@@ -396,17 +415,25 @@ window.addEventListener('load', function () {
         graphJqplot.bindCursorTooltip('#inputCPlot', 'Time', 'ms', '');
         
 
+        // Store data for the animation
+        animationTime = [];
         tongueLength = [];
         tongueDiameter = [];
+        timeMarkerX = [];
         for (var i = 0; i < LL.length; i++) {
-          tongueLength[i] = parseInt(100 * LL[i][1]);
-          tongueDiameter[i] = parseInt(100 * LC[i][1] / 3.14159);    
+          //animationTime[i] = LL[i][0];
+          animationTime[i] = Math.round(LL[i][0]);
+          //tongueLength[i] = parseInt(100 * LL[i][1]);
+          //tongueDiameter[i] = parseInt(100 * LC[i][1] / 3.14159);    
+          tongueLength[i] = Math.round(100 * LL[i][1]);
+          tongueDiameter[i] = Math.round(100 * LC[i][1] / 3.14159);    
+          //timeMarkerX[i] = timeMarkerXInit + (timeMarkerXFinal - timeMarkerXInit) * (LL[i][0] / LL[LL.length-1][0]);
+          timeMarkerX[i] = Math.round(timeMarkerXInit + (timeMarkerXFinal - timeMarkerXInit) * (LL[i][0] / LL[LL.length-1][0]));
         }
-        seconds = 10 * tongueLength.length;
-        /*for (var i = 0; i < 100; i++) {
-          tongueLength.push(tongueLength[tongueLength.length - 1]);
-          tongueDiameter.push(tongueDiameter[tongueDiameter.length - 1]);
-        }*/
+        //console.log(animationTime);
+        //console.log(tongueLength);
+        //console.log(tongueDiameter);
+        //console.log(timeMarkerX);
     }
 
     
@@ -417,9 +444,10 @@ window.addEventListener('load', function () {
     }
     
     function animateTongueLapping() {
-        tongueLengthChange(tongueLength);
-        tongueDiameterChange(tongueDiameter);
-        timeMarkerChange(timeMarkerX, seconds);
+        //tongueLengthChange(tongueLength, 10 * 10);     // 10 ms per frame
+        //tongueDiameterChange(tongueDiameter, 10 * 10); // 10 ms per frame
+        //timeMarkerChange(timeMarkerX, 10 * 10 * tongueLength.length); // 10 * number of frames for entire animation
+        animateSimulation();
     }
     
     function stopTongueLapping() {

@@ -155,7 +155,10 @@ window.addEventListener('load', function () {
     };
 
     // Function for synchronous animation of Raphael objects
-    function animateSimulation(index = 0, animationTimeRatio = 1) {
+    function animateSimulation(animationTimeRatio, index) {
+        animationTimeRatio = (animationTimeRatio === undefined ? 1 : animationTimeRatio);
+        index = (index === undefined ? 0 : index);
+        
         var animationDuration, nextIndex = (index + 1) % tongueLength.length;
         if (nextIndex == 0) {
             animationDuration = 0
@@ -171,7 +174,7 @@ window.addEventListener('load', function () {
             timeMarker.animate(
                 {path: Raphael.transformPath('M' + timeMarkerPosition[nextIndex] + ' ' + (timeMarkerY - timeMarkerLength) + 'V' + timeMarkerY)},
                 animationDuration,
-                function(){animateSimulation(nextIndex, animationTimeRatio)} // the last animation calls this function again
+                function(){animateSimulation(animationTimeRatio, nextIndex)} // the last animation calls this function again
             );
         }
     };

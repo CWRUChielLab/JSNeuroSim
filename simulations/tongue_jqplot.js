@@ -149,7 +149,7 @@ window.addEventListener('load', function () {
             0
         );
         timeMarker.animate(
-            {path: Raphael.transformPath('M' + timeMarkerPosition[0] + ' ' + (timeMarkerY - timeMarkerLength) + 'V' + timeMarkerY)},
+            {transform: 't' + (timeMarkerPosition[0] - timeMarkerPositionLeft) + ',0'},
             0
         );
     };
@@ -172,7 +172,7 @@ window.addEventListener('load', function () {
                 animationDuration
             );
             timeMarker.animate(
-                {path: Raphael.transformPath('M' + timeMarkerPosition[nextIndex] + ' ' + (timeMarkerY - timeMarkerLength) + 'V' + timeMarkerY)},
+                {transform: 't' + (timeMarkerPosition[nextIndex] - timeMarkerPositionLeft) + ',0'},
                 animationDuration,
                 function(){animateSimulation(animationTimeRatio, nextIndex)} // the last animation calls this function again
             );

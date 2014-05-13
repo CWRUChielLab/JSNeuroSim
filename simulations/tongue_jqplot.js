@@ -149,7 +149,7 @@ window.addEventListener('load', function () {
             0
         );
         timeMarker.animate(
-            {transform: 't' + (timeMarkerPosition[0] - timeMarkerPositionLeft) + ',0'},
+            {transform: 't' + timeMarkerPosition[0] + ',0'},
             0
         );
     };
@@ -172,7 +172,7 @@ window.addEventListener('load', function () {
                 animationDuration
             );
             timeMarker.animate(
-                {transform: 't' + (timeMarkerPosition[nextIndex] - timeMarkerPositionLeft) + ',0'},
+                {transform: 't' + timeMarkerPosition[nextIndex] + ',0'},
                 animationDuration,
                 function(){animateSimulation(animationTimeRatio, nextIndex)} // the last animation calls this function again
             );
@@ -413,7 +413,7 @@ window.addEventListener('load', function () {
           animationTime[i] = Math.round(LL[i][0]);
           tongueLength[i] = Math.round(100 * LL[i][1]);
           tongueDiameter[i] = Math.round(100 * LC[i][1] / 3.14159);    
-          timeMarkerPosition[i] = Math.round(timeMarkerPositionLeft + (timeMarkerPositionRight - timeMarkerPositionLeft) * (LL[i][0] / LL[LL.length-1][0]));
+          timeMarkerPosition[i] = Math.round((timeMarkerPositionRight - timeMarkerPositionLeft) * (LL[i][0] / LL[LL.length-1][0]));
         }
 
         // Set the animation to the appropriate initial conditions

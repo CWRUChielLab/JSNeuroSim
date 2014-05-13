@@ -387,6 +387,8 @@ window.addEventListener('load', function () {
         graphJqplot.bindCursorTooltip('#inputCPlot', 'Time', 'ms', '');
         
 
+        tongueLength = [];
+        tongueDiameter = [];
         for (var i = 0; i < LL.length; i++) {
           tongueLength[i] = parseInt(100 * LL[i][1]);
           tongueDiameter[i] = parseInt(100 * LC[i][1] / 3.14159);    

@@ -142,16 +142,34 @@ window.addEventListener('load', function () {
     
     // Animation functions
     var tongueLengthChange = function (tongueLength, seconds = 10, style = 'linear', index = 0) {
-            var nextIndex = (index + 1) % tongueLength.length;
-            tongue.animate({width: tongueLength[nextIndex]}, seconds, function(){tongueLengthChange(tongueLength, seconds, style, nextIndex)});
+            var animationDuration, nextIndex = (index + 1) % tongueLength.length;
+            if (nextIndex == 0) {
+                animationDuration = 0
+            } else {
+                animationDuration = seconds;
+            }
+
+            tongue.animate({width: tongueLength[nextIndex]}, animationDuration, function(){tongueLengthChange(tongueLength, seconds, style, nextIndex)});
         },
         tongueDiameterChange = function (tongueDiameter, seconds = 10, style = 'linear', index = 0) {
-            var nextIndex = (index + 1) % tongueDiameter.length;
-            tongue.animate({height: tongueDiameter[nextIndex]}, seconds, function(){tongueDiameterChange(tongueDiameter, seconds, style, nextIndex)});
+            var animationDuration, nextIndex = (index + 1) % tongueDiameter.length;
+            if (nextIndex == 0) {
+                animationDuration = 0
+            } else {
+                animationDuration = seconds;
+            }
+
+            tongue.animate({height: tongueDiameter[nextIndex]}, animationDuration, function(){tongueDiameterChange(tongueDiameter, seconds, style, nextIndex)});
         },
         timeMarkerChange = function (timeMarkerX, seconds, style = 'linear', index = 0) {
-            var nextIndex = (index + 1) % timeMarkerX.length;
-            timeMarker.animate({cx: timeMarkerX[nextIndex]}, seconds, function(){timeMarkerChange(timeMarkerX, seconds, style, nextIndex)});
+            var animationDuration, nextIndex = (index + 1) % timeMarkerX.length;
+            if (nextIndex == 0) {
+                animationDuration = 0
+            } else {
+                animationDuration = seconds;
+            }
+
+            timeMarker.animate({cx: timeMarkerX[nextIndex]}, animationDuration, function(){timeMarkerChange(timeMarkerX, seconds, style, nextIndex)});
         };
         
 

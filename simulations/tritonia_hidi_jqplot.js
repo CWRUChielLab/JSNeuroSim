@@ -878,23 +878,25 @@ window.addEventListener('load', function () {
 
     var doAnimation = 0,
         
-        tritoniaRadius = 40,
-        tritoniaCenterX = 500,
-        tritoniaCenterY = 40,
-        tritoniaLeftXInit = tritoniaCenterX - tritoniaRadius,
-        tritoniaRightXInit = tritoniaCenterX + tritoniaRadius,
-        tritoniaEndsYInit = tritoniaCenterY,
+        tritoniaRadius = 60,
+        tritoniaCenterXInit = tritoniaRadius + 30,
+        tritoniaCenterYInit = 60,
+        tritoniaLeftXInit = tritoniaCenterXInit - tritoniaRadius,
+        tritoniaRightXInit = tritoniaCenterXInit + tritoniaRadius,
+        tritoniaEndsYInit = tritoniaCenterYInit,
         
         timeMarkerPositionLeft = 585,
         timeMarkerPositionRight = 990,
-        timeMarkerY = 80,
+        timeMarkerY = 120,
         timeMarkerLength = 20,
         
-        paper = Raphael(animationPanel, 1000, 90),
-        tritoniaBody = paper.path('M' + tritoniaLeftXInit + ',' + tritoniaEndsYInit + 'L' + tritoniaCenterX + ',' + tritoniaCenterY + 'L' + tritoniaRightXInit + ',' + tritoniaEndsYInit),
+        paper = Raphael(animationPanel, 1000, 120),
+        tritoniaBody = paper.path('M' + tritoniaLeftXInit + ',' + tritoniaEndsYInit + 'L' + tritoniaCenterXInit + ',' + tritoniaCenterYInit + 'L' + tritoniaRightXInit + ',' + tritoniaEndsYInit),
         timeMarker = paper.path('M' + timeMarkerPositionLeft + ',' + (timeMarkerY - timeMarkerLength) + 'V' + timeMarkerY),
             
         animationTime = [],
+        tritoniaCenterX = [],
+        tritoniaCenterY = [],
         tritoniaLeftX = [], 
         tritoniaRightX = [],
         tritoniaEndsY = [],
@@ -906,7 +908,7 @@ window.addEventListener('load', function () {
     // Function for setting Raphael objects to the appropriate initial conditions
     function reinitializeAnimation() {
         tritoniaBody.animate(
-            {path: 'M' + tritoniaLeftX[0] + ',' + tritoniaEndsY[0] + 'L' + tritoniaCenterX + ',' + tritoniaCenterY + 'L' + tritoniaRightX[0] + ',' + tritoniaEndsY[0]},
+            {path: 'M' + tritoniaLeftX[0] + ',' + tritoniaEndsY[0] + 'L' + tritoniaCenterX[0] + ',' + tritoniaCenterY[0] + 'L' + tritoniaRightX[0] + ',' + tritoniaEndsY[0]},
             0
         );
         timeMarker.animate(
@@ -929,7 +931,7 @@ window.addEventListener('load', function () {
 
         if (doAnimation) {
             tritoniaBody.animate(
-                {path: 'M' + tritoniaLeftX[nextIndex] + ',' + tritoniaEndsY[nextIndex] + 'L' + tritoniaCenterX + ',' + tritoniaCenterY + 'L' + tritoniaRightX[nextIndex] + ',' + tritoniaEndsY[nextIndex]},
+                {path: 'M' + tritoniaLeftX[nextIndex] + ',' + tritoniaEndsY[nextIndex] + 'L' + tritoniaCenterX[nextIndex] + ',' + tritoniaCenterY[nextIndex] + 'L' + tritoniaRightX[nextIndex] + ',' + tritoniaEndsY[nextIndex]},
                 animationDuration
             );
             timeMarker.animate(
@@ -1858,17 +1860,25 @@ window.addEventListener('load', function () {
 
                 // Store data for the animation
                 animationTime = [];
+                tritoniaCenterX = [];
+                tritoniaCenterY = [];
                 tritoniaLeftX = [];
                 tritoniaRightX = [];
                 tritoniaEndsY = [];
                 timeMarkerPosition = [];
                 var sampleFactor = 20;
                 for (var i = 0; i * sampleFactor < bodyAngle_degree.length; i++) {
-                    animationTime[i]      = Math.round(bodyAngle_degree[i * sampleFactor][0]);
-                    tritoniaLeftX[i]      = Math.round(tritoniaCenterX - tritoniaRadius * Math.cos(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180));
-                    tritoniaRightX[i]     = Math.round(tritoniaCenterX + tritoniaRadius * Math.cos(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180));
-                    tritoniaEndsY[i]      = Math.round(tritoniaCenterY - tritoniaRadius * Math.sin(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180)); // the origin of the Raphael paper is in the top-left, so dorsal flexion means the y-coord should decresease
-                    timeMarkerPosition[i] = Math.round((timeMarkerPositionRight - timeMarkerPositionLeft) * (bodyAngle_degree[i * sampleFactor][0] / bodyAngle_degree[bodyAngle_degree.length-1][0]));
+                    animationTime[i]       = Math.round(bodyAngle_degree[i * sampleFactor][0]);
+                    if (i == 0) {
+                        tritoniaCenterX[i] = tritoniaCenterXInit;
+                    } else {
+                        tritoniaCenterX[i] = Math.round(tritoniaCenterX[i-1] + Math.abs(bodyAngle_degree[i * sampleFactor][1] / 45));
+                    }
+                    tritoniaCenterY[i]     = Math.round(tritoniaCenterYInit + bodyAngle_degree[i * sampleFactor][1] / 1.5); // the origin of the Raphael paper is in the top-left, so dorsal flexion means the y-coord should decresease
+                    tritoniaLeftX[i]       = Math.round(tritoniaCenterX[i] - tritoniaRadius * Math.cos(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180));
+                    tritoniaRightX[i]      = Math.round(tritoniaCenterX[i] + tritoniaRadius * Math.cos(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180));
+                    tritoniaEndsY[i]       = Math.round(tritoniaCenterY[i] - tritoniaRadius * Math.sin(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180)); // the origin of the Raphael paper is in the top-left, so dorsal flexion means the y-coord should decresease
+                    timeMarkerPosition[i]  = Math.round((timeMarkerPositionRight - timeMarkerPositionLeft) * (bodyAngle_degree[i * sampleFactor][0] / bodyAngle_degree[bodyAngle_degree.length-1][0]));
                 }
 
                 // Set the animation to the appropriate initial conditions

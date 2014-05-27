@@ -7,7 +7,7 @@ window.addEventListener('load', function () {
     'use strict';
 
     var layoutSwim, layoutHiDi, layoutModulatedSwimCurrentClamp,
-		controlsPanel, controls, dataPanel, 
+		controlsPanel, controls, dataPanel, animationPanel,
         touchStimDataTable,
         voltageSDataTable,   currentSDataTable,
 		voltageC2DataTable,  currentC2DataTable, 
@@ -873,6 +873,75 @@ window.addEventListener('load', function () {
     bodyAngleDataTable.className = 'datatable';
     dataPanel.appendChild(bodyAngleDataTable);
 
+    // Tritonia animation
+    animationPanel = document.getElementById('TritoniaAnimation');
+
+    var doAnimation = 0,
+        
+        tritoniaRadius = 40,
+        tritoniaCenterX = 500,
+        tritoniaCenterY = 40,
+        tritoniaLeftXInit = tritoniaCenterX - tritoniaRadius,
+        tritoniaRightXInit = tritoniaCenterX + tritoniaRadius,
+        tritoniaEndsYInit = tritoniaCenterY,
+        
+        timeMarkerPositionLeft = 585,
+        timeMarkerPositionRight = 990,
+        timeMarkerY = 80,
+        timeMarkerLength = 20,
+        
+        paper = Raphael(animationPanel, 1000, 90),
+        tritoniaBody = paper.path('M' + tritoniaLeftXInit + ',' + tritoniaEndsYInit + 'L' + tritoniaCenterX + ',' + tritoniaCenterY + 'L' + tritoniaRightXInit + ',' + tritoniaEndsYInit),
+        timeMarker = paper.path('M' + timeMarkerPositionLeft + ',' + (timeMarkerY - timeMarkerLength) + 'V' + timeMarkerY),
+            
+        animationTime = [],
+        tritoniaLeftX = [], 
+        tritoniaRightX = [],
+        tritoniaEndsY = [],
+        timeMarkerPosition = [];
+
+    tritoniaBody.attr({'stroke': 'black', 'stroke-width': 2});
+    timeMarker.attr({'stroke': 'black', 'stroke-width': 2, 'arrow-end': 'classic-wide-long'}); 
+
+    // Function for setting Raphael objects to the appropriate initial conditions
+    function reinitializeAnimation() {
+        tritoniaBody.animate(
+            {path: 'M' + tritoniaLeftX[0] + ',' + tritoniaEndsY[0] + 'L' + tritoniaCenterX + ',' + tritoniaCenterY + 'L' + tritoniaRightX[0] + ',' + tritoniaEndsY[0]},
+            0
+        );
+        timeMarker.animate(
+            {transform: 't' + timeMarkerPosition[0] + ',0'},
+            0
+        );
+    };
+
+    // Function for synchronous animation of Raphael objects
+    function animateSimulation(animationTimeRatio, index) {
+        animationTimeRatio = (animationTimeRatio === undefined ? 1 : animationTimeRatio);
+        index = (index === undefined ? 0 : index);
+        
+        var animationDuration, nextIndex = (index + 1) % animationTime.length;
+        if (nextIndex == 0) {
+            animationDuration = 0
+        } else {
+            animationDuration = animationTimeRatio * (animationTime[nextIndex] - animationTime[nextIndex - 1]);
+        }
+
+        if (doAnimation) {
+            tritoniaBody.animate(
+                {path: 'M' + tritoniaLeftX[nextIndex] + ',' + tritoniaEndsY[nextIndex] + 'L' + tritoniaCenterX + ',' + tritoniaCenterY + 'L' + tritoniaRightX[nextIndex] + ',' + tritoniaEndsY[nextIndex]},
+                animationDuration
+            );
+            timeMarker.animate(
+                {transform: 't' + timeMarkerPosition[nextIndex] + ',0'},
+                animationDuration,
+                function(){animateSimulation(animationTimeRatio, nextIndex)} // the last animation calls this function again
+            );
+        } else {
+            reinitializeAnimation();
+        }
+    };
+
 
     // simulate and plot the tritonia swim CPG from Calin-Jageman et al 2007
     function runSimulation() {
@@ -1388,6 +1457,33 @@ window.addEventListener('load', function () {
             plotPanel = document.getElementById('TritoniaPlots');
             plotPanel.innerHTML = '';
 			
+			// Body flexion angle plot
+            title = document.createElement('h4');
+            title.innerHTML = 'Body Flexion Angle';
+            title.className = 'simplotheading';
+            plotPanel.appendChild(title);
+            plot = document.createElement('div');
+            plot.id = 'angleDiffPlot';
+            plot.style.width = '425px';
+            plot.style.height = '200px';
+            plotPanel.appendChild(plot);
+            plotHandles.push(
+               $.jqplot('angleDiffPlot', [bodyAngle_degree], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                    axes: {
+                        xaxis: {label:'Time (ms)'},
+                        yaxis: {
+                            label:'Body angle (degrees)',
+                            min: -90, max: 90,
+                            numberTicks: 7,
+                        },
+                    },
+                    series: [
+                        {label: 'Body angle', color: 'black'},
+                    ],
+            })));
+            graphJqplot.bindDataCapture('#angleDiffPlot', bodyAngleDataTable, title.innerHTML, 'Time');
+            graphJqplot.bindCursorTooltip('#angleDiffPlot', 'Time', 'ms', 'Degrees');
+			
 			// Unlabelled touch stimuli (Cell D)
 			if (plotTag == 'swim' || plotTag == 'ModulatedSwimCurrentClamp') {
 				title = document.createElement('h4');
@@ -1749,33 +1845,6 @@ window.addEventListener('load', function () {
 				graphJqplot.bindCursorTooltip('#currentDFNPlot', 'Time', 'ms', 'nA');
 			}
 			
-			// Body flexion angle plot
-            title = document.createElement('h4');
-            title.innerHTML = 'Body Flexion Angle';
-            title.className = 'simplotheading';
-            plotPanel.appendChild(title);
-            plot = document.createElement('div');
-            plot.id = 'angleDiffPlot';
-            plot.style.width = '425px';
-            plot.style.height = '200px';
-            plotPanel.appendChild(plot);
-            plotHandles.push(
-               $.jqplot('angleDiffPlot', [bodyAngle_degree], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-                    axes: {
-                        xaxis: {label:'Time (ms)'},
-                        yaxis: {
-                            label:'Body angle (degrees)',
-                            min: -90, max: 90,
-                            numberTicks: 7,
-                        },
-                    },
-                    series: [
-                        {label: 'Body angle', color: 'black'},
-                    ],
-            })));
-            graphJqplot.bindDataCapture('#angleDiffPlot', bodyAngleDataTable, title.innerHTML, 'Time');
-            graphJqplot.bindCursorTooltip('#angleDiffPlot', 'Time', 'ms', 'Degrees');
-			
 
             if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
@@ -1786,6 +1855,24 @@ window.addEventListener('load', function () {
                         (new Date().getTime() - startTime));
                 debugPanel = document.getElementById('debugPanel');
                 //debugPanel.innerHTML = 'hello world';
+
+                // Store data for the animation
+                animationTime = [];
+                tritoniaLeftX = [];
+                tritoniaRightX = [];
+                tritoniaEndsY = [];
+                timeMarkerPosition = [];
+                var sampleFactor = 20;
+                for (var i = 0; i * sampleFactor < bodyAngle_degree.length; i++) {
+                    animationTime[i]      = Math.round(bodyAngle_degree[i * sampleFactor][0]);
+                    tritoniaLeftX[i]      = Math.round(tritoniaCenterX - tritoniaRadius * Math.cos(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180));
+                    tritoniaRightX[i]     = Math.round(tritoniaCenterX + tritoniaRadius * Math.cos(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180));
+                    tritoniaEndsY[i]      = Math.round(tritoniaCenterY - tritoniaRadius * Math.sin(bodyAngle_degree[i * sampleFactor][1] * 3.14159 / 180)); // the origin of the Raphael paper is in the top-left, so dorsal flexion means the y-coord should decresease
+                    timeMarkerPosition[i] = Math.round((timeMarkerPositionRight - timeMarkerPositionLeft) * (bodyAngle_degree[i * sampleFactor][0] / bodyAngle_degree[bodyAngle_degree.length-1][0]));
+                }
+
+                // Set the animation to the appropriate initial conditions
+                reinitializeAnimation();
             }
         }
 
@@ -1799,6 +1886,15 @@ window.addEventListener('load', function () {
         runSimulation();
     }
 	
+    function toggleAnimation() {
+        if (!doAnimation) {
+            doAnimation = 1;
+            animateSimulation(0.5); // argument is animationTimeRatio
+        } else {
+            doAnimation = 0;
+        }
+    }
+    
     function resetToModulatedSwim() {
 		plotTag = 'swim';
         reset(paramsModulatedSwim, layoutSwim);
@@ -1868,6 +1964,8 @@ window.addEventListener('load', function () {
 
     (document.getElementById('TritoniaRunButton')
         .addEventListener('click', runSimulation, false));
+    (document.getElementById('TritoniaAnimationButton')
+        .addEventListener('click', toggleAnimation, false));
     (document.getElementById('TritoniaModulatedSwimResetButton')
         .addEventListener('click', resetToModulatedSwim, false));
     (document.getElementById('TritoniaModulatedSwimCurrentClampResetButton')

@@ -17,19 +17,20 @@
         <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
         <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
         <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+        <script language="javascript" type="text/javascript" src="../src/raphael.js"></script>
         <script language="javascript" type="text/javascript" src="tritonia_hidi_jqplot.js"></script>
     </head>
     <body>
         <h1 class="simtitle">Tritonia swim CPG simulation</h1>
+        <div id="TritoniaAnimation" class="animationpanel"></div>
         <div id="TritoniaPlots" class="plotpanel"></div>
         <div id="TritoniaControls" class="controlspanel"></div>
 
         <div>
             <div style="float:left;">
-                <input id="TritoniaRunButton" type="button" value="Run"/>
-            </div>
-            <div style="float:left;">
-                <input type="button" id="TritoniaClearDataButton" value="Clear Data Points"/>
+                <input id="TritoniaRunButton" type="button" value="Run"/><br/>
+                <input id="TritoniaAnimationButton" type="button" value="Toggle Animation"/><br/>
+                <input type="button" id="TritoniaClearDataButton" value="Clear Data Points"/><br/>
             </div>
             <div style="float:left;">
                 <input type="button" id="TritoniaModulatedSwimResetButton" value="Natural Swim Pattern"/><br/>

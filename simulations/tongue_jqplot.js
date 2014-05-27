@@ -159,7 +159,7 @@ window.addEventListener('load', function () {
         animationTimeRatio = (animationTimeRatio === undefined ? 1 : animationTimeRatio);
         index = (index === undefined ? 0 : index);
         
-        var animationDuration, nextIndex = (index + 1) % tongueLength.length;
+        var animationDuration, nextIndex = (index + 1) % animationTime.length;
         if (nextIndex == 0) {
             animationDuration = 0
         } else {
@@ -430,7 +430,7 @@ window.addEventListener('load', function () {
     function toggleAnimation() {
         if (!doAnimation) {
             doAnimation = 1;
-            animateSimulation(3);
+            animateSimulation(3); // argument is animationTimeRatio
         } else {
             doAnimation = 0;
         }

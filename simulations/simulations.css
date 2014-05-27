@@ -104,6 +104,9 @@ body
 }
 
 .animationpanel {
+}
+
+#TongueAnimation {
     width: 1000px;
     height: 80px;
 }

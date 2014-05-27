@@ -7,24 +7,24 @@ window.addEventListener('load', function () {
     'use strict';
 
     var layoutSwim, layoutHiDi, layoutModulatedSwimCurrentClamp,
-		controlsPanel, controls, dataPanel, animationPanel,
+        controlsPanel, controls, dataPanel, animationPanel,
         touchStimDataTable,
         voltageSDataTable,   currentSDataTable,
-		voltageC2DataTable,  currentC2DataTable, 
-		voltageDSIDataTable, currentDSIDataTable,
+        voltageC2DataTable,  currentC2DataTable, 
+        voltageDSIDataTable, currentDSIDataTable,
         voltageVSIDataTable, currentVSIDataTable, 
-		voltageDRIDataTable, currentDRIDataTable,
-		voltageDFNDataTable, currentDFNDataTable,
-		voltageVFNDataTable, currentVFNDataTable,
-		bodyAngleDataTable,
+        voltageDRIDataTable, currentDRIDataTable,
+        voltageDFNDataTable, currentDFNDataTable,
+        voltageVFNDataTable, currentVFNDataTable,
+        bodyAngleDataTable,
         tMax = 600000e-3,
         paramsUnmodulatedSwim, 
         paramsModulatedSwim, modulation,
         paramsIsolatedCells,
-		paramsModulatedSwimCurrentClamp, paramsHiDi,
+        paramsModulatedSwimCurrentClamp, paramsHiDi,
         plotHandles = [],
         currentRunNumber = 0,
-		plotTag = 'swim'; 
+        plotTag = 'swim'; 
 
     // set up the controls for the passive membrane simulation
     paramsUnmodulatedSwim = { 
@@ -93,8 +93,8 @@ window.addEventListener('load', function () {
             defaultVal: 80, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_DRI: { label: 'Number of pulses', units: '', 
             defaultVal: 10, minVal: 0, maxVal: 100 },
-			
-		pulseStart_ms_DFN: { label: 'Stimulus delay', units: 'ms', 
+            
+        pulseStart_ms_DFN: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 5000, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_DFN: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
@@ -104,8 +104,8 @@ window.addEventListener('load', function () {
             defaultVal: 80, minVal: 0, maxVal: tMax / 1e-3 },
         numPulses_DFN: { label: 'Number of pulses', units: '', 
             defaultVal: 10, minVal: 0, maxVal: 100 },
-			
-		pulseStart_ms_VFN: { label: 'Stimulus delay', units: 'ms', 
+            
+        pulseStart_ms_VFN: { label: 'Stimulus delay', units: 'ms', 
             defaultVal: 5000, minVal: 0, maxVal: tMax / 1e-3 },
         pulseHeight_nA_VFN: { label: 'Stimulus current', units: 'nA', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
@@ -184,7 +184,7 @@ window.addEventListener('load', function () {
         tau_close_Slow_ms_C2: { units: 'ms', 
             label: 'Slow undershoot closing time constant', 
             defaultVal: 4000, minVal: 0.1, maxVal: 1000000 },
-			
+            
         V_init_mV_DSI: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -50, minVal: -1000, maxVal: 1000 },
         C_nF_DSI: { label: 'Membrane capacitance', units: 'nF', 
@@ -331,8 +331,8 @@ window.addEventListener('load', function () {
         tau_close_Fast_ms_DRI: { units: 'ms', 
             label: 'Fast undershoot closing time constant', 
             defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
-			
-		V_init_mV_DFN: { label: 'Initial membrane potential', units: 'mV', 
+            
+        V_init_mV_DFN: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -50, minVal: -1000, maxVal: 1000 },
         C_nF_DFN: { label: 'Membrane capacitance', units: 'nF', 
             defaultVal: 2, minVal: 0.01, maxVal: 100 },
@@ -356,8 +356,8 @@ window.addEventListener('load', function () {
         tau_close_Fast_ms_DFN: { units: 'ms', 
             label: 'Fast undershoot closing time constant', 
             defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
-			
-		V_init_mV_VFN: { label: 'Initial membrane potential', units: 'mV', 
+            
+        V_init_mV_VFN: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -50, minVal: -1000, maxVal: 1000 },
         C_nF_VFN: { label: 'Membrane capacitance', units: 'nF', 
             defaultVal: 2, minVal: 0.01, maxVal: 100 },
@@ -381,8 +381,8 @@ window.addEventListener('load', function () {
         tau_close_Fast_ms_VFN: { units: 'ms', 
             label: 'Fast undershoot closing time constant', 
             defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
-			
-		W_E1_uS_StoDRI: { label: 'E1 conductance', 
+            
+        W_E1_uS_StoDRI: { label: 'E1 conductance', 
             units: '\u00B5S', defaultVal: 0.0056, minVal: 0, maxVal: 100 },
         E_E1_mV_StoDRI: { label: 'E1 reversal potential', units: 'mV', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
@@ -392,7 +392,7 @@ window.addEventListener('load', function () {
         tau_close_E1_ms_StoDRI: { units: 'ms', 
             label: 'E1 closing time constant', 
             defaultVal: 15000, minVal: 0.1, maxVal: 1000000 },
-			
+            
         W_E1_uS_C2toDSI: { label: 'E1 conductance', 
             units: '\u00B5S', defaultVal: 0.00029, minVal: 0, maxVal: 100 },
         E_E1_mV_C2toDSI: { label: 'E1 reversal potential', units: 'mV', 
@@ -549,8 +549,8 @@ window.addEventListener('load', function () {
         tau_close_E1_ms_DRItoDSI: { units: 'ms', 
             label: 'E1 closing time constant', 
             defaultVal: 15000, minVal: 0.1, maxVal: 1000000 },
-			
-		W_E1_uS_DSItoDFN: { label: 'E1 conductance', 
+            
+        W_E1_uS_DSItoDFN: { label: 'E1 conductance', 
             units: '\u00B5S', defaultVal: 0.054, minVal: 0, maxVal: 100 },
         E_E1_mV_DSItoDFN: { label: 'E1 reversal potential', units: 'mV', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
@@ -560,8 +560,8 @@ window.addEventListener('load', function () {
         tau_close_E1_ms_DSItoDFN: { units: 'ms', 
             label: 'E1 closing time constant', 
             defaultVal: 370, minVal: 0.1, maxVal: 1000000 },
-			
-		W_E1_uS_VSItoVFN: { label: 'E1 conductance', 
+            
+        W_E1_uS_VSItoVFN: { label: 'E1 conductance', 
             units: '\u00B5S', defaultVal: 0.054, minVal: 0, maxVal: 100 },
         E_E1_mV_VSItoVFN: { label: 'E1 reversal potential', units: 'mV', 
             defaultVal: 10, minVal: -1000, maxVal: 1000 },
@@ -581,81 +581,81 @@ window.addEventListener('load', function () {
         tau_close_E2_ms_VSItoVFN: { units: 'ms', 
             label: 'E2 closing time constant', 
             defaultVal: 2200, minVal: 0.1, maxVal: 1000000 },
-		
-		sigHeight: { label: 'Body angle sigmoid height', units: 'mV',
-			defaultVal: 200, minVal: 0, maxVal: 300},
-		beta_ventral: { label: 'Ventral neuron beta value', units: 'mV',
-			defaultVal: -44, minVal: 0, maxVal: 1000 },
-		gamma_ventral: { label: 'Ventral neuron gamma value', units: 'mV',
-			defaultVal: 1, minVal: 0, maxVal: 1000 },
-		beta_dorsal: { label: 'Dorsal neuron beta value', units: 'mV',
-			defaultVal: -43, minVal: 0, maxVal: 1000 },
-		gamma_dorsal: { label: 'Dorsal neuron gamma value', units: 'mV',
-			defaultVal: 1, minVal: 0, maxVal: 1000 }
+        
+        sigHeight: { label: 'Body angle sigmoid height', units: 'mV',
+            defaultVal: 200, minVal: 0, maxVal: 300},
+        beta_ventral: { label: 'Ventral neuron beta value', units: 'mV',
+            defaultVal: -44, minVal: 0, maxVal: 1000 },
+        gamma_ventral: { label: 'Ventral neuron gamma value', units: 'mV',
+            defaultVal: 1, minVal: 0, maxVal: 1000 },
+        beta_dorsal: { label: 'Dorsal neuron beta value', units: 'mV',
+            defaultVal: -43, minVal: 0, maxVal: 1000 },
+        gamma_dorsal: { label: 'Dorsal neuron gamma value', units: 'mV',
+            defaultVal: 1, minVal: 0, maxVal: 1000 }
     };
 
-	// Hi Di Treatment Parameters
-	paramsHiDi = JSON.parse(JSON.stringify(paramsUnmodulatedSwim));
-	paramsHiDi.sigHeight.defaultVal = 90;
-	paramsHiDi.totalDuration_ms.defaultVal = 10000;
-	
-	// Make all neurons less sensitive to firing
-	paramsHiDi.theta_ss_mV_S.defaultVal = -20;
-	paramsHiDi.theta_ss_mV_DRI.defaultVal = -27;
-	paramsHiDi.theta_ss_mV_DSI.defaultVal = -20;
-	paramsHiDi.theta_ss_mV_VSI.defaultVal = -20;
-	paramsHiDi.theta_ss_mV_C2.defaultVal = -10;
-	paramsHiDi.theta_ss_mV_DFN.defaultVal = -20;
-	paramsHiDi.theta_ss_mV_VFN.defaultVal = -20;
-	
-	paramsHiDi.W_E1_uS_DSItoDFN.defaultVal = .02
-	paramsHiDi.W_E1_uS_VSItoVFN.defaultVal = .03
-	paramsHiDi.beta_ventral.defaultVal = -40;
-	paramsHiDi.beta_dorsal.defaultVal = -40;
-	
-	// Current setup for good results
-	paramsHiDi.numPulses_touch.defaultVal = 0;      // touch
+    // Hi Di Treatment Parameters
+    paramsHiDi = JSON.parse(JSON.stringify(paramsUnmodulatedSwim));
+    paramsHiDi.sigHeight.defaultVal = 90;
+    paramsHiDi.totalDuration_ms.defaultVal = 10000;
+    
+    // Make all neurons less sensitive to firing
+    paramsHiDi.theta_ss_mV_S.defaultVal = -20;
+    paramsHiDi.theta_ss_mV_DRI.defaultVal = -27;
+    paramsHiDi.theta_ss_mV_DSI.defaultVal = -20;
+    paramsHiDi.theta_ss_mV_VSI.defaultVal = -20;
+    paramsHiDi.theta_ss_mV_C2.defaultVal = -10;
+    paramsHiDi.theta_ss_mV_DFN.defaultVal = -20;
+    paramsHiDi.theta_ss_mV_VFN.defaultVal = -20;
+    
+    paramsHiDi.W_E1_uS_DSItoDFN.defaultVal = .02
+    paramsHiDi.W_E1_uS_VSItoVFN.defaultVal = .03
+    paramsHiDi.beta_ventral.defaultVal = -40;
+    paramsHiDi.beta_dorsal.defaultVal = -40;
+    
+    // Current setup for good results
+    paramsHiDi.numPulses_touch.defaultVal = 0;      // touch
 
-	paramsHiDi.pulseStart_ms_DRI.defaultVal = 500;  // cell A
-	paramsHiDi.pulseHeight_nA_DRI.defaultVal = 3;
-	paramsHiDi.pulseWidth_ms_DRI.defaultVal = 200;
-	paramsHiDi.isi_ms_DRI.defaultVal = 800;  
-	paramsHiDi.numPulses_DRI.defaultVal = 0;
-	
-	paramsHiDi.pulseHeight_nA_C2.defaultVal = 6;   // cell B
-	paramsHiDi.pulseWidth_ms_C2.defaultVal = 1000;
-	paramsHiDi.isi_ms_C2.defaultVal = 800;  
-	paramsHiDi.numPulses_C2.defaultVal = 0;
-	
-	paramsHiDi.pulseStart_ms_VFN.defaultVal = 500;   // cell C
-	paramsHiDi.pulseHeight_nA_VFN.defaultVal = 5;
-	paramsHiDi.pulseWidth_ms_VFN.defaultVal = 1200;
-	paramsHiDi.isi_ms_VFN.defaultVal = 800;  
-	paramsHiDi.numPulses_VFN.defaultVal = 0;
-	
-	paramsHiDi.pulseHeight_nA_S.defaultVal = 1.7;   // cell D
-	paramsHiDi.pulseWidth_ms_S.defaultVal = 200;
-	paramsHiDi.isi_ms_S.defaultVal = 800;  
-	paramsHiDi.numPulses_S.defaultVal = 0;
-	
-	paramsHiDi.pulseStart_ms_VSI.defaultVal = 200;   // cell E
-	paramsHiDi.pulseHeight_nA_VSI.defaultVal = 5;
-	paramsHiDi.pulseWidth_ms_VSI.defaultVal = 2000;
-	paramsHiDi.isi_ms_VSI.defaultVal = 800;  
-	paramsHiDi.numPulses_VSI.defaultVal = 0;
-	
-	paramsHiDi.pulseHeight_nA_DSI.defaultVal = 5;   // cell F
-	paramsHiDi.pulseWidth_ms_DSI.defaultVal = 1000;
-	paramsHiDi.isi_ms_DSI.defaultVal = 800;  
-	paramsHiDi.numPulses_DSI.defaultVal = 0;
-	
-	paramsHiDi.pulseStart_ms_DFN.defaultVal = 500;   // cell G
-	paramsHiDi.pulseHeight_nA_DFN.defaultVal = 5;
-	paramsHiDi.pulseWidth_ms_DFN.defaultVal = 1200;
-	paramsHiDi.isi_ms_DFN.defaultVal = 800;  
-	paramsHiDi.numPulses_DFN.defaultVal = 0;
-	
-	
+    paramsHiDi.pulseStart_ms_DRI.defaultVal = 500;  // cell A
+    paramsHiDi.pulseHeight_nA_DRI.defaultVal = 3;
+    paramsHiDi.pulseWidth_ms_DRI.defaultVal = 200;
+    paramsHiDi.isi_ms_DRI.defaultVal = 800;  
+    paramsHiDi.numPulses_DRI.defaultVal = 0;
+    
+    paramsHiDi.pulseHeight_nA_C2.defaultVal = 6;   // cell B
+    paramsHiDi.pulseWidth_ms_C2.defaultVal = 1000;
+    paramsHiDi.isi_ms_C2.defaultVal = 800;  
+    paramsHiDi.numPulses_C2.defaultVal = 0;
+    
+    paramsHiDi.pulseStart_ms_VFN.defaultVal = 500;   // cell C
+    paramsHiDi.pulseHeight_nA_VFN.defaultVal = 5;
+    paramsHiDi.pulseWidth_ms_VFN.defaultVal = 1200;
+    paramsHiDi.isi_ms_VFN.defaultVal = 800;  
+    paramsHiDi.numPulses_VFN.defaultVal = 0;
+    
+    paramsHiDi.pulseHeight_nA_S.defaultVal = 1.7;   // cell D
+    paramsHiDi.pulseWidth_ms_S.defaultVal = 200;
+    paramsHiDi.isi_ms_S.defaultVal = 800;  
+    paramsHiDi.numPulses_S.defaultVal = 0;
+    
+    paramsHiDi.pulseStart_ms_VSI.defaultVal = 200;   // cell E
+    paramsHiDi.pulseHeight_nA_VSI.defaultVal = 5;
+    paramsHiDi.pulseWidth_ms_VSI.defaultVal = 2000;
+    paramsHiDi.isi_ms_VSI.defaultVal = 800;  
+    paramsHiDi.numPulses_VSI.defaultVal = 0;
+    
+    paramsHiDi.pulseHeight_nA_DSI.defaultVal = 5;   // cell F
+    paramsHiDi.pulseWidth_ms_DSI.defaultVal = 1000;
+    paramsHiDi.isi_ms_DSI.defaultVal = 800;  
+    paramsHiDi.numPulses_DSI.defaultVal = 0;
+    
+    paramsHiDi.pulseStart_ms_DFN.defaultVal = 500;   // cell G
+    paramsHiDi.pulseHeight_nA_DFN.defaultVal = 5;
+    paramsHiDi.pulseWidth_ms_DFN.defaultVal = 1200;
+    paramsHiDi.isi_ms_DFN.defaultVal = 800;  
+    paramsHiDi.numPulses_DFN.defaultVal = 0;
+    
+    
     // Modulated parameters:
     // start with a copy of the unmodulated parameters, then adjust
     modulation = 1;
@@ -670,7 +670,7 @@ window.addEventListener('load', function () {
     paramsModulatedSwim.W_I1_uS_C2toVSI.defaultVal *= 1 + -1 * modulation;
     paramsModulatedSwim.W_I2_uS_C2toVSI.defaultVal *= 1 + -1 * modulation;
     paramsModulatedSwim.W_E1_uS_C2toDSI.defaultVal *= 1 + 20 * modulation;
-	
+    
     
     // uncorrelated parameter changes from paper
     //paramsModulatedSwim.tau_close_E1_ms_C2toDSI.defaultVal *= 1 + 
@@ -715,92 +715,92 @@ window.addEventListener('load', function () {
     paramsIsolatedCells.pulseHeight_nA_DRI.defaultVal = 0;
 
     // Normal Saline Parameters
-	paramsModulatedSwimCurrentClamp = JSON.parse(JSON.stringify(paramsModulatedSwim));
+    paramsModulatedSwimCurrentClamp = JSON.parse(JSON.stringify(paramsModulatedSwim));
 
-	paramsModulatedSwimCurrentClamp.pulseStart_ms_DRI.defaultVal = 0;  // cell A
-	paramsModulatedSwimCurrentClamp.pulseHeight_nA_DRI.defaultVal = -1;
-	paramsModulatedSwimCurrentClamp.pulseWidth_ms_DRI.defaultVal = 2000;
-	paramsModulatedSwimCurrentClamp.isi_ms_DRI.defaultVal = 5000;  
-	paramsModulatedSwimCurrentClamp.numPulses_DRI.defaultVal = 0;
-	
-	paramsModulatedSwimCurrentClamp.pulseStart_ms_C2.defaultVal = 0;   // cell B
-	paramsModulatedSwimCurrentClamp.pulseHeight_nA_C2.defaultVal = -1;
-	paramsModulatedSwimCurrentClamp.pulseWidth_ms_C2.defaultVal = 2000;
-	paramsModulatedSwimCurrentClamp.isi_ms_C2.defaultVal = 5000;  
-	paramsModulatedSwimCurrentClamp.numPulses_C2.defaultVal = 0;
-	
-	paramsModulatedSwimCurrentClamp.pulseStart_ms_VFN.defaultVal = 0;   // cell C
-	paramsModulatedSwimCurrentClamp.pulseHeight_nA_VFN.defaultVal = -1;
-	paramsModulatedSwimCurrentClamp.pulseWidth_ms_VFN.defaultVal = 2000;
-	paramsModulatedSwimCurrentClamp.isi_ms_VFN.defaultVal = 5000;  
-	paramsModulatedSwimCurrentClamp.numPulses_VFN.defaultVal = 0;
-	
-	paramsModulatedSwimCurrentClamp.pulseStart_ms_S.defaultVal = 0;   // cell D
-	paramsModulatedSwimCurrentClamp.pulseHeight_nA_S.defaultVal = -1;
-	paramsModulatedSwimCurrentClamp.pulseWidth_ms_S.defaultVal = 2000;
-	paramsModulatedSwimCurrentClamp.isi_ms_S.defaultVal = 5000;  
-	paramsModulatedSwimCurrentClamp.numPulses_S.defaultVal = 0;
-	
-	paramsModulatedSwimCurrentClamp.pulseStart_ms_VSI.defaultVal = 0;   // cell E
-	paramsModulatedSwimCurrentClamp.pulseHeight_nA_VSI.defaultVal = -1;
-	paramsModulatedSwimCurrentClamp.pulseWidth_ms_VSI.defaultVal = 2000;
-	paramsModulatedSwimCurrentClamp.isi_ms_VSI.defaultVal = 5000;  
-	paramsModulatedSwimCurrentClamp.numPulses_VSI.defaultVal = 0;
-	
-	paramsModulatedSwimCurrentClamp.pulseStart_ms_DSI.defaultVal = 0;   // cell F
-	paramsModulatedSwimCurrentClamp.pulseHeight_nA_DSI.defaultVal = -1;
-	paramsModulatedSwimCurrentClamp.pulseWidth_ms_DSI.defaultVal = 2000;
-	paramsModulatedSwimCurrentClamp.isi_ms_DSI.defaultVal = 5000;  
-	paramsModulatedSwimCurrentClamp.numPulses_DSI.defaultVal = 0;
-	
-	paramsModulatedSwimCurrentClamp.pulseStart_ms_DFN.defaultVal = 0;   // cell G
-	paramsModulatedSwimCurrentClamp.pulseHeight_nA_DFN.defaultVal = -1;
-	paramsModulatedSwimCurrentClamp.pulseWidth_ms_DFN.defaultVal = 2000;
-	paramsModulatedSwimCurrentClamp.isi_ms_DFN.defaultVal = 5000;  
-	paramsModulatedSwimCurrentClamp.numPulses_DFN.defaultVal = 0;
+    paramsModulatedSwimCurrentClamp.pulseStart_ms_DRI.defaultVal = 0;  // cell A
+    paramsModulatedSwimCurrentClamp.pulseHeight_nA_DRI.defaultVal = -1;
+    paramsModulatedSwimCurrentClamp.pulseWidth_ms_DRI.defaultVal = 2000;
+    paramsModulatedSwimCurrentClamp.isi_ms_DRI.defaultVal = 5000;  
+    paramsModulatedSwimCurrentClamp.numPulses_DRI.defaultVal = 0;
+    
+    paramsModulatedSwimCurrentClamp.pulseStart_ms_C2.defaultVal = 0;   // cell B
+    paramsModulatedSwimCurrentClamp.pulseHeight_nA_C2.defaultVal = -1;
+    paramsModulatedSwimCurrentClamp.pulseWidth_ms_C2.defaultVal = 2000;
+    paramsModulatedSwimCurrentClamp.isi_ms_C2.defaultVal = 5000;  
+    paramsModulatedSwimCurrentClamp.numPulses_C2.defaultVal = 0;
+    
+    paramsModulatedSwimCurrentClamp.pulseStart_ms_VFN.defaultVal = 0;   // cell C
+    paramsModulatedSwimCurrentClamp.pulseHeight_nA_VFN.defaultVal = -1;
+    paramsModulatedSwimCurrentClamp.pulseWidth_ms_VFN.defaultVal = 2000;
+    paramsModulatedSwimCurrentClamp.isi_ms_VFN.defaultVal = 5000;  
+    paramsModulatedSwimCurrentClamp.numPulses_VFN.defaultVal = 0;
+    
+    paramsModulatedSwimCurrentClamp.pulseStart_ms_S.defaultVal = 0;   // cell D
+    paramsModulatedSwimCurrentClamp.pulseHeight_nA_S.defaultVal = -1;
+    paramsModulatedSwimCurrentClamp.pulseWidth_ms_S.defaultVal = 2000;
+    paramsModulatedSwimCurrentClamp.isi_ms_S.defaultVal = 5000;  
+    paramsModulatedSwimCurrentClamp.numPulses_S.defaultVal = 0;
+    
+    paramsModulatedSwimCurrentClamp.pulseStart_ms_VSI.defaultVal = 0;   // cell E
+    paramsModulatedSwimCurrentClamp.pulseHeight_nA_VSI.defaultVal = -1;
+    paramsModulatedSwimCurrentClamp.pulseWidth_ms_VSI.defaultVal = 2000;
+    paramsModulatedSwimCurrentClamp.isi_ms_VSI.defaultVal = 5000;  
+    paramsModulatedSwimCurrentClamp.numPulses_VSI.defaultVal = 0;
+    
+    paramsModulatedSwimCurrentClamp.pulseStart_ms_DSI.defaultVal = 0;   // cell F
+    paramsModulatedSwimCurrentClamp.pulseHeight_nA_DSI.defaultVal = -1;
+    paramsModulatedSwimCurrentClamp.pulseWidth_ms_DSI.defaultVal = 2000;
+    paramsModulatedSwimCurrentClamp.isi_ms_DSI.defaultVal = 5000;  
+    paramsModulatedSwimCurrentClamp.numPulses_DSI.defaultVal = 0;
+    
+    paramsModulatedSwimCurrentClamp.pulseStart_ms_DFN.defaultVal = 0;   // cell G
+    paramsModulatedSwimCurrentClamp.pulseHeight_nA_DFN.defaultVal = -1;
+    paramsModulatedSwimCurrentClamp.pulseWidth_ms_DFN.defaultVal = 2000;
+    paramsModulatedSwimCurrentClamp.isi_ms_DFN.defaultVal = 5000;  
+    paramsModulatedSwimCurrentClamp.numPulses_DFN.defaultVal = 0;
 
 
     layoutSwim = [
-		['Touch Stimulus', ['pulseStart_ms_touch', 'pulseHeight_nA_touch', 
+        ['Touch Stimulus', ['pulseStart_ms_touch', 'pulseHeight_nA_touch', 
             'pulseWidth_ms_touch', 'isi_ms_touch', 'numPulses_touch']],
         ['Simulation Settings', ['totalDuration_ms']],
     ];
-	
-	layoutModulatedSwimCurrentClamp = [
-		['Touch Stimulus', ['pulseStart_ms_touch', 'pulseHeight_nA_touch', 
+    
+    layoutModulatedSwimCurrentClamp = [
+        ['Touch Stimulus', ['pulseStart_ms_touch', 'pulseHeight_nA_touch', 
             'pulseWidth_ms_touch', 'isi_ms_touch', 'numPulses_touch']],
-		['Cell A Current Clamp', ['pulseStart_ms_DRI', 'pulseHeight_nA_DRI', 
+        ['Cell A Current Clamp', ['pulseStart_ms_DRI', 'pulseHeight_nA_DRI', 
             'pulseWidth_ms_DRI', 'isi_ms_DRI', 'numPulses_DRI']],
         ['Cell B Current Clamp', ['pulseStart_ms_C2', 'pulseHeight_nA_C2', 
             'pulseWidth_ms_C2', 'isi_ms_C2', 'numPulses_C2']],
-		['Cell C Current Clamp', ['pulseStart_ms_VFN', 'pulseHeight_nA_VFN', 
+        ['Cell C Current Clamp', ['pulseStart_ms_VFN', 'pulseHeight_nA_VFN', 
             'pulseWidth_ms_VFN', 'isi_ms_VFN', 'numPulses_VFN']],
-		['Cell D Current Clamp', ['pulseStart_ms_S', 'pulseHeight_nA_S', 
+        ['Cell D Current Clamp', ['pulseStart_ms_S', 'pulseHeight_nA_S', 
             'pulseWidth_ms_S', 'isi_ms_S', 'numPulses_S']],
-		['Cell E Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
+        ['Cell E Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
             'pulseWidth_ms_VSI', 'isi_ms_VSI', 'numPulses_VSI']],
         ['Cell F Current Clamp', ['pulseStart_ms_DSI', 'pulseHeight_nA_DSI', 
             'pulseWidth_ms_DSI', 'isi_ms_DSI', 'numPulses_DSI']],
-		['Cell G Current Clamp', ['pulseStart_ms_DFN', 'pulseHeight_nA_DFN', 
-            'pulseWidth_ms_DFN', 'isi_ms_DFN', 'numPulses_DFN']],	
+        ['Cell G Current Clamp', ['pulseStart_ms_DFN', 'pulseHeight_nA_DFN', 
+            'pulseWidth_ms_DFN', 'isi_ms_DFN', 'numPulses_DFN']],    
         ['Simulation Settings', ['totalDuration_ms']]
     ];
 
-	layoutHiDi = [
-		['Cell A Current Clamp', ['pulseStart_ms_DRI', 'pulseHeight_nA_DRI', 
+    layoutHiDi = [
+        ['Cell A Current Clamp', ['pulseStart_ms_DRI', 'pulseHeight_nA_DRI', 
             'pulseWidth_ms_DRI', 'isi_ms_DRI', 'numPulses_DRI']],
         ['Cell B Current Clamp', ['pulseStart_ms_C2', 'pulseHeight_nA_C2', 
             'pulseWidth_ms_C2', 'isi_ms_C2', 'numPulses_C2']],
-		['Cell C Current Clamp', ['pulseStart_ms_VFN', 'pulseHeight_nA_VFN', 
+        ['Cell C Current Clamp', ['pulseStart_ms_VFN', 'pulseHeight_nA_VFN', 
             'pulseWidth_ms_VFN', 'isi_ms_VFN', 'numPulses_VFN']],
-		['Cell D Current Clamp', ['pulseStart_ms_S', 'pulseHeight_nA_S', 
+        ['Cell D Current Clamp', ['pulseStart_ms_S', 'pulseHeight_nA_S', 
             'pulseWidth_ms_S', 'isi_ms_S', 'numPulses_S']],
-		['Cell E Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
+        ['Cell E Current Clamp', ['pulseStart_ms_VSI', 'pulseHeight_nA_VSI', 
             'pulseWidth_ms_VSI', 'isi_ms_VSI', 'numPulses_VSI']],
         ['Cell F Current Clamp', ['pulseStart_ms_DSI', 'pulseHeight_nA_DSI', 
             'pulseWidth_ms_DSI', 'isi_ms_DSI', 'numPulses_DSI']],
-		['Cell G Current Clamp', ['pulseStart_ms_DFN', 'pulseHeight_nA_DFN', 
-            'pulseWidth_ms_DFN', 'isi_ms_DFN', 'numPulses_DFN']],	
+        ['Cell G Current Clamp', ['pulseStart_ms_DFN', 'pulseHeight_nA_DFN', 
+            'pulseWidth_ms_DFN', 'isi_ms_DFN', 'numPulses_DFN']],    
         ['Simulation Settings', ['totalDuration_ms']]
     ];
     controlsPanel = document.getElementById('TritoniaControls');
@@ -809,10 +809,10 @@ window.addEventListener('load', function () {
     dataPanel = document.getElementById('TritoniaData');
     dataPanel.className = 'datapanel';
 
-	touchStimDataTable = document.createElement('table');   // touch
+    touchStimDataTable = document.createElement('table');   // touch
     touchStimDataTable.className = 'datatable';
     dataPanel.appendChild(touchStimDataTable);
-	
+    
     voltageDRIDataTable = document.createElement('table');  // cell A
     voltageDRIDataTable.className = 'datatable';
     dataPanel.appendChild(voltageDRIDataTable);
@@ -828,24 +828,24 @@ window.addEventListener('load', function () {
     currentC2DataTable = document.createElement('table'); 
     currentC2DataTable.className = 'datatable';
     dataPanel.appendChild(currentC2DataTable);
-	
-	voltageVFNDataTable = document.createElement('table');  // cell C
+    
+    voltageVFNDataTable = document.createElement('table');  // cell C
     voltageVFNDataTable.className = 'datatable';
     dataPanel.appendChild(voltageVFNDataTable);
 
     currentVFNDataTable = document.createElement('table');
     currentVFNDataTable.className = 'datatable';
     dataPanel.appendChild(currentVFNDataTable);
-	
-	voltageSDataTable = document.createElement('table');   // cell D
+    
+    voltageSDataTable = document.createElement('table');   // cell D
     voltageSDataTable.className = 'datatable';
     dataPanel.appendChild(voltageSDataTable);
-	
+    
     currentSDataTable = document.createElement('table');
     currentSDataTable.className = 'datatable';
     dataPanel.appendChild(currentSDataTable);
-	
-	voltageVSIDataTable = document.createElement('table');  // cell E
+    
+    voltageVSIDataTable = document.createElement('table');  // cell E
     voltageVSIDataTable.className = 'datatable';
     dataPanel.appendChild(voltageVSIDataTable);
 
@@ -860,7 +860,7 @@ window.addEventListener('load', function () {
     currentDSIDataTable = document.createElement('table');
     currentDSIDataTable.className = 'datatable';
     dataPanel.appendChild(currentDSIDataTable);
-	
+    
     voltageDFNDataTable = document.createElement('table');  // cell G
     voltageDFNDataTable.className = 'datatable';
     dataPanel.appendChild(voltageDFNDataTable);
@@ -868,8 +868,8 @@ window.addEventListener('load', function () {
     currentDFNDataTable = document.createElement('table');
     currentDFNDataTable.className = 'datatable';
     dataPanel.appendChild(currentDFNDataTable);
-	
-	bodyAngleDataTable = document.createElement('table');  // body angle
+    
+    bodyAngleDataTable = document.createElement('table');  // body angle
     bodyAngleDataTable.className = 'datatable';
     dataPanel.appendChild(bodyAngleDataTable);
 
@@ -959,11 +959,11 @@ window.addEventListener('load', function () {
             v_VSI, v_VSI_mV, iStim_VSI, iStim_VSI_nA,
             DRI, DRIFast, pulseTrainDRI,
             v_DRI, v_DRI_mV, iStim_DRI, iStim_DRI_nA,
-			DFN, DFNFast, pulseTrainDFN,
-			v_DFN, v_DFN_mV, iStim_DFN, iStim_DFN_nA,
-			VFN, VFNFast, pulseTrainVFN,
-			v_VFN, v_VFN_mV, iStim_VFN, iStim_VFN_nA,
-			StoDRI_E1,
+            DFN, DFNFast, pulseTrainDFN,
+            v_DFN, v_DFN_mV, iStim_DFN, iStim_DFN_nA,
+            VFN, VFNFast, pulseTrainVFN,
+            v_VFN, v_VFN_mV, iStim_VFN, iStim_VFN_nA,
+            StoDRI_E1,
             C2toDSI_E1, C2toDSI_I1, C2toDSI_I2, 
             C2toVSI_E1, C2toVSI_I1, C2toVSI_I2, 
             DSItoC2_E1, DSItoC2_E2, 
@@ -971,9 +971,9 @@ window.addEventListener('load', function () {
             VSItoC2_I1, 
             VSItoDSI_I1, VSItoDSI_I2, 
             DRItoDSI_E1, 
-			DSItoDFN_E1, DSItoDFN_E2,
-			VSItoVFN_E1, VSItoVFN_E2,
-			slugBody, bodyAngle, bodyAngle_degree,
+            DSItoDFN_E1, DSItoDFN_E2,
+            VSItoVFN_E1, VSItoVFN_E2,
+            slugBody, bodyAngle, bodyAngle_degree,
             startTime = new Date().getTime(),
             t0, y0, runNumber;
        
@@ -981,7 +981,7 @@ window.addEventListener('load', function () {
         model = componentModel.componentModel();
 
         // create the touch stim
-		pulseTrainTouchStim = electrophys.pulseTrain({
+        pulseTrainTouchStim = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms_touch, 
             width: params.pulseWidth_ms_touch * 1e-3, 
             height: params.pulseHeight_nA_touch * 1e-9,
@@ -999,7 +999,7 @@ window.addEventListener('load', function () {
             theta_r: params.theta_r_mV_S * 1e-3, 
             theta_tau: params.theta_tau_ms_S * 1e-3
         });
-		pulseTrainS = electrophys.pulseTrain({
+        pulseTrainS = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms_S, 
             width: params.pulseWidth_ms_S * 1e-3, 
             height: params.pulseHeight_nA_S * 1e-9,
@@ -1172,7 +1172,7 @@ window.addEventListener('load', function () {
         DRI.addCurrent(pulseTrainDRI);
        
 
-	   DFN = electrophys.gettingIFNeuron(model, { 
+       DFN = electrophys.gettingIFNeuron(model, { 
             V_rest: params.V_init_mV_DFN * 1e-3, 
             C: params.C_nF_DFN * 1e-9, 
             g_leak: params.g_leak_uS_DFN * 1e-6, 
@@ -1187,7 +1187,7 @@ window.addEventListener('load', function () {
             tau_open: params.tau_open_Fast_ms_DFN * 1e-3, 
             tau_close: params.tau_close_Fast_ms_DFN * 1e-3, 
         });
-		pulseTrainDFN = electrophys.pulseTrain({
+        pulseTrainDFN = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms_DFN, 
             width: params.pulseWidth_ms_DFN * 1e-3, 
             height: params.pulseHeight_nA_DFN * 1e-9,
@@ -1195,8 +1195,8 @@ window.addEventListener('load', function () {
             num_pulses: params.numPulses_DFN
         });
         DFN.addCurrent(pulseTrainDFN);
-		
-		VFN = electrophys.gettingIFNeuron(model, { 
+        
+        VFN = electrophys.gettingIFNeuron(model, { 
             V_rest: params.V_init_mV_VFN * 1e-3, 
             C: params.C_nF_VFN * 1e-9, 
             g_leak: params.g_leak_uS_VFN * 1e-6, 
@@ -1211,7 +1211,7 @@ window.addEventListener('load', function () {
             tau_open: params.tau_open_Fast_ms_VFN * 1e-3, 
             tau_close: params.tau_close_Fast_ms_VFN * 1e-3, 
         });
-		pulseTrainVFN = electrophys.pulseTrain({
+        pulseTrainVFN = electrophys.pulseTrain({
             start: 1e-3 * params.pulseStart_ms_VFN, 
             width: params.pulseWidth_ms_VFN * 1e-3, 
             height: params.pulseHeight_nA_VFN * 1e-9,
@@ -1219,15 +1219,15 @@ window.addEventListener('load', function () {
             num_pulses: params.numPulses_VFN
         });
         VFN.addCurrent(pulseTrainVFN);
-		
-		// create the S to DRI synapse
+        
+        // create the S to DRI synapse
         StoDRI_E1 = electrophys.gettingSynapse(model, S, DRI, { 
             W: params.W_E1_uS_StoDRI * 1e-6, 
             E_rev: params.E_E1_mV_StoDRI * 1e-3, 
             tau_open: params.tau_open_E1_ms_StoDRI * 1e-3, 
             tau_close: params.tau_close_E1_ms_StoDRI * 1e-3, 
         });
-		
+        
         // create the C2 to DSI synapse
         C2toDSI_E1 = electrophys.gettingSynapse(model, C2, DSI, { 
             W: params.W_E1_uS_C2toDSI * 1e-6, 
@@ -1337,16 +1337,16 @@ window.addEventListener('load', function () {
             tau_open: params.tau_open_E1_ms_DRItoDSI * 1e-3, 
             tau_close: params.tau_close_E1_ms_DRItoDSI * 1e-3, 
         });
-		
-		// create the DSI to DFN synapse
+        
+        // create the DSI to DFN synapse
         DSItoDFN_E1 = electrophys.gettingSynapse(model, DSI, DFN, { 
             W: params.W_E1_uS_DSItoDFN * 1e-6, 
             E_rev: params.E_E1_mV_DSItoDFN * 1e-3, 
             tau_open: params.tau_open_E1_ms_DSItoDFN * 1e-3, 
             tau_close: params.tau_close_E1_ms_DSItoDFN * 1e-3, 
         });
-		
-		// create the VSI to VFN synapse
+        
+        // create the VSI to VFN synapse
         VSItoVFN_E1 = electrophys.gettingSynapse(model, VSI, VFN, { 
             W: params.W_E1_uS_VSItoVFN * 1e-6, 
             E_rev: params.E_E1_mV_VSItoVFN * 1e-3, 
@@ -1359,17 +1359,17 @@ window.addEventListener('load', function () {
             tau_open: params.tau_open_E2_ms_VSItoVFN * 1e-3, 
             tau_close: params.tau_close_E2_ms_VSItoVFN * 1e-3, 
         });
-		
-		
-		// Get the body angle
-		slugBody = electrophys.slugBody(model, VFN, DFN, {
-			sigHeight: params.sigHeight,
-			beta_ventral: params.beta_ventral * 1e-3,
-			gamma_ventral: params.gamma_ventral * 1e-3,
-			beta_dorsal: params.beta_dorsal * 1e-3,
-			gamma_dorsal: params.gamma_dorsal * 1e-3
-		});
-		
+        
+        
+        // Get the body angle
+        slugBody = electrophys.slugBody(model, VFN, DFN, {
+            sigHeight: params.sigHeight,
+            beta_ventral: params.beta_ventral * 1e-3,
+            gamma_ventral: params.gamma_ventral * 1e-3,
+            beta_dorsal: params.beta_dorsal * 1e-3,
+            gamma_dorsal: params.gamma_dorsal * 1e-3
+        });
+        
         // simulate them
         touchStim_nA = [];
         v_S_mV = [];
@@ -1382,11 +1382,11 @@ window.addEventListener('load', function () {
         iStim_VSI_nA = [];
         v_DRI_mV = [];
         iStim_DRI_nA = [];
-		v_DFN_mV = [];
-		iStim_DFN_nA = [];
-		v_VFN_mV = [];
-		iStim_VFN_nA = [];
-		bodyAngle_degree = [];
+        v_DFN_mV = [];
+        iStim_DFN_nA = [];
+        v_VFN_mV = [];
+        iStim_VFN_nA = [];
+        bodyAngle_degree = [];
 
         // run for a bit to allow the simulation to stabilize
         result = model.integrate({
@@ -1410,24 +1410,24 @@ window.addEventListener('load', function () {
                     params.totalDuration_ms * 1e-3 / 500),
                 y0: y0, 
                 timeout: 500
-			});
+            });
             
             v_S       = result.mapOrderedPairs(S.VWithSpikes);
             v_C2      = result.mapOrderedPairs(C2.VWithSpikes);
             v_DSI     = result.mapOrderedPairs(DSI.VWithSpikes);
             v_VSI     = result.mapOrderedPairs(VSI.VWithSpikes);
             v_DRI     = result.mapOrderedPairs(DRI.VWithSpikes);
-			v_DFN	  = result.mapOrderedPairs(DFN.VWithSpikes);
-			v_VFN	  = result.mapOrderedPairs(VFN.VWithSpikes);
+            v_DFN     = result.mapOrderedPairs(DFN.VWithSpikes);
+            v_VFN     = result.mapOrderedPairs(VFN.VWithSpikes);
             touchStim = result.mapOrderedPairs(pulseTrainTouchStim);
             iStim_S   = result.mapOrderedPairs(pulseTrainS);
             iStim_C2  = result.mapOrderedPairs(pulseTrainC2);
             iStim_DSI = result.mapOrderedPairs(pulseTrainDSI);
             iStim_VSI = result.mapOrderedPairs(pulseTrainVSI);
             iStim_DRI = result.mapOrderedPairs(pulseTrainDRI);
-			iStim_DFN = result.mapOrderedPairs(pulseTrainDFN);
-			iStim_VFN = result.mapOrderedPairs(pulseTrainVFN);
-			bodyAngle = result.mapOrderedPairs(slugBody.bodyAngle);
+            iStim_DFN = result.mapOrderedPairs(pulseTrainDFN);
+            iStim_VFN = result.mapOrderedPairs(pulseTrainVFN);
+            bodyAngle = result.mapOrderedPairs(slugBody.bodyAngle);
 
             // convert to the right units
             // each ordered pair consists of a time and another variable
@@ -1436,17 +1436,17 @@ window.addEventListener('load', function () {
             v_DSI_mV     = v_DSI_mV.concat(v_DSI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             v_VSI_mV     = v_VSI_mV.concat(v_VSI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             v_DRI_mV     = v_DRI_mV.concat(v_DRI.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
-			v_DFN_mV     = v_DFN_mV.concat(v_DFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
-			v_VFN_mV     = v_VFN_mV.concat(v_VFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
+            v_DFN_mV     = v_DFN_mV.concat(v_DFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
+            v_VFN_mV     = v_VFN_mV.concat(v_VFN.map         (function (v) {return [v[0] / 1e-3, v[1] / 1e-3];}));
             touchStim_nA = touchStim_nA.concat(touchStim.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_S_nA   = iStim_S_nA.concat(iStim_S.map     (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_C2_nA  = iStim_C2_nA.concat(iStim_C2.map   (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_DSI_nA = iStim_DSI_nA.concat(iStim_DSI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_VSI_nA = iStim_VSI_nA.concat(iStim_VSI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
             iStim_DRI_nA = iStim_DRI_nA.concat(iStim_DRI.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
-			iStim_DFN_nA = iStim_DFN_nA.concat(iStim_DFN.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
-			iStim_VFN_nA = iStim_VFN_nA.concat(iStim_VFN.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
-			bodyAngle_degree = bodyAngle_degree.concat(bodyAngle.map (function (d) {return [d[0] / 1e-3, d[1]];}));
+            iStim_DFN_nA = iStim_DFN_nA.concat(iStim_DFN.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
+            iStim_VFN_nA = iStim_VFN_nA.concat(iStim_VFN.map (function (i) {return [i[0] / 1e-3, i[1] / 1e-9]}));
+            bodyAngle_degree = bodyAngle_degree.concat(bodyAngle.map (function (d) {return [d[0] / 1e-3, d[1]];}));
 
             // free resources from old plots
             while (plotHandles.length > 0) {
@@ -1456,8 +1456,8 @@ window.addEventListener('load', function () {
             // plot the results
             plotPanel = document.getElementById('TritoniaPlots');
             plotPanel.innerHTML = '';
-			
-			// Body flexion angle plot
+            
+            // Body flexion angle plot
             title = document.createElement('h4');
             title.innerHTML = 'Body Flexion Angle';
             title.className = 'simplotheading';
@@ -1483,31 +1483,31 @@ window.addEventListener('load', function () {
             })));
             graphJqplot.bindDataCapture('#angleDiffPlot', bodyAngleDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#angleDiffPlot', 'Time', 'ms', 'Degrees');
-			
-			// Unlabelled touch stimuli (Cell D)
-			if (plotTag == 'swim' || plotTag == 'ModulatedSwimCurrentClamp') {
-				title = document.createElement('h4');
-				title.innerHTML = 'Touch Stimulus';
-				title.className = 'simplotheading';
-				plotPanel.appendChild(title);
-				plot = document.createElement('div');
-				plot.id = 'touchStimPlot';
-				plot.style.width = '425px';
-				plot.style.height = '200px';
-				plotPanel.appendChild(plot);
-				plotHandles.push(
-				   $.jqplot('touchStimPlot', [touchStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-						axes: {
-							xaxis: {label:'Time (ms)'},
-							yaxis: {label:'Current (nA)'},
-						},
-						series: [
-							{label: 'I<sub>stim</sub>', color: 'black'},
-						],
-				})));
-				graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'nA');
-			}
+            
+            // Unlabelled touch stimuli (Cell D)
+            if (plotTag == 'swim' || plotTag == 'ModulatedSwimCurrentClamp') {
+                title = document.createElement('h4');
+                title.innerHTML = 'Touch Stimulus';
+                title.className = 'simplotheading';
+                plotPanel.appendChild(title);
+                plot = document.createElement('div');
+                plot.id = 'touchStimPlot';
+                plot.style.width = '425px';
+                plot.style.height = '200px';
+                plotPanel.appendChild(plot);
+                plotHandles.push(
+                   $.jqplot('touchStimPlot', [touchStim_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                        axes: {
+                            xaxis: {label:'Time (ms)'},
+                            yaxis: {label:'Current (nA)'},
+                        },
+                        series: [
+                            {label: 'I<sub>stim</sub>', color: 'black'},
+                        ],
+                })));
+                graphJqplot.bindDataCapture('#touchStimPlot', touchStimDataTable, title.innerHTML, 'Time');
+                graphJqplot.bindCursorTooltip('#touchStimPlot', 'Time', 'ms', 'nA');
+            }
 
             // DRI Voltage (Cell A)
             title = document.createElement('h4');
@@ -1533,29 +1533,29 @@ window.addEventListener('load', function () {
             graphJqplot.bindCursorTooltip('#voltageDRIPlot', 'Time', 'ms', 'mV');
 
             // DRI Current (Cell A)
-			if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
-				title = document.createElement('h4');
-				title.innerHTML = 'Cell A Stimulation Current';
-				title.className = 'simplotheading';
-				plotPanel.appendChild(title);
-				plot = document.createElement('div');
-				plot.id = 'currentDRIPlot';
-				plot.style.width = '425px';
-				plot.style.height = '200px';
-				plotPanel.appendChild(plot);
-				plotHandles.push(
-				   $.jqplot('currentDRIPlot', [iStim_DRI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-						axes: {
-							xaxis: {label:'Time (ms)'},
-							yaxis: {label:'Current (nA)'},
-						},
-						series: [
-							{label: 'I<sub>stim</sub>', color: 'black'},
-						],
-				})));
-				graphJqplot.bindDataCapture('#currentDRIPlot', currentDRIDataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#currentDRIPlot', 'Time', 'ms', 'nA');
-			}
+            if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
+                title = document.createElement('h4');
+                title.innerHTML = 'Cell A Stimulation Current';
+                title.className = 'simplotheading';
+                plotPanel.appendChild(title);
+                plot = document.createElement('div');
+                plot.id = 'currentDRIPlot';
+                plot.style.width = '425px';
+                plot.style.height = '200px';
+                plotPanel.appendChild(plot);
+                plotHandles.push(
+                   $.jqplot('currentDRIPlot', [iStim_DRI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                        axes: {
+                            xaxis: {label:'Time (ms)'},
+                            yaxis: {label:'Current (nA)'},
+                        },
+                        series: [
+                            {label: 'I<sub>stim</sub>', color: 'black'},
+                        ],
+                })));
+                graphJqplot.bindDataCapture('#currentDRIPlot', currentDRIDataTable, title.innerHTML, 'Time');
+                graphJqplot.bindCursorTooltip('#currentDRIPlot', 'Time', 'ms', 'nA');
+            }
 
             // C2 Voltage (Cell B)
             title = document.createElement('h4');
@@ -1581,31 +1581,31 @@ window.addEventListener('load', function () {
             graphJqplot.bindCursorTooltip('#voltageC2Plot', 'Time', 'ms', 'mV');
 
             // C2 Current (Cell B)
-			if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
-				title = document.createElement('h4');
-				title.innerHTML = 'Cell B Stimulation Current';
-				title.className = 'simplotheading';
-				plotPanel.appendChild(title);
-				plot = document.createElement('div');
-				plot.id = 'currentC2Plot';
-				plot.style.width = '425px';
-				plot.style.height = '200px';
-				plotPanel.appendChild(plot);
-				plotHandles.push(
-				   $.jqplot('currentC2Plot', [iStim_C2_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-						axes: {
-							xaxis: {label:'Time (ms)'},
-							yaxis: {label:'Current (nA)'},
-						},
-						series: [
-							{label: 'I<sub>stim</sub>', color: 'black'},
-						],
-				})));
-				graphJqplot.bindDataCapture('#currentC2Plot', currentC2DataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#currentC2Plot', 'Time', 'ms', 'nA');
-			}
-			
-			// VFN Voltage (Cell C)
+            if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
+                title = document.createElement('h4');
+                title.innerHTML = 'Cell B Stimulation Current';
+                title.className = 'simplotheading';
+                plotPanel.appendChild(title);
+                plot = document.createElement('div');
+                plot.id = 'currentC2Plot';
+                plot.style.width = '425px';
+                plot.style.height = '200px';
+                plotPanel.appendChild(plot);
+                plotHandles.push(
+                   $.jqplot('currentC2Plot', [iStim_C2_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                        axes: {
+                            xaxis: {label:'Time (ms)'},
+                            yaxis: {label:'Current (nA)'},
+                        },
+                        series: [
+                            {label: 'I<sub>stim</sub>', color: 'black'},
+                        ],
+                })));
+                graphJqplot.bindDataCapture('#currentC2Plot', currentC2DataTable, title.innerHTML, 'Time');
+                graphJqplot.bindCursorTooltip('#currentC2Plot', 'Time', 'ms', 'nA');
+            }
+            
+            // VFN Voltage (Cell C)
             title = document.createElement('h4');
             title.innerHTML = 'Cell C Membrane Potential';
             title.className = 'simplotheading';
@@ -1627,33 +1627,33 @@ window.addEventListener('load', function () {
             })));
             graphJqplot.bindDataCapture('#voltageVFNPlot', voltageVFNDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltageVFNPlot', 'Time', 'ms', 'mV');
-			
-			// VFN Current (Cell C)
-			if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
-				title = document.createElement('h4');
-				title.innerHTML = 'Cell C Stimulation Current';
-				title.className = 'simplotheading';
-				plotPanel.appendChild(title);
-				plot = document.createElement('div');
-				plot.id = 'currentVFNPlot';
-				plot.style.width = '425px';
-				plot.style.height = '200px';
-				plotPanel.appendChild(plot);
-				plotHandles.push(
-				   $.jqplot('currentVFNPlot', [iStim_VFN_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-						axes: {
-							xaxis: {label:'Time (ms)'},
-							yaxis: {label:'Current (nA)'},
-						},
-						series: [
-							{label: 'I<sub>stim</sub>', color: 'black'},
-						],
-				})));
-				graphJqplot.bindDataCapture('#currentVFNPlot', currentVFNDataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#currentVFNPlot', 'Time', 'ms', 'nA');
-			}
-			
-			// S Voltage (Cell D)
+            
+            // VFN Current (Cell C)
+            if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
+                title = document.createElement('h4');
+                title.innerHTML = 'Cell C Stimulation Current';
+                title.className = 'simplotheading';
+                plotPanel.appendChild(title);
+                plot = document.createElement('div');
+                plot.id = 'currentVFNPlot';
+                plot.style.width = '425px';
+                plot.style.height = '200px';
+                plotPanel.appendChild(plot);
+                plotHandles.push(
+                   $.jqplot('currentVFNPlot', [iStim_VFN_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                        axes: {
+                            xaxis: {label:'Time (ms)'},
+                            yaxis: {label:'Current (nA)'},
+                        },
+                        series: [
+                            {label: 'I<sub>stim</sub>', color: 'black'},
+                        ],
+                })));
+                graphJqplot.bindDataCapture('#currentVFNPlot', currentVFNDataTable, title.innerHTML, 'Time');
+                graphJqplot.bindCursorTooltip('#currentVFNPlot', 'Time', 'ms', 'nA');
+            }
+            
+            // S Voltage (Cell D)
             title = document.createElement('h4');
             title.innerHTML = 'Cell D Membrane Potential';
             title.className = 'simplotheading';
@@ -1677,31 +1677,31 @@ window.addEventListener('load', function () {
             graphJqplot.bindCursorTooltip('#voltageSPlot', 'Time', 'ms', 'mV');
 
             // S Current (Cell D)
-			if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
-				title = document.createElement('h4');
-				title.innerHTML = 'Cell D Stimulation Current';
-				title.className = 'simplotheading';
-				plotPanel.appendChild(title);
-				plot = document.createElement('div');
-				plot.id = 'currentSPlot';
-				plot.style.width = '425px';
-				plot.style.height = '200px';
-				plotPanel.appendChild(plot);
-				plotHandles.push(
-				   $.jqplot('currentSPlot', [iStim_S_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-						axes: {
-							xaxis: {label:'Time (ms)'},
-							yaxis: {label:'Current (nA)'},
-						},
-						series: [
-							{label: 'I<sub>stim</sub>', color: 'black'},
-						],
-				})));
-				graphJqplot.bindDataCapture('#currentSPlot', currentSDataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#currentSPlot', 'Time', 'ms', 'nA');
-			}
-			
-			// VSI Voltage (Cell E)
+            if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
+                title = document.createElement('h4');
+                title.innerHTML = 'Cell D Stimulation Current';
+                title.className = 'simplotheading';
+                plotPanel.appendChild(title);
+                plot = document.createElement('div');
+                plot.id = 'currentSPlot';
+                plot.style.width = '425px';
+                plot.style.height = '200px';
+                plotPanel.appendChild(plot);
+                plotHandles.push(
+                   $.jqplot('currentSPlot', [iStim_S_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                        axes: {
+                            xaxis: {label:'Time (ms)'},
+                            yaxis: {label:'Current (nA)'},
+                        },
+                        series: [
+                            {label: 'I<sub>stim</sub>', color: 'black'},
+                        ],
+                })));
+                graphJqplot.bindDataCapture('#currentSPlot', currentSDataTable, title.innerHTML, 'Time');
+                graphJqplot.bindCursorTooltip('#currentSPlot', 'Time', 'ms', 'nA');
+            }
+            
+            // VSI Voltage (Cell E)
             title = document.createElement('h4');
             title.innerHTML = 'Cell E Membrane Potential';
             title.className = 'simplotheading';
@@ -1725,30 +1725,30 @@ window.addEventListener('load', function () {
             graphJqplot.bindCursorTooltip('#voltageVSIPlot', 'Time', 'ms', 'mV');
 
             // VSI Current (Cell E)
-			if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
-				title = document.createElement('h4');
-				title.innerHTML = 'Cell E Stimulation Current';
-				title.className = 'simplotheading';
-				plotPanel.appendChild(title);
-				plot = document.createElement('div');
-				plot.id = 'currentVSIPlot';
-				plot.style.width = '425px';
-				plot.style.height = '200px';
-				plotPanel.appendChild(plot);
-				plotHandles.push(
-				   $.jqplot('currentVSIPlot', [iStim_VSI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-						axes: {
-							xaxis: {label:'Time (ms)'},
-							yaxis: {label:'Current (nA)'},
-						},
-						series: [
-							{label: 'I<sub>stim</sub>', color: 'black'},
-						],
-				})));
-				graphJqplot.bindDataCapture('#currentVSIPlot', currentVSIDataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#currentVSIPlot', 'Time', 'ms', 'nA');
-			}
-			
+            if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
+                title = document.createElement('h4');
+                title.innerHTML = 'Cell E Stimulation Current';
+                title.className = 'simplotheading';
+                plotPanel.appendChild(title);
+                plot = document.createElement('div');
+                plot.id = 'currentVSIPlot';
+                plot.style.width = '425px';
+                plot.style.height = '200px';
+                plotPanel.appendChild(plot);
+                plotHandles.push(
+                   $.jqplot('currentVSIPlot', [iStim_VSI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                        axes: {
+                            xaxis: {label:'Time (ms)'},
+                            yaxis: {label:'Current (nA)'},
+                        },
+                        series: [
+                            {label: 'I<sub>stim</sub>', color: 'black'},
+                        ],
+                })));
+                graphJqplot.bindDataCapture('#currentVSIPlot', currentVSIDataTable, title.innerHTML, 'Time');
+                graphJqplot.bindCursorTooltip('#currentVSIPlot', 'Time', 'ms', 'nA');
+            }
+            
             // DSI Voltage (Cell F)
             title = document.createElement('h4');
             title.innerHTML = 'Cell F Membrane Potential';
@@ -1773,31 +1773,31 @@ window.addEventListener('load', function () {
             graphJqplot.bindCursorTooltip('#voltageDSIPlot', 'Time', 'ms', 'mV');
 
             // DSI Current (Cell F)
-			if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
-				title = document.createElement('h4');
-				title.innerHTML = 'Cell F Stimulation Current';
-				title.className = 'simplotheading';
-				plotPanel.appendChild(title);
-				plot = document.createElement('div');
-				plot.id = 'currentDSIPlot';
-				plot.style.width = '425px';
-				plot.style.height = '200px';
-				plotPanel.appendChild(plot);
-				plotHandles.push(
-				   $.jqplot('currentDSIPlot', [iStim_DSI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-						axes: {
-							xaxis: {label:'Time (ms)'},
-							yaxis: {label:'Current (nA)'},
-						},
-						series: [
-							{label: 'I<sub>stim</sub>', color: 'black'},
-						],
-				})));
-				graphJqplot.bindDataCapture('#currentDSIPlot', currentDSIDataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#currentDSIPlot', 'Time', 'ms', 'nA');
-			}
-			
-			// DFN Voltage (Cell G)
+            if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
+                title = document.createElement('h4');
+                title.innerHTML = 'Cell F Stimulation Current';
+                title.className = 'simplotheading';
+                plotPanel.appendChild(title);
+                plot = document.createElement('div');
+                plot.id = 'currentDSIPlot';
+                plot.style.width = '425px';
+                plot.style.height = '200px';
+                plotPanel.appendChild(plot);
+                plotHandles.push(
+                   $.jqplot('currentDSIPlot', [iStim_DSI_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                        axes: {
+                            xaxis: {label:'Time (ms)'},
+                            yaxis: {label:'Current (nA)'},
+                        },
+                        series: [
+                            {label: 'I<sub>stim</sub>', color: 'black'},
+                        ],
+                })));
+                graphJqplot.bindDataCapture('#currentDSIPlot', currentDSIDataTable, title.innerHTML, 'Time');
+                graphJqplot.bindCursorTooltip('#currentDSIPlot', 'Time', 'ms', 'nA');
+            }
+            
+            // DFN Voltage (Cell G)
             title = document.createElement('h4');
             title.innerHTML = 'Cell G Membrane Potential';
             title.className = 'simplotheading';
@@ -1819,32 +1819,32 @@ window.addEventListener('load', function () {
             })));
             graphJqplot.bindDataCapture('#voltageDFNPlot', voltageDFNDataTable, title.innerHTML, 'Time');
             graphJqplot.bindCursorTooltip('#voltageDFNPlot', 'Time', 'ms', 'mV');
-			
-			// DFN Current (Cell G)
-			if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
-				title = document.createElement('h4');
-				title.innerHTML = 'Cell G Stimulation Current';
-				title.className = 'simplotheading';
-				plotPanel.appendChild(title);
-				plot = document.createElement('div');
-				plot.id = 'currentDFNPlot';
-				plot.style.width = '425px';
-				plot.style.height = '200px';
-				plotPanel.appendChild(plot);
-				plotHandles.push(
-				   $.jqplot('currentDFNPlot', [iStim_DFN_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
-						axes: {
-							xaxis: {label:'Time (ms)'},
-							yaxis: {label:'Current (nA)'},
-						},
-						series: [
-							{label: 'I<sub>stim</sub>', color: 'black'},
-						],
-				})));
-				graphJqplot.bindDataCapture('#currentDFNPlot', currentDFNDataTable, title.innerHTML, 'Time');
-				graphJqplot.bindCursorTooltip('#currentDFNPlot', 'Time', 'ms', 'nA');
-			}
-			
+            
+            // DFN Current (Cell G)
+            if (plotTag == 'HiDi' || plotTag == 'ModulatedSwimCurrentClamp') {
+                title = document.createElement('h4');
+                title.innerHTML = 'Cell G Stimulation Current';
+                title.className = 'simplotheading';
+                plotPanel.appendChild(title);
+                plot = document.createElement('div');
+                plot.id = 'currentDFNPlot';
+                plot.style.width = '425px';
+                plot.style.height = '200px';
+                plotPanel.appendChild(plot);
+                plotHandles.push(
+                   $.jqplot('currentDFNPlot', [iStim_DFN_nA], jQuery.extend(true, {}, graphJqplot.defaultOptions(params), {
+                        axes: {
+                            xaxis: {label:'Time (ms)'},
+                            yaxis: {label:'Current (nA)'},
+                        },
+                        series: [
+                            {label: 'I<sub>stim</sub>', color: 'black'},
+                        ],
+                })));
+                graphJqplot.bindDataCapture('#currentDFNPlot', currentDFNDataTable, title.innerHTML, 'Time');
+                graphJqplot.bindCursorTooltip('#currentDFNPlot', 'Time', 'ms', 'nA');
+            }
+            
 
             if (result.terminationReason === 'Timeout') {
                 t0 = result.t_f;
@@ -1885,7 +1885,7 @@ window.addEventListener('load', function () {
         controls = simcontrols.controls(controlsPanel, params, layout);
         runSimulation();
     }
-	
+    
     function toggleAnimation() {
         if (!doAnimation) {
             doAnimation = 1;
@@ -1896,17 +1896,17 @@ window.addEventListener('load', function () {
     }
     
     function resetToModulatedSwim() {
-		plotTag = 'swim';
+        plotTag = 'swim';
         reset(paramsModulatedSwim, layoutSwim);
     }
 
-	function resetToModulatedSwimCurrentClamp() {
-		plotTag = 'ModulatedSwimCurrentClamp';
+    function resetToModulatedSwimCurrentClamp() {
+        plotTag = 'ModulatedSwimCurrentClamp';
         reset(paramsModulatedSwimCurrentClamp, layoutModulatedSwimCurrentClamp);
     }
     
-	function resetToHiDi() {
-		plotTag = 'HiDi';
+    function resetToHiDi() {
+        plotTag = 'HiDi';
         reset(paramsHiDi, layoutHiDi);
     }
     
@@ -1944,21 +1944,21 @@ window.addEventListener('load', function () {
 
         currentDRIDataTable.innerHTML = '';
         currentDRIDataTable.style.display = 'none';
-		
+        
         voltageDFNDataTable.innerHTML = '';
         voltageDFNDataTable.style.display = 'none';
 
         currentDFNDataTable.innerHTML = '';
         currentDFNDataTable.style.display = 'none';
-		
+        
         voltageVFNDataTable.innerHTML = '';
         voltageVFNDataTable.style.display = 'none';
 
         currentVFNDataTable.innerHTML = '';
         currentVFNDataTable.style.display = 'none';
-		
-		bodyAngleDataTable.innerHTML = '';
-		bodyAngleDataTable.style.display = 'none';
+        
+        bodyAngleDataTable.innerHTML = '';
+        bodyAngleDataTable.style.display = 'none';
     }
 
 
@@ -1970,7 +1970,7 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToModulatedSwim, false));
     (document.getElementById('TritoniaModulatedSwimCurrentClampResetButton')
         .addEventListener('click', resetToModulatedSwimCurrentClamp, false));
-	(document.getElementById('TritoniaHiDiResetButton')
+    (document.getElementById('TritoniaHiDiResetButton')
         .addEventListener('click', resetToHiDi, false));
     (document.getElementById('TritoniaClearDataButton')
         .addEventListener('click', clearDataTables, false));

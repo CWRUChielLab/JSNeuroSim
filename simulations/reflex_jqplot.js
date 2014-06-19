@@ -37,6 +37,10 @@ window.addEventListener('load', function () {
         motorNerveTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 1}),
         inhibitoryNerveTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 1}),
         
+        scaleFactor = 1,
+        defaultLength = 90,
+        reflex,
+        
         startHammer = 'M 733 55 L 730 50 L 770 10 L 785 30 Z',
         endHammer = 'M 713 75 L 710 70 L 750 30 L 765 50 Z',
         hammer1 = paper.path(startHammer).attr({'stroke-width': 2}),
@@ -49,25 +53,25 @@ window.addEventListener('load', function () {
 
     // set up the controls
     params = {
-        Linit_cm: { label: 'Initial length', units: 'cm',
-            defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
+        Lstretch_mm: { label: 'Stetch', units: 'mm',
+            defaultVal: 0, minVal: 0, maxVal: 10 },
         m_g: { label: 'Mass', units: 'g',
-            defaultVal: 1, minVal: 1, maxVal: 10000.0 },
+            defaultVal: 2200, minVal: 2000, maxVal: 2500 },
         B_ms_cm: { label: 'Force-velocity constant', units: 'ms/cm',
             defaultVal: 0, minVal: 0, maxVal: 10000.0 },
         beta_g_ms: { label: 'Damping constant', units: 'g/ms',
-            defaultVal: 5, minVal: 0, maxVal: 10000.0 },
+            defaultVal: 20, minVal: 0, maxVal: 10000.0 },
         Lrestpas_cm: { label: 'Resting position', units: 'cm',
-            defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
+            defaultVal: 90.0, minVal: 88.0, maxVal: 92.0 },
         c1_mN: { label: 'Passive force multiplier', units: 'mN',
             defaultVal: 0, minVal: 0, maxVal: 10000 },
         activation_tau: { label: 'Activation time constant', units: 'ms',
             defaultVal: 1, minVal: 0.1, maxVal: 10000.0 },
 
         Lrestspring_cm: { label: 'Spring resting position', units: 'cm',
-            defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
+            defaultVal: 90.0, minVal: 88.0, maxVal: 92.0 },
         k: { label: 'Spring stiffness', units: 'N/cm',
-            defaultVal: 0.1, minVal: 0, maxVal: 10.0 },
+            defaultVal: 1, minVal: 0, maxVal: 10.0 },
 
         spindle_Ks: { label: 'Static gain', units: 'nA/mN',
             defaultVal: 0.2, minVal: 0, maxVal: 100},
@@ -93,7 +97,7 @@ window.addEventListener('load', function () {
             defaultVal: 20, minVal: 0.1, maxVal: 1000000 },
 
         reflexThreshold_cm: { label: 'Reflex threshold length', units: 'cm',
-            defaultVal: 6.0, minVal: 2.5, maxVal: 12.0 },
+            defaultVal: 90.0, minVal: 88.0, maxVal: 92.0 },
         reflexConstant_cm: { label: 'Reflex activation length constant', units: 'cm',
             defaultVal: 1e8, minVal: 0.1, maxVal: 1e12 },
 
@@ -124,15 +128,15 @@ window.addEventListener('load', function () {
             defaultVal: 25, minVal: 0.1, maxVal: 1000000 },
 
         nmj_gain: { label: 'Synapse strength', units: 'mV<sup>-1</sup>',
-            defaultVal: 0.1, minVal: 0, maxVal: 10000 },
+            defaultVal: 0.01, minVal: 0, maxVal: 100 },
 
         totalDuration_ms: { label: 'Total duration', units: 'ms', 
             defaultVal: 2000, minVal: 0, maxVal: tMax / 1e-3 },
     };
 
     layout = [
-        ['Muscle Properties', ['Linit_cm', 'm_g', 'beta_g_ms', 'activation_tau']],
-        ['Spring Properties', ['Lrestspring_cm', 'k']],
+        ['Muscle Properties', ['Lstretch_mm']],//, 'm_g', 'beta_g_ms', 'activation_tau']],
+        //['Spring Properties', ['Lrestspring_cm', 'k']],
         ['Spindle Cell Properties', ['spindle_V_init_mV', 'spindle_C_nF', 'spindle_g_leak_uS', 'spindle_E_leak_mV',
             'spindle_theta_ss_mV', 'spindle_theta_r_mV', 'spindle_theta_tau_ms', 'reflexThreshold_cm', 'reflexConstant_cm']],
         ['Alpha Motor Neuron Properties', ['alphaMN_V_init_mV', 'alphaMN_C_nF', 'alphaMN_g_leak_uS', 'alphaMN_E_leak_mV',
@@ -203,7 +207,7 @@ window.addEventListener('load', function () {
         });
 
         muscle = electrophys.muscleFullDynamics(model, {
-            Linit: params.Linit_cm,
+            Linit: params.Lrestpas_cm + params.Lstretch_mm / 10,
             m: params.m_g,
             B: params.B_ms_cm * 1e-3,
             beta: params.beta_g_ms * 1e3,
@@ -275,7 +279,7 @@ window.addEventListener('load', function () {
                     xaxis: {label:'Time (ms)'},
                     yaxis: {
                         label:'Length (cm)',
-                        min: 0, max: 12,
+                        min: 85, max: 95,
                     },
                 },
                 series: [
@@ -359,6 +363,41 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#alphaMNVPlot', alphaMNVDataTable, 'Alpha Motor Neuron Membrane Potential', 'Time');
         graphJqplot.bindCursorTooltip('#alphaMNVPlot', 'Time', 'ms', 'mV');
+        
+        
+        
+        
+        
+
+        
+        scaleFactor = (params.Lstretch_mm) / (10 * defaultLength);
+        
+        var tendonX = Math.round(710 - scaleFactor * 900),
+            tendonY = Math.round(70 + scaleFactor * 900),
+            hammerX1 = Math.round(715 - scaleFactor * 350),
+            hammerX2 = Math.round(712 - scaleFactor * 350),
+            hammerX3 = Math.round(752 - scaleFactor * 350),
+            hammerX4 = Math.round(767 - scaleFactor * 350),
+            hammerY1 = Math.round(73 + scaleFactor * 350),
+            hammerY2 = Math.round(68 + scaleFactor * 350),
+            hammerY3 = Math.round(28 + scaleFactor * 350),
+            hammerY4 = Math.round(48 + scaleFactor * 350);
+
+
+        startTendon = 'M 700 50 S 710 70 723 89';
+        endTendon = 'M 700 50 S ' + tendonX + ' ' + tendonY + ' 723 89';
+        
+        startHammer = 'M 733 55 L 730 50 L 770 10 L 785 30 Z';
+        endHammer = 'M ' + hammerX1 + ' ' + hammerY1 + ' L ' + hammerX2 + ' ' + hammerY2 + 
+                    ' L ' + hammerX3 + ' ' + hammerY3 + ' L ' + hammerX4 + ' ' + hammerY4 + ' Z';
+        
+        if (params.Lstretch_mm < 6.1) {
+            reflex = false;
+        } else {
+            reflex = true;
+        };
+        
+        resetAnimation();
     }
 
     
@@ -457,11 +496,17 @@ window.addEventListener('load', function () {
         
     }
         
-    function reflexAnimation() {    
+    function reflexAnimation() {
+        var totalAnimTime;
+        if (!reflex) {
+            totalAnimTime = 2000;
+        } else { 
+            totalAnimTime = 11000;
+        }
         document.getElementById('ReflexAnimationButton').disabled = true;
-        setTimeout(function(){document.getElementById('ReflexAnimationButton').disabled = false}, 11000);
+        setTimeout(function(){document.getElementById('ReflexAnimationButton').disabled = false}, totalAnimTime);
         document.getElementById('ResetAnimationButton').disabled = true;
-        setTimeout(function(){document.getElementById('ResetAnimationButton').disabled = false}, 11000);
+        setTimeout(function(){document.getElementById('ResetAnimationButton').disabled = false}, totalAnimTime);
         
         resetAnimation();        
     
@@ -473,36 +518,38 @@ window.addEventListener('load', function () {
         changeOpacity(hammer2, 1, 1, 1200);
         changeOpacity(hammer1, 0, 1, 1500);
         movePath(hammer2, startHammer, 1000, 2000);
-    
-        changeOpacity(afferentNerveTracker, 1, 1, 1000);
-        rightTrack(afferentNerveTracker, afferentNerve, 3000, 1000);
-        changeOpacity(afferentNerveTracker, 0, 1, 4500);
         
-        changeOpacity(interNeuronTracker, 1, 1, 4400);
-        leftTrack(interNeuronTracker, interNeuron, 500, 4500);
-        changeOpacity(interNeuronTracker, 0, 1, 5000);
-        
-        changeOpacity(motorNerveTracker, 1, 1, 4400);
-        leftTrack(motorNerveTracker, motorNerve, 3000, 4500);
-        colorChange(motorNerveTracker, 'red', 500, 8000),
-        contractMuscle(motorNerveTracker, 150, 20, 500, 8000);
-        changeOpacity(motorNerveTracker, 0, 500, 8000);
-        
-        changeOpacity(inhibitoryNerveTracker, 1, 1, 4900);
-        leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 2500, 5000);
-        colorChange(inhibitoryNerveTracker, 'white', 500, 8000),
-        contractMuscle(inhibitoryNerveTracker, 150, 20, 500, 8000);
-        changeOpacity(inhibitoryNerveTracker, 0, 500, 8000);
-        
-        contractMuscle(quadriceps, 180, 25, 2000, 9000);
-        colorChange(quadriceps, '#E60000', 200, 9000);
-        contractMuscle(hamstring, 205, 15, 2000, 9000);
-        colorChange(hamstring, '#FF9999', 200, 9000);
-        
-        movePath(patellarTendon2, 'M 680 50 S 713 60 721 70', 2000, 9000);
-        movePath(hamstringTendon, 'M 700 105 S 699 95 702 90', 2000, 9000);
-        movePath(tibia, 'M 710 80 L 919 289', 2000, 9000);
-        movePath(foot, 'M 919 309 L 985 241', 2000, 9000);
+        if (reflex) {
+            changeOpacity(afferentNerveTracker, 1, 1, 1000);
+            rightTrack(afferentNerveTracker, afferentNerve, 3000, 1000);
+            changeOpacity(afferentNerveTracker, 0, 1, 4500);
+            
+            changeOpacity(interNeuronTracker, 1, 1, 4400);
+            leftTrack(interNeuronTracker, interNeuron, 500, 4500);
+            changeOpacity(interNeuronTracker, 0, 1, 5000);
+            
+            changeOpacity(motorNerveTracker, 1, 1, 4400);
+            leftTrack(motorNerveTracker, motorNerve, 3000, 4500);
+            colorChange(motorNerveTracker, 'red', 500, 8000),
+            contractMuscle(motorNerveTracker, 150, 20, 500, 8000);
+            changeOpacity(motorNerveTracker, 0, 500, 8000);
+            
+            changeOpacity(inhibitoryNerveTracker, 1, 1, 4900);
+            leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 2500, 5000);
+            colorChange(inhibitoryNerveTracker, 'white', 500, 8000),
+            contractMuscle(inhibitoryNerveTracker, 150, 20, 500, 8000);
+            changeOpacity(inhibitoryNerveTracker, 0, 500, 8000);
+            
+            contractMuscle(quadriceps, 180, 25, 2000, 9000);
+            colorChange(quadriceps, '#E60000', 200, 9000);
+            contractMuscle(hamstring, 205, 15, 2000, 9000);
+            colorChange(hamstring, '#FF9999', 200, 9000);
+            
+            movePath(patellarTendon2, 'M 680 50 S 713 60 721 70', 2000, 9000);
+            movePath(hamstringTendon, 'M 700 105 S 699 95 702 90', 2000, 9000);
+            movePath(tibia, 'M 710 80 L 919 289', 2000, 9000);
+            movePath(foot, 'M 919 309 L 985 241', 2000, 9000);
+        }
 
     }
 

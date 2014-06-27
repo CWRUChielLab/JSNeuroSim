@@ -9,58 +9,72 @@ window.addEventListener('load', function () {
     var params, layout, controlsPanel, controls, dataPanel,
         lengthDataTable, forceDataTable, spindleVDataTable, alphaMNVDataTable,
         tMax = 10000e-3, plotHandles = []; 
-        
-    // Set up the graphics
-    var animationPanel = document.getElementById('ReflexAnimation'),
-        paper = Raphael(animationPanel, 2000, 900),
-        tibia = paper.path('M 710 90 L 770 380').attr({stroke: '#EED999', 'stroke-width': 30}),
-        foot = paper.path('M 757 396 L 850 378').attr({stroke: '#EED999', 'stroke-width': 24}),
-        
-        femur = paper.path('M 310 75 L 690 75').attr({stroke: '#EED999', 'stroke-width': 30}),
-        quadriceps = paper.ellipse(500, 50, 200, 20).attr({fill: '#FF4444', stroke: 'black'}),
-        hamstring = paper.ellipse(495, 105, 190, 20).attr({fill: '#FF4444', stroke: 'black'}),
-        
-        spinalCord = paper.ellipse(100, 100, 70, 70).attr({stroke: 'black', fill: 'silver'}),
-        afferentNerve = paper.path('M 100 85 S 250 0 500 50').attr({stroke: 'grey', 'stroke-width': 8, 'stroke-opacity': .5}),
-        interNeuron = paper.path('M 100 85 L 100 115').attr({stroke: 'grey', 'stroke-width': 8, 'stroke-opacity': .5}),
-        motorNerve = paper.path('M 100 85 S 300 100 500 55').attr({stroke: 'grey', 'stroke-width': 8, 'stroke-opacity': .5}),
-        inhibitoryNerve = paper.path('M 100 115 S 300 200 500 105').attr({stroke: 'grey', 'stroke-width': 8, 'stroke-opacity': .5}),
-        
-        startTendon = 'M 700 50 S 710 70 723 89',
-        endTendon = 'M 700 50 S 710 80 723 89',
-        patellarTendon1 = paper.path(startTendon).attr({'stroke-width': 3}),
-        patellarTendon2 = paper.path(endTendon).attr({'stroke-width': 3, opacity: 0}),
-        hamstringTendon = paper.path('M 685 105 S 690 102 698 93').attr({'stroke-width': 2}),  
-        
-        afferentNerveTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 0}),
-        interNeuronTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 0}),
-        motorNerveTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 1}),
-        inhibitoryNerveTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 1}),
-        
-        scaleFactor = 1,
-        defaultLength = 90,
-        reflex,
-        
-        startHammer = 'M 733 55 L 730 50 L 770 10 L 785 30 Z',
-        endHammer = 'M 713 75 L 710 70 L 750 30 L 765 50 Z',
-        hammer1 = paper.path(startHammer).attr({'stroke-width': 2}),
-        hammer2 = paper.path(endHammer).attr({'stroke-width': 2, opacity: 0});
-        
-            
-    motorNerveTracker.animate({opacity: 0}, 1);
-    inhibitoryNerveTracker.animate({opacity: 0}, 1);
-        
+		
+	// Set up the graphics
+	var animationPanel = document.getElementById('ReflexAnimation'),
+		paper = Raphael(animationPanel, 2000, 450),
+		
+		startTibiaAngle = -1.36678,		
+		tibiaKneeX = 715, tibiaKneeY = 90, tibiaAnkleX1 = 775, tibiaAnkleY1 = 380, tibiaAnkleX2, tibiaAnkleY2,
+		startTibia = 'M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L ' + tibiaAnkleX1 + ' ' + tibiaAnkleY1,
+		endTibia,// = 'M 710 80 L 919 289',
+		tibia = paper.path(startTibia).attr({stroke: '#EED999', 'stroke-width': 30}),
+		tibiaLength = 296,
+		
+		startFootHeelAngle = -1.41839,
+		startFootToesAngle = -1.11832,
+		footHeelX1 = 762, footHeelY1 = 396, footToesX1 = 855, footToesY1 = 378, footHeelX2, footHeelY2, footToesX2, footToesY2,
+		startFoot = 'M ' + footHeelX1 + ' ' + footHeelY1 + ' L ' + footToesX1 + ' ' + footToesY1,
+		endFoot,
+		foot = paper.path(startFoot).attr({stroke: '#EED999', 'stroke-width': 24}),
+		kneeToHeelLength = 310,
+		kneeToToesLength = 320,
+		
+		femur = paper.path('M 310 75 L 690 75').attr({stroke: '#EED999', 'stroke-width': 30}),
+		quadriceps = paper.ellipse(500, 50, 200, 20).attr({fill: '#FF4444', stroke: 'black'}),
+		hamstring = paper.ellipse(495, 105, 190, 20).attr({fill: '#FF4444', stroke: 'black'}),
+		
+		spinalCord = paper.ellipse(100, 100, 70, 70).attr({stroke: 'black', fill: 'silver'}),
+		afferentNerve = paper.path('M 100 85 S 250 0 500 50').attr({stroke: 'grey', 'stroke-width': 8, 'stroke-opacity': .5}),
+		interNeuron = paper.path('M 100 85 L 100 115').attr({stroke: 'grey', 'stroke-width': 8, 'stroke-opacity': .5}),
+		motorNerve = paper.path('M 100 85 S 300 100 500 55').attr({stroke: 'grey', 'stroke-width': 8, 'stroke-opacity': .5}),
+		inhibitoryNerve = paper.path('M 100 115 S 300 200 500 105').attr({stroke: 'grey', 'stroke-width': 8, 'stroke-opacity': .5}),
+		
+		startTendon = 'M 700 50 S 710 70 723 89',
+		endTendon = 'M 700 50 S 710 80 723 89',
+		patellarTendon1 = paper.path(startTendon).attr({'stroke-width': 3}),
+		patellarTendon2 = paper.path(endTendon).attr({'stroke-width': 3, opacity: 0}),
+		hamstringTendon = paper.path('M 685 105 S 690 102 698 93').attr({'stroke-width': 2}),  
+		
+		afferentNerveTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 0}),
+		interNeuronTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 0}),
+		motorNerveTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 1}),
+		inhibitoryNerveTracker = paper.ellipse(0, 0, 4, 4).attr({stroke: 'black', fill: 'black', opacity: 1}),
+		
+		scaleFactor = 1,
+		defaultLength = 90,
+		reflex,
+		
+		startHammer = 'M 733 55 L 730 50 L 770 10 L 785 30 Z',
+		endHammer = 'M 713 75 L 710 70 L 750 30 L 765 50 Z',
+		hammer1 = paper.path(startHammer).attr({'stroke-width': 2}),
+		hammer2 = paper.path(endHammer).attr({'stroke-width': 2, opacity: 0});
+		
+			
+	motorNerveTracker.animate({opacity: 0}, 1);
+	inhibitoryNerveTracker.animate({opacity: 0}, 1);
+		
 
     // set up the controls
     params = {
         Lstretch_mm: { label: 'Stetch', units: 'mm',
             defaultVal: 0, minVal: 0, maxVal: 10 },
         m_g: { label: 'Mass', units: 'g',
-            defaultVal: 2200, minVal: 2000, maxVal: 2500 },
+            defaultVal: 8000, minVal: 7000, maxVal: 8500 },
         B_ms_cm: { label: 'Force-velocity constant', units: 'ms/cm',
             defaultVal: 0, minVal: 0, maxVal: 10000.0 },
         beta_g_ms: { label: 'Damping constant', units: 'g/ms',
-            defaultVal: 20, minVal: 0, maxVal: 10000.0 },
+            defaultVal: 50, minVal: 0, maxVal: 10000.0 },
         Lrestpas_cm: { label: 'Resting position', units: 'cm',
             defaultVal: 90.0, minVal: 88.0, maxVal: 92.0 },
         c1_mN: { label: 'Passive force multiplier', units: 'mN',
@@ -101,7 +115,7 @@ window.addEventListener('load', function () {
         reflexConstant_cm: { label: 'Reflex activation length constant', units: 'cm',
             defaultVal: 1e8, minVal: 0.1, maxVal: 1e12 },
 
-        alphaMN_V_init_mV: { label: 'Initial membrane potential', units: 'mV', 
+		alphaMN_V_init_mV: { label: 'Initial membrane potential', units: 'mV', 
             defaultVal: -50, minVal: -1000, maxVal: 1000 },
         alphaMN_C_nF: { label: 'Membrane capacitance', units: 'nF', 
             defaultVal: 2, minVal: 0.01, maxVal: 100 },
@@ -117,7 +131,7 @@ window.addEventListener('load', function () {
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
 
         spindleToAlphaMN_g_uS: { label: 'Synapse conductance', 
-            units: '\u00B5S', defaultVal: 0.05, minVal: 0, maxVal: 100 },
+            units: '\u00B5S', defaultVal: 0.05, minVal: 0, maxVal: 1 },
         spindleToAlphaMN_E_mV: { label: 'Synapse potential', units: 'mV', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         spindleToAlphaMN_tau_rise_ms: { units: 'ms', 
@@ -363,41 +377,60 @@ window.addEventListener('load', function () {
         })));
         graphJqplot.bindDataCapture('#alphaMNVPlot', alphaMNVDataTable, 'Alpha Motor Neuron Membrane Potential', 'Time');
         graphJqplot.bindCursorTooltip('#alphaMNVPlot', 'Time', 'ms', 'mV');
-        
-        
-        
-        
-        
+		
+		
+		
+		
+		// Animation calculations
+		
+		var forceIntegral = 0,
+			reflexAngle = 0;
+			
+		for (var i = 0; i < force.length - 1; i++) {
+			forceIntegral += (force[i + 1][1]) * (force[i + 1][0] - force[i][0]);
+		}
+		
+		reflexAngle = (-1.13603 * Math.pow(10, -17)) - (6.82844 * Math.pow(10, -7) * forceIntegral) -
+					  (8.54039 * Math.pow(10, -13) * Math.pow(forceIntegral, 2)) - 
+					  (5.7811 * Math.pow(10, -19) * Math.pow(forceIntegral, 3));
+		
+		tibiaAnkleX2 = tibiaKneeX + tibiaLength * Math.cos(startTibiaAngle + reflexAngle);
+		tibiaAnkleY2 = tibiaKneeY - tibiaLength * Math.sin(startTibiaAngle + reflexAngle);
+		endTibia = 'M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L ' + tibiaAnkleX2 + ' ' + tibiaAnkleY2;
+		
+		footHeelX2 = tibiaKneeX + kneeToHeelLength * Math.cos(startFootHeelAngle + reflexAngle);
+		footHeelY2 = tibiaKneeY - kneeToHeelLength * Math.sin(startFootHeelAngle + reflexAngle);
+		footToesX2 = tibiaKneeX + kneeToToesLength * Math.cos(startFootToesAngle + reflexAngle);
+		footToesY2 = tibiaKneeY - kneeToToesLength * Math.sin(startFootToesAngle + reflexAngle);		
+		endFoot = 'M ' + footHeelX2 + ' ' + footHeelY2 + ' L ' + footToesX2 + ' ' + footToesY2;
+		
+		scaleFactor = (params.Lstretch_mm) / (10 * defaultLength);
+		
+		var tendonX = Math.round(710 - scaleFactor * 900),
+			tendonY = Math.round(70 + scaleFactor * 900),
+			hammerX1 = Math.round(715 - scaleFactor * 350),
+			hammerX2 = Math.round(712 - scaleFactor * 350),
+			hammerX3 = Math.round(752 - scaleFactor * 350),
+			hammerX4 = Math.round(767 - scaleFactor * 350),
+			hammerY1 = Math.round(73 + scaleFactor * 350),
+			hammerY2 = Math.round(68 + scaleFactor * 350),
+			hammerY3 = Math.round(28 + scaleFactor * 350),
+			hammerY4 = Math.round(48 + scaleFactor * 350);
 
-        
-        scaleFactor = (params.Lstretch_mm) / (10 * defaultLength);
-        
-        var tendonX = Math.round(710 - scaleFactor * 900),
-            tendonY = Math.round(70 + scaleFactor * 900),
-            hammerX1 = Math.round(715 - scaleFactor * 350),
-            hammerX2 = Math.round(712 - scaleFactor * 350),
-            hammerX3 = Math.round(752 - scaleFactor * 350),
-            hammerX4 = Math.round(767 - scaleFactor * 350),
-            hammerY1 = Math.round(73 + scaleFactor * 350),
-            hammerY2 = Math.round(68 + scaleFactor * 350),
-            hammerY3 = Math.round(28 + scaleFactor * 350),
-            hammerY4 = Math.round(48 + scaleFactor * 350);
-
-
-        startTendon = 'M 700 50 S 710 70 723 89';
-        endTendon = 'M 700 50 S ' + tendonX + ' ' + tendonY + ' 723 89';
-        
-        startHammer = 'M 733 55 L 730 50 L 770 10 L 785 30 Z';
-        endHammer = 'M ' + hammerX1 + ' ' + hammerY1 + ' L ' + hammerX2 + ' ' + hammerY2 + 
-                    ' L ' + hammerX3 + ' ' + hammerY3 + ' L ' + hammerX4 + ' ' + hammerY4 + ' Z';
-        
-        if (params.Lstretch_mm < 6.1) {
-            reflex = false;
-        } else {
-            reflex = true;
-        };
-        
-        resetAnimation();
+		
+		startTendon = 'M 700 50 S 710 70 723 89';
+		endTendon = 'M 700 50 S ' + tendonX + ' ' + tendonY + ' 723 89';
+		startHammer = 'M 733 55 L 730 50 L 770 10 L 785 30 Z';
+		endHammer = 'M ' + hammerX1 + ' ' + hammerY1 + ' L ' + hammerX2 + ' ' + hammerY2 + 
+					' L ' + hammerX3 + ' ' + hammerY3 + ' L ' + hammerX4 + ' ' + hammerY4 + ' Z';
+		
+		if (forceIntegral == 0) {
+			reflex = false;
+		} else {
+			reflex = true;
+		};
+		
+		resetAnimation();
     }
 
     
@@ -426,132 +459,135 @@ window.addEventListener('load', function () {
         alphaMNVDataTable.innerHTML = '';
         alphaMNVDataTable.style.display = 'none';
     }
-    
-    // Functions for animation along a path
-    Raphael.fn.addGuides = function() {
-        this.ca.guide = function(g) {
-          return {
-            guide: g
-          };
-        };
-        this.ca.along = function(percent) {
-          var g = this.attr("guide");
-          var len = g.getTotalLength();
-          var point = g.getPointAtLength(percent * len);
-          var t = {
-            transform: "t" + point.x + " " + point.y
-          };
-          return t;
-        };
-        this.ca.alongRight = function(percent) {
-          var g = this.attr("guide");
-          var len = g.getTotalLength();
-          var point = 1 - g.getPointAtLength(percent * len);
-          var t = {
-            transfor: "t" + point.x + " " + point.y
-          };
-          return t;
-        }
-     };
-    paper.addGuides();
-    
-    // Animation functions
-    var leftTrack = function (tracker, track, duration, delay) {            
-            tracker.attr({guide: track, along: 0}).animate(Raphael.animation({along: 1}, duration).delay(delay));        
-        },
-        rightTrack = function (tracker, track, duration, delay) {            
-            tracker.attr({guide: track, along: 1}).animate(Raphael.animation({along: 0}, duration).delay(delay));        
-        },    
-        contractMuscle = function (muscle, endLength, endWidth, duration, delay) {
-            muscle.animate(Raphael.animation({rx: endLength, ry: endWidth}, duration).delay(delay));
-        },
-        moveMuscle = function (muscle, x, y, angle, duration, delay) {
-            muscle.animate(Raphael.animation({transform: 'T' + x + ' ' + y + 'r' + angle}, duration).delay(delay));
-        },
-        colorChange = function (muscle, color, duration, delay) {
-            muscle.animate(Raphael.animation({fill: color}, duration).delay(delay));
-        },        
-        movePath = function (path, pathString, duration, delay) {
-            path.animate(Raphael.animation({path: pathString}, duration).delay(delay));
-        },
-        changeOpacity = function (tracker, opacity, duration, delay) {
-            tracker.animate(Raphael.animation({'opacity': opacity}, duration).delay(delay));
-        };
-    
-    function resetAnimation() {
-        quadriceps.attr({fill: '#FF4444', rx: 200, ry: 20});
-        hamstring.attr({fill: '#FF4444', rx: 190, ry: 20});
-        tibia.attr({path: 'M 710 90 L 770 380'});
-        foot.attr({path: 'M 757 396 L 850 378'});
-        patellarTendon1.attr({path: startTendon, opacity: 1});
-        patellarTendon2.attr({path: endTendon, opacity: 0})
-        hamstringTendon.attr({path: 'M 685 105 S 690 102 698 93'});
-        motorNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
-        inhibitoryNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
-        hammer1.attr({path: startHammer, opacity: 1});
-        hammer2.attr({path: endHammer, opacity: 0});
-        
-        changeOpacity(motorNerveTracker, 0, 1, 0);
-        changeOpacity(inhibitoryNerveTracker, 0, 1, 0);
-        
-    }
-        
-    function reflexAnimation() {
-        var totalAnimTime;
-        if (!reflex) {
-            totalAnimTime = 2000;
-        } else { 
-            totalAnimTime = 11000;
-        }
-        document.getElementById('ReflexAnimationButton').disabled = true;
-        setTimeout(function(){document.getElementById('ReflexAnimationButton').disabled = false}, totalAnimTime);
-        document.getElementById('ResetAnimationButton').disabled = true;
-        setTimeout(function(){document.getElementById('ResetAnimationButton').disabled = false}, totalAnimTime);
-        
-        resetAnimation();        
-    
-        movePath(hammer1, endHammer, 1000, 0);
-        movePath(patellarTendon1, endTendon, 100, 900);
-        
-        changeOpacity(patellarTendon2, 1, 1, 1200);
-        changeOpacity(patellarTendon1, 0, 1, 1500);
-        changeOpacity(hammer2, 1, 1, 1200);
-        changeOpacity(hammer1, 0, 1, 1500);
-        movePath(hammer2, startHammer, 1000, 2000);
-        
-        if (reflex) {
-            changeOpacity(afferentNerveTracker, 1, 1, 1000);
-            rightTrack(afferentNerveTracker, afferentNerve, 3000, 1000);
-            changeOpacity(afferentNerveTracker, 0, 1, 4500);
-            
-            changeOpacity(interNeuronTracker, 1, 1, 4400);
-            leftTrack(interNeuronTracker, interNeuron, 500, 4500);
-            changeOpacity(interNeuronTracker, 0, 1, 5000);
-            
-            changeOpacity(motorNerveTracker, 1, 1, 4400);
-            leftTrack(motorNerveTracker, motorNerve, 3000, 4500);
-            colorChange(motorNerveTracker, 'red', 500, 8000),
-            contractMuscle(motorNerveTracker, 150, 20, 500, 8000);
-            changeOpacity(motorNerveTracker, 0, 500, 8000);
-            
-            changeOpacity(inhibitoryNerveTracker, 1, 1, 4900);
-            leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 2500, 5000);
-            colorChange(inhibitoryNerveTracker, 'white', 500, 8000),
-            contractMuscle(inhibitoryNerveTracker, 150, 20, 500, 8000);
-            changeOpacity(inhibitoryNerveTracker, 0, 500, 8000);
-            
-            contractMuscle(quadriceps, 180, 25, 2000, 9000);
-            colorChange(quadriceps, '#E60000', 200, 9000);
-            contractMuscle(hamstring, 205, 15, 2000, 9000);
-            colorChange(hamstring, '#FF9999', 200, 9000);
-            
-            movePath(patellarTendon2, 'M 680 50 S 713 60 721 70', 2000, 9000);
-            movePath(hamstringTendon, 'M 700 105 S 699 95 702 90', 2000, 9000);
-            movePath(tibia, 'M 710 80 L 919 289', 2000, 9000);
-            movePath(foot, 'M 919 309 L 985 241', 2000, 9000);
-        }
+	
+	// Functions for animation along a path
+	Raphael.fn.addGuides = function() {
+		this.ca.guide = function(g) {
+		  return {
+			guide: g
+		  };
+		};
+		this.ca.along = function(percent) {
+		  var g = this.attr("guide");
+		  var len = g.getTotalLength();
+		  var point = g.getPointAtLength(percent * len);
+		  var t = {
+			transform: "t" + point.x + " " + point.y
+		  };
+		  return t;
+		};
+		this.ca.alongRight = function(percent) {
+		  var g = this.attr("guide");
+		  var len = g.getTotalLength();
+		  var point = 1 - g.getPointAtLength(percent * len);
+		  var t = {
+			transfor: "t" + point.x + " " + point.y
+		  };
+		  return t;
+		}
+	 };
+	paper.addGuides();
+	
+	// Animation functions
+	var leftTrack = function (tracker, track, duration, delay) {			
+			tracker.attr({guide: track, along: 0}).animate(Raphael.animation({along: 1}, duration).delay(delay));		
+		},
+		rightTrack = function (tracker, track, duration, delay) {			
+			tracker.attr({guide: track, along: 1}).animate(Raphael.animation({along: 0}, duration).delay(delay));		
+		},	
+		contractMuscle = function (muscle, endLength, endWidth, duration, delay) {
+			muscle.animate(Raphael.animation({rx: endLength, ry: endWidth}, duration).delay(delay));
+		},
+		moveMuscle = function (muscle, x, y, angle, duration, delay) {
+			muscle.animate(Raphael.animation({transform: 'T' + x + ' ' + y + 'r' + angle}, duration).delay(delay));
+		},
+		colorChange = function (muscle, color, duration, delay) {
+			muscle.animate(Raphael.animation({fill: color}, duration).delay(delay));
+		},		
+		movePath = function (path, pathString, duration, delay) {
+			path.animate(Raphael.animation({path: pathString}, duration).delay(delay));
+		},
+		changeOpacity = function (tracker, opacity, duration, delay) {
+			tracker.animate(Raphael.animation({'opacity': opacity}, duration).delay(delay));
+		};
+	
+	function resetAnimation() {
+		quadriceps.attr({fill: '#FF4444', rx: 200, ry: 20});
+		hamstring.attr({fill: '#FF4444', rx: 190, ry: 20});
+		tibia.attr({path: startTibia});
+		foot.attr({path: startFoot});
+		patellarTendon1.attr({path: startTendon, opacity: 1});
+		patellarTendon2.attr({path: endTendon, opacity: 0})
+		hamstringTendon.attr({path: 'M 685 105 S 690 102 698 93'});
+		motorNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
+		inhibitoryNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
+		hammer1.attr({path: startHammer, opacity: 1});
+		hammer2.attr({path: endHammer, opacity: 0});
+		
+		changeOpacity(motorNerveTracker, 0, 1, 0);
+		changeOpacity(inhibitoryNerveTracker, 0, 1, 0);
+		
+	}
+		
+	function reflexAnimation() {
+		var totalAnimTime;
+		if (!reflex) {
+			totalAnimTime = 2000;
+		} else { 
+			totalAnimTime = 11000;
+		}
+		document.getElementById('ReflexRunButton').disabled = true;
+		setTimeout(function(){document.getElementById('ReflexRunButton').disabled = false}, totalAnimTime);
+		document.getElementById('ReflexAnimationButton').disabled = true;
+		setTimeout(function(){document.getElementById('ReflexAnimationButton').disabled = false}, totalAnimTime);
+		document.getElementById('ResetAnimationButton').disabled = true;
+		setTimeout(function(){document.getElementById('ResetAnimationButton').disabled = false}, totalAnimTime);
+		
+		
+		resetAnimation();		
+	
+		movePath(hammer1, endHammer, 1000, 0);
+		movePath(patellarTendon1, endTendon, 100, 900);
+		
+		changeOpacity(patellarTendon2, 1, 1, 1200);
+		changeOpacity(patellarTendon1, 0, 1, 1500);
+		changeOpacity(hammer2, 1, 1, 1200);
+		changeOpacity(hammer1, 0, 1, 1500);
+		movePath(hammer2, startHammer, 1000, 2000);
+		
+		if (reflex) {
+			changeOpacity(afferentNerveTracker, 1, 1, 1000);
+			rightTrack(afferentNerveTracker, afferentNerve, 3000, 1000);
+			changeOpacity(afferentNerveTracker, 0, 1, 4500);
+			
+			changeOpacity(interNeuronTracker, 1, 1, 4400);
+			leftTrack(interNeuronTracker, interNeuron, 500, 4500);
+			changeOpacity(interNeuronTracker, 0, 1, 5000);
+			
+			changeOpacity(motorNerveTracker, 1, 1, 4400);
+			leftTrack(motorNerveTracker, motorNerve, 3000, 4500);
+			colorChange(motorNerveTracker, 'red', 500, 8000),
+			contractMuscle(motorNerveTracker, 150, 20, 500, 8000);
+			changeOpacity(motorNerveTracker, 0, 500, 8000);
+			
+			changeOpacity(inhibitoryNerveTracker, 1, 1, 4900);
+			leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 2500, 5000);
+			colorChange(inhibitoryNerveTracker, 'white', 500, 8000),
+			contractMuscle(inhibitoryNerveTracker, 150, 20, 500, 8000);
+			changeOpacity(inhibitoryNerveTracker, 0, 500, 8000);
+			
+			contractMuscle(quadriceps, 180, 25, 2000, 9000);
+			colorChange(quadriceps, '#E60000', 200, 9000);
+			contractMuscle(hamstring, 205, 15, 2000, 9000);
+			colorChange(hamstring, '#FF9999', 200, 9000);
+			
+			movePath(patellarTendon2, 'M 680 50 S 713 60 721 70', 2000, 9000);
+			movePath(hamstringTendon, 'M 700 105 S 699 95 702 90', 2000, 9000);
+			movePath(tibia, endTibia, 2000, 9000);
+			movePath(foot, endFoot, 2000, 9000);
+		}
 
-    }
+	}
 
 
     (document.getElementById('ReflexRunButton')
@@ -560,9 +596,9 @@ window.addEventListener('load', function () {
         .addEventListener('click', resetToDefaultSim, false));
     (document.getElementById('ReflexClearDataButton')
         .addEventListener('click', clearDataTables, false));
-    (document.getElementById('ReflexAnimationButton')
+	(document.getElementById('ReflexAnimationButton')
         .addEventListener('click', reflexAnimation, false));
-    (document.getElementById('ResetAnimationButton')
+	(document.getElementById('ResetAnimationButton')
         .addEventListener('click', resetAnimation, false));
     
 

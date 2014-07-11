@@ -8,18 +8,17 @@ window.addEventListener('load', function () {
 
     var params, layout, controlsPanel, controls, dataPanel,
         lengthDataTable, forceDataTable, spindleVDataTable, alphaMNVDataTable,
-        tMax = 10000e-3, plotHandles = []; 
+        tMax = 10000e-3, plotHandles = [],
         
-    // Set up the graphics
-    var animationPanel = document.getElementById('ReflexAnimation'),
+        // Set up the graphics
+        animationPanel = document.getElementById('ReflexAnimation'),
         paper = Raphael(animationPanel, 2000, 450),
         
         startTibiaAngle = -1.36678,        
-        tibiaKneeX = 715, tibiaKneeY = 90, tibiaAnkleX1 = 775, tibiaAnkleY1 = 380, tibiaAnkleX2, tibiaAnkleY2,
-        startTibia = 'M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L ' + tibiaAnkleX1 + ' ' + tibiaAnkleY1,
-        endTibia,
+        tibiaKneeX = 715, tibiaKneeY = 90,
+        
         boneStrokeWidth = 30,
-        tibia = paper.path(startTibia).attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
+        tibia = paper.path('M 715 90 L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
         tibiaLength = 296,
         
         startFootHeelAngle = -1.41839,
@@ -401,19 +400,7 @@ window.addEventListener('load', function () {
                       (8.54039 * Math.pow(10, -13) * Math.pow(forceIntegral, 2)) - 
                       (5.7811 * Math.pow(10, -19) * Math.pow(forceIntegral, 3));
         reflexAngleDeg = reflexAngle * 360 / (2 * Math.PI);
-        
-        tibiaAnkleX2 = tibiaKneeX + tibiaLength * Math.cos(startTibiaAngle + reflexAngle);
-        tibiaAnkleY2 = tibiaKneeY - tibiaLength * Math.sin(startTibiaAngle + reflexAngle);
-        endTibia = 'M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L ' + tibiaAnkleX2 + ' ' + tibiaAnkleY2;
-        
-        footHeelX2 = tibiaKneeX + kneeToHeelLength * Math.cos(startFootHeelAngle + reflexAngle);
-        footHeelY2 = tibiaKneeY - kneeToHeelLength * Math.sin(startFootHeelAngle + reflexAngle);
-        footToesX2 = tibiaKneeX + kneeToToesLength * Math.cos(startFootToesAngle + reflexAngle);
-        footToesY2 = tibiaKneeY - kneeToToesLength * Math.sin(startFootToesAngle + reflexAngle);        
-        endFoot = 'M ' + footHeelX2 + ' ' + footHeelY2 + ' L ' + footToesX2 + ' ' + footToesY2;
-        
         quadricepsEndWidth = 200 - (-forceIntegral / 30000);
-        
         scaleFactor = (params.Lstretch_mm) / (10 * defaultLength);
         
         var patellarTendonLeftX1 = 700,
@@ -577,8 +564,7 @@ window.addEventListener('load', function () {
         motorNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
         inhibitoryNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
         hammer1.attr({path: startHammer, opacity: 1});
-        hammer2.attr({path: endHammer, opacity: 0});    
-        
+        hammer2.attr({path: endHammer, opacity: 0});            
         changeOpacity(motorNerveTracker, 0, 1, 0);
         changeOpacity(inhibitoryNerveTracker, 0, 1, 0);
         

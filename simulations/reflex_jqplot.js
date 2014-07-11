@@ -17,8 +17,9 @@ window.addEventListener('load', function () {
         startTibiaAngle = -1.36678,        
         tibiaKneeX = 715, tibiaKneeY = 90, tibiaAnkleX1 = 775, tibiaAnkleY1 = 380, tibiaAnkleX2, tibiaAnkleY2,
         startTibia = 'M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L ' + tibiaAnkleX1 + ' ' + tibiaAnkleY1,
-        endTibia,// = 'M 710 80 L 919 289',
-        tibia = paper.path(startTibia).attr({stroke: '#EED999', 'stroke-width': 30}),
+        endTibia,
+        boneStrokeWidth = 30,
+        tibia = paper.path(startTibia).attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
         tibiaLength = 296,
         
         startFootHeelAngle = -1.41839,
@@ -30,7 +31,7 @@ window.addEventListener('load', function () {
         kneeToHeelLength = 310,
         kneeToToesLength = 320,
         
-        femur = paper.path('M 310 75 L 690 75').attr({stroke: '#EED999', 'stroke-width': 30}),
+        femur = paper.path('M 310 75 L 690 75').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
         quadriceps = paper.ellipse(500, 50, 200, 20).attr({fill: '#FF4444', stroke: 'black'}),
         quadricepsEndWidth = 200,
         hamstring = paper.ellipse(495, 105, 190, 20).attr({fill: '#FF4444', stroke: 'black'}),
@@ -58,6 +59,9 @@ window.addEventListener('load', function () {
         scaleFactor = 1,
         defaultLength = 90,
         reflex,
+        reflexAngle,
+        reflexAngleDeg,
+        timeScale = 7,
         
         startHammer = 'M 733 55 L 730 50 L 770 10 L 785 30 Z',
         endHammer = 'M 713 75 L 710 70 L 750 30 L 765 50 Z',
@@ -71,8 +75,8 @@ window.addEventListener('load', function () {
 
     // set up the controls
     params = {
-        Lstretch_mm: { label: 'Stetch', units: 'mm',
-            defaultVal: 0, minVal: 0, maxVal: 10 },
+        Lstretch_mm: { label: 'Stretch', units: 'mm',
+            defaultVal: 5, minVal: 0, maxVal: 10 },
         m_g: { label: 'Mass', units: 'g',
             defaultVal: 8000, minVal: 7000, maxVal: 8500 },
         B_ms_cm: { label: 'Force-velocity constant', units: 'ms/cm',
@@ -135,7 +139,7 @@ window.addEventListener('load', function () {
             defaultVal: 10, minVal: 0.1, maxVal: 1000000 },
 
         spindleToAlphaMN_g_uS: { label: 'Synapse conductance', 
-            units: '\u00B5S', defaultVal: 0.05, minVal: 0, maxVal: 1 },
+            units: '\u00B5S', defaultVal: 0.05, minVal: 0, maxVal: .1 },
         spindleToAlphaMN_E_mV: { label: 'Synapse potential', units: 'mV', 
             defaultVal: 0, minVal: -1000, maxVal: 1000 },
         spindleToAlphaMN_tau_rise_ms: { units: 'ms', 
@@ -387,8 +391,7 @@ window.addEventListener('load', function () {
         
         // Animation calculations
         
-        var forceIntegral = 0,
-            reflexAngle = 0;
+        var forceIntegral = 0;
             
         for (var i = 0; i < force.length - 1; i++) {
             forceIntegral += (force[i + 1][1]) * (force[i + 1][0] - force[i][0]);
@@ -397,6 +400,7 @@ window.addEventListener('load', function () {
         reflexAngle = (-1.13603 * Math.pow(10, -17)) - (6.82844 * Math.pow(10, -7) * forceIntegral) -
                       (8.54039 * Math.pow(10, -13) * Math.pow(forceIntegral, 2)) - 
                       (5.7811 * Math.pow(10, -19) * Math.pow(forceIntegral, 3));
+        reflexAngleDeg = reflexAngle * 360 / (2 * Math.PI);
         
         tibiaAnkleX2 = tibiaKneeX + tibiaLength * Math.cos(startTibiaAngle + reflexAngle);
         tibiaAnkleY2 = tibiaKneeY - tibiaLength * Math.sin(startTibiaAngle + reflexAngle);
@@ -416,29 +420,29 @@ window.addEventListener('load', function () {
             patellarTendonLeftY1 = 50,
             patellarTendonMidX1 = 710,
             patellarTendonMidY1 = 70,
-            patellarTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * 15),
-            patellarTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * 15) + 3,
+            patellarTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            patellarTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
             
             patellarTendonLeftX2 = 700,
             patellarTendonLeftY2 = 50,
             patellarTendonMidX2 = Math.round(710 - scaleFactor * 900),
             patellarTendonMidY2 = Math.round(70 + scaleFactor * 900),
-            patellarTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * 15),
-            patellarTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * 15) + 3,
+            patellarTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            patellarTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
             
             patellarTendonLeftX3 = 500 + quadricepsEndWidth,
             patellarTendonLeftY3 = 50,
             patellarTendonMidX3 = 705,
             patellarTendonMidY3 = 60,
-            patellarTendonRightX3 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * 15),
-            patellarTendonRightY3 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * 15) + 3,
+            patellarTendonRightX3 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            patellarTendonRightY3 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
             
             hamstringTendonLeftX1 = 685,
             hamstringTendonLeftY1 = 105,
             hamstringTendonMidX1 = 690,
             hamstringTendonMidY1 = 102,
-            hamstringTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle - Math.PI / 2) * 15) + 3,
-            hamstringTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle - Math.PI / 2) * 15),
+            hamstringTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            hamstringTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)),
             
             hamstringTendonLeftX2 = 700,
             hamstringTendonLeftY2 = 105,
@@ -538,39 +542,42 @@ window.addEventListener('load', function () {
     
     // Animation functions
     var leftTrack = function (tracker, track, duration, delay) {            
-            tracker.attr({guide: track, along: 0}).animate(Raphael.animation({along: 1}, duration).delay(delay));        
+            tracker.attr({guide: track, along: 0}).animate(Raphael.animation({along: 1}, duration * timeScale).delay(delay * timeScale));        
         },
         rightTrack = function (tracker, track, duration, delay) {            
-            tracker.attr({guide: track, along: 1}).animate(Raphael.animation({along: 0}, duration).delay(delay));        
+            tracker.attr({guide: track, along: 1}).animate(Raphael.animation({along: 0}, duration * timeScale).delay(delay * timeScale));        
         },    
         contractMuscle = function (muscle, endLength, endWidth, duration, delay) {
-            muscle.animate(Raphael.animation({rx: endLength, ry: endWidth}, duration).delay(delay));
+            muscle.animate(Raphael.animation({rx: endLength, ry: endWidth}, duration * timeScale).delay(delay * timeScale));
         },
         moveMuscle = function (muscle, x, y, angle, duration, delay) {
-            muscle.animate(Raphael.animation({transform: 'T' + x + ' ' + y + 'r' + angle}, duration).delay(delay));
+            muscle.animate(Raphael.animation({transform: 'T' + x + ' ' + y + 'r' + angle}, duration * timeScale).delay(delay * timeScale));
         },
         colorChange = function (muscle, color, duration, delay) {
-            muscle.animate(Raphael.animation({fill: color}, duration).delay(delay));
+            muscle.animate(Raphael.animation({fill: color}, duration * timeScale).delay(delay * timeScale));
         },        
         movePath = function (path, pathString, duration, delay) {
-            path.animate(Raphael.animation({path: pathString}, duration).delay(delay));
+            path.animate(Raphael.animation({path: pathString}, duration * timeScale).delay(delay * timeScale));
+        },
+        rotatePath = function (path, angle, xRotationPoint, yRotationPoint, duration, delay) {
+            path.animate(Raphael.animation({transform: 'r' + angle + ' ' + xRotationPoint + ' ' + yRotationPoint}, duration * timeScale).delay(delay * timeScale));
         },
         changeOpacity = function (tracker, opacity, duration, delay) {
-            tracker.animate(Raphael.animation({'opacity': opacity}, duration).delay(delay));
+            tracker.animate(Raphael.animation({'opacity': opacity}, duration * timeScale).delay(delay * timeScale));
         };
     
     function resetAnimation() {
         quadriceps.attr({fill: '#FF4444', rx: 200, ry: 20});
         hamstring.attr({fill: '#FF4444', rx: 190, ry: 20});
-        tibia.attr({path: startTibia});
-        foot.attr({path: startFoot});
+        tibia.attr({transform: 'r0'});
+        foot.attr({transform: 'r0'});
         patellarTendon1.attr({path: patellarTendonPath1, opacity: 1});
         patellarTendon2.attr({path: patellarTendonPath2, opacity: 0})
         hamstringTendon.attr({path: hamstringTendonPath1});
         motorNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
         inhibitoryNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
         hammer1.attr({path: startHammer, opacity: 1});
-        hammer2.attr({path: endHammer, opacity: 0});
+        hammer2.attr({path: endHammer, opacity: 0});    
         
         changeOpacity(motorNerveTracker, 0, 1, 0);
         changeOpacity(inhibitoryNerveTracker, 0, 1, 0);
@@ -580,9 +587,9 @@ window.addEventListener('load', function () {
     function reflexAnimation() {
         var totalAnimTime;
         if (!reflex) {
-            totalAnimTime = 2000;
+            totalAnimTime = 200 * timeScale;
         } else { 
-            totalAnimTime = 11000;
+            totalAnimTime = 1100 * timeScale;
         }
         document.getElementById('ReflexRunButton').disabled = true;
         setTimeout(function(){document.getElementById('ReflexRunButton').disabled = false}, totalAnimTime);
@@ -594,45 +601,46 @@ window.addEventListener('load', function () {
         
         resetAnimation();        
     
-        movePath(hammer1, endHammer, 1000, 0);
-        movePath(patellarTendon1, patellarTendonPath2, 100, 900);
+        movePath(hammer1, endHammer, 100, 0);
+        movePath(patellarTendon1, patellarTendonPath2, 10, 90);
         
-        changeOpacity(patellarTendon2, 1, 1, 1200);
-        changeOpacity(patellarTendon1, 0, 1, 1500);
-        changeOpacity(hammer2, 1, 1, 1200);
-        changeOpacity(hammer1, 0, 1, 1500);
-        movePath(hammer2, startHammer, 1000, 2000);
+        changeOpacity(patellarTendon2, 1, 1, 120);
+        changeOpacity(patellarTendon1, 0, 1, 150);
+        changeOpacity(hammer2, 1, 1, 120);
+        changeOpacity(hammer1, 0, 1, 150);
+        movePath(hammer2, startHammer, 100, 200);
+        
         
         if (reflex) {
-            changeOpacity(afferentNerveTracker, 1, 1, 1000);
-            rightTrack(afferentNerveTracker, afferentNerve, 3000, 1000);
-            changeOpacity(afferentNerveTracker, 0, 1, 4500);
+            changeOpacity(afferentNerveTracker, 1, 1, 100);
+            rightTrack(afferentNerveTracker, afferentNerve, 300, 100);
+            changeOpacity(afferentNerveTracker, 0, 1, 450);
             
-            changeOpacity(interNeuronTracker, 1, 1, 4400);
-            leftTrack(interNeuronTracker, interNeuron, 500, 4500);
-            changeOpacity(interNeuronTracker, 0, 1, 5000);
+            changeOpacity(interNeuronTracker, 1, 1, 440);
+            leftTrack(interNeuronTracker, interNeuron, 50, 450);
+            changeOpacity(interNeuronTracker, 0, 1, 500);
             
-            changeOpacity(motorNerveTracker, 1, 1, 4400);
-            leftTrack(motorNerveTracker, motorNerve, 3000, 4500);
-            colorChange(motorNerveTracker, 'red', 500, 8000),
-            contractMuscle(motorNerveTracker, 150, 20, 500, 8000);
-            changeOpacity(motorNerveTracker, 0, 500, 8000);
+            changeOpacity(motorNerveTracker, 1, 1, 440);
+            leftTrack(motorNerveTracker, motorNerve, 300, 450);
+            colorChange(motorNerveTracker, 'red', 50, 800),
+            contractMuscle(motorNerveTracker, 150, 20, 50, 800);
+            changeOpacity(motorNerveTracker, 0, 50, 800);
             
-            changeOpacity(inhibitoryNerveTracker, 1, 1, 4900);
-            leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 2500, 5000);
-            colorChange(inhibitoryNerveTracker, 'white', 500, 8000),
-            contractMuscle(inhibitoryNerveTracker, 150, 20, 500, 8000);
-            changeOpacity(inhibitoryNerveTracker, 0, 500, 8000);
+            changeOpacity(inhibitoryNerveTracker, 1, 1, 490);
+            leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 250, 500);
+            colorChange(inhibitoryNerveTracker, 'white', 50, 800),
+            contractMuscle(inhibitoryNerveTracker, 150, 20, 50, 800);
+            changeOpacity(inhibitoryNerveTracker, 0, 50, 800);
             
-            contractMuscle(quadriceps, quadricepsEndWidth, 25, 2000, 9000);
-            colorChange(quadriceps, '#E60000', 200, 9000);
-            contractMuscle(hamstring, 205, 15, 2000, 9000);
-            colorChange(hamstring, '#FF9999', 200, 9000);
+            contractMuscle(quadriceps, quadricepsEndWidth, 25, 200, 900);
+            colorChange(quadriceps, '#E60000', 20, 900);
+            contractMuscle(hamstring, 205, 15, 200, 900);
+            colorChange(hamstring, '#FF9999', 20, 900);
             
-            movePath(patellarTendon2, patellarTendonPath3, 2000, 9000);
-            movePath(hamstringTendon, hamstringTendonPath2, 2000, 9000);
-            movePath(tibia, endTibia, 2000, 9000);
-            movePath(foot, endFoot, 2000, 9000);
+            movePath(patellarTendon2, patellarTendonPath3, 200, 900);
+            movePath(hamstringTendon, hamstringTendonPath2, 200, 900);
+            rotatePath(tibia, -reflexAngleDeg, 715, 90, 200, 900);
+            rotatePath(foot, -reflexAngleDeg, 715, 90, 200, 900);
         }
 
     }

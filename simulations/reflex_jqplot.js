@@ -53,8 +53,6 @@ window.addEventListener('load', function () {
         afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
         afferentToInterNeuron = paper.path('M 105 65 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
         afferentToMotorNeuron = paper.path('M 125 75 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
-        //afferentNerveSoma = paper.ellipse(250, 28, 12, 12).attr({fill: 'grey', stroke: 'grey'}),
-        //afferentNerveSynapse = paper.path('M 500 50 L 505 55 L 495 45 Z').attr({stroke: 'black', 'stroke-width': 1}),
         interNeuron = paper.path('M 90 80 L 90 120').attr({stroke: 'grey', 'stroke-width': 6, 
                       'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
         motorNerve = paper.path('M 120 90 S 300 100 500 58').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
@@ -73,6 +71,8 @@ window.addEventListener('load', function () {
         interNeuronTracker = paper.ellipse(0, 0, 3, 3).attr({stroke: 'black', fill: 'black', opacity: 0}),
         motorNerveTracker = paper.ellipse(0, 0, 3, 3).attr({stroke: 'black', fill: 'black', opacity: 1}),
         inhibitoryNerveTracker = paper.ellipse(0, 0, 3, 3).attr({stroke: 'black', fill: 'black', opacity: 1}),
+        afferentToInterNeuronTracker = paper.ellipse(0, 0, 3, 3).attr({stroke: 'black', fill: 'black', opacity: 0}),
+        afferentToMotorNeuronTracker = paper.ellipse(0, 0, 3, 3).attr({stroke: 'black', fill: 'black', opacity: 0}),
         
         scaleFactor = 1,
         defaultLength = 90,
@@ -575,8 +575,8 @@ window.addEventListener('load', function () {
     function resetAnimation() {
         quadriceps.attr({fill: '#FF4444', rx: 200, ry: 20});
         hamstring.attr({fill: '#FF4444', rx: 190, ry: 20});
-        tibia.attr({transform: 'r0'});
-        foot.attr({transform: 'r0'});
+        rotatePath(tibia, 0, 715, 90, 1, 0);
+        rotatePath(foot, 0, 715, 90, 1, 0);
         patellarTendon1.attr({path: patellarTendonPath1, opacity: 1});
         patellarTendon2.attr({path: patellarTendonPath2, opacity: 0})
         hamstringTendon.attr({path: hamstringTendonPath1});
@@ -602,9 +602,8 @@ window.addEventListener('load', function () {
         setTimeout(function(){document.getElementById('ReflexAnimationButton').disabled = false}, totalAnimTime);
         document.getElementById('ResetAnimationButton').disabled = true;
         setTimeout(function(){document.getElementById('ResetAnimationButton').disabled = false}, totalAnimTime);
-        
-        
-        resetAnimation();        
+            
+        resetAnimation();            
     
         movePath(hammer1, endHammer, 100, 0);
         movePath(patellarTendon1, patellarTendonPath2, 10, 90);
@@ -618,8 +617,16 @@ window.addEventListener('load', function () {
         
         if (reflex) {
             changeOpacity(afferentNerveTracker, 1, 1, 100);
-            rightTrack(afferentNerveTracker, afferentNerve, 300, 100);
-            changeOpacity(afferentNerveTracker, 0, 1, 450);
+            rightTrack(afferentNerveTracker, afferentNerve, 200, 100);
+            changeOpacity(afferentNerveTracker, 0, 1, 300);
+            
+            changeOpacity(afferentToInterNeuronTracker, 1, 1, 295);
+            rightTrack(afferentToInterNeuronTracker, afferentToInterNeuron, 130, 300);
+            changeOpacity(afferentToInterNeuronTracker, 0, 1, 440);
+            
+            changeOpacity(afferentToMotorNeuronTracker, 1, 1, 295);
+            rightTrack(afferentToMotorNeuronTracker, afferentToMotorNeuron, 130, 300);
+            changeOpacity(afferentToMotorNeuronTracker, 0, 1, 440);
             
             changeOpacity(interNeuronTracker, 1, 1, 440);
             leftTrack(interNeuronTracker, interNeuron, 50, 450);

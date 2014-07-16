@@ -12,7 +12,7 @@ window.addEventListener('load', function () {
         
         // Set up the graphics
         animationPanel = document.getElementById('ReflexAnimation'),
-        paper = Raphael(animationPanel, 2000, 450),
+        paper = Raphael(animationPanel, 1000, 450),
         
         startTibiaAngle = -1.36678,        
         tibiaKneeX = 715, tibiaKneeY = 90,
@@ -35,7 +35,21 @@ window.addEventListener('load', function () {
         quadricepsEndWidth = 200,
         hamstring = paper.ellipse(495, 105, 190, 20).attr({fill: '#FF4444', stroke: 'black'}),
         
-        spinalCord = paper.ellipse(100, 100, 80, 80).attr({stroke: 'black', fill: 'silver'}),
+//        spinalCord = paper.ellipse(100, 100, 80, 80).attr({stroke: 'black', fill: 'silver'}),
+
+//        spinalCord;
+//        jQuery.ajax({
+//            type: "GET",
+//            url: "../media/spinal_cord.svg",
+//            datatype: "xml",
+//            success: function(svgXML) {
+//                spinalCord = paper.importSVG(svgXML);
+//                //spinalCord = spinalCord.attr({opacity: 0.5, stroke: 'red'});
+//                spinalCord = spinalCord.transform("t0,-100s0.7,0.7,10,10");
+//            }
+//        });
+//    var
+
         afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
         afferentToInterNeuron = paper.path('M 105 65 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
         afferentToMotorNeuron = paper.path('M 125 75 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),

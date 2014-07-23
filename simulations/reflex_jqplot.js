@@ -583,77 +583,83 @@ window.addEventListener('load', function () {
         motorNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
         inhibitoryNerveTracker.attr({fill: 'black', rx: 4, ry: 4, opacity: 1});
         hammer1.attr({path: startHammer, opacity: 1});
-        hammer2.attr({path: endHammer, opacity: 0});            
+        hammer2.attr({path: endHammer, opacity: 0});
         changeOpacity(motorNerveTracker, 0, 1, 0);
         changeOpacity(inhibitoryNerveTracker, 0, 1, 0);
         
     }
         
     function reflexAnimation() {
-        var totalAnimTime;
-        if (!reflex) {
-            totalAnimTime = 200 * timeScale;
-        } else { 
-            totalAnimTime = 1100 * timeScale;
-        }
-        document.getElementById('ReflexRunButton').disabled = true;
-        setTimeout(function(){document.getElementById('ReflexRunButton').disabled = false}, totalAnimTime);
-        document.getElementById('ReflexAnimationButton').disabled = true;
-        setTimeout(function(){document.getElementById('ReflexAnimationButton').disabled = false}, totalAnimTime);
-        document.getElementById('ResetAnimationButton').disabled = true;
-        setTimeout(function(){document.getElementById('ResetAnimationButton').disabled = false}, totalAnimTime);
-            
-        resetAnimation();            
-    
-        movePath(hammer1, endHammer, 100, 0);
-        movePath(patellarTendon1, patellarTendonPath2, 10, 90);
+        resetAnimation();
         
-        changeOpacity(patellarTendon2, 1, 1, 120);
-        changeOpacity(patellarTendon1, 0, 1, 150);
-        changeOpacity(hammer2, 1, 1, 120);
-        changeOpacity(hammer1, 0, 1, 150);
-        movePath(hammer2, startHammer, 100, 200);
+        setTimeout(function() {
+            resetAnimation();
+            
+            var totalAnimTime;
+            if (!reflex) {
+                totalAnimTime = 200 * timeScale;
+            } else { 
+                totalAnimTime = 1100 * timeScale;
+            }
+            document.getElementById('ReflexRunButton').disabled = true;
+            setTimeout(function(){document.getElementById('ReflexRunButton').disabled = false}, totalAnimTime);
+            document.getElementById('ReflexAnimationButton').disabled = true;
+            setTimeout(function(){document.getElementById('ReflexAnimationButton').disabled = false}, totalAnimTime);
+            document.getElementById('ResetAnimationButton').disabled = true;
+            setTimeout(function(){document.getElementById('ResetAnimationButton').disabled = false}, totalAnimTime);
+                
+                       
         
-        
-        if (reflex) {
-            changeOpacity(afferentNerveTracker, 1, 1, 100);
-            rightTrack(afferentNerveTracker, afferentNerve, 200, 100);
-            changeOpacity(afferentNerveTracker, 0, 1, 300);
+            movePath(hammer1, endHammer, 100, 0);
+            movePath(patellarTendon1, patellarTendonPath2, 10, 90);
             
-            changeOpacity(afferentToInterNeuronTracker, 1, 1, 295);
-            rightTrack(afferentToInterNeuronTracker, afferentToInterNeuron, 130, 300);
-            changeOpacity(afferentToInterNeuronTracker, 0, 1, 440);
+            changeOpacity(patellarTendon2, 1, 1, 120);
+            changeOpacity(patellarTendon1, 0, 1, 150);
+            changeOpacity(hammer2, 1, 1, 120);
+            changeOpacity(hammer1, 0, 1, 150);
+            movePath(hammer2, startHammer, 100, 200);
             
-            changeOpacity(afferentToMotorNeuronTracker, 1, 1, 295);
-            rightTrack(afferentToMotorNeuronTracker, afferentToMotorNeuron, 130, 300);
-            changeOpacity(afferentToMotorNeuronTracker, 0, 1, 440);
             
-            changeOpacity(interNeuronTracker, 1, 1, 440);
-            leftTrack(interNeuronTracker, interNeuron, 50, 450);
-            changeOpacity(interNeuronTracker, 0, 1, 500);
-            
-            changeOpacity(motorNerveTracker, 1, 1, 440);
-            leftTrack(motorNerveTracker, motorNerve, 300, 450);
-            colorChange(motorNerveTracker, 'red', 50, 800),
-            contractMuscle(motorNerveTracker, 150, 20, 50, 800);
-            changeOpacity(motorNerveTracker, 0, 50, 800);
-            
-            changeOpacity(inhibitoryNerveTracker, 1, 1, 490);
-            leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 250, 500);
-            colorChange(inhibitoryNerveTracker, 'white', 50, 800),
-            contractMuscle(inhibitoryNerveTracker, 150, 20, 50, 800);
-            changeOpacity(inhibitoryNerveTracker, 0, 50, 800);
-            
-            contractMuscle(quadriceps, quadricepsEndWidth, 25, 200, 900);
-            colorChange(quadriceps, '#E60000', 20, 900);
-            contractMuscle(hamstring, 205, 15, 200, 900);
-            colorChange(hamstring, '#FF9999', 20, 900);
-            
-            movePath(patellarTendon2, patellarTendonPath3, 200, 900);
-            movePath(hamstringTendon, hamstringTendonPath2, 200, 900);
-            rotatePath(tibia, -reflexAngleDeg, 715, 90, 200, 900);
-            rotatePath(foot, -reflexAngleDeg, 715, 90, 200, 900);
-        }
+            if (reflex) {
+                changeOpacity(afferentNerveTracker, 1, 1, 100);
+                rightTrack(afferentNerveTracker, afferentNerve, 200, 100);
+                changeOpacity(afferentNerveTracker, 0, 1, 300);
+                
+                changeOpacity(afferentToInterNeuronTracker, 1, 1, 295);
+                rightTrack(afferentToInterNeuronTracker, afferentToInterNeuron, 130, 300);
+                changeOpacity(afferentToInterNeuronTracker, 0, 1, 440);
+                
+                changeOpacity(afferentToMotorNeuronTracker, 1, 1, 295);
+                rightTrack(afferentToMotorNeuronTracker, afferentToMotorNeuron, 130, 300);
+                changeOpacity(afferentToMotorNeuronTracker, 0, 1, 440);
+                
+                changeOpacity(interNeuronTracker, 1, 1, 440);
+                leftTrack(interNeuronTracker, interNeuron, 50, 450);
+                changeOpacity(interNeuronTracker, 0, 1, 500);
+                
+                changeOpacity(motorNerveTracker, 1, 1, 440);
+                leftTrack(motorNerveTracker, motorNerve, 300, 450);
+                colorChange(motorNerveTracker, 'red', 50, 800),
+                contractMuscle(motorNerveTracker, 150, 20, 50, 800);
+                changeOpacity(motorNerveTracker, 0, 50, 800);
+                
+                changeOpacity(inhibitoryNerveTracker, 1, 1, 490);
+                leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 250, 500);
+                colorChange(inhibitoryNerveTracker, 'white', 50, 800),
+                contractMuscle(inhibitoryNerveTracker, 150, 20, 50, 800);
+                changeOpacity(inhibitoryNerveTracker, 0, 50, 800);
+                
+                contractMuscle(quadriceps, quadricepsEndWidth, 25, 200, 900);
+                colorChange(quadriceps, '#E60000', 20, 900);
+                contractMuscle(hamstring, 205, 15, 200, 900);
+                colorChange(hamstring, '#FF9999', 20, 900);
+                
+                movePath(patellarTendon2, patellarTendonPath3, 200, 900);
+                movePath(hamstringTendon, hamstringTendonPath2, 200, 900);
+                rotatePath(tibia, -reflexAngleDeg, 715, 90, 200, 900);
+                rotatePath(foot, -reflexAngleDeg, 715, 90, 200, 900);
+            }
+           }, 10);
 
     }
 

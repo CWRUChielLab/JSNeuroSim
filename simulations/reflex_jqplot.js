@@ -15,10 +15,12 @@ window.addEventListener('load', function () {
         paper = Raphael(animationPanel, 1000, 450),
         
         startTibiaAngle = -1.36678,        
-        tibiaKneeX = 715, tibiaKneeY = 90,
+        //tibiaKneeX = 715, tibiaKneeY = 90,
+        tibiaKneeX = 725, tibiaKneeY = 165,
         
         boneStrokeWidth = 30,
-        tibia = paper.path('M 715 90 L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
+        //tibia = paper.path('M 715 90 L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
+        tibia = paper.path('M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
         tibiaLength = 296,
         
         startFootHeelAngle = -1.41839,
@@ -30,10 +32,13 @@ window.addEventListener('load', function () {
         kneeToHeelLength = 310,
         kneeToToesLength = 320,
         
-        femur = paper.path('M 310 75 L 690 75').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
-        quadriceps = paper.ellipse(500, 50, 200, 20).attr({fill: '#FF4444', stroke: 'black'}),
-        quadricepsEndWidth = 200,
-        hamstring = paper.ellipse(495, 105, 190, 20).attr({fill: '#FF4444', stroke: 'black'}),
+        //femur = paper.path('M 310 75 L 690 75').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
+        femur = paper.path('M 410 150 L 700 150').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
+        //quadriceps = paper.ellipse(500, 50, 200, 20).attr({fill: '#FF4444', stroke: 'black'}),
+        quadriceps = paper.ellipse(555, 125, 150, 20).attr({fill: '#FF4444', stroke: 'black'}),
+        quadricepsEndWidth = 150,
+        //hamstring = paper.ellipse(495, 105, 190, 20).attr({fill: '#FF4444', stroke: 'black'}),
+        hamstring = paper.ellipse(545, 175, 140, 20).attr({fill: '#FF4444', stroke: 'black'}),
         
 //        spinalCord = paper.ellipse(100, 100, 80, 80).attr({stroke: 'black', fill: 'silver'}),
 
@@ -419,7 +424,7 @@ window.addEventListener('load', function () {
                       (8.54039 * Math.pow(10, -13) * Math.pow(forceIntegral, 2)) - 
                       (5.7811 * Math.pow(10, -19) * Math.pow(forceIntegral, 3));
         reflexAngleDeg = reflexAngle * 360 / (2 * Math.PI);
-        quadricepsEndWidth = 200 - (-forceIntegral / 30000);
+        quadricepsEndWidth = 150 - (-forceIntegral / 30000);
         scaleFactor = (params.Lstretch_mm) / (10 * defaultLength);
         
         var patellarTendonLeftX1 = 700,
@@ -573,10 +578,14 @@ window.addEventListener('load', function () {
         };
     
     function resetAnimation() {
-        quadriceps.attr({fill: '#FF4444', rx: 200, ry: 20});
-        hamstring.attr({fill: '#FF4444', rx: 190, ry: 20});
-        rotatePath(tibia, 0, 715, 90, 1, 0);
-        rotatePath(foot, 0, 715, 90, 1, 0);
+        //quadriceps.attr({fill: '#FF4444', rx: 200, ry: 20});
+        quadriceps.attr({fill: '#FF4444', rx: 150, ry: 20});
+        //hamstring.attr({fill: '#FF4444', rx: 190, ry: 20});
+        hamstring.attr({fill: '#FF4444', rx: 140, ry: 20});
+        //rotatePath(tibia, 0, 715, 90, 1, 0);
+        rotatePath(tibia, 0, tibiaKneeX, tibiaKneeY, 1, 0);
+        //rotatePath(foot, 0, 715, 90, 1, 0);
+        rotatePath(foot, 0, tibiaKneeX, tibiaKneeY, 1, 0);
         patellarTendon1.attr({path: patellarTendonPath1, opacity: 1});
         patellarTendon2.attr({path: patellarTendonPath2, opacity: 0})
         hamstringTendon.attr({path: hamstringTendonPath1});
@@ -649,15 +658,19 @@ window.addEventListener('load', function () {
                 contractMuscle(inhibitoryNerveTracker, 150, 20, 50, 800);
                 changeOpacity(inhibitoryNerveTracker, 0, 50, 800);
                 
+                //contractMuscle(quadriceps, quadricepsEndWidth, 25, 200, 900);
                 contractMuscle(quadriceps, quadricepsEndWidth, 25, 200, 900);
                 colorChange(quadriceps, '#E60000', 20, 900);
-                contractMuscle(hamstring, 205, 15, 200, 900);
+                //contractMuscle(hamstring, 205, 15, 200, 900);
+                contractMuscle(hamstring, 155, 15, 200, 900);
                 colorChange(hamstring, '#FF9999', 20, 900);
                 
                 movePath(patellarTendon2, patellarTendonPath3, 200, 900);
                 movePath(hamstringTendon, hamstringTendonPath2, 200, 900);
-                rotatePath(tibia, -reflexAngleDeg, 715, 90, 200, 900);
-                rotatePath(foot, -reflexAngleDeg, 715, 90, 200, 900);
+                //rotatePath(tibia, -reflexAngleDeg, 715, 90, 200, 900);
+                rotatePath(tibia, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
+                //rotatePath(foot, -reflexAngleDeg, 715, 90, 200, 900);
+                rotatePath(foot, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
             }
            }, 10);
 

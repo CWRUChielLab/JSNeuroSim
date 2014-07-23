@@ -16,12 +16,16 @@ window.addEventListener('load', function () {
         
         startTibiaAngle = -1.36678,        
         //tibiaKneeX = 715, tibiaKneeY = 90,
-        tibiaKneeX = 725, tibiaKneeY = 165,
+        tibiaKneeStartX1 = 725, tibiaKneeStartY1 = 165,
+        tibiaKneeStartX2 = 775, tibiaKneeStartY2 = 380,
+        tibiaLength = Math.sqrt(Math.pow((tibiaKneeStartY2 - tibiaKneeStartY1),2) + Math.pow((tibiaKneeStartX2 - tibiaKneeStartX1), 2)),
         
         boneStrokeWidth = 30,
         //tibia = paper.path('M 715 90 L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
-        tibia = paper.path('M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
-        tibiaLength = 296,
+        //tibia = paper.path('M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
+        tibia = paper.path('M ' + tibiaKneeStartX1 + ' ' + tibiaKneeStartY1 + ' L ' + tibiaKneeStartX2 + ' ' + tibiaKneeStartY2).attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
+        
+        //tibiaLength = 296,
         
         startFootHeelAngle = -1.41839,
         startFootToesAngle = -1.11832,
@@ -29,6 +33,10 @@ window.addEventListener('load', function () {
         startFoot = 'M ' + footHeelX1 + ' ' + footHeelY1 + ' L ' + footToesX1 + ' ' + footToesY1,
         endFoot,
         foot = paper.path(startFoot).attr({stroke: '#EED999', 'stroke-width': 24}),
+        
+        /* 
+            Need to adjust these numbers 
+         */
         kneeToHeelLength = 310,
         kneeToToesLength = 320,
         
@@ -55,13 +63,22 @@ window.addEventListener('load', function () {
 //        });
 //    var
 
-        afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-        afferentToInterNeuron = paper.path('M 105 65 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
-        afferentToMotorNeuron = paper.path('M 125 75 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
+        //afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+        afferentNerve = paper.path('M 280 120 S 360 150 555 127').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+        //afferentToInterNeuron = paper.path('M 105 65 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
+        afferentToInterNeuron = paper.path('M 105 65 S 150 30 280 120').attr({stroke: 'grey', 'stroke-width': 6}),
+        //afferentToMotorNeuron = paper.path('M 125 75 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
+        afferentToMotorNeuron = paper.path('M 125 75 S 150 30 280 120').attr({stroke: 'grey', 'stroke-width': 6}),
+        
+        // interNeuron = paper.path('M 90 80 L 90 120').attr({stroke: 'grey', 'stroke-width': 6, 
+                      // 'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
         interNeuron = paper.path('M 90 80 L 90 120').attr({stroke: 'grey', 'stroke-width': 6, 
                       'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
-        motorNerve = paper.path('M 120 90 S 300 100 500 58').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-        inhibitoryNerve = paper.path('M 90 135 S 300 200 500 105').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+        // motorNerve = paper.path('M 120 90 S 300 100 500 58').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+        motorNerve = paper.path('M 120 90 S 300 100 555 120').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+        // inhibitoryNerve = paper.path('M 90 135 S 300 200 500 105').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+        //inhibitoryNerve = paper.path('M 90 135 S 280 140 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+        inhibitoryNerve = paper.path('M 90 135 R 180 195 250 200 280 140 380 170 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
         
         patellarTendonPath1 = 'M 700 50 S 710 70 733 87',
         patellarTendonPath2,
@@ -431,36 +448,46 @@ window.addEventListener('load', function () {
             patellarTendonLeftY1 = 50,
             patellarTendonMidX1 = 710,
             patellarTendonMidY1 = 70,
-            patellarTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
-            patellarTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            // patellarTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            // patellarTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            patellarTendonRightX1 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            patellarTendonRightY1 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
             
             patellarTendonLeftX2 = 700,
             patellarTendonLeftY2 = 50,
             patellarTendonMidX2 = Math.round(710 - scaleFactor * 900),
             patellarTendonMidY2 = Math.round(70 + scaleFactor * 900),
-            patellarTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
-            patellarTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            // patellarTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            // patellarTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            patellarTendonRightX2 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            patellarTendonRightY2 = Math.round(tibiaKneeStartY2 - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
             
             patellarTendonLeftX3 = 500 + quadricepsEndWidth,
             patellarTendonLeftY3 = 50,
             patellarTendonMidX3 = 705,
             patellarTendonMidY3 = 60,
-            patellarTendonRightX3 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
-            patellarTendonRightY3 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            // patellarTendonRightX3 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            // patellarTendonRightY3 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            patellarTendonRightX3 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+            patellarTendonRightY3 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
             
             hamstringTendonLeftX1 = 685,
             hamstringTendonLeftY1 = 105,
             hamstringTendonMidX1 = 690,
             hamstringTendonMidY1 = 102,
-            hamstringTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
-            hamstringTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)),
+            // hamstringTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            // hamstringTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)),
+            hamstringTendonRightX1 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
+            hamstringTendonRightY1 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)),
             
             hamstringTendonLeftX2 = 700,
             hamstringTendonLeftY2 = 105,
             hamstringTendonMidX2 = 695,
             hamstringTendonMidY2 = 102,
-            hamstringTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
-            hamstringTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle - Math.PI / 2) * 15),
+            // hamstringTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
+            // hamstringTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle - Math.PI / 2) * 15),
+            hamstringTendonRightX2 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
+            hamstringTendonRightY2 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + reflexAngle - Math.PI / 2) * 15),
             
             hammerX1 = Math.round(715 - scaleFactor * 350),
             hammerX2 = Math.round(712 - scaleFactor * 350),
@@ -583,9 +610,11 @@ window.addEventListener('load', function () {
         //hamstring.attr({fill: '#FF4444', rx: 190, ry: 20});
         hamstring.attr({fill: '#FF4444', rx: 140, ry: 20});
         //rotatePath(tibia, 0, 715, 90, 1, 0);
-        rotatePath(tibia, 0, tibiaKneeX, tibiaKneeY, 1, 0);
+        // rotatePath(tibia, 0, tibiaKneeX, tibiaKneeY, 1, 0);
+        rotatePath(tibia, 0, tibiaKneeStartX1, tibiaKneeStartY1, 1, 0);
         //rotatePath(foot, 0, 715, 90, 1, 0);
-        rotatePath(foot, 0, tibiaKneeX, tibiaKneeY, 1, 0);
+        //rotatePath(foot, 0, tibiaKneeX, tibiaKneeY, 1, 0);
+        rotatePath(foot, 0, tibiaKneeStartX1, tibiaKneeStartY1, 1, 0);
         patellarTendon1.attr({path: patellarTendonPath1, opacity: 1});
         patellarTendon2.attr({path: patellarTendonPath2, opacity: 0})
         hamstringTendon.attr({path: hamstringTendonPath1});
@@ -668,9 +697,11 @@ window.addEventListener('load', function () {
                 movePath(patellarTendon2, patellarTendonPath3, 200, 900);
                 movePath(hamstringTendon, hamstringTendonPath2, 200, 900);
                 //rotatePath(tibia, -reflexAngleDeg, 715, 90, 200, 900);
-                rotatePath(tibia, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
+                //rotatePath(tibia, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
+                rotatePath(tibia, -reflexAngleDeg, tibiaKneeStartX1, tibiaKneeStartY1, 200, 900);
                 //rotatePath(foot, -reflexAngleDeg, 715, 90, 200, 900);
-                rotatePath(foot, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
+                // rotatePath(foot, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
+                rotatePath(foot, -reflexAngleDeg, tibiaKneeStartX1, tibiaKneeStartY1, 200, 900);
             }
            }, 10);
 

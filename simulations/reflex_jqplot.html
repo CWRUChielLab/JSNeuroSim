@@ -1,50 +1,50 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>        
-        <title>Stretch reflex simulation</title>
-        <meta charset="UTF-8" />
-        <link rel="stylesheet" type="text/css" href="simulations.css" />
-        <link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
-        <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../lib/jqplot/excanvas.js"></script><![endif]-->
-        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.min.js"></script>
-        <script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.jqplot.min.js"></script>
-        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
-        <script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
-        <script language="javascript" type="text/javascript" src="../src/ode.js"></script>
-        <script language="javascript" type="text/javascript" src="../src/graph.js"></script>
-        <script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
-        <script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
-        <script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
-        <script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
-        <script language="javascript" type="text/javascript" src="reflex_jqplot.js"></script>
-        <script language="javascript" type="text/javascript" src="../src/raphael.js"></script>
-        <!--<script language="javascript" type="text/javascript" src="../lib/raphael-svg-import-classic/raphael-svg-import.js"></script>-->
-    </head>
-    <body>
-        <h1 class="simtitle">Stretch reflex simulation</h1>
-        
-        <div id="MusclePlots" class="plotpanel"></div>
-        <div id="MuscleControls" class="controlspanel"></div>
-        
-        <div>
-            <div style="float:left;">
-                <input id="ReflexRunButton" type="button" value="Run"/>
-            </div>
-            <div style="float:left;">
-                <input type="button" id="ReflexResetButton" value="Reset"/>
-            </div>
-            <div style="float:left;">
-                <input type="button" id="ReflexClearDataButton" value="Clear Data Points"/>
-            </div><br/>
-            <div><br/><input type="button" id="ReflexAnimationButton" value="Reflex Animation"/><br/></div>
-            <div><input type="button" id="ResetAnimationButton" value="Reset Animation"/><br/></div>
-        </div><br/>
-        <div id="MuscleData" class="datapanel"></div>
-        <div id="ReflexAnimation" class="animationpanel">
-            <div style="position:absolute;top:0px;left:0px;z-index:-1;">
-                <img src="../media/spinal_cord.svg" onerror="this.src='../media/spinal_cord.png'">
-            </div>
-        </div>
-    </body>
+	<head>		
+		<title>Stretch reflex simulation</title>
+		<meta charset="UTF-8" />
+		<link rel="stylesheet" type="text/css" href="simulations.css" />
+		<link rel="stylesheet" type="text/css" href="../lib/jqplot/jquery.jqplot.css" />
+		<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="../lib/jqplot/excanvas.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/jquery.jqplot.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../lib/jqplot/plugins/jqplot.cursor.min.js"></script>
+		<script language="javascript" type="text/javascript" src="../src/ode.js"></script>
+		<script language="javascript" type="text/javascript" src="../src/graph.js"></script>
+		<script language="javascript" type="text/javascript" src="../src/graph_jqplot.js"></script>
+		<script language="javascript" type="text/javascript" src="../src/component_model.js"></script>
+		<script language="javascript" type="text/javascript" src="../src/electrophys.js"></script>
+		<script language="javascript" type="text/javascript" src="../src/sim_controls.js"></script>
+		<script language="javascript" type="text/javascript" src="reflex_jqplot.js"></script>
+		<script language="javascript" type="text/javascript" src="../src/raphael.js"></script>
+		<!--<script language="javascript" type="text/javascript" src="../lib/raphael-svg-import-classic/raphael-svg-import.js"></script>-->
+	</head>
+	<body>
+		<h1 class="simtitle">Stretch reflex simulation</h1>
+		
+		<div id="MusclePlots" class="plotpanel"></div>
+		<div id="MuscleControls" class="controlspanel"></div>
+		
+		<div>
+			<div style="float:left;">
+				<input id="ReflexRunButton" type="button" value="Run"/>
+			</div>
+			<div style="float:left;">
+				<input type="button" id="ReflexResetButton" value="Reset"/>
+			</div>
+			<div style="float:left;">
+				<input type="button" id="ReflexClearDataButton" value="Clear Data Points"/>
+			</div><br/>
+			<div><br/><input type="button" id="ReflexAnimationButton" value="Reflex Animation"/><br/></div>
+			<div><input type="button" id="ResetAnimationButton" value="Reset Animation"/><br/></div>
+		</div><br/>
+		<div id="MuscleData" class="datapanel"></div>
+		<div id="ReflexAnimation" class="animationpanel">
+			<div style="position:absolute;top:0px;left:0px;z-index:-1;">
+				<img src="../media/spinal_cord.svg" onerror="this.src='../media/spinal_cord.png'">
+			</div>
+		</div>
+	</body>
 </html>

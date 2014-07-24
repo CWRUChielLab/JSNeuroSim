@@ -35,7 +35,7 @@ window.addEventListener('load', function () {
 		foot = paper.path(startFoot).attr({stroke: '#EED999', 'stroke-width': 24}),
 		
 		/* 
-			Need to adjust these numbers 
+			Need to adjust these numbers?
 		 */
 		kneeToHeelLength = 310,
 		kneeToToesLength = 320,
@@ -450,7 +450,7 @@ window.addEventListener('load', function () {
 		scaleFactor = (params.Lstretch_mm) / (10 * defaultLength);
 		
 		var //patellarTendonLeftX1 = 700,
-			patellarTendonLeftX1 = 705,
+			patellarTendonLeftX1 = 704,
 			//patellarTendonLeftY1 = 50,
 			patellarTendonLeftY1 = 125,
 			patellarTendonMidX1 = 710,
@@ -458,11 +458,11 @@ window.addEventListener('load', function () {
 			patellarTendonMidY1 = 135,
 			// patellarTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
 			// patellarTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
-			patellarTendonRightX1 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
+			patellarTendonRightX1 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) - 1,
 			patellarTendonRightY1 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			
 			//patellarTendonLeftX2 = 700,
-			patellarTendonLeftX2 = 705,
+			patellarTendonLeftX2 = 704,
 			//patellarTendonLeftY2 = 50,
 			patellarTendonLeftY2 = 125,
 			//patellarTendonMidX2 = Math.round(710 - scaleFactor * 900),
@@ -475,7 +475,7 @@ window.addEventListener('load', function () {
 			patellarTendonRightY2 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			
 			//patellarTendonLeftX3 = 500 + quadricepsEndWidth,
-			patellarTendonLeftX3 = 555 + quadricepsEndWidth,
+			patellarTendonLeftX3 = 553 + quadricepsEndWidth,
 			//patellarTendonLeftY3 = 50,
 			patellarTendonLeftY3 = 125,
 			patellarTendonMidX3 = 705,
@@ -486,7 +486,7 @@ window.addEventListener('load', function () {
 			patellarTendonRightX3 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
 			patellarTendonRightY3 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			
-			hamstringTendonLeftX1 = 685,
+			hamstringTendonLeftX1 = 683,
 			//hamstringTendonLeftY1 = 105,
 			hamstringTendonLeftY1 = 175,
 			hamstringTendonMidX1 = 690,
@@ -495,19 +495,19 @@ window.addEventListener('load', function () {
 			// hamstringTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			// hamstringTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)),
 			hamstringTendonRightX1 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
-			hamstringTendonRightY1 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)),
+			hamstringTendonRightY1 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 1,
 			
-			hamstringTendonLeftX2 = 700,
+			hamstringTendonLeftX2 = 693,
 			// hamstringTendonLeftY2 = 105,
 			hamstringTendonLeftY2 = 175,
 			//hamstringTendonMidX2 = 695,
 			hamstringTendonMidX2 = 705,
 			//hamstringTendonMidY2 = 102,
-			hamstringTendonMidY2 = 165,
+			hamstringTendonMidY2 = 162,
 			// hamstringTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
 			// hamstringTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle - Math.PI / 2) * 15),
 			hamstringTendonRightX2 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
-			hamstringTendonRightY2 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + reflexAngle - Math.PI / 2) * 15),
+			hamstringTendonRightY2 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
 			
 			// hammerX1 = Math.round(715 - scaleFactor * 350),
 			// hammerX2 = Math.round(712 - scaleFactor * 350),
@@ -722,7 +722,7 @@ window.addEventListener('load', function () {
 				contractMuscle(quadriceps, quadricepsEndWidth, 25, 150, 900);
 				colorChange(quadriceps, '#E60000', 20, 900);
 				//contractMuscle(hamstring, 205, 15, 200, 900);
-				contractMuscle(hamstring, 155, 15, 150, 900);
+				contractMuscle(hamstring, 150, 15, 150, 900);
 				colorChange(hamstring, '#FF9999', 20, 900);
 				
 				//movePath(patellarTendon2, patellarTendonPath3, 200, 900);

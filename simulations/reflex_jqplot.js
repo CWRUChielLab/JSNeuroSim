@@ -65,21 +65,21 @@ window.addEventListener('load', function () {
 //	var
 
 		//afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		afferentNerve = paper.path('M 250 80 R 280 118 360 135 555 120').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+		afferentNerve = paper.path('M 240 70 R 280 118 360 135 555 120').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
 		//afferentToInterNeuron = paper.path('M 105 65 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
-		afferentToInterNeuron = paper.path('M 76 65 R 190 30 250 80').attr({stroke: 'grey', 'stroke-width': 6}),
+		afferentToInterNeuron = paper.path('M 148 62 R 190 30 240 70').attr({stroke: 'grey', 'stroke-width': 6}),
 		//afferentToMotorNeuron = paper.path('M 125 75 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
-		afferentToMotorNeuron = paper.path('M 88 80 R 190 30 250 80').attr({stroke: 'grey', 'stroke-width': 6}),
+		afferentToMotorNeuron = paper.path('M 160 77 R 190 30 240 70').attr({stroke: 'grey', 'stroke-width': 6}),
 		
 		// interNeuron = paper.path('M 90 80 L 90 120').attr({stroke: 'grey', 'stroke-width': 6, 
 					  // 'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
-		interNeuron = paper.path('M 65 70 L 65 130').attr({stroke: 'grey', 'stroke-width': 6, 
+		interNeuron = paper.path('M 140 70 L 140 130').attr({stroke: 'grey', 'stroke-width': 6, 
 					  'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
 		// motorNerve = paper.path('M 120 90 S 300 100 500 58').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		motorNerve = paper.path('M 80 90 R 178 188 250 193 280 135 380 150 555 127').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+		motorNerve = paper.path('M 155 90 R 178 188 250 193 280 135 380 150 555 127').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
 		// inhibitoryNerve = paper.path('M 90 135 S 300 200 500 105').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
 		//inhibitoryNerve = paper.path('M 90 135 S 280 140 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		inhibitoryNerve = paper.path('M 65 145 R 140 178 200 205 256 203 285 143 380 172 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+		inhibitoryNerve = paper.path('M 140 145 R 155 183 200 205 256 203 285 143 380 172 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
 		
 		//patellarTendonPath1 = 'M 700 50 S 710 70 733 87',
 		patellarTendonPath1 = 'M 705 125 S 710 145 733 87',

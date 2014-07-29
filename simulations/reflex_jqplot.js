@@ -63,23 +63,28 @@ window.addEventListener('load', function () {
 //			}
 //		});
 //	var
-
+		nerveColor = '#ADD8E6',
+		
 		//afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		afferentNerve = paper.path('M 240 70 R 280 118 360 135 555 120').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+		afferentNerve = paper.path('M 240 70 R 280 118 360 135 545 115').attr({stroke: nerveColor, 'stroke-width': 4, 'arrow-start': 'oval'}),
 		//afferentToInterNeuron = paper.path('M 105 65 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
-		afferentToInterNeuron = paper.path('M 148 62 R 190 30 240 70').attr({stroke: 'grey', 'stroke-width': 6}),
+		afferentToInterNeuron = paper.path('M 150 60 R 190 30 240 70').attr({stroke: nerveColor, 'stroke-width': 4}),
+		afferentToInterNeuronSynapse = paper.path('M 140 55 L 152 58 L 153 70').attr({stroke: nerveColor, 'stroke-width': 3}),
 		//afferentToMotorNeuron = paper.path('M 125 75 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
-		afferentToMotorNeuron = paper.path('M 160 77 R 190 30 240 70').attr({stroke: 'grey', 'stroke-width': 6}),
+		afferentToMotorNeuron = paper.path('M 160 105 R 163 60 190 30 240 70').attr({stroke: nerveColor, 'stroke-width': 4}),
+		afferentToMotorNeuronSynapse = paper.path('M 150 110 L 160 105 L 168 110').attr({stroke: nerveColor, 'stroke-width': 3}),
 		
 		// interNeuron = paper.path('M 90 80 L 90 120').attr({stroke: 'grey', 'stroke-width': 6, 
 					  // 'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
-		interNeuron = paper.path('M 140 70 L 140 130').attr({stroke: 'grey', 'stroke-width': 6, 
+		interNeuron = paper.path('M 140 70 L 140 130').attr({stroke: nerveColor, 'stroke-width': 4, 
 					  'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
 		// motorNerve = paper.path('M 120 90 S 300 100 500 58').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		motorNerve = paper.path('M 155 90 R 178 188 250 193 280 135 380 150 555 127').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+		motorNerve = paper.path('M 160 120 R 178 188 250 193 280 135 380 150 555 127').attr({stroke: nerveColor, 'stroke-width': 4, 'arrow-start': 'oval'}),
+		motorNerveSynpase = paper.path('M 565 120 L 555 127 L 565 135').attr({stroke: nerveColor, 'stroke-width': 3}),
 		// inhibitoryNerve = paper.path('M 90 135 S 300 200 500 105').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
 		//inhibitoryNerve = paper.path('M 90 135 S 280 140 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		inhibitoryNerve = paper.path('M 140 145 R 155 183 200 205 256 203 285 143 380 172 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
+		inhibitoryNerve = paper.path('M 140 145 R 155 183 200 205 256 203 285 143 380 172 545 175').attr({stroke: nerveColor, 'stroke-width': 4, 'arrow-start': 'oval'}),
+		inhibitoryNerveSynpase = paper.path('M 555 167 L 545 175 L 555 183').attr({stroke: nerveColor, 'stroke-width': 3}),
 		
 		//patellarTendonPath1 = 'M 700 50 S 710 70 733 87',
 		patellarTendonPath1 = 'M 705 125 S 710 145 733 87',
@@ -480,7 +485,7 @@ window.addEventListener('load', function () {
 			patellarTendonLeftY3 = 125,
 			patellarTendonMidX3 = 705,
 			//patellarTendonMidY3 = 60,
-			patellarTendonMidY3 = 110,
+			patellarTendonMidY3 = 118,
 			// patellarTendonRightX3 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
 			// patellarTendonRightY3 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			patellarTendonRightX3 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
@@ -712,7 +717,7 @@ window.addEventListener('load', function () {
 				contractMuscle(motorNerveTracker, 150, 20, 50, 800);
 				changeOpacity(motorNerveTracker, 0, 50, 800);
 				
-				changeOpacity(inhibitoryNerveTracker, 1, 1, 490);
+				changeOpacity(inhibitoryNerveTracker, 1, 1, 500);
 				leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 250, 500);
 				colorChange(inhibitoryNerveTracker, 'white', 50, 800),
 				contractMuscle(inhibitoryNerveTracker, 150, 20, 50, 800);

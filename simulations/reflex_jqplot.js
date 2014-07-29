@@ -63,7 +63,9 @@ window.addEventListener('load', function () {
 //			}
 //		});
 //	var
-		nerveColor = '#ADD8E6',
+		//nerveColorLight =
+		nerveColorMid = '#ADD8E6',
+		
 		
 		//afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
 		afferentNerve = paper.path('M 240 70 R 280 118 360 135 545 115 L 550 118 555 112 560 118 565 112').attr({stroke: nerveColor, 'stroke-width': 4, 'arrow-start': 'oval'}),
@@ -79,7 +81,7 @@ window.addEventListener('load', function () {
 		interNeuron = paper.path('M 140 70 L 140 130').attr({stroke: nerveColor, 'stroke-width': 4, 
 					  'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
 		// motorNerve = paper.path('M 120 90 S 300 100 500 58').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		motorNerve = paper.path('M 160 120 R 178 188 250 193 280 135 380 150 555 133').attr({stroke: nerveColor, 'stroke-width': 4, 'arrow-start': 'oval'}),
+		motorNerve = paper.path('M 160 120 R 178 188 250 193 272 135 320 140 380 142 440 137 555 133').attr({stroke: nerveColor, 'stroke-width': 4, 'arrow-start': 'oval'}),
 		motorNerveSynpase = paper.path('M 565 125 L 555 133 L 565 140').attr({stroke: nerveColor, 'stroke-width': 3}),
 		// inhibitoryNerve = paper.path('M 90 135 S 300 200 500 105').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
 		//inhibitoryNerve = paper.path('M 90 135 S 280 140 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
@@ -717,11 +719,11 @@ window.addEventListener('load', function () {
 				contractMuscle(motorNerveTracker, 150, 20, 50, 800);
 				changeOpacity(motorNerveTracker, 0, 50, 800);
 				
-				changeOpacity(inhibitoryNerveTracker, 1, 1, 500);
+				/*changeOpacity(inhibitoryNerveTracker, 1, 1, 500);
 				leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 250, 500);
 				colorChange(inhibitoryNerveTracker, 'white', 50, 800),
 				contractMuscle(inhibitoryNerveTracker, 150, 20, 50, 800);
-				changeOpacity(inhibitoryNerveTracker, 0, 50, 800);
+				changeOpacity(inhibitoryNerveTracker, 0, 50, 800);*/
 				
 				//contractMuscle(quadriceps, quadricepsEndWidth, 25, 200, 900);
 				contractMuscle(quadriceps, quadricepsEndWidth, 25, 150, 900);

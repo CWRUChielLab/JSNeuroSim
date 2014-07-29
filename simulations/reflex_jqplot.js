@@ -741,7 +741,7 @@ window.addEventListener('load', function () {
 				// rotatePath(foot, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
 				rotatePath(foot, -reflexAngleDeg, tibiaKneeStartX1, tibiaKneeStartY1, 150, 900);
 			}
-			}, 10);
+			}, 100);
 
 	}
 	

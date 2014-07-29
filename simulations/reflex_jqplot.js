@@ -64,7 +64,8 @@ window.addEventListener('load', function () {
 //		});
 //	var
 		//nerveColorLight =
-		nerveColorMid = '#ADD8E6',
+		nerveColor = '#ADD8E6',
+		
 		
 		
 		//afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),

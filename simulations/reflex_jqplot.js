@@ -15,17 +15,12 @@ window.addEventListener('load', function () {
 		paper = Raphael(animationPanel, 1000, 450),
 		
 		startTibiaAngle = -1.36678,		
-		//tibiaKneeX = 715, tibiaKneeY = 90,
 		tibiaKneeStartX1 = 725, tibiaKneeStartY1 = 165,
 		tibiaKneeStartX2 = 775, tibiaKneeStartY2 = 380,
 		tibiaLength = Math.sqrt(Math.pow((tibiaKneeStartY2 - tibiaKneeStartY1),2) + Math.pow((tibiaKneeStartX2 - tibiaKneeStartX1), 2)),
 		
 		boneStrokeWidth = 30,
-		//tibia = paper.path('M 715 90 L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
-		//tibia = paper.path('M ' + tibiaKneeX + ' ' + tibiaKneeY + ' L 775 380').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
 		tibia = paper.path('M ' + tibiaKneeStartX1 + ' ' + tibiaKneeStartY1 + ' L ' + tibiaKneeStartX2 + ' ' + tibiaKneeStartY2).attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
-		
-		//tibiaLength = 296,
 		
 		startFootHeelAngle = -1.41839,
 		startFootToesAngle = -1.11832,
@@ -34,23 +29,14 @@ window.addEventListener('load', function () {
 		endFoot,
 		foot = paper.path(startFoot).attr({stroke: '#EED999', 'stroke-width': 24}),
 		
-		/* 
-			Need to adjust these numbers?
-		 */
 		kneeToHeelLength = 310,
 		kneeToToesLength = 320,
 		
-		//femur = paper.path('M 310 75 L 690 75').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
 		femur = paper.path('M 410 150 L 700 150').attr({stroke: '#EED999', 'stroke-width': boneStrokeWidth}),
-		//quadriceps = paper.ellipse(500, 50, 200, 20).attr({fill: '#FF4444', stroke: 'black'}),
 		quadriceps = paper.ellipse(555, 125, 150, 20).attr({fill: '#FF4444', stroke: 'black'}),
-		//quadricepsEndWidth = 150,
 		quadricepsEndWidth = 200,
-		//hamstring = paper.ellipse(495, 105, 190, 20).attr({fill: '#FF4444', stroke: 'black'}),
 		hamstring = paper.ellipse(545, 175, 140, 20).attr({fill: '#FF4444', stroke: 'black'}),
 		
-//		spinalCord = paper.ellipse(100, 100, 80, 80).attr({stroke: 'black', fill: 'silver'}),
-
 //		spinalCord;
 //		jQuery.ajax({
 //			type: "GET",
@@ -67,36 +53,28 @@ window.addEventListener('load', function () {
 		nerveColorMid = '#1E90FF',
 		nerveColorDark = '#0000CD',
 		
-		
-		
-		//afferentNerve = paper.path('M 250 28 S 380 30 500 47').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		afferentNerve = paper.path('M 240 70 R 280 118 360 135 545 115 L 550 118 555 112 560 118 565 112').attr({stroke: nerveColorMid, 'stroke-width': 4, 'arrow-start': 'oval'}),
-		//afferentToInterNeuron = paper.path('M 105 65 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
+		quadricepsToAfferentSynapse = paper.ellipse(240, 70, 6, 6).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		afferentNerve = paper.path('M 240 70 R 280 118 360 135 545 115 L 550 118 555 112 560 118 565 112').attr({stroke: nerveColorMid, 'stroke-width': 4}),
 		afferentToInterNeuron = paper.path('M 150 60 R 190 30 240 70').attr({stroke: nerveColorMid, 'stroke-width': 4}),
 		afferentToInterNeuronSynapse = paper.path('M 140 55 L 152 58 L 153 70').attr({stroke: nerveColorMid, 'stroke-width': 3}),
-		//afferentToMotorNeuron = paper.path('M 125 75 S 150 30 250 28').attr({stroke: 'grey', 'stroke-width': 6}),
 		afferentToMotorNeuron = paper.path('M 160 105 R 163 60 190 30 240 70').attr({stroke: nerveColorMid, 'stroke-width': 4}),
 		afferentToMotorNeuronSynapse = paper.path('M 150 110 L 160 105 L 168 110').attr({stroke: nerveColorMid, 'stroke-width': 3}),
 		
-		// interNeuron = paper.path('M 90 80 L 90 120').attr({stroke: 'grey', 'stroke-width': 6, 
-					  // 'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
-		interNeuron = paper.path('M 140 70 L 140 130').attr({stroke: nerveColorMid, 'stroke-width': 4, 
-					  'arrow-start': 'oval', 'arrow-end': 'oval-narrow-short'}),
-		// motorNerve = paper.path('M 120 90 S 300 100 500 58').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		motorNerve = paper.path('M 160 120 R 178 188 250 193 272 135 320 140 380 142 440 137 555 133').attr({stroke: nerveColorMid, 'stroke-width': 4, 'arrow-start': 'oval'}),
-		motorNerveSynapse = paper.path('M 565 125 L 555 133 L 565 140').attr({stroke: nerveColorMid, 'stroke-width': 3}),
-		// inhibitoryNerve = paper.path('M 90 135 S 300 200 500 105').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		//inhibitoryNerve = paper.path('M 90 135 S 280 140 545 175').attr({stroke: 'grey', 'stroke-width': 6, 'arrow-start': 'oval'}),
-		inhibitoryNerve = paper.path('M 140 145 R 155 183 200 205 256 203 285 143 380 172 545 175').attr({stroke: nerveColorMid, 'stroke-width': 4, 'arrow-start': 'oval'}),
-		inhibitoryNerveSynapse = paper.path('M 555 167 L 545 175 L 555 183').attr({stroke: nerveColorMid, 'stroke-width': 3}),
+		interToAfferentNeuronSynapse = paper.ellipse(140, 70, 6, 6).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		interNeuron = paper.path('M 140 70 L 140 130').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		interToMotorNerveSynapse = paper.ellipse(140, 130, 3, 3).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		motorToInterNeuronSynapse = paper.ellipse(160, 120, 6, 6).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		motorNerve = paper.path('M 160 120 R 178 188 250 193 272 135 320 140 380 142 440 137 555 133').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		motorNerveToQuadricepsSynapse = paper.path('M 565 125 L 555 133 L 565 140').attr({stroke: nerveColorMid, 'stroke-width': 3}),
+		inhibitoryToInterNeuronSynapse = paper.ellipse(140, 145, 6, 6).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		inhibitoryNerve = paper.path('M 140 145 R 155 183 200 205 256 203 285 143 380 172 545 175').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		inhibitoryNerveToHamstringSynapse = paper.path('M 555 167 L 545 175 L 555 183').attr({stroke: nerveColorMid, 'stroke-width': 3}),
 		
-		//patellarTendonPath1 = 'M 700 50 S 710 70 733 87',
 		patellarTendonPath1 = 'M 705 125 S 710 145 733 87',
 		patellarTendonPath2,
 		patellarTendonPath3,
 		patellarTendon1 = paper.path(patellarTendonPath1).attr({'stroke-width': 3}),
 		patellarTendon2 = paper.path(patellarTendonPath2).attr({'stroke-width': 3, opacity: 0}),
-		//hamstringTendonPath1 = 'M 685 105 S 690 102 698 93',
 		hamstringTendonPath1 = 'M 685 175 S 690 172 698 93',
 		hamstringTendonPath2,
 		hamstringTendon = paper.path(hamstringTendonPath1).attr({'stroke-width': 2}),  
@@ -457,74 +435,40 @@ window.addEventListener('load', function () {
 		quadricepsEndWidth = 150 - (-forceIntegral / 40000);
 		scaleFactor = (params.Lstretch_mm) / (10 * defaultLength);
 		
-		var //patellarTendonLeftX1 = 700,
-			patellarTendonLeftX1 = 704,
-			//patellarTendonLeftY1 = 50,
+		var patellarTendonLeftX1 = 704,
 			patellarTendonLeftY1 = 125,
 			patellarTendonMidX1 = 710,
-			//patellarTendonMidY1 = 70,
 			patellarTendonMidY1 = 135,
-			// patellarTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
-			// patellarTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			patellarTendonRightX1 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) - 1,
 			patellarTendonRightY1 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			
-			//patellarTendonLeftX2 = 700,
 			patellarTendonLeftX2 = 704,
-			//patellarTendonLeftY2 = 50,
 			patellarTendonLeftY2 = 125,
-			//patellarTendonMidX2 = Math.round(710 - scaleFactor * 900),
 			patellarTendonMidX2 = Math.round(715 - scaleFactor * 900),
-			//patellarTendonMidY2 = Math.round(70 + scaleFactor * 900),
 			patellarTendonMidY2 = Math.round(145 + scaleFactor * 900),
-			// patellarTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
-			// patellarTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			patellarTendonRightX2 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
 			patellarTendonRightY2 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			
-			//patellarTendonLeftX3 = 500 + quadricepsEndWidth,
 			patellarTendonLeftX3 = 553 + quadricepsEndWidth,
-			//patellarTendonLeftY3 = 50,
 			patellarTendonLeftY3 = 125,
 			patellarTendonMidX3 = 705,
-			//patellarTendonMidY3 = 60,
 			patellarTendonMidY3 = 118,
-			// patellarTendonRightX3 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
-			// patellarTendonRightY3 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			patellarTendonRightX3 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)),
 			patellarTendonRightY3 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + reflexAngle + Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			
 			hamstringTendonLeftX1 = 683,
-			//hamstringTendonLeftY1 = 105,
 			hamstringTendonLeftY1 = 175,
 			hamstringTendonMidX1 = 690,
-			//hamstringTendonMidY1 = 102,
 			hamstringTendonMidY1 = 172,
-			// hamstringTendonRightX1 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
-			// hamstringTendonRightY1 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)),
 			hamstringTendonRightX1 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 3,
 			hamstringTendonRightY1 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle - Math.PI / 2) * (boneStrokeWidth / 2)) + 1,
 			
 			hamstringTendonLeftX2 = 693,
-			// hamstringTendonLeftY2 = 105,
 			hamstringTendonLeftY2 = 175,
-			//hamstringTendonMidX2 = 695,
 			hamstringTendonMidX2 = 705,
-			//hamstringTendonMidY2 = 102,
 			hamstringTendonMidY2 = 162,
-			// hamstringTendonRightX2 = Math.round(tibiaKneeX + Math.cos(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
-			// hamstringTendonRightY2 = Math.round(tibiaKneeY - Math.sin(startTibiaAngle + reflexAngle - Math.PI / 2) * 15),
 			hamstringTendonRightX2 = Math.round(tibiaKneeStartX1 + Math.cos(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
 			hamstringTendonRightY2 = Math.round(tibiaKneeStartY1 - Math.sin(startTibiaAngle + reflexAngle - Math.PI / 2) * 15) + 3,
-			
-			// hammerX1 = Math.round(715 - scaleFactor * 350),
-			// hammerX2 = Math.round(712 - scaleFactor * 350),
-			// hammerX3 = Math.round(752 - scaleFactor * 350),
-			// hammerX4 = Math.round(767 - scaleFactor * 350),
-			// hammerY1 = Math.round(73 + scaleFactor * 350),
-			// hammerY2 = Math.round(68 + scaleFactor * 350),
-			// hammerY3 = Math.round(28 + scaleFactor * 350),
-			// hammerY4 = Math.round(48 + scaleFactor * 350);
 			
 			hammerX1 = Math.round(720 - scaleFactor * 350),
 			hammerX2 = Math.round(717 - scaleFactor * 350),
@@ -546,10 +490,7 @@ window.addEventListener('load', function () {
 		hamstringTendonPath2 = 'M ' + hamstringTendonLeftX2 + ' ' + hamstringTendonLeftY2 + ' S ' + hamstringTendonMidX2 + ' ' +
 							  hamstringTendonMidY2 + ' ' + hamstringTendonRightX2 + ' ' + hamstringTendonRightY2,
 
-		//startHammer = 'M 733 55 L 730 50 L 770 10 L 785 30 Z';
 		startHammer = 'M 733 125 L 730 120 L 770 80 L 785 100 Z';
-		// endHammer = 'M ' + hammerX1 + ' ' + hammerY1 + ' L ' + hammerX2 + ' ' + hammerY2 + 
-					// ' L ' + hammerX3 + ' ' + hammerY3 + ' L ' + hammerX4 + ' ' + hammerY4 + ' Z';
 		endHammer = 'M ' + hammerX1 + ' ' + hammerY1 + ' L ' + hammerX2 + ' ' + hammerY2 + 
 					' L ' + hammerX3 + ' ' + hammerY3 + ' L ' + hammerX4 + ' ' + hammerY4 + ' Z';			
 		
@@ -630,8 +571,8 @@ window.addEventListener('load', function () {
 		moveMuscle = function (muscle, x, y, angle, duration, delay) {
 			muscle.animate(Raphael.animation({transform: 'T' + x + ' ' + y + 'r' + angle}, duration * timeScale).delay(delay * timeScale));
 		},
-		changeObjectColor = function (object, color, duration, delay) {
-			object.animate(Raphael.animation({fill: color}, duration * timeScale).delay(delay * timeScale));
+		changeObjectColor = function (object, fillColor, strokeColor, duration, delay) {
+			object.animate(Raphael.animation({fill: fillColor, stroke: strokeColor}, duration * timeScale).delay(delay * timeScale));
 		},	
 		changePathColor = function (path, color, duration, delay) {
 			path.animate(Raphael.animation({stroke: color}, duration * timeScale).delay(delay * timeScale));
@@ -647,15 +588,9 @@ window.addEventListener('load', function () {
 		};
 	
 	function resetAnimation() {
-		//quadriceps.attr({fill: '#FF4444', rx: 200, ry: 20});
 		quadriceps.attr({fill: '#FF4444', rx: 150, ry: 20});
-		//hamstring.attr({fill: '#FF4444', rx: 190, ry: 20});
 		hamstring.attr({fill: '#FF4444', rx: 140, ry: 20});
-		//rotatePath(tibia, 0, 715, 90, 1, 0);
-		// rotatePath(tibia, 0, tibiaKneeX, tibiaKneeY, 1, 0);
 		rotatePath(tibia, 0, tibiaKneeStartX1, tibiaKneeStartY1, 1, 0);
-		//rotatePath(foot, 0, 715, 90, 1, 0);
-		//rotatePath(foot, 0, tibiaKneeX, tibiaKneeY, 1, 0);
 		rotatePath(foot, 0, tibiaKneeStartX1, tibiaKneeStartY1, 1, 0);
 		patellarTendon1.attr({path: patellarTendonPath1, opacity: 1});
 		patellarTendon2.attr({path: patellarTendonPath2, opacity: 0})
@@ -666,10 +601,12 @@ window.addEventListener('load', function () {
 		hammer2.attr({path: endHammer, opacity: 0});
 		changeOpacity(motorNerveTracker, 0, 1, 0);
 		changeOpacity(inhibitoryNerveTracker, 0, 1, 0);
+		motorToInterNeuronSynapse.attr({fill: nerveColorMid, stroke: nerveColorMid});
 		motorNerve.attr({stroke: nerveColorMid});
-		motorNerveSynapse.attr({stroke: nerveColorMid});
+		motorNerveToQuadricepsSynapse.attr({stroke: nerveColorMid});
+		inhibitoryToInterNeuronSynapse.attr({fill: nerveColorMid, stroke: nerveColorMid});
 		inhibitoryNerve.attr({stroke: nerveColorMid});
-		inhibitoryNerveSynapse.attr({stroke: nerveColorMid});
+		inhibitoryNerveToHamstringSynapse.attr({stroke: nerveColorMid});
 		
 	}
 		
@@ -704,8 +641,27 @@ window.addEventListener('load', function () {
 			movePath(hammer2, startHammer, 100, 200);
 			
 			
+			
+		/*quadricepsToAfferentSynapse = paper.ellipse(240, 70, 6, 6).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		afferentNerve = paper.path('M 240 70 R 280 118 360 135 545 115 L 550 118 555 112 560 118 565 112').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		afferentToInterNeuron = paper.path('M 150 60 R 190 30 240 70').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		afferentToInterNeuronSynapse = paper.path('M 140 55 L 152 58 L 153 70').attr({stroke: nerveColorMid, 'stroke-width': 3}),
+		afferentToMotorNeuron = paper.path('M 160 105 R 163 60 190 30 240 70').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		afferentToMotorNeuronSynapse = paper.path('M 150 110 L 160 105 L 168 110').attr({stroke: nerveColorMid, 'stroke-width': 3}),
+		
+		interToAfferentNeuronSynapse = paper.ellipse(140, 70, 6, 6).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		interNeuron = paper.path('M 140 70 L 140 130').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		interToMotorNerveSynapse = paper.ellipse(140, 130, 3, 3).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		motorToInterNeuronSynapse = paper.ellipse(160, 120, 6, 6).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		motorNerve = paper.path('M 160 120 R 178 188 250 193 272 135 320 140 380 142 440 137 555 133').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		motorNerveToQuadricepsSynapse = paper.path('M 565 125 L 555 133 L 565 140').attr({stroke: nerveColorMid, 'stroke-width': 3}),
+		inhibitoryToInterNeuronSynapse = paper.ellipse(140, 145, 6, 6).attr({fill: nerveColorMid, stroke: nerveColorMid}),
+		inhibitoryNerve = paper.path('M 140 145 R 155 183 200 205 256 203 285 143 380 172 545 175').attr({stroke: nerveColorMid, 'stroke-width': 4}),
+		inhibitoryNerveToHamstringSynapse = paper.path('M 555 167 L 545 175 L 555 183').attr({stroke: nerveColorMid, 'stroke-width': 3}),*/
+			
 			if (reflex) {
 				changeOpacity(afferentNerveTracker, 1, 1, 100);
+				changeObjectColor(quadricepsToAfferentSynapse, nerveColorDark, nerveColorDark, 1, 100);
 				changePathColor(afferentNerve, nerveColorDark, 1, 100);
 				changePathColor(afferentToInterNeuron, nerveColorDark, 1, 100);
 				changePathColor(afferentToInterNeuronSynapse, nerveColorDark, 1, 100);
@@ -721,7 +677,8 @@ window.addEventListener('load', function () {
 				changeOpacity(afferentToMotorNeuronTracker, 1, 1, 295);
 				rightTrack(afferentToMotorNeuronTracker, afferentToMotorNeuron, 130, 300);
 				changeOpacity(afferentToMotorNeuronTracker, 0, 1, 440);
-											
+				
+				changeObjectColor(quadricepsToAfferentSynapse, nerveColorMid, nerveColorMid, 1, 440);
 				changePathColor(afferentNerve, nerveColorMid, 1, 440);
 				changePathColor(afferentToInterNeuron, nerveColorMid, 1, 440);
 				changePathColor(afferentToInterNeuronSynapse, nerveColorMid, 1, 440);
@@ -729,21 +686,26 @@ window.addEventListener('load', function () {
 				changePathColor(afferentToMotorNeuronSynapse, nerveColorMid, 1, 440);
 				
 				changeOpacity(interNeuronTracker, 1, 1, 440);
+				changeObjectColor(interToAfferentNeuronSynapse, nerveColorDark, nerveColorDark, 1, 440);
 				changePathColor(interNeuron, nerveColorDark, 1, 440);
+				changeObjectColor(interToMotorNerveSynapse, nerveColorDark, nerveColorDark, 1, 440);
 				leftTrack(interNeuronTracker, interNeuron, 50, 450);
 				changeOpacity(interNeuronTracker, 0, 1, 500);
+				changeObjectColor(interToAfferentNeuronSynapse, nerveColorMid, nerveColorMid, 1, 500);
 				changePathColor(interNeuron, nerveColorMid, 1, 500);
+				changeObjectColor(interToMotorNerveSynapse, nerveColorMid, nerveColorMid, 1, 500);
 				
 				changeOpacity(motorNerveTracker, 1, 1, 440);
+				changeObjectColor(motorToInterNeuronSynapse, nerveColorDark, nerveColorDark, 1, 440);
 				changePathColor(motorNerve, nerveColorDark, 1, 440);
-				changePathColor(motorNerveSynapse, nerveColorDark, 1, 440);
+				changePathColor(motorNerveToQuadricepsSynapse, nerveColorDark, 1, 440);
 				leftTrack(motorNerveTracker, motorNerve, 300, 450);
-				changeObjectColor(motorNerveTracker, 'red', 50, 800),
+				changeObjectColor(motorNerveTracker, 'red', 'black', 50, 800),
 				contractMuscle(motorNerveTracker, 150, 20, 50, 800);
 				changeOpacity(motorNerveTracker, 0, 50, 800);
-				
+				changeObjectColor(inhibitoryToInterNeuronSynapse, nerveColorLight, nerveColorLight, 1, 500);
 				changePathColor(inhibitoryNerve, nerveColorLight, 1, 500);
-				changePathColor(inhibitoryNerveSynapse, nerveColorLight, 1, 500);
+				changePathColor(inhibitoryNerveToHamstringSynapse, nerveColorLight, 1, 500);
 				
 				/*changeOpacity(inhibitoryNerveTracker, 1, 1, 500);
 				leftTrack(inhibitoryNerveTracker, inhibitoryNerve, 250, 500);
@@ -751,22 +713,14 @@ window.addEventListener('load', function () {
 				contractMuscle(inhibitoryNerveTracker, 150, 20, 50, 800);
 				changeOpacity(inhibitoryNerveTracker, 0, 50, 800);*/
 				
-				//contractMuscle(quadriceps, quadricepsEndWidth, 25, 200, 900);
 				contractMuscle(quadriceps, quadricepsEndWidth, 25, 150, 900);
-				changeObjectColor(quadriceps, '#E60000', 20, 900);
-				//contractMuscle(hamstring, 205, 15, 200, 900);
+				changeObjectColor(quadriceps, '#E60000', 'black', 20, 900);
 				contractMuscle(hamstring, 150, 15, 150, 900);
-				changeObjectColor(hamstring, '#FF9999', 20, 900);
+				changeObjectColor(hamstring, '#FF9999', 'black', 20, 900);
 				
-				//movePath(patellarTendon2, patellarTendonPath3, 200, 900);
-				//movePath(hamstringTendon, hamstringTendonPath2, 200, 900);
 				movePath(patellarTendon2, patellarTendonPath3, 150, 900);
 				movePath(hamstringTendon, hamstringTendonPath2, 150, 900);
-				//rotatePath(tibia, -reflexAngleDeg, 715, 90, 200, 900);
-				//rotatePath(tibia, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
 				rotatePath(tibia, -reflexAngleDeg, tibiaKneeStartX1, tibiaKneeStartY1, 150, 900);
-				//rotatePath(foot, -reflexAngleDeg, 715, 90, 200, 900);
-				// rotatePath(foot, -reflexAngleDeg, tibiaKneeX, tibiaKneeY, 200, 900);
 				rotatePath(foot, -reflexAngleDeg, tibiaKneeStartX1, tibiaKneeStartY1, 150, 900);
 			}
 			}, 100);

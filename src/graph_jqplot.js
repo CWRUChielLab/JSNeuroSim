@@ -249,7 +249,8 @@ graphJqplot.histFormat = function (binNumber, data) {
     binRange = maxVal - minVal;
     binStepSize = binRange / binNumber;
     binStepMin = minVal;
-    binStepMax = minVal + binStepSize;	
+    binStepMax = minVal + binStepSize;
+	
     for (var i = 0; i <= binNumber; i++ ) {
         histData[i] = [binStepMin, 0];
         for (var j = 0; j < data.length; j++) {
@@ -263,6 +264,16 @@ graphJqplot.histFormat = function (binNumber, data) {
         binStepMin += binStepSize;
         binStepMax += binStepSize;
     }
+	
+	// Dealing with the one bar problem occurring at p=0
+	if (binRange == 0) {
+		var tempHistData = [[0, histData[0][1]]];
+		for (var i = 1; i < 5; i++) {
+			tempHistData[i] = [i, 0];
+		}
+		histData = tempHistData;
+		console.log(tempHistData);
+	}
     return histData;
 }
 

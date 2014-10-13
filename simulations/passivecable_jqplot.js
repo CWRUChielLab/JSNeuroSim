@@ -13,7 +13,7 @@ window.addEventListener('load', function () {
     params = { 
         diameter_um: { label: 'Dendrite diameter', units: '\u00B5m',
             defaultVal: 2, minVal: 0.001, maxVal: 1000 },
-        R_axial_ohm_cm: { label: 'Axial resistance', units: '\u03A9 cm',
+        R_axial_ohm_cm: { label: 'Intracellular resistivity', units: '\u03A9 cm',
             defaultVal: 36, minVal: 0.01, maxVal: 10000 },
         C_uF_p_cm2: { label: 'Membrane capacitance', units: '\u00B5F/cm\u00B2',
             defaultVal: 1, minVal: 0.01, maxVal: 100 }, 

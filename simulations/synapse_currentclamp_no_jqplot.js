@@ -21,7 +21,7 @@ window.addEventListener('load', function () {
             defaultVal: 10, minVal: 0, maxVal: 1000 },
         SNP_uM: { label: 'Sodium nitroprusside (SNP)', units: '\u00B5M',
             defaultVal: 0, minVal: 0, maxVal: 2000 },
-        TEA_mM: { label: 'Tetraethyl amonium (TEA)', units: 'mM',
+        TEA_mM: { label: 'Tetraethylammonium (TEA)', units: 'mM',
             defaultVal: 0, minVal: 0, maxVal: 3 },
 
         C_pre_nF: { label: 'Membrane capacitance', units: 'nF',

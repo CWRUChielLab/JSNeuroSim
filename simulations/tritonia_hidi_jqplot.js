@@ -7,7 +7,7 @@ window.addEventListener('load', function () {
     'use strict';
 
     var layoutSwim, layoutHiDi, layoutModulatedSwimCurrentClamp,
-        controlsPanel, controls, dataPanel, animationPanel,
+        controlsPanel, controls, dataPanel, debugPanel, animationPanel,
         touchStimDataTable,
         voltageSDataTable,   currentSDataTable,
         voltageC2DataTable,  currentC2DataTable, 

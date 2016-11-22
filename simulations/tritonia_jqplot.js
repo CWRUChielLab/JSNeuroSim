@@ -6,7 +6,7 @@
 window.addEventListener('load', function () {
     'use strict';
 
-    var layout, controlsPanel, controls, dataPanel, voltageC2DataTable,
+    var layout, controlsPanel, controls, dataPanel, debugPanel, voltageC2DataTable,
         currentC2DataTable, voltageDSIDataTable, currentDSIDataTable,
         voltageVSIDataTable, currentVSIDataTable, voltageDRIDataTable,
         currentDRIDataTable,
